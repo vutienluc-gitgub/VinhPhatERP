@@ -178,7 +178,7 @@ export function OrderDetail({
                 ] ?? ORDERS_LIST_LABELS.TYPE_PRODUCTION}
               </Badge>
             </div>
-            <span className="text-muted text-sm">
+            <span className="text-muted-foreground text-sm">
               {order.customers?.name ?? '—'}
             </span>
           </div>
@@ -190,19 +190,19 @@ export function OrderDetail({
         {/* Info grid */}
         <div className="dashboard-summary-row mb-4">
           <div>
-            <div className="text-muted text-sm summary-label">
+            <div className="text-muted-foreground text-sm summary-label">
               {ORDERS_LIST_LABELS.LBL_ORDER_DATE}
             </div>
             <div>{order.order_date}</div>
           </div>
           <div>
-            <div className="text-muted text-sm summary-label">
+            <div className="text-muted-foreground text-sm summary-label">
               {ORDERS_LIST_LABELS.LBL_DELIVERY_DATE}
             </div>
             <div>{order.delivery_date ?? '—'}</div>
           </div>
           <div>
-            <div className="text-muted text-sm summary-label">
+            <div className="text-muted-foreground text-sm summary-label">
               {ORDERS_FORM_LABELS.LBL_TOTAL_AMOUNT}
             </div>
             <div className="summary-value">
@@ -210,7 +210,7 @@ export function OrderDetail({
             </div>
           </div>
           <div>
-            <div className="text-muted text-sm summary-label">
+            <div className="text-muted-foreground text-sm summary-label">
               {ORDERS_LIST_LABELS.LBL_PAID_AMOUNT}
             </div>
             <div className="summary-value text-[var(--success)]">
@@ -218,7 +218,7 @@ export function OrderDetail({
             </div>
           </div>
           <div>
-            <div className="text-muted text-sm summary-label">
+            <div className="text-muted-foreground text-sm summary-label">
               {ORDERS_FORM_LABELS.LBL_BALANCE_DUE}
             </div>
             <div
@@ -405,7 +405,9 @@ export function OrderDetail({
                       .product_category as ProductCategory | undefined;
                     return (
                       <tr key={item.id}>
-                        <td className="text-muted text-sm">{idx + 1}</td>
+                        <td className="text-muted-foreground text-sm">
+                          {idx + 1}
+                        </td>
                         {order.order_type === 'trading' && (
                           <td>
                             <Badge variant="info">
@@ -418,7 +420,7 @@ export function OrderDetail({
                         <td>
                           <strong>{item.fabric_type}</strong>
                         </td>
-                        <td className="text-muted text-sm">
+                        <td className="text-muted-foreground text-sm">
                           {item.color_name ?? '\u2014'}
                         </td>
                         <td className="text-right tabular-nums">

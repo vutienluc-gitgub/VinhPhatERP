@@ -40,7 +40,7 @@ export function POSupplierPortalStatus({ po }: POSupplierPortalStatusProps) {
       );
     }
     return (
-      <div className="flex items-center gap-1.5 text-muted text-sm font-medium">
+      <div className="flex items-center gap-1.5 text-muted-foreground text-sm font-medium">
         <Icon name="Mail" className="w-4 h-4" />
         <span>Chưa mở</span>
       </div>
@@ -60,7 +60,7 @@ export function POSupplierPortalStatus({ po }: POSupplierPortalStatusProps) {
           type="text"
           value={portalUrl}
           readOnly
-          className="flex-1 text-xs px-2 py-1.5 bg-white border border-border rounded text-muted-foreground outline-none"
+          className="flex-1 text-xs px-2 py-1.5 bg-surface border border-border rounded text-muted-foreground outline-none"
         />
         <Button
           variant="outline"

@@ -107,7 +107,7 @@ export function RevenueTrendSection({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-5">
         <div className="card-sub-section">
-          <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 border-b pb-1">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 border-b pb-1">
             {REPORT_LABELS.TREND_MONTHLY_CHART}
           </p>
           <RevenueBarChart data={monthlyData} isLoading={isLoading} />
@@ -115,7 +115,7 @@ export function RevenueTrendSection({
 
         {fabricData.length > 0 && (
           <div className="card-sub-section">
-            <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-4 border-b pb-1">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-4 border-b pb-1">
               {REPORT_LABELS.TREND_FABRIC_CHART}
             </p>
             <FabricRevenueChart data={fabricData} isLoading={isLoading} />
@@ -126,7 +126,7 @@ export function RevenueTrendSection({
       {paymentMethods.length > 0 && (
         <div className="mt-4">
           <div className="px-5 py-2 bg-surface-subtle border-y border-border">
-            <p className="text-[10px] font-bold text-muted uppercase tracking-widest">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
               {REPORT_LABELS.TREND_COLLECTION_EYEBROW}
             </p>
             <p className="text-xs font-bold">

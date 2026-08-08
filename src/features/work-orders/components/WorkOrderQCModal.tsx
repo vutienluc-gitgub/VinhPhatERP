@@ -27,7 +27,7 @@ export function WorkOrderQCModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-foreground/50 backdrop-blur-sm"
         onClick={onClose}
       />
       <div className="bg-surface relative z-10 w-full max-w-md rounded-xl shadow-xl flex flex-col">

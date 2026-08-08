@@ -16,7 +16,7 @@
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -32,18 +32,18 @@
   --accent: rgb(var(--accent-rgb));
 
   /* ── Surface & Layout ──────────────────────────────────────── */
-  --surface: rgba(255, 255, 255, 0.86);
-  --surface-strong: #ffffff;
-  --surface-hover: rgba(var(--brand-rgb), 0.05);
-  --surface-selected: rgba(var(--brand-rgb), 0.08);
-  --surface-subtle: rgba(var(--base-rgb), 0.03);
-  --surface-disabled: rgba(var(--base-rgb), 0.04);
-  --border: rgba(var(--base-rgb), 0.1);
+  --surface: rgb(255, 255, 255, 0.86);
+  --surface-strong: #fff;
+  --surface-hover: rgb(var(--brand-rgb), 0.05);
+  --surface-selected: rgb(var(--brand-rgb), 0.08);
+  --surface-subtle: rgb(var(--base-rgb), 0.03);
+  --surface-disabled: rgb(var(--base-rgb), 0.04);
+  --border: rgb(var(--base-rgb), 0.1);
 
   /* ── Text ───────────────────────────────────────────────────── */
   --text: rgb(var(--base-rgb));
   --muted: #5c6f88;
-  --text-tertiary: #8899aa;
+  --text-tertiary: #89a;
 
   /* ── Status Colors ─────────────────────────────────────────── */
   --warning: #d97706;
@@ -55,7 +55,7 @@
   --info: rgb(var(--brand-rgb));
 
   /* ── Elevation & Shape ─────────────────────────────────────── */
-  --shadow: 0 16px 40px rgba(var(--base-rgb), 0.08);
+  --shadow: 0 16px 40px rgb(var(--base-rgb), 0.08);
   --radius-xl: 28px;
   --radius-lg: 24px;
   --radius-md: 18px;
@@ -71,7 +71,7 @@
   background:
     radial-gradient(
       circle at top left,
-      rgba(var(--brand-rgb), 0.12),
+      rgb(var(--brand-rgb), 0.12),
       transparent 28%
     ),
     linear-gradient(180deg, #f6fbff 0%, #edf4fb 100%);
@@ -95,7 +95,8 @@ body {
   width: 100%;
   min-width: 320px;
   min-height: 100vh;
-  color: var(--text);
+  color: var(--foreground);
+
   /* background-attachment: fixed gây floating/parallax trên iOS Safari khi overscroll */
   overflow-x: hidden;
 }
@@ -136,30 +137,30 @@ p {
    ============================================================ */
 [data-theme='dark'] {
   color-scheme: dark;
+
+  /* @architecture-exception: legacy color migration */
   color: #eef7ff;
   background:
     radial-gradient(
       circle at top left,
-      rgba(var(--brand-rgb), 0.15),
+      rgb(var(--brand-rgb), 0.15),
       transparent 28%
     ),
     linear-gradient(180deg, #091524 0%, #060e18 100%);
 
-  --surface: rgba(var(--base-rgb), 0.86);
+  --surface: rgb(var(--base-rgb), 0.86);
   --surface-strong: #0d1e34;
-  --surface-hover: rgba(255, 255, 255, 0.06);
-  --surface-selected: rgba(var(--brand-rgb), 0.15);
-  --surface-subtle: rgba(255, 255, 255, 0.03);
-  --surface-disabled: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.12);
+  --surface-hover: rgb(255, 255, 255, 0.06);
+  --surface-selected: rgb(var(--brand-rgb), 0.15);
+  --surface-subtle: rgb(255, 255, 255, 0.03);
+  --surface-disabled: rgb(255, 255, 255, 0.04);
+  --border: rgb(255, 255, 255, 0.12);
   --text: #eef7ff;
   --muted: #94a3b8;
   --text-tertiary: #64748b;
-
   --primary: #4a8fd4;
   --primary-strong: #7ab3e8;
   --accent: #f04d5f;
-
   --warning: #f59e0b;
   --warning-strong: #d97706;
   --danger: #f87171;
@@ -167,9 +168,7 @@ p {
   --success: #34d399;
   --success-rgb: 52, 211, 153;
   --info: #7ab3e8;
-
-  --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-
+  --shadow: 0 16px 40px rgb(0, 0, 0, 0.4);
   --auth-accent: #4a8fd4;
   --auth-accent-strong: #7ab3e8;
   --auth-accent-rgb: 74, 143, 212;
@@ -199,6 +198,7 @@ p {
   right: 10%;
   background: var(--accent);
 }
+
 .bg-glow-2 {
   bottom: -80px;
   left: 20%;
@@ -210,6 +210,7 @@ p {
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -223,12 +224,15 @@ p {
 .fade-up:nth-child(1) {
   animation-delay: 0.05s;
 }
+
 .fade-up:nth-child(2) {
   animation-delay: 0.1s;
 }
+
 .fade-up:nth-child(3) {
   animation-delay: 0.15s;
 }
+
 .fade-up:nth-child(4) {
   animation-delay: 0.2s;
 }
@@ -238,6 +242,7 @@ p {
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.4;
   }

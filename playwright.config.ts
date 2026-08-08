@@ -34,6 +34,7 @@ export default defineConfig({
         '**/core-smoke.spec.ts',
         '**/operations-dnd.spec.ts',
         '**/fluid-layout.spec.ts',
+        '**/visual-regression.spec.ts',
       ],
     },
     {
@@ -48,6 +49,7 @@ export default defineConfig({
         '**/core-smoke.spec.ts',
         '**/operations-dnd.spec.ts',
         '**/fluid-layout.spec.ts',
+        '**/visual-regression.spec.ts',
       ],
     },
   ],

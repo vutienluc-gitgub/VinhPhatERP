@@ -260,19 +260,19 @@ export function PublicInquiryModal({
   })();
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-foreground/50 z-50 flex items-center justify-center p-3 animate-fade-in">
+      <div className="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-4 border-b border-default flex justify-between items-center bg-slate-50">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <Icon name="FileText" className="w-5 h-5 text-primary" />
+            <Icon name="FileText" className="w-5 h-5 text-foreground" />
             {currentStep === 'success'
               ? LABELS.rfqSuccessTitle
               : LABELS.rfqModalTitle}
           </h3>
           <button
             onClick={handleClose}
-            className="p-1 rounded-full hover:bg-surface-secondary text-muted"
+            className="p-1 rounded-full hover:bg-surface-secondary text-muted-foreground"
           >
             <Icon name="X" className="w-5 h-5" />
           </button>
@@ -327,7 +327,7 @@ interface InquiryIntentStepProps {
 function InquiryIntentStep({ onSelectIntent }: InquiryIntentStepProps) {
   return (
     <div className="p-4 space-y-3 overflow-y-auto">
-      <p className="text-sm font-semibold text-secondary">
+      <p className="text-sm font-semibold text-muted-foreground">
         {LABELS.rfqWhatDoYouNeed}
       </p>
       <div className="grid grid-cols-2 gap-3">
@@ -340,11 +340,13 @@ function InquiryIntentStep({ onSelectIntent }: InquiryIntentStepProps) {
             <div className="w-10 h-10 rounded-full bg-surface-secondary group-hover:bg-[#0068ff]/10 flex items-center justify-center transition-colors">
               <Icon
                 name={card.icon}
-                className="w-5 h-5 text-muted group-hover:text-[#0068ff] transition-colors"
+                className="w-5 h-5 text-muted-foreground group-hover:text-[#0068ff] transition-colors"
               />
             </div>
-            <span className="text-xs font-bold text-primary">{card.title}</span>
-            <span className="text-[10px] text-muted leading-snug">
+            <span className="text-xs font-bold text-foreground">
+              {card.title}
+            </span>
+            <span className="text-[10px] text-muted-foreground leading-snug">
               {card.description}
             </span>
           </button>
@@ -400,20 +402,23 @@ function RFQFormStep({
       className="flex-1 overflow-y-auto p-4 space-y-4"
     >
       <div className="bg-slate-50 p-3 rounded-xl border border-default">
-        <span className="text-[10px] text-muted font-bold block mb-1">
+        <span className="text-[10px] text-muted-foreground font-bold block mb-1">
           {LABELS.rfqFabricRequested}
         </span>
         {inquiryRequest.isBatchRequest ? (
           <div className="space-y-1">
             {Object.values(inquiryCart).map((item) => (
-              <div key={item.id} className="text-xs font-semibold text-primary">
+              <div
+                key={item.id}
+                className="text-xs font-semibold text-foreground"
+              >
                 • {item.code} - {item.name}{' '}
                 {item.color_name && `(${item.color_name})`}
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-xs font-bold text-primary">
+          <div className="text-xs font-bold text-foreground">
             {fabric.code} - {fabric.name}{' '}
             {activeColorName && `(Màu: ${activeColorName})`}
           </div>
@@ -421,7 +426,7 @@ function RFQFormStep({
       </div>
 
       <div>
-        <label className="text-xs font-bold text-secondary block mb-1">
+        <label className="text-xs font-bold text-muted-foreground block mb-1">
           {LABELS.requestedQty} <span className="text-danger">*</span>
         </label>
         <div className="relative">
@@ -431,10 +436,10 @@ function RFQFormStep({
             min="1"
             value={rfqQty}
             onChange={(e) => setRfqQty(e.target.value)}
-            className="w-full text-sm border border-default rounded-xl pl-3 pr-12 py-2 focus:outline-none focus:border-primary bg-white"
+            className="w-full text-sm border border-default rounded-xl pl-3 pr-12 py-2 focus:outline-none focus:border-primary bg-surface"
           />
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <span className="text-xs font-bold text-muted">
+            <span className="text-xs font-bold text-muted-foreground">
               {fabric.commercial?.minimum_order_unit ?? fabric.unit ?? 'kg'}
             </span>
           </div>
@@ -458,7 +463,7 @@ function RFQFormStep({
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-bold text-secondary block">
+        <label className="text-xs font-bold text-muted-foreground block">
           {LABELS.contactNameLabel} <span className="text-danger">*</span>
         </label>
         <input
@@ -472,7 +477,7 @@ function RFQFormStep({
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-bold text-secondary block">
+        <label className="text-xs font-bold text-muted-foreground block">
           {LABELS.contactPhoneLabel} <span className="text-danger">*</span>
         </label>
         <input
@@ -486,7 +491,7 @@ function RFQFormStep({
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-bold text-secondary block">
+        <label className="text-xs font-bold text-muted-foreground block">
           {LABELS.rfqEmailLabel}
         </label>
         <input
@@ -499,7 +504,7 @@ function RFQFormStep({
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-bold text-secondary block">
+        <label className="text-xs font-bold text-muted-foreground block">
           {LABELS.companyNameLabel}
         </label>
         <input
@@ -561,20 +566,20 @@ function RFQSuccessStep({
         <Icon name="Check" className="w-8 h-8 text-success" />
       </div>
       <div>
-        <p className="text-lg font-bold text-primary">
+        <p className="text-lg font-bold text-foreground">
           {LABELS.rfqSuccessTitle}
         </p>
-        <p className="text-xs text-muted mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           {LABELS.rfqLeadId}{' '}
-          <span className="font-mono font-bold text-primary">
+          <span className="font-mono font-bold text-foreground">
             {successLeadId}
           </span>
         </p>
       </div>
-      <div className="bg-slate-50 rounded-xl p-3 text-xs text-muted">
+      <div className="bg-slate-50 rounded-xl p-3 text-xs text-muted-foreground">
         <p className="font-semibold">
           {LABELS.rfqSuccessWait1}{' '}
-          <span className="font-bold text-primary">
+          <span className="font-bold text-foreground">
             {LABELS.rfqSuccessWait2}
           </span>{' '}
           {LABELS.rfqSuccessWait3}

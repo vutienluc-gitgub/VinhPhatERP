@@ -51,14 +51,10 @@
   --border-danger: rgba(var(--danger-rgb), 0.3);
 
   /* ── Text ───────────────────────────────────────────────────── */
-  --text: rgb(var(--base-rgb));
   --foreground: rgb(var(--base-rgb));
-  --text-primary: rgb(var(--base-rgb));
-  --text-secondary: #5c6f88;
-  --text-muted: #5c6f88;
-  --text-muted-foreground: #8899aa;
-  --text-disabled: #8899aa;
-  --text-inverse: #ffffff;
+  --muted-foreground: #5c6f88;
+  --disabled-foreground: #8899aa;
+  --inverse-foreground: #ffffff;
 
   /* ── Semantic Colors ───────────────────────────────────────── */
   --warning: #d97706;
@@ -99,7 +95,7 @@
   --input: #ffffff;
   --input-border: var(--border-default);
   --input-focus-ring: var(--border-focus);
-  --text-label: var(--text-secondary);
+  --text-label: var(--muted-foreground);
 
   /* ── Auth Page Accent (Login / Register) ────────────────────── */
   --auth-accent: rgb(var(--brand-rgb));

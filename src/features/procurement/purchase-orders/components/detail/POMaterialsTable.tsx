@@ -22,7 +22,7 @@ export function POMaterialsTable({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-border text-sm text-muted bg-gray-50">
+            <tr className="border-b border-border text-sm text-muted-foreground bg-gray-50">
               <th className="px-4 py-3 font-semibold w-[25%]">Nguyên liệu</th>
               <th className="px-4 py-3 font-semibold text-right">Đơn giá</th>
               <th className="px-4 py-3 font-semibold text-right">SL Đặt</th>
@@ -40,7 +40,7 @@ export function POMaterialsTable({
                   key={item.id}
                   className="border-b border-border last:border-0 hover:bg-gray-50/50"
                 >
-                  <td className="px-4 py-3 text-primary">
+                  <td className="px-4 py-3 text-foreground">
                     {(() => {
                       const mat = globalMaterials.find(
                         (m) => m.id === item.material_id,
@@ -56,7 +56,7 @@ export function POMaterialsTable({
                           <span className="font-semibold">
                             {mat.code} - {mat.name}
                           </span>
-                          <span className="text-xs text-muted">
+                          <span className="text-xs text-muted-foreground">
                             Loại: {mat.type === 'yarn' ? 'Sợi' : 'Vải'}
                           </span>
                         </div>

@@ -71,7 +71,7 @@ export function SupplierRFQListPage() {
           <h1 className="text-2xl font-bold text-foreground">
             {TEXT.RFQ_LIST_TITLE}
           </h1>
-          <p className="text-muted mt-1">{TEXT.RFQ_LIST_DESC}</p>
+          <p className="text-muted-foreground mt-1">{TEXT.RFQ_LIST_DESC}</p>
         </div>
       </div>
 
@@ -93,7 +93,7 @@ export function SupplierRFQListPage() {
           ) : (
             <div className="rounded-md border border-default overflow-hidden">
               <table className="w-full text-sm text-left text-foreground">
-                <thead className="text-xs text-muted bg-surface uppercase border-b border-default">
+                <thead className="text-xs text-muted-foreground bg-surface uppercase border-b border-default">
                   <tr>
                     <th className="px-6 py-3 font-medium">
                       {TEXT.RFQ_LIST_COL_CODE}

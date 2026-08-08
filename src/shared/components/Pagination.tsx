@@ -37,7 +37,7 @@ export function Pagination<T>({
   return (
     <div className="pagination-bar flex items-center justify-between">
       <div className="flex items-center gap-6">
-        <span className="text-sm text-muted">
+        <span className="text-sm text-muted-foreground">
           {formatPaginationText(page, pageSize, total, itemLabel)}
         </span>
         {onPageSizeChange && result.pageSize && (

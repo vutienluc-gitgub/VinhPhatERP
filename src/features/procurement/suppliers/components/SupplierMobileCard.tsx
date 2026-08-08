@@ -20,12 +20,12 @@ export function SupplierMobileCard({ supplier }: SupplierMobileCardProps) {
 
         <div className="grid grid-cols-2 gap-2 text-sm">
           {supplier.phone && (
-            <div className="flex items-center gap-2 text-muted">
+            <div className="flex items-center gap-2 text-muted-foreground">
               <PhoneContact phone={supplier.phone} />
             </div>
           )}
           {supplier.contact_person && (
-            <div className="flex items-center gap-2 text-muted">
+            <div className="flex items-center gap-2 text-muted-foreground">
               <Icon name="User" size={16} />
               <span>{supplier.contact_person}</span>
             </div>
@@ -33,17 +33,21 @@ export function SupplierMobileCard({ supplier }: SupplierMobileCardProps) {
         </div>
 
         {supplier.address && (
-          <div className="flex items-start gap-2 text-xs text-muted mt-1">
+          <div className="flex items-start gap-2 text-xs text-muted-foreground mt-1">
             <Icon name="MapPin" size={16} className="mt-0.5 flex-shrink-0" />
             <span className="truncate">{supplier.address}</span>
           </div>
         )}
 
         <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
-          <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground bg-surface-subtle px-1.5 py-0.5 rounded">
             {supplier.category_name ?? supplier.category}
           </span>
-          <Icon name="ChevronRight" size={16} className="text-muted" />
+          <Icon
+            name="ChevronRight"
+            size={16}
+            className="text-muted-foreground"
+          />
         </div>
       </div>
     </div>

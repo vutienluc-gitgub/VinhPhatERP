@@ -85,7 +85,7 @@ export function ActivityTimeline({ leadId }: ActivityTimelineProps) {
       <div className="flex-1 overflow-y-auto pr-2 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
         <div className="space-y-4">
           {activities?.length === 0 ? (
-            <div className="text-sm text-muted text-center py-4">
+            <div className="text-sm text-muted-foreground text-center py-4">
               Chưa có lịch sử tương tác nào
             </div>
           ) : (
@@ -110,7 +110,7 @@ export function ActivityTimeline({ leadId }: ActivityTimelineProps) {
                           {meta.label}
                         </span>
                         {activity.owner && (
-                          <span className="text-xs text-muted">
+                          <span className="text-xs text-muted-foreground">
                             bởi {activity.owner.full_name}
                           </span>
                         )}
@@ -119,7 +119,7 @@ export function ActivityTimeline({ leadId }: ActivityTimelineProps) {
                         {dayjs(activity.created_at).format('HH:mm DD/MM')}
                       </span>
                     </div>
-                    <p className="text-sm text-muted whitespace-pre-wrap">
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                       {activity.description}
                     </p>
                   </div>

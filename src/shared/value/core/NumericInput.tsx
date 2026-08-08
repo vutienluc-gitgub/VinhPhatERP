@@ -126,7 +126,7 @@ export const NumericInput = React.forwardRef<
     return (
       <div className="relative flex items-center w-full">
         {hasPrefix && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none select-none text-sm z-10">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none select-none text-sm z-10">
             {formatOptions.prefix}
           </span>
         )}
@@ -148,7 +148,7 @@ export const NumericInput = React.forwardRef<
           {...rest}
         />
         {hasSuffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none select-none text-sm z-10">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none select-none text-sm z-10">
             {formatOptions.suffix}
           </span>
         )}

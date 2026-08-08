@@ -188,7 +188,7 @@ export function WorkflowDesignerBoard({
         <h3 className="text-lg font-semibold text-foreground">
           Các bước duyệt
         </h3>
-        <p className="text-sm text-muted">
+        <p className="text-sm text-muted-foreground">
           Kéo thả hoặc dùng nút lên/xuống để thay đổi thứ tự. Các bước được đánh
           dấu "Song song" sẽ có cùng số thứ tự với bước liền trước nó.
         </p>
@@ -212,7 +212,7 @@ export function WorkflowDesignerBoard({
         <Button
           variant="outline"
           onClick={handleAddStep}
-          className="w-full mt-4 border-dashed py-8 text-muted hover:text-foreground"
+          className="w-full mt-4 border-dashed py-8 text-muted-foreground hover:text-foreground"
         >
           <Icon name="Plus" className="w-5 h-5 mr-2" />
           Thêm bước duyệt mới

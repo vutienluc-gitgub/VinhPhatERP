@@ -94,7 +94,7 @@ export function IntegrationSettingsForm() {
               placeholder={SETTINGS_PLACEHOLDERS.WEBHOOK_URL}
               {...register('webhook_url')}
             />
-            <p className="text-xs text-muted mt-1 italic">
+            <p className="text-xs text-muted-foreground mt-1 italic">
               {SETTINGS_LABELS.WEBHOOK_URL_DESC}
             </p>
             {errors.webhook_url && (

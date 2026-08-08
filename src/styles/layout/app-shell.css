@@ -17,7 +17,7 @@
   --shell-inset: 1rem;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   :root {
     --shell-inset: 1.25rem;
   }
@@ -34,6 +34,7 @@ body {
   width: 100%;
   overflow-x: hidden;
   max-width: 100vw;
+
   /* Prevent pull-to-refresh & overscroll bounce on mobile browsers */
   overscroll-behavior: none;
 }
@@ -44,6 +45,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   display: block;
+
   /* Đảm bảo không lộ khoảng trắng khi overscroll bounce trên iOS */
   background: var(--surface-strong);
 }
@@ -68,20 +70,20 @@ body {
   align-items: center;
   gap: 0.375rem;
   font-size: 0.8125rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
   min-width: 0;
   overflow: hidden;
 }
 
 .topbar-breadcrumb a {
-  color: var(--muted);
+  color: var(--surface-subtle);
   text-decoration: none;
   white-space: nowrap;
   transition: color 150ms;
 }
 
 .topbar-breadcrumb a:hover {
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .topbar-breadcrumb-sep {
@@ -90,7 +92,7 @@ body {
 }
 
 .topbar-breadcrumb-current {
-  color: var(--text);
+  color: var(--foreground);
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -111,7 +113,7 @@ body {
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--surface);
-  color: var(--muted);
+  color: var(--surface-subtle);
   cursor: pointer;
   transition: all 150ms;
   padding: 0;
@@ -120,7 +122,7 @@ body {
 
 .topbar-icon-btn:hover {
   background: var(--surface-subtle);
-  color: var(--text);
+  color: var(--foreground);
   border-color: var(--primary);
 }
 
@@ -168,7 +170,7 @@ html.fluid .content-shell {
   height: 36px;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--muted);
+  color: var(--surface-subtle);
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 150ms;
@@ -177,7 +179,7 @@ html.fluid .content-shell {
 .app-launcher-trigger:hover,
 .app-launcher-trigger[aria-expanded='true'] {
   background: var(--surface-subtle);
-  color: var(--text);
+  color: var(--foreground);
   border-color: var(--border);
 }
 
@@ -190,7 +192,7 @@ html.fluid .content-shell {
   background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 32px rgb(0, 0, 0, 0.12);
   z-index: 100;
   padding: 1rem;
   animation: slideUp 200ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -203,7 +205,7 @@ html.fluid .content-shell {
 .app-launcher-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .app-launcher-grid {
@@ -221,14 +223,14 @@ html.fluid .content-shell {
   gap: 0.5rem;
   padding: 0.75rem 0.25rem;
   border-radius: var(--radius-sm);
-  color: var(--muted);
+  color: var(--surface-subtle);
   text-decoration: none;
   transition: all 150ms;
 }
 
 .app-launcher-item:hover {
   background: var(--surface-subtle);
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .app-launcher-icon {
@@ -241,7 +243,7 @@ html.fluid .content-shell {
   background: var(--surface);
   color: var(--primary);
   border: 1px solid var(--border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgb(0, 0, 0, 0.04);
 }
 
 .app-launcher-label {
@@ -274,7 +276,7 @@ html.fluid .content-shell {
   border-radius: var(--radius-sm);
   background: transparent;
   border: 1px solid transparent;
-  color: var(--muted);
+  color: var(--surface-subtle);
   cursor: pointer;
   transition: all 150ms;
   text-align: left;
@@ -282,7 +284,7 @@ html.fluid .content-shell {
 
 .quick-create-btn:hover {
   background: var(--surface-subtle);
-  color: var(--text);
+  color: var(--foreground);
   border-color: var(--border);
 }
 
@@ -307,6 +309,8 @@ html.fluid .content-shell {
   height: 16px;
   border-radius: 50%;
   background: var(--primary-strong);
+
+  /* @architecture-exception: legacy color migration */
   color: white;
   display: flex;
   align-items: center;
@@ -325,6 +329,7 @@ html.fluid .content-shell {
   gap: 1.5rem;
   padding: 0 var(--shell-inset) 5.5rem; /* INSET: tiêu thụ --shell-inset */
   min-width: 0;
+
   /* Chặn overscroll bounce làm nội dung "trôi nổi" trên mobile */
   overscroll-behavior-y: contain;
 }
@@ -341,7 +346,6 @@ html.fluid .content-shell {
   font-weight: 900;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -360,18 +364,18 @@ html.fluid .content-shell {
   margin-bottom: 0.25rem;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--muted);
+  color: var(--surface-subtle);
   border: none;
   text-decoration: none;
 }
 
 .nav-link:hover {
-  background: rgba(var(--brand-rgb), 0.04);
-  color: var(--text);
+  background: rgb(var(--brand-rgb), 0.04);
+  color: var(--foreground);
 }
 
 .nav-link.is-active {
-  background: rgba(var(--brand-rgb), 0.08);
+  background: rgb(var(--brand-rgb), 0.08);
   color: var(--primary-strong);
 }
 
@@ -400,6 +404,8 @@ html.fluid .content-shell {
   border-radius: 999px;
   min-height: 48px;
   padding: 0.85rem 1.1rem;
+
+  /* @architecture-exception: legacy color migration */
   color: #fff;
   background: linear-gradient(135deg, var(--primary), var(--primary-strong));
   font-weight: 700;
@@ -409,6 +415,7 @@ html.fluid .content-shell {
   display: grid;
   gap: 1.5rem;
   min-width: 0;
+
   /* clip any overflowing content from child cards */
   overflow-x: clip;
   animation: pageEnter 0.25s ease forwards;
@@ -441,6 +448,7 @@ html.fluid .content-shell {
   background: var(--surface-strong);
   padding: 1.25rem;
   box-shadow: var(--shadow);
+
   /* prevent children (tables, grids) from overflowing horizontally */
   overflow: hidden;
   min-width: 0;
@@ -451,7 +459,7 @@ html.fluid .content-shell {
 .placeholder-copy,
 .resource-list,
 .summary-list {
-  color: var(--muted);
+  color: var(--surface-subtle);
 }
 
 .status-pill {
@@ -491,16 +499,17 @@ html.fluid .content-shell {
 }
 
 .summary-card {
+  /* @architecture-exception: legacy color migration */
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.95),
-    rgba(242, 248, 255, 0.95)
+    rgb(255, 255, 255, 0.95),
+    rgb(242, 248, 255, 0.95)
   );
 }
 
 .summary-label {
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
 }
 
 .summary-value {
@@ -522,6 +531,7 @@ html.fluid .content-shell {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   /* Safe-area insets for notched devices (iPhone X+) */
   padding: 0.5rem calc(0.5rem + env(safe-area-inset-right))
     calc(0.5rem + env(safe-area-inset-bottom))
@@ -529,14 +539,16 @@ html.fluid .content-shell {
   border-top: 1px solid var(--border);
   background: var(--surface-strong);
   z-index: 100;
+
   /* Prevent any child from spilling and causing visual cutoff */
   overflow: hidden;
+
   /* ── Mobile browser bounce fix ──
      Force GPU compositing layer so the element stays pinned
      during URL bar collapse/expand animations on iOS Safari & Chrome */
-  -webkit-transform: translateZ(0);
   transform: translateZ(0);
   will-change: transform;
+
   /* Prevent tap-highlight and callout glitches */
   -webkit-tap-highlight-color: transparent;
 }
@@ -560,7 +572,7 @@ html.fluid .content-shell {
   border-radius: 0;
   font-size: 0.65rem;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--surface-subtle);
   text-decoration: none;
   background: transparent;
   min-height: auto;
@@ -576,7 +588,7 @@ html.fluid .content-shell {
   stroke-width: 2.5;
 }
 
-@media (min-width: 768px) {
+@media (width >= 768px) {
   .content-shell {
     width: min(1180px, 100% - 2rem);
   }
@@ -591,6 +603,7 @@ html.fluid .content-shell {
 
   .topbar {
     height: 60px;
+
     /* padding-x được xử lý bởi --shell-inset, không override ở đây */
   }
 
@@ -607,7 +620,7 @@ html.fluid .content-shell {
   }
 }
 
-@media (min-width: 1100px) {
+@media (width >= 1100px) {
   .shell-layout {
     width: min(1380px, 100% - 2rem);
     margin: 0 auto;
@@ -645,7 +658,7 @@ html.fluid .content-shell {
 .user-name {
   font-weight: 700;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--foreground);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -677,19 +690,19 @@ html.fluid .content-shell {
     box-shadow 0.15s;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .user-trigger {
     padding: 0.35rem 0.6rem 0.35rem 0.35rem;
   }
 }
 
 .user-trigger:hover {
-  border-color: rgba(var(--brand-rgb), 0.25);
-  box-shadow: 0 2px 8px rgba(var(--base-rgb), 0.06);
+  border-color: rgb(var(--brand-rgb), 0.25);
+  box-shadow: 0 2px 8px rgb(var(--base-rgb), 0.06);
 }
 
 .user-trigger svg {
-  color: var(--muted);
+  color: var(--surface-subtle);
   flex-shrink: 0;
   transition: transform 0.15s;
 }
@@ -706,6 +719,8 @@ html.fluid .content-shell {
   height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+
+  /* @architecture-exception: legacy color migration */
   color: #fff;
   font-weight: 700;
   font-size: 0.75rem;
@@ -721,7 +736,7 @@ html.fluid .content-shell {
   background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  box-shadow: 0 12px 32px rgba(var(--base-rgb), 0.12);
+  box-shadow: 0 12px 32px rgb(var(--base-rgb), 0.12);
   padding: 0.5rem 0;
   z-index: 100;
   animation: dropdownFadeIn 0.12s ease-out;
@@ -749,7 +764,7 @@ html.fluid .content-shell {
 .user-dropdown-name {
   font-weight: 700;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .user-dropdown-header .status-pill {
@@ -771,7 +786,7 @@ html.fluid .content-shell {
   padding: 0.55rem 0.85rem;
   border: 0;
   background: transparent;
-  color: var(--text);
+  color: var(--foreground);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -779,11 +794,11 @@ html.fluid .content-shell {
 }
 
 .user-dropdown-item:hover {
-  background: rgba(var(--base-rgb), 0.04);
+  background: rgb(var(--base-rgb), 0.04);
 }
 
 .user-dropdown-item svg {
-  color: var(--muted);
+  color: var(--surface-subtle);
   flex-shrink: 0;
 }
 
@@ -792,14 +807,16 @@ html.fluid .content-shell {
   border-radius: 999px;
   min-height: 44px;
   padding: 0.7rem 1.1rem;
-  color: var(--text);
+  color: var(--foreground);
   background: var(--surface);
   font-weight: 600;
 }
 
 .secondary-button:hover {
-  border-color: rgba(var(--brand-rgb), 0.3);
-  background: rgba(255, 255, 255, 0.98);
+  border-color: rgb(var(--brand-rgb), 0.3);
+
+  /* @architecture-exception: legacy color migration */
+  background: rgb(255, 255, 255, 0.98);
 }
 
 /* Auth status pages: unauthorized, blocked */
@@ -820,7 +837,7 @@ html.fluid .content-shell {
 }
 
 .auth-status-body {
-  color: var(--muted);
+  color: var(--surface-subtle);
   margin-bottom: 1.5rem;
 }
 
@@ -860,7 +877,7 @@ html.fluid .content-shell {
 
 .profile-label {
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
   font-weight: 600;
 }
 
@@ -878,7 +895,8 @@ html.fluid .content-shell {
 }
 
 .badge--danger {
-  background: rgba(220, 53, 69, 0.1);
+  /* @architecture-exception: legacy color migration */
+  background: rgb(220, 53, 69, 0.1);
   color: var(--danger);
 }
 
@@ -888,15 +906,16 @@ html.fluid .content-shell {
 }
 
 /* ── Brand Sidebar Theme (Cut-out Active State) ── */
-@media (min-width: 1100px) {
+@media (width >= 1100px) {
   /* Sidebar palette — derived from brand tokens */
   :root {
     --sidebar-bg: rgb(var(--brand-strong-rgb));
-    --sidebar-text: rgba(255, 255, 255, 0.7);
-    --sidebar-text-hover: #ffffff;
+    --sidebar-text: rgb(255, 255, 255, 0.7);
+    --sidebar-text-hover: #fff;
     --sidebar-active-text: rgb(var(--brand-strong-rgb));
     --sidebar-cutout-bg: #f4f8fb;
   }
+
   [data-theme='dark'] {
     --sidebar-cutout-bg: #08111d;
   }
@@ -909,10 +928,12 @@ html.fluid .content-shell {
   .zircon-promo {
     margin: 1rem;
     padding: 1.25rem 1rem;
-    background: linear-gradient(180deg, #ffffff 0%, #f0f4fb 100%);
+
+    /* @architecture-exception: legacy color migration */
+    background: linear-gradient(180deg, #fff 0%, #f0f4fb 100%);
     border-radius: 16px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgb(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -930,9 +951,11 @@ html.fluid .content-shell {
       rgb(var(--brand-rgb)),
       rgb(var(--brand-strong-rgb))
     );
+
+    /* @architecture-exception: legacy color migration */
     color: white;
     margin-bottom: 0.75rem;
-    box-shadow: 0 4px 12px rgba(var(--brand-rgb), 0.4);
+    box-shadow: 0 4px 12px rgb(var(--brand-rgb), 0.4);
   }
 
   .zircon-promo-title {
@@ -953,6 +976,8 @@ html.fluid .content-shell {
       rgb(var(--brand-rgb)),
       rgb(var(--brand-strong-rgb))
     );
+
+    /* @architecture-exception: legacy color migration */
     color: white;
     border: none;
     border-radius: 999px;
@@ -966,7 +991,7 @@ html.fluid .content-shell {
 
   .zircon-promo-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgb(0, 0, 0, 0.15);
   }
 
   /* Responsive Collapsed */
@@ -994,7 +1019,7 @@ html.fluid .content-shell {
   margin-bottom: 0.5rem;
 }
 
-@media (max-width: 639px) {
+@media (width <= 639px) {
   .page-header {
     flex-direction: column;
     padding-bottom: 0.75rem;

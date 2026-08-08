@@ -76,7 +76,7 @@ export function SettingsLayout() {
     <div className="page-container pb-20">
       <div className="page-header mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 text-foreground flex items-center justify-center shrink-0">
             <Icon name="Settings" size={24} strokeWidth={1.5} />
           </div>
           <div>

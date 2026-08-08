@@ -27,7 +27,9 @@ export function useMachineSpecColumns({
         cell: (item) => {
           return (
             <div>
-              <div className="font-medium text-primary">{item.code || '-'}</div>
+              <div className="font-medium text-foreground">
+                {item.code || '-'}
+              </div>
               <div className="text-xs text-text-tertiary flex gap-1 mt-1">
                 <SourceTypeBadge sourceType={item.source_type} />
               </div>
@@ -89,7 +91,7 @@ export function useMachineSpecColumns({
             <div className="flex items-center justify-end gap-2">
               <button
                 type="button"
-                className="p-1.5 text-text-secondary hover:text-primary transition-colors"
+                className="p-1.5 text-text-secondary hover:text-foreground transition-colors"
                 onClick={() => onEdit(item)}
                 title={MSG.BTN_SPEC_EDIT_TOOLTIP}
               >

@@ -41,7 +41,7 @@ function CashFlowBarChart({ data }: { data: MonthlyDataPoint[] }) {
           return (
             <div key={d.month} className="dash-cashflow-bar-group">
               <div
-                className={`dash-cashflow-bar ${isActive ? 'text-primary bg-primary/10' : ''}`}
+                className={`dash-cashflow-bar ${isActive ? 'text-foreground bg-primary/10' : ''}`}
                 style={{
                   height: `${Math.max(pct, 2)}%`,
                   background: isActive ? BAR_COLORS.expense : BAR_COLORS.income,

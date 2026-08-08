@@ -97,8 +97,8 @@ export function FabricVariantList({
             <button
               className={`px-2 py-1 text-xs rounded-full border transition-colors ${
                 statusFilter === ''
-                  ? 'bg-primary text-white border-primary'
-                  : 'border-border text-muted hover:border-primary'
+                  ? 'bg-primary text-inverse-foreground border-primary'
+                  : 'border-border text-muted-foreground hover:border-primary'
               }`}
               onClick={() => setStatusFilter('')}
             >
@@ -109,8 +109,8 @@ export function FabricVariantList({
                 key={s}
                 className={`px-2 py-1 text-xs rounded-full border transition-colors ${
                   statusFilter === s
-                    ? 'bg-primary text-white border-primary'
-                    : 'border-border text-muted hover:border-primary'
+                    ? 'bg-primary text-inverse-foreground border-primary'
+                    : 'border-border text-muted-foreground hover:border-primary'
                 }`}
                 onClick={() => setStatusFilter(statusFilter === s ? '' : s)}
               >
@@ -128,10 +128,12 @@ export function FabricVariantList({
           <Icon
             name="Palette"
             size={40}
-            className="text-muted mx-auto mb-3 opacity-40"
+            className="text-muted-foreground mx-auto mb-3 opacity-40"
           />
-          <p className="text-muted font-medium">Chưa có biến thể nào</p>
-          <p className="text-xs text-muted mt-1">
+          <p className="text-muted-foreground font-medium">
+            Chưa có biến thể nào
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
             Nhấn "Thêm biến thể" để tạo biến thể màu đầu tiên.
           </p>
         </div>
@@ -157,7 +159,7 @@ export function FabricVariantList({
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-primary text-sm">
+                  <span className="font-bold text-foreground text-sm">
                     {v.variant_code}
                   </span>
                   <Badge variant={getVariantStatusVariant(v.status)}>
@@ -167,7 +169,7 @@ export function FabricVariantList({
                 <p className="text-sm font-medium mt-0.5">{v.color_name}</p>
 
                 {/* Specs row */}
-                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-xs text-muted">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-xs text-muted-foreground">
                   {v.actual_width_cm !== null && (
                     <span>
                       Khổ:{' '}
@@ -199,7 +201,7 @@ export function FabricVariantList({
 
                 {/* Pricing row */}
                 {(v.purchase_price !== null || v.selling_price !== null) && (
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-muted">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-muted-foreground">
                     {v.purchase_price !== null && (
                       <span>
                         Nhập:{' '}

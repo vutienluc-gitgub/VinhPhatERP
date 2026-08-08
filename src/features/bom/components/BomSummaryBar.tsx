@@ -33,26 +33,30 @@ export function BomSummaryBar() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* Net */}
         <div className="flex flex-col gap-0.5 p-3 rounded-lg bg-surface border border-border">
-          <span className="text-[11px] text-muted uppercase tracking-wide">
+          <span className="text-[11px] text-muted-foreground uppercase tracking-wide">
             Tiêu hao tịnh (Net)
           </span>
           <span className="text-xl font-bold text-text tabular-nums">
             {netConsumption.toFixed(4)}{' '}
-            <span className="text-sm font-normal text-muted">kg/m</span>
+            <span className="text-sm font-normal text-muted-foreground">
+              kg/m
+            </span>
           </span>
-          <span className="text-[10px] text-muted">Không tính hao hụt</span>
+          <span className="text-[10px] text-muted-foreground">
+            Không tính hao hụt
+          </span>
         </div>
 
         {/* Gross */}
         <div className="flex flex-col gap-0.5 p-3 rounded-lg bg-primary/5 border border-primary/20">
-          <span className="text-[11px] text-primary uppercase tracking-wide font-semibold">
+          <span className="text-[11px] text-foreground uppercase tracking-wide font-semibold">
             Thực cấp mộc (Gross)
           </span>
-          <span className="text-xl font-bold text-primary tabular-nums">
+          <span className="text-xl font-bold text-foreground tabular-nums">
             {watchLoss < 100 ? grossConsumption.toFixed(4) : '0.0000'}{' '}
-            <span className="text-sm font-normal text-primary/70">kg/m</span>
+            <span className="text-sm font-normal text-foreground/70">kg/m</span>
           </span>
-          <span className="text-[10px] text-primary/70">
+          <span className="text-[10px] text-foreground/70">
             Gồm {watchLoss}% hao hụt
           </span>
         </div>

@@ -132,7 +132,7 @@ export function GreigePriceEstimator({
         <span className="w-2 h-2 rounded-full bg-primary" />
         Dự toán Giá Thành Vải Mộc
         {isPriceLoading && (
-          <span className="text-xs font-normal text-muted animate-pulse">
+          <span className="text-xs font-normal text-muted-foreground animate-pulse">
             Đang tải giá sợi...
           </span>
         )}
@@ -150,7 +150,9 @@ export function GreigePriceEstimator({
           <label className="text-xs">Giá sợi TB từ phiếu nhập (VNĐ/kg)</label>
           <div className="field-input text-sm bg-surface cursor-default">
             {isPriceLoading ? (
-              <span className="text-muted animate-pulse">Đang tải...</span>
+              <span className="text-muted-foreground animate-pulse">
+                Đang tải...
+              </span>
             ) : derivedAvgPrice > 0 ? (
               <MoneyText value={derivedAvgPrice} />
             ) : (
@@ -185,19 +187,21 @@ export function GreigePriceEstimator({
       {!isPriceLoading && result && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-surface p-3 rounded border border-border/50">
           <div>
-            <p className="text-muted mb-1">Chi phí Sợi (từ phiếu nhập):</p>
+            <p className="text-muted-foreground mb-1">
+              Chi phí Sợi (từ phiếu nhập):
+            </p>
             <p className="font-semibold">
               <MoneyText value={result.directYarnCost} />
             </p>
           </div>
           <div>
-            <p className="text-muted mb-1">{processingLabel}:</p>
+            <p className="text-muted-foreground mb-1">{processingLabel}:</p>
             <p className="font-semibold">
               <MoneyText value={result.processingCost} />
             </p>
           </div>
           <div>
-            <p className="text-muted mb-1">
+            <p className="text-muted-foreground mb-1">
               Chi phí Hao hụt ({standardLossPct}%):
             </p>
             <p className="font-semibold text-danger">
@@ -205,21 +209,23 @@ export function GreigePriceEstimator({
             </p>
           </div>
           <div>
-            <p className="text-muted mb-1">Tổng Giá Vốn:</p>
-            <p className="font-bold text-primary">
+            <p className="text-muted-foreground mb-1">Tổng Giá Vốn:</p>
+            <p className="font-bold text-foreground">
               <MoneyText value={result.totalCost} />
             </p>
           </div>
           <div className="col-span-2 mt-2 pt-2 border-t border-border/50 flex justify-between items-end">
             <div>
-              <p className="text-muted mb-1">Giá Bán Khuyến nghị:</p>
+              <p className="text-muted-foreground mb-1">Giá Bán Khuyến nghị:</p>
               <h4 className="text-lg font-bold text-success">
                 <MoneyText value={result.finalPrice} />
               </h4>
             </div>
             {targetQuantity > 0 && (
               <div className="text-right">
-                <p className="text-muted mb-1">Giá bán trên 1 {targetUnit}:</p>
+                <p className="text-muted-foreground mb-1">
+                  Giá bán trên 1 {targetUnit}:
+                </p>
                 <p className="font-bold">
                   <MoneyText
                     value={Math.round(result.finalPrice / targetQuantity)}

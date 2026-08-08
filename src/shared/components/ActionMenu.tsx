@@ -143,7 +143,9 @@ export function ActionMenu({
                         size={16}
                         className={
                           item.iconClass ||
-                          (item.danger ? 'text-danger/80' : 'text-muted')
+                          (item.danger
+                            ? 'text-danger/80'
+                            : 'text-muted-foreground')
                         }
                       />
                     )}

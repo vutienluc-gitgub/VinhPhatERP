@@ -31,14 +31,16 @@ export function FabricCatalogDetail({ catalog }: FabricCatalogDetailProps) {
             />
           ) : (
             <div className="w-20 h-20 rounded-lg bg-surface-subtle flex items-center justify-center border border-border shrink-0">
-              <Icon name="Image" size={24} className="text-muted" />
+              <Icon name="Image" size={24} className="text-muted-foreground" />
             </div>
           )}
 
           {/* Info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-lg font-bold text-primary">{catalog.code}</h2>
+              <h2 className="text-lg font-bold text-foreground">
+                {catalog.code}
+              </h2>
               <Badge variant={getStatusVariant(catalog.status)}>
                 {FABRIC_CATALOG_STATUS_LABELS[catalog.status]}
               </Badge>
@@ -65,7 +67,9 @@ export function FabricCatalogDetail({ catalog }: FabricCatalogDetailProps) {
             <div className="flex flex-wrap gap-4 mt-3">
               {catalog.target_width_cm !== null && (
                 <div className="text-sm">
-                  <span className="text-muted">{LABELS.TARGET_WIDTH} </span>
+                  <span className="text-muted-foreground">
+                    {LABELS.TARGET_WIDTH}{' '}
+                  </span>
                   <span className="font-semibold">
                     {catalog.target_width_cm} cm
                   </span>
@@ -73,20 +77,22 @@ export function FabricCatalogDetail({ catalog }: FabricCatalogDetailProps) {
               )}
               {catalog.target_gsm !== null && (
                 <div className="text-sm">
-                  <span className="text-muted">{LABELS.TARGET_GSM} </span>
+                  <span className="text-muted-foreground">
+                    {LABELS.TARGET_GSM}{' '}
+                  </span>
                   <span className="font-semibold">
                     {catalog.target_gsm} gsm
                   </span>
                 </div>
               )}
               <div className="text-sm">
-                <span className="text-muted">{LABELS.UNIT}: </span>
+                <span className="text-muted-foreground">{LABELS.UNIT}: </span>
                 <span className="font-semibold">{catalog.unit}</span>
               </div>
             </div>
 
             {catalog.notes && (
-              <p className="text-xs text-muted mt-2 bg-surface-subtle p-2 rounded border-l-2 border-primary/20 italic">
+              <p className="text-xs text-muted-foreground mt-2 bg-surface-subtle p-2 rounded border-l-2 border-primary/20 italic">
                 {catalog.notes}
               </p>
             )}

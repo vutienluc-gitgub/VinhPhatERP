@@ -68,7 +68,7 @@ export function PermissionMatrixForm() {
             <span className="font-bold text-lg block">
               {SETTINGS_LABELS.PERM_TITLE}
             </span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-muted-foreground">
               {SETTINGS_LABELS.PERM_SUBTITLE}
             </span>
           </div>
@@ -124,9 +124,11 @@ export function PermissionMatrixForm() {
         <Icon
           name="ShieldAlert"
           size={48}
-          className="mx-auto text-muted mb-2"
+          className="mx-auto text-muted-foreground mb-2"
         />
-        <p className="text-sm text-muted">{SETTINGS_LABELS.PERM_EMPTY}</p>
+        <p className="text-sm text-muted-foreground">
+          {SETTINGS_LABELS.PERM_EMPTY}
+        </p>
       </div>
     );
   }
@@ -142,7 +144,7 @@ export function PermissionMatrixForm() {
             <span className="font-bold text-lg block">
               {SETTINGS_LABELS.PERM_TITLE}
             </span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-muted-foreground">
               {SETTINGS_LABELS.PERM_SUBTITLE}
             </span>
           </div>
@@ -157,7 +159,7 @@ export function PermissionMatrixForm() {
               name="Info"
               size={14}
               strokeWidth={2}
-              className="text-muted shrink-0"
+              className="text-muted-foreground shrink-0"
             />
             <span>{SETTINGS_LABELS.PERM_ADMIN_NOTE}</span>
           </div>
@@ -229,7 +231,7 @@ export function PermissionMatrixForm() {
                             name={PERMISSION_MODULE_ICONS[module] ?? 'Layers'}
                             size={14}
                             strokeWidth={2}
-                            className="text-muted"
+                            className="text-muted-foreground"
                           />
                           <span>
                             {PERMISSION_MODULE_LABELS[module] ?? module}
@@ -277,13 +279,13 @@ export function PermissionMatrixForm() {
                               <span className="font-semibold text-sm">
                                 {perm.label}
                               </span>
-                              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--surface-subtle)] text-[var(--muted)] rounded font-mono uppercase tracking-tight">
+                              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--surface-subtle)] text-[var(--surface-subtle)] rounded font-mono uppercase tracking-tight">
                                 {PERMISSION_ACTION_LABELS[perm.action] ??
                                   perm.action}
                               </span>
                             </div>
                             {perm.description && (
-                              <span className="text-xs text-muted">
+                              <span className="text-xs text-muted-foreground">
                                 {perm.description}
                               </span>
                             )}
@@ -317,7 +319,7 @@ export function PermissionMatrixForm() {
       {/* Sticky Save Bar */}
       {dirtyCount > 0 && (
         <div className="perm-sticky-bar">
-          <div className="flex items-center gap-2 text-white">
+          <div className="flex items-center gap-2 text-inverse-foreground">
             <Icon name="AlertCircle" size={18} className="text-warning" />
             <span className="text-sm font-semibold">
               {SETTINGS_LABELS.PERM_DIRTY_MESSAGE(dirtyCount)}

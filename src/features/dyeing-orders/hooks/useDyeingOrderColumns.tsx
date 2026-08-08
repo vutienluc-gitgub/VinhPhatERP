@@ -26,10 +26,10 @@ export function useDyeingOrderColumns({
         sortable: true,
         cell: ({ row: { original: row } }) => (
           <div className="flex flex-col">
-            <span className="font-bold text-primary">
+            <span className="font-bold text-foreground">
               {row.dyeing_order_number}
             </span>
-            <span className="text-[0.7rem] text-muted">
+            <span className="text-[0.7rem] text-muted-foreground">
               {row.order_date
                 ? dayjs(row.order_date).format('DD/MM/YYYY')
                 : '—'}
@@ -45,7 +45,7 @@ export function useDyeingOrderColumns({
         cell: ({ row: { original: row } }) => (
           <div className="flex flex-col">
             <span className="font-medium">{row.suppliers?.name ?? '—'}</span>
-            <span className="text-[0.7rem] text-muted uppercase tracking-wider">
+            <span className="text-[0.7rem] text-muted-foreground uppercase tracking-wider">
               {row.suppliers?.code ?? '—'}
             </span>
           </div>
@@ -78,7 +78,7 @@ export function useDyeingOrderColumns({
         sortable: true,
         meta: { className: 'max-sm:hidden' },
         cell: ({ row: { original: row } }) => (
-          <div className="flex items-center gap-1.5 text-muted">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <Icon name="Calendar" size={16} />
             <span>
               {row.expected_return_date

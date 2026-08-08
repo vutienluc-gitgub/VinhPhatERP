@@ -71,7 +71,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <span className="logo-text">Vinh Phat ERP</span>
           <h2>{AUTH_MESSAGES.registerSuccessTitle}</h2>
         </div>
-        <p className="text-center text-white/70">
+        <p className="text-center text-inverse-foreground/70">
           {AUTH_MESSAGES.registerSuccessBody}
         </p>
       </div>

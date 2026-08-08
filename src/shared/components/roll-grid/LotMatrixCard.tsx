@@ -99,25 +99,25 @@ export function LotMatrixCard({
           <Icon
             name="Layers"
             size={13}
-            className="text-primary flex-shrink-0"
+            className="text-foreground flex-shrink-0"
           />
-          <span className="font-extrabold text-[12px] text-[var(--text)] uppercase tracking-widest truncate">
+          <span className="font-extrabold text-[12px] text-[var(--foreground)] uppercase tracking-widest truncate">
             {title}
           </span>
           {lotIndex !== undefined && totalLots !== undefined && (
-            <span className="text-[10px] font-bold bg-primary/10 text-primary px-1.5 py-[1px] rounded whitespace-nowrap flex-shrink-0">
+            <span className="text-[10px] font-bold bg-primary/10 text-foreground px-1.5 py-[1px] rounded whitespace-nowrap flex-shrink-0">
               {lotIndex}/{totalLots}
             </span>
           )}
           {colorName && (
-            <span className="text-[10px] text-muted whitespace-nowrap flex-shrink-0">
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap flex-shrink-0">
               · {colorName}
             </span>
           )}
           {standardWeightKg && (
             <div className="flex items-center gap-1 ml-2 bg-[var(--surface-subtle)] px-2 py-0.5 rounded text-[10px] border border-border flex-shrink-0">
-              <Icon name="Target" size={10} className="text-muted" />
-              <span className="text-muted font-medium">Chuẩn:</span>
+              <Icon name="Target" size={10} className="text-muted-foreground" />
+              <span className="text-muted-foreground font-medium">Chuẩn:</span>
               <span className="font-extrabold text-warning">
                 {standardWeightKg}kg
               </span>
@@ -133,21 +133,23 @@ export function LotMatrixCard({
                 {selectedCount} đã chọn · {selectedWeight.toFixed(1)} kg
               </span>
             ) : (
-              <span className="text-[10px] text-muted">Nhấn để chọn</span>
+              <span className="text-[10px] text-muted-foreground">
+                Nhấn để chọn
+              </span>
             )
           ) : (
             <div className="flex flex-col items-end gap-1.5">
               <span
                 className={cn(
                   'text-[11px] font-bold flex items-center gap-1.5',
-                  isCountMatch ? 'text-success' : 'text-[var(--text)]',
+                  isCountMatch ? 'text-success' : 'text-[var(--foreground)]',
                 )}
               >
                 {isCountMatch && <Icon name="CheckCircle2" size={12} />}
                 <span>
                   {totals.rollCount} / {expectedRollsCount} cuộn
                 </span>
-                <span className="font-medium text-muted">
+                <span className="font-medium text-muted-foreground">
                   · {totals.totalWeight.toFixed(1)} kg
                 </span>
               </span>

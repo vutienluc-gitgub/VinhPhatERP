@@ -231,14 +231,18 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
             cell: (q) => (
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-primary">
+                  <span className="font-bold text-foreground">
                     {q.quotation_number}
                   </span>
                   {q.revision > 1 && (
-                    <span className="text-xs text-muted">v{q.revision}</span>
+                    <span className="text-xs text-muted-foreground">
+                      v{q.revision}
+                    </span>
                   )}
                 </div>
-                <span className="text-xs text-muted">{q.quotation_date}</span>
+                <span className="text-xs text-muted-foreground">
+                  {q.quotation_date}
+                </span>
               </div>
             ),
           },
@@ -253,7 +257,9 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                   {q.customers?.name ?? '—'}
                 </span>
                 {q.customers?.code && (
-                  <span className="text-xs text-muted">{q.customers.code}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {q.customers.code}
+                  </span>
                 )}
               </div>
             ),
@@ -270,7 +276,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                   <span>{q.valid_until ?? '—'}</span>
                   {validity && isActiveQuote && (
                     <span
-                      className={`text-[0.78rem] ${validity.urgent ? 'font-bold text-danger' : 'text-muted'}`}
+                      className={`text-[0.78rem] ${validity.urgent ? 'font-bold text-danger' : 'text-muted-foreground'}`}
                     >
                       {validity.text}
                     </span>
@@ -347,7 +353,9 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                     {q.quotation_number}
                   </span>
                   {q.revision > 1 && (
-                    <span className="text-xs text-muted">v{q.revision}</span>
+                    <span className="text-xs text-muted-foreground">
+                      v{q.revision}
+                    </span>
                   )}
                 </div>
                 <Badge variant={getStatusVariant(q.status)}>
@@ -357,7 +365,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
               <div className="mobile-card-body">
                 <div className="flex flex-col mb-3">
-                  <span className="text-[0.72rem] text-muted uppercase tracking-wider">
+                  <span className="text-[0.72rem] text-muted-foreground uppercase tracking-wider">
                     Khách hàng
                   </span>
                   <span className="font-bold text-base leading-tight">
@@ -367,21 +375,21 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
 
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <div className="flex flex-col">
-                    <span className="text-[0.72rem] text-muted uppercase tracking-wider">
+                    <span className="text-[0.72rem] text-muted-foreground uppercase tracking-wider">
                       Tổng tiền
                     </span>
-                    <span className="font-bold text-lg text-primary">
+                    <span className="font-bold text-lg text-foreground">
                       <MoneyText value={q.total_amount} />
                     </span>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-[0.72rem] text-muted uppercase tracking-wider">
+                    <span className="text-[0.72rem] text-muted-foreground uppercase tracking-wider">
                       Thời hạn
                     </span>
                     <span className="font-medium">{q.valid_until ?? '—'}</span>
                     {validity && isActiveQuote && (
                       <span
-                        className={`text-[0.7rem] ${validity.urgent ? 'font-bold text-danger' : 'text-muted'}`}
+                        className={`text-[0.7rem] ${validity.urgent ? 'font-bold text-danger' : 'text-muted-foreground'}`}
                       >
                         {validity.text}
                       </span>
@@ -405,7 +413,7 @@ export function QuotationList({ onEdit, onNew, onView }: QuotationListProps) {
                     <>
                       <Button
                         variant="secondary"
-                        className="flex-1 text-primary shadow-sm font-medium"
+                        className="flex-1 text-foreground shadow-sm font-medium"
                         leftIcon="Pencil"
                         onClick={(e) => {
                           e.stopPropagation();

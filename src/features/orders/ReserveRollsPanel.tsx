@@ -141,7 +141,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
             {selectedItem.color_name && (
               <span> · {selectedItem.color_name}</span>
             )}
-            <span className="text-muted text-sm">
+            <span className="text-muted-foreground text-sm">
               {ORDERS_RES_LABELS.RES_REQUIRED}{' '}
               <QuantityText
                 value={selectedItem.quantity}
@@ -205,11 +205,13 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                       <td>
                         <strong>{roll.roll_number}</strong>
                       </td>
-                      <td className="text-muted text-sm">{roll.fabric_type}</td>
-                      <td className="text-muted text-sm">
+                      <td className="text-muted-foreground text-sm">
+                        {roll.fabric_type}
+                      </td>
+                      <td className="text-muted-foreground text-sm">
                         <LengthText value={roll.length_m} suffix="m" />
                       </td>
-                      <td className="text-muted text-sm">
+                      <td className="text-muted-foreground text-sm">
                         <WeightText value={roll.weight_kg} suffix="kg" />
                       </td>
                       <td>
@@ -249,7 +251,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
           <h4 className="text-[0.88rem] mb-2">
             {ORDERS_RES_LABELS.RES_AVAILABLE_LIST_TITLE}
             {selectedItem && (
-              <span className="text-muted text-sm">
+              <span className="text-muted-foreground text-sm">
                 {' '}
                 — {selectedItem.fabric_type}
                 {selectedItem.color_name ? ` · ${selectedItem.color_name}` : ''}
@@ -293,13 +295,13 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                       <td>
                         <strong>{roll.roll_number}</strong>
                       </td>
-                      <td className="text-muted text-sm max-sm:hidden">
+                      <td className="text-muted-foreground text-sm max-sm:hidden">
                         {roll.color_name ?? '—'}
                       </td>
-                      <td className="text-muted text-sm">
+                      <td className="text-muted-foreground text-sm">
                         <LengthText value={roll.length_m} suffix="m" />
                       </td>
-                      <td className="text-muted text-sm">
+                      <td className="text-muted-foreground text-sm">
                         <WeightText value={roll.weight_kg} suffix="kg" />
                       </td>
                       <td className="max-sm:hidden">
@@ -313,7 +315,7 @@ export function ReserveRollsPanel({ order, onClose }: ReserveRollsPanelProps) {
                           '—'
                         )}
                       </td>
-                      <td className="text-muted text-sm max-sm:hidden">
+                      <td className="text-muted-foreground text-sm max-sm:hidden">
                         {roll.warehouse_location ?? '—'}
                       </td>
                       <td className="whitespace-nowrap text-right">

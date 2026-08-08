@@ -41,11 +41,11 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
           className="w-2.5 h-2.5 rounded-[2px] shrink-0"
           style={{ background: entry?.payload?.color ?? '#3b82f6' }}
         />
-        <span className="text-[12px] font-bold text-[var(--text)]">
+        <span className="text-[12px] font-bold text-[var(--foreground)]">
           {entry?.name}
         </span>
       </div>
-      <p className="text-[13px] font-bold text-[var(--text)] pl-[18px]">
+      <p className="text-[13px] font-bold text-[var(--foreground)] pl-[18px]">
         {/* eslint-disable-next-line no-restricted-syntax */}
         {formatCurrency(entry?.value ?? 0)} đ
       </p>
@@ -71,7 +71,7 @@ export function PaymentMethodChart({
 
   if (data.length === 0) {
     return (
-      <div className="h-[220px] flex items-center justify-center text-[var(--muted)] text-[13px]">
+      <div className="h-[220px] flex items-center justify-center text-[var(--surface-subtle)] text-[13px]">
         Chưa có dữ liệu thu tiền
       </div>
     );
@@ -119,7 +119,7 @@ export function PaymentMethodChart({
               style={{ background: s.color }}
             />
             {/* Label */}
-            <span className="flex-1 text-[12px] font-semibold text-[var(--muted)] truncate">
+            <span className="flex-1 text-[12px] font-semibold text-[var(--surface-subtle)] truncate">
               {s.label}
             </span>
             {/* Percentage badge */}
@@ -133,7 +133,7 @@ export function PaymentMethodChart({
               {s.pct}%
             </span>
             {/* Value */}
-            <span className="text-[12px] font-bold text-[var(--text)] shrink-0 min-w-[72px] text-right tabular-nums">
+            <span className="text-[12px] font-bold text-[var(--foreground)] shrink-0 min-w-[72px] text-right tabular-nums">
               <MoneyText value={s.value} />
             </span>
           </div>

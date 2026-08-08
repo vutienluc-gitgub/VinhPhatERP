@@ -337,7 +337,7 @@ export function FabricVariantForm({
             >
               {isEditing ? LABELS.VARIANT_EDIT_TITLE : LABELS.VARIANT_ADD_TITLE}
             </h3>
-            <p className="text-sm text-muted mt-0.5">
+            <p className="text-sm text-muted-foreground mt-0.5">
               {isEditing ? (
                 <>
                   <span className="font-medium text-foreground">
@@ -412,7 +412,7 @@ export function FabricVariantForm({
       <div className="flex items-center justify-between mb-4">
         <div className="flex gap-4">
           <div
-            className={`flex items-center gap-2 ${stepper.currentStep === 0 ? 'text-primary font-medium' : 'text-muted'}`}
+            className={`flex items-center gap-2 ${stepper.currentStep === 0 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}
           >
             <span
               className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${stepper.currentStep === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted/20'}`}
@@ -421,9 +421,9 @@ export function FabricVariantForm({
             </span>
             Thông tin
           </div>
-          <div className="text-muted/30">―</div>
+          <div className="text-muted-foreground/30">―</div>
           <div
-            className={`flex items-center gap-2 ${stepper.currentStep === 1 ? 'text-primary font-medium' : 'text-muted'}`}
+            className={`flex items-center gap-2 ${stepper.currentStep === 1 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}
           >
             <span
               className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${stepper.currentStep === 1 ? 'bg-primary text-primary-foreground' : 'bg-muted/20'}`}
@@ -435,7 +435,7 @@ export function FabricVariantForm({
         </div>
         <div className="flex gap-2">
           {status === 'saving' && (
-            <span className="text-xs text-muted italic">
+            <span className="text-xs text-muted-foreground italic">
               {LABELS.VARIANT_SAVING_DRAFT}
             </span>
           )}
@@ -643,13 +643,13 @@ export function FabricVariantForm({
                   <div className="form-field">
                     <label>Quy đổi</label>
                     <div className="flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-surface-disabled text-sm">
-                      <span className="font-medium text-muted">
+                      <span className="font-medium text-muted-foreground">
                         1 {watch('base_uom')} =
                       </span>
                       <span className="font-bold text-foreground">
                         {watch('conversion_rate') ?? 0}
                       </span>
-                      <span className="text-muted">m</span>
+                      <span className="text-muted-foreground">m</span>
                     </div>
                   </div>
                 </div>
@@ -807,7 +807,7 @@ export function FabricVariantForm({
                 </div>
                 <div className="public-toggle-section__controls">
                   <span
-                    className={`public-status-dot${watch('is_public') ? ' text-primary bg-primary/10' : ''}`}
+                    className={`public-status-dot${watch('is_public') ? ' text-foreground bg-primary/10' : ''}`}
                   >
                     {watch('is_public') ? LABELS.PUBLIC_ON : LABELS.PUBLIC_OFF}
                   </span>

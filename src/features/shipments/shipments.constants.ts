@@ -100,7 +100,7 @@ export const AD_HOC_SHIPMENT_LABELS = {
   SHIPMENT_NUMBER: 'Số phiếu xuất',
   SHIPMENT_DATE: 'Ngày giao',
   CUSTOMER: 'Khách hàng',
-  EMPLOYEE: 'Nhân viên kho',
+  EMPLOYEE: 'Kho xuất *',
   DELIVERY_ADDRESS: 'Địa chỉ giao',
   DELIVERY_STAFF: 'Nhân viên giao hàng',
   VEHICLE_INFO: 'Biển số xe',
@@ -114,15 +114,17 @@ export const AD_HOC_SHIPMENT_LABELS = {
   SEC_GENERAL: 'Thông tin chung',
   SEC_LOGISTICS: 'Giao vận & Chi phí',
   SEC_DETAILS: 'Chi tiết hàng hoá',
+  SEC_PAYMENT: 'Thanh toán',
 
   // Checkboxes
   CHK_DEBT: 'Ghi nhận vào công nợ khách hàng (tự động tạo nợ)',
 
   // Placeholders
   PLC_CUSTOMER: '— Chọn khách hàng —',
-  PLC_WAREHOUSE: '— Kho xuất —',
+  PLC_WAREHOUSE: '— Chọn kho xuất —',
   PLC_STAFF: '— Chưa phân công —',
   PLC_ADDRESS: 'Địa chỉ giao hàng...',
+  PLC_VEHICLE: 'VD: 51C-12345',
   PLC_NO_APPLY: '— Không áp dụng —',
   PLC_NOTES: 'Ghi chú nội bộ...',
 };
@@ -157,12 +159,12 @@ export const AD_HOC_SHIPMENT_MESSAGES = {
 };
 
 export const AD_HOC_PURPOSE_OPTIONS = [
-  { value: 'Hàng bán lẻ', label: 'Hàng bán lẻ' },
-  { value: 'Hàng mẫu', label: 'Hàng mẫu' },
-  { value: 'Đền bù lỗi', label: 'Đền bù lỗi' },
-  { value: 'Tiêu hao nội bộ', label: 'Tiêu hao nội bộ' },
-  { value: 'Khác', label: 'Khác' },
-];
+  { value: 'Hàng bán lẻ', label: 'Hàng bán lẻ', iconName: 'ShoppingCart' },
+  { value: 'Hàng mẫu', label: 'Hàng mẫu', iconName: 'Gift' },
+  { value: 'Đền bù lỗi', label: 'Đền bù lỗi', iconName: 'AlertTriangle' },
+  { value: 'Tiêu hao nội bộ', label: 'Tiêu hao nội bộ', iconName: 'Factory' },
+  { value: 'Khác', label: 'Khác', iconName: 'MoreHorizontal' },
+] as const;
 
 export const VERIFY_PAGE_MESSAGES = {
   LOADING: 'Đang tải...',

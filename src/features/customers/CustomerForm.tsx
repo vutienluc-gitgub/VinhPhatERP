@@ -421,7 +421,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Nhóm khách hàng (Many-to-Many Tags / Checkbox toggles) */}
           <div className="form-field">
-            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-2">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2">
               {CUSTOMER_FORM_LABELS.groupsLabel}
             </span>
             {groupsList.length === 0 ? (
@@ -452,8 +452,8 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
                         }}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer h-fit ${
                           isSelected
-                            ? 'bg-primary/10 border-primary text-primary'
-                            : 'bg-white border-default text-muted hover:bg-slate-50'
+                            ? 'bg-primary/10 border-primary text-foreground'
+                            : 'bg-surface border-default text-muted-foreground hover:bg-slate-50'
                         }`}
                       >
                         <span>{isSelected ? '✓' : '+'}</span>
@@ -470,7 +470,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
 
           {/* Tài khoản Customer Portal */}
           <div className="form-field">
-            <span className="text-xs font-bold text-muted uppercase tracking-wider block mb-2">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2">
               {CUSTOMER_FORM_LABELS.portalLabel}
             </span>
             {isEditing ? (

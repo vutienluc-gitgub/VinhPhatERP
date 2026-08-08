@@ -61,7 +61,7 @@ export function DispatchConfirmSheet({
           <h3 className="text-lg font-bold text-foreground mb-2">
             {MSG.HEADING}
           </h3>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             {MSG.DESC_PART_1} <b>{activeTrucks.length}</b> {MSG.DESC_PART_2}{' '}
             <b>{totalRolls}</b> {MSG.DESC_PART_3} <b>{MSG.DESC_PART_4}</b>{' '}
             {MSG.DESC_PART_5}
@@ -69,7 +69,7 @@ export function DispatchConfirmSheet({
         </div>
 
         <div className="form-field mt-2">
-          <label className="form-label block text-secondary">
+          <label className="form-label block text-muted-foreground">
             {MSG.LBL_ORDER} <span className="text-danger">*</span>
           </label>
           <VPCombobox

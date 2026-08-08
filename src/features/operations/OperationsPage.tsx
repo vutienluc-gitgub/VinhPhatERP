@@ -20,8 +20,9 @@ import {
   Button,
   AdaptiveSheet,
   SearchInput,
-  Combobox,
+  PageHeader,
 } from '@/shared/components';
+import { VPCombobox } from '@/shared/components/VPCombobox';
 import { Icon } from '@/shared/components/Icon';
 import type { Task, TaskStatus } from '@/domain/operations/types';
 
@@ -162,7 +163,7 @@ export function OperationsPage() {
           <h2 className="text-lg font-semibold text-text">
             Không thể tải dữ liệu
           </h2>
-          <p className="text-muted text-sm">
+          <p className="text-muted-foreground text-sm">
             Đã xảy ra lỗi khi lấy dữ liệu Kanban. Vui lòng tải lại trang.
           </p>
           <Button onClick={() => window.location.reload()} variant="primary">
@@ -175,84 +176,81 @@ export function OperationsPage() {
 
   return (
     <div className="page-container space-y-6 min-h-screen">
-      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="fade-up shrink-0">
-            <h1 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
-              {OPERATIONS_MESSAGES.TITLE}
-            </h1>
-            <p className="text-muted text-xs md:text-sm mt-1">
-              {OPERATIONS_MESSAGES.SUBTITLE}
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 w-full md:w-auto">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-surface p-2 rounded-2xl shadow-sm border border-border w-full overflow-hidden">
-              <div className="w-full sm:w-[360px]">
-                <SearchInput
-                  placeholder={OPERATIONS_MESSAGES.SEARCH_PLACEHOLDER}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="border-none bg-surface-hover w-full"
-                />
-              </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <div className="flex-1 sm:w-48 min-w-0">
-                  <Combobox
-                    options={assigneeOptions}
-                    value={assigneeFilter ?? ''}
-                    onChange={(val) => setAssigneeFilter(val || undefined)}
-                    placeholder={OPERATIONS_MESSAGES.FILTER_ASSIGNEE}
-                    className="border-none bg-surface-hover w-full min-w-0"
+      <div className="sticky top-0 z-10 pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <PageHeader
+          title={OPERATIONS_MESSAGES.TITLE}
+          subtitle={OPERATIONS_MESSAGES.SUBTITLE}
+          actions={
+            <div className="flex flex-col gap-3 w-full md:w-auto">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-surface p-2 rounded-2xl shadow-sm border border-border w-full overflow-hidden">
+                <div className="w-full sm:w-[360px]">
+                  <SearchInput
+                    placeholder={OPERATIONS_MESSAGES.SEARCH_PLACEHOLDER}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="border-none bg-surface-hover w-full"
                   />
                 </div>
-                <Button
-                  variant="primary"
-                  leftIcon="Plus"
-                  onClick={() => {
-                    setSelectedTask(null);
-                    setIsFormOpen(true);
-                  }}
-                  className="rounded-xl px-4 whitespace-nowrap"
-                >
-                  <span className="hidden sm:inline">
-                    {OPERATIONS_MESSAGES.CREATE_TASK}
-                  </span>
-                  <span className="sm:hidden">
-                    {OPERATIONS_MESSAGES.ADD_SHORT}
-                  </span>
-                </Button>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <div className="flex-1 sm:w-48 min-w-0">
+                    <VPCombobox
+                      options={assigneeOptions}
+                      value={assigneeFilter ?? ''}
+                      onChange={(val) => setAssigneeFilter(val || undefined)}
+                      placeholder={OPERATIONS_MESSAGES.FILTER_ASSIGNEE}
+                    />
+                  </div>
+                  <Button
+                    variant="primary"
+                    leftIcon="Plus"
+                    onClick={() => {
+                      setSelectedTask(null);
+                      setIsFormOpen(true);
+                    }}
+                    className="rounded-xl px-4 whitespace-nowrap"
+                  >
+                    <span className="hidden sm:inline">
+                      {OPERATIONS_MESSAGES.CREATE_TASK}
+                    </span>
+                    <span className="sm:hidden">
+                      {OPERATIONS_MESSAGES.ADD_SHORT}
+                    </span>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {(['today', 'overdue', 'urgent'] as const).map((filter) => (
+                  <button
+                    key={filter}
+                    onClick={() =>
+                      setQuickFilter((prev) =>
+                        prev === filter ? null : filter,
+                      )
+                    }
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors border ${
+                      quickFilter === filter
+                        ? 'bg-primary text-inverse-foreground border-primary'
+                        : 'bg-surface hover:bg-surface-hover text-muted-foreground border-border'
+                    }`}
+                  >
+                    {filter === 'today' && 'Hôm nay'}
+                    {filter === 'overdue' && 'Quá hạn'}
+                    {filter === 'urgent' && 'Khẩn cấp'}
+                  </button>
+                ))}
+                {quickFilter && (
+                  <button
+                    onClick={() => setQuickFilter(null)}
+                    className="text-xs text-muted-foreground hover:text-danger underline ml-2 whitespace-nowrap"
+                  >
+                    Xóa lọc
+                  </button>
+                )}
               </div>
             </div>
-
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {(['today', 'overdue', 'urgent'] as const).map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() =>
-                    setQuickFilter((prev) => (prev === filter ? null : filter))
-                  }
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors border ${
-                    quickFilter === filter
-                      ? 'bg-primary text-white border-primary'
-                      : 'bg-surface hover:bg-surface-hover text-muted border-border'
-                  }`}
-                >
-                  {filter === 'today' && 'Hôm nay'}
-                  {filter === 'overdue' && 'Quá hạn'}
-                  {filter === 'urgent' && 'Khẩn cấp'}
-                </button>
-              ))}
-              {quickFilter && (
-                <button
-                  onClick={() => setQuickFilter(null)}
-                  className="text-xs text-muted hover:text-danger underline ml-2 whitespace-nowrap"
-                >
-                  Xóa lọc
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+          }
+        />
       </div>
 
       <OperationsKpiGrid
@@ -359,7 +357,7 @@ export function OperationsPage() {
       <div className="border-t border-border pt-4">
         <button
           type="button"
-          className="flex items-center gap-2 text-sm font-medium text-muted hover:text-text transition-colors mb-4"
+          className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-text transition-colors mb-4"
           onClick={() => setIsDashboardOpen((prev) => !prev)}
         >
           <Icon

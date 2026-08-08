@@ -32,7 +32,7 @@ export function FabricPublicStatusSection({
           {LABELS.PUBLIC_TITLE}
         </h3>
         <span
-          className={`text-xs font-semibold px-2 py-1 rounded-md ${isPublic ? 'bg-success-soft text-success' : 'bg-surface-secondary text-muted'}`}
+          className={`text-xs font-semibold px-2 py-1 rounded-md ${isPublic ? 'bg-success-soft text-success' : 'bg-surface-secondary text-muted-foreground'}`}
         >
           {isPublic ? 'LIVE' : 'DRAFT'}
         </span>
@@ -41,7 +41,7 @@ export function FabricPublicStatusSection({
       <div className="space-y-5">
         {/* Toggle */}
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-secondary">
+          <span className="text-sm font-medium text-muted-foreground">
             {LABELS.PUBLIC_DESC}
           </span>
           <Controller
@@ -58,15 +58,17 @@ export function FabricPublicStatusSection({
         {/* Info */}
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted">{TAB_LABELS.LAST_UPDATED}</span>
-            <span className="font-medium text-secondary">
+            <span className="text-muted-foreground">
+              {TAB_LABELS.LAST_UPDATED}
+            </span>
+            <span className="font-medium text-muted-foreground">
               {updatedAt ? dayjs(updatedAt).format('DD MMM YYYY, HH:mm') : '—'}
             </span>
           </div>
 
           {isPublic && (
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted">Public URL</span>
+              <span className="text-muted-foreground">Public URL</span>
               <div className="flex items-center gap-1">
                 <Button
                   type="button"
@@ -75,7 +77,11 @@ export function FabricPublicStatusSection({
                   className="px-2"
                   onClick={() => navigator.clipboard.writeText(publicUrl)}
                 >
-                  <Icon name="Copy" size={14} className="text-muted" />
+                  <Icon
+                    name="Copy"
+                    size={14}
+                    className="text-muted-foreground"
+                  />
                 </Button>
               </div>
             </div>

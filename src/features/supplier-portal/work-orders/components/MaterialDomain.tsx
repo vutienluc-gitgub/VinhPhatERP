@@ -69,24 +69,24 @@ export function MaterialDomain() {
 
             <div className="grid grid-cols-5 gap-2 md:gap-6 text-center">
               <div>
-                <p className="text-xs text-muted mb-1">CẦN</p>
+                <p className="text-xs text-muted-foreground mb-1">CẦN</p>
                 <p className="font-medium text-foreground">{mat.need}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">XUẤT</p>
+                <p className="text-xs text-muted-foreground mb-1">XUẤT</p>
                 <p className="font-medium text-foreground">{mat.issued}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">ĐÃ NHẬN</p>
+                <p className="text-xs text-muted-foreground mb-1">ĐÃ NHẬN</p>
                 <p className="font-medium text-success">{mat.received}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">TIÊU HAO</p>
+                <p className="text-xs text-muted-foreground mb-1">TIÊU HAO</p>
                 <p className="font-medium text-warning">{mat.consumed}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">CÒN LẠI</p>
-                <p className="font-medium text-primary">{mat.remaining}</p>
+                <p className="text-xs text-muted-foreground mb-1">CÒN LẠI</p>
+                <p className="font-medium text-foreground">{mat.remaining}</p>
               </div>
             </div>
 
@@ -100,7 +100,9 @@ export function MaterialDomain() {
                   Xác nhận nhận
                 </Button>
               ) : (
-                <span className="text-xs text-muted">Đã khớp sổ</span>
+                <span className="text-xs text-muted-foreground">
+                  Đã khớp sổ
+                </span>
               )}
             </div>
           </Card>

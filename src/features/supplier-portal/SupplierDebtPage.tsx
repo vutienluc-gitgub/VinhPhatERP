@@ -87,7 +87,7 @@ export function SupplierDebtPage() {
           <h1 className="text-2xl font-bold text-foreground">
             {TEXT.DEBT_TITLE}
           </h1>
-          <p className="text-muted mt-1">{TEXT.DEBT_DESC}</p>
+          <p className="text-muted-foreground mt-1">{TEXT.DEBT_DESC}</p>
         </div>
       </div>
 
@@ -129,7 +129,7 @@ export function SupplierDebtPage() {
         <CardContent>
           <div className="rounded-md border border-default overflow-hidden">
             <table className="w-full text-sm text-left text-foreground">
-              <thead className="text-xs text-muted bg-surface uppercase border-b border-default">
+              <thead className="text-xs text-muted-foreground bg-surface uppercase border-b border-default">
                 <tr>
                   <th className="px-6 py-3 font-medium">
                     {TEXT.DEBT_COL_TIME}
@@ -175,7 +175,7 @@ export function SupplierDebtPage() {
                         {dayjs(tx.created_at).format('DD/MM/YYYY HH:mm')}
                       </td>
                       <td className="px-6 py-4">{getTxTypeBadge(tx.type)}</td>
-                      <td className="px-6 py-4 font-medium text-muted">
+                      <td className="px-6 py-4 font-medium text-muted-foreground">
                         {tx.reference_type} / {tx.reference_id?.split('-')[0]}
                       </td>
                       <td className="px-6 py-4 text-right">

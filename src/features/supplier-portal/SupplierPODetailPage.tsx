@@ -47,7 +47,7 @@ export function SupplierPODetailPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="flex flex-col items-center gap-4 text-muted">
+        <div className="flex flex-col items-center gap-4 text-muted-foreground">
           <Icon name="loader-2" className="w-8 h-8 animate-spin" />
           <p>{TEXT.LOADING_PO}</p>
         </div>
@@ -62,7 +62,7 @@ export function SupplierPODetailPage() {
         <h2 className="text-lg font-bold text-foreground text-center">
           {TEXT.PO_NOT_FOUND_TITLE}
         </h2>
-        <p className="text-muted text-center mt-2 text-sm max-w-md">
+        <p className="text-muted-foreground text-center mt-2 text-sm max-w-md">
           {TEXT.PO_NOT_FOUND_DESC}
         </p>
       </div>

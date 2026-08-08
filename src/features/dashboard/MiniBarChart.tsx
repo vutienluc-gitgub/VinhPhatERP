@@ -35,7 +35,7 @@ export interface MiniBarChartProps {
  *
  * Merge strategy:
  * - API (maxValue, valueFormatter, MiniBarChartItem) — from codebase
- * - CSS variables (var(--muted), var(--text))     — from codebase (dark mode safe)
+ * - CSS variables (var(--surface-subtle), var(--foreground))     — from codebase (dark mode safe)
  * - height:'100%' fix + Shine glass overlay        — from new code (correct render)
  * - Gradient cc opacity + glow shadow              — from new code (better aesthetics)
  */
@@ -58,14 +58,14 @@ export function MiniBarChart({
           <div key={d.label} className="flex items-center gap-2.5">
             {/* Rank — từ codebase */}
             {showRank && (
-              <span className="text-[11px] font-bold text-[var(--muted)] w-4 text-right shrink-0">
+              <span className="text-[11px] font-bold text-[var(--surface-subtle)] w-4 text-right shrink-0">
                 {i + 1}
               </span>
             )}
 
             {/* Label — fixed width + truncate */}
             <span
-              className="w-[100px] max-w-[100px] text-[13px] text-[var(--muted)] shrink-0 truncate"
+              className="w-[100px] max-w-[100px] text-[13px] text-[var(--surface-subtle)] shrink-0 truncate"
               title={d.label}
             >
               {d.label}

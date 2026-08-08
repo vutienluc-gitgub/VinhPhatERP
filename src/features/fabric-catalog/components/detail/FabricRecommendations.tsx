@@ -53,7 +53,7 @@ export function FabricRecommendations({
     <>
       {/* Collaborative Recommendations ("Khách hàng khác cũng xem") */}
       {hasAlsoViewed && (
-        <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="bg-surface rounded-xl shadow-sm p-4">
           <h3 className="text-base font-bold text-foreground mb-3 pb-2">
             {LABELS.alsoViewedProducts}
           </h3>
@@ -77,10 +77,10 @@ export function FabricRecommendations({
                     </div>
                   )}
                 </div>
-                <span className="font-semibold text-muted text-xs truncate group-hover:text-primary transition-colors">
+                <span className="font-semibold text-muted-foreground text-xs truncate group-hover:text-foreground transition-colors">
                   {item.code}
                 </span>
-                <span className="text-[10px] text-muted truncate">
+                <span className="text-[10px] text-muted-foreground truncate">
                   {item.name}
                 </span>
               </Link>
@@ -91,7 +91,7 @@ export function FabricRecommendations({
 
       {/* Related Products Section */}
       {hasRelated && (
-        <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="bg-surface rounded-xl shadow-sm p-4">
           <h3 className="text-base font-bold text-foreground mb-3 pb-2">
             {LABELS.relatedProducts}
           </h3>
@@ -116,14 +116,16 @@ export function FabricRecommendations({
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-primary text-sm truncate group-hover:text-primary transition-colors">
+                  <p className="font-semibold text-foreground text-sm truncate group-hover:text-foreground transition-colors">
                     {item.code}
                   </p>
-                  <p className="text-xs text-muted truncate">{item.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {item.name}
+                  </p>
                 </div>
                 <Icon
                   name="ChevronRight"
-                  className="w-4 h-4 text-muted-foreground group-hover:text-primary"
+                  className="w-4 h-4 text-muted-foreground group-hover:text-foreground"
                 />
               </Link>
             ))}

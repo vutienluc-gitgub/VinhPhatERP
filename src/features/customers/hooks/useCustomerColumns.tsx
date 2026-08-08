@@ -67,7 +67,9 @@ export function useCustomerColumns({
       accessorKey: 'code',
       enableSorting: true,
       cell: (info) => (
-        <span className="font-bold text-primary">{info.row.original.code}</span>
+        <span className="font-bold text-foreground">
+          {info.row.original.code}
+        </span>
       ),
     },
     {
@@ -80,7 +82,7 @@ export function useCustomerColumns({
         return (
           <div className="flex flex-col">
             <span className="font-bold">{c.name}</span>
-            <span className="text-xs text-muted truncate max-w-[300px]">
+            <span className="text-xs text-muted-foreground truncate max-w-[300px]">
               {c.address || '—'}
             </span>
           </div>
@@ -166,11 +168,11 @@ export function useCustomerColumns({
         const salesperson = info.row.original.salesperson;
         return salesperson ? (
           <div className="flex items-center gap-1.5 text-sm">
-            <Icon name="User" size={14} className="text-muted" />
+            <Icon name="User" size={14} className="text-muted-foreground" />
             <span>{salesperson.name}</span>
           </div>
         ) : (
-          <span className="text-muted text-sm">—</span>
+          <span className="text-muted-foreground text-sm">—</span>
         );
       },
     },

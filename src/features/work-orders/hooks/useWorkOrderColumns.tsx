@@ -28,11 +28,11 @@ export function useWorkOrderColumns({
         accessorFn: (wo) => wo.work_order_number,
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-bold text-primary">
+            <span className="font-bold text-foreground">
               {row.original.work_order_number}
             </span>
             {row.original.order && (
-              <span className="text-xs text-muted truncate max-w-[200px]">
+              <span className="text-xs text-muted-foreground truncate max-w-[200px]">
                 ĐH: {row.original.order.order_number}
               </span>
             )}
@@ -46,7 +46,7 @@ export function useWorkOrderColumns({
         cell: ({ row }) => (
           <div className="flex flex-col">
             <span className="font-bold">{row.original.bom_template?.code}</span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-muted-foreground">
               V{row.original.bom_version}
             </span>
           </div>
@@ -59,7 +59,7 @@ export function useWorkOrderColumns({
         cell: ({ row }) => (
           <div className="flex flex-col">
             <span className="font-medium">{row.original.supplier?.name}</span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-muted-foreground">
               <MoneyText value={row.original.weaving_unit_price} />
               /m
             </span>
@@ -77,7 +77,7 @@ export function useWorkOrderColumns({
               {formatQuantity(row.original.target_quantity)} m
             </span>
             {row.original.target_weight_kg && (
-              <span className="text-xs text-muted">
+              <span className="text-xs text-muted-foreground">
                 ~{formatQuantity(row.original.target_weight_kg)} kg
               </span>
             )}
@@ -90,7 +90,7 @@ export function useWorkOrderColumns({
         accessorFn: (wo) => wo.loom?.code,
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-medium text-primary">
+            <span className="font-medium text-foreground">
               {row.original.loom?.code || '—'}
             </span>
           </div>

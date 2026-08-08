@@ -61,7 +61,7 @@ export function ShipmentVerifyPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f0f5fb]">
-        <div className="text-[var(--text-secondary)] text-sm animate-pulse">
+        <div className="text-[var(--muted-foreground)] text-sm animate-pulse">
           {MSG.LOADING}
         </div>
       </div>
@@ -72,10 +72,10 @@ export function ShipmentVerifyPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0f5fb] gap-3 p-6">
         <div className="text-4xl">🔍</div>
-        <h1 className="font-bold text-lg text-[var(--text-primary)]">
+        <h1 className="font-bold text-lg text-[var(--foreground)]">
           {MSG.NOT_FOUND_TITLE}
         </h1>
-        <p className="text-sm text-[var(--text-secondary)] text-center">
+        <p className="text-sm text-[var(--muted-foreground)] text-center">
           {MSG.NOT_FOUND_DESC(shipmentNumber!)}
         </p>
       </div>
@@ -97,12 +97,12 @@ export function ShipmentVerifyPage() {
 
       <div className="max-w-md mx-auto px-4 py-6 flex flex-col gap-4">
         {/* Header card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-sm border border-[#dce6f0] overflow-hidden">
           <div className="bg-[#0f3460] px-5 py-4">
             <div className="text-xs text-[#8eb8e5] font-semibold uppercase tracking-widest mb-1">
               {MSG.DOC_TITLE}
             </div>
-            <div className="text-white text-2xl font-bold tracking-tight">
+            <div className="text-inverse-foreground text-2xl font-bold tracking-tight">
               {shipment.shipment_number}
             </div>
             <div className="text-[#b8d4f0] text-sm mt-1">
@@ -110,7 +110,7 @@ export function ShipmentVerifyPage() {
             </div>
           </div>
           <div className="px-5 py-3 flex items-center justify-between">
-            <span className="text-xs text-[var(--text-secondary)]">
+            <span className="text-xs text-[var(--muted-foreground)]">
               {MSG.STATUS_LBL}
             </span>
             <span
@@ -119,7 +119,7 @@ export function ShipmentVerifyPage() {
                   ? 'bg-success-soft text-success'
                   : shipment.status === 'shipped'
                     ? 'bg-info-soft text-info'
-                    : 'bg-surface-secondary text-muted'
+                    : 'bg-surface-secondary text-muted-foreground'
               }`}
             >
               {VERIFY_STATUS_LABELS[shipment.status] ?? shipment.status}
@@ -128,20 +128,20 @@ export function ShipmentVerifyPage() {
         </div>
 
         {/* Customer info */}
-        <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4 flex flex-col gap-2">
+        <div className="bg-surface rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4 flex flex-col gap-2">
           <div className="text-xs font-bold uppercase text-[#0f3460] tracking-wider mb-1">
             {MSG.DELIVERY_INFO}
           </div>
           <div className="flex items-start gap-3 text-sm">
             <span className="text-lg leading-none">👤</span>
-            <span className="text-[var(--text-primary)] font-medium">
+            <span className="text-[var(--foreground)] font-medium">
               {shipment.customer_name ?? '—'}
             </span>
           </div>
           {shipment.delivery_address && (
             <div className="flex items-start gap-3 text-sm">
               <span className="text-lg leading-none">📍</span>
-              <span className="text-[var(--text-secondary)]">
+              <span className="text-[var(--muted-foreground)]">
                 {shipment.delivery_address}
               </span>
             </div>
@@ -150,7 +150,7 @@ export function ShipmentVerifyPage() {
 
         {/* Items */}
         {shipment.items.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] overflow-hidden">
+          <div className="bg-surface rounded-2xl shadow-sm border border-[#dce6f0] overflow-hidden">
             <div className="px-5 py-3 border-b border-[#f0f5fb]">
               <span className="text-xs font-bold uppercase text-[#0f3460] tracking-wider">
                 {MSG.ITEM_LIST(shipment.item_count)}
@@ -163,10 +163,10 @@ export function ShipmentVerifyPage() {
                   className="px-5 py-3 flex items-center justify-between gap-3"
                 >
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-medium text-[var(--text-primary)]">
+                    <span className="text-sm font-medium text-[var(--foreground)]">
                       {item.fabric_type ?? '—'}
                     </span>
-                    <span className="text-xs text-[var(--text-secondary)]">
+                    <span className="text-xs text-[var(--muted-foreground)]">
                       {item.color_name ?? '—'}
                     </span>
                   </div>
@@ -181,7 +181,7 @@ export function ShipmentVerifyPage() {
 
         {/* Journey timeline */}
         {shipment.journey_status && (
-          <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4">
+          <div className="bg-surface rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4">
             <div className="text-xs font-bold uppercase text-[#0f3460] tracking-wider mb-3">
               {MSG.JOURNEY_TITLE}
             </div>
@@ -197,7 +197,7 @@ export function ShipmentVerifyPage() {
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
                         isDone
-                          ? 'bg-[#0f3460] text-white'
+                          ? 'bg-[#0f3460] text-inverse-foreground'
                           : 'bg-[#f0f5fb] text-[#8a9bb0] border border-[#dce6f0]'
                       }`}
                     >
@@ -205,12 +205,12 @@ export function ShipmentVerifyPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div
-                        className={`text-sm ${isCurrent ? 'font-bold text-[#0f3460]' : isDone ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)]'}`}
+                        className={`text-sm ${isCurrent ? 'font-bold text-[#0f3460]' : isDone ? 'text-[var(--foreground)]' : 'text-[var(--muted-foreground)]'}`}
                       >
                         {VERIFY_JOURNEY_LABELS[step] ?? step}
                       </div>
                       {log && (
-                        <div className="text-xs text-[var(--text-tertiary)]">
+                        <div className="text-xs text-[var(--muted-foreground)]">
                           {formatDateTime(log.created_at)}
                         </div>
                       )}
@@ -224,7 +224,7 @@ export function ShipmentVerifyPage() {
 
         {/* Signature proof */}
         {shipment.customer_signature_url && (
-          <div className="bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4">
+          <div className="bg-surface rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4">
             <div className="text-xs font-bold uppercase text-[#0f3460] tracking-wider mb-3">
               {MSG.SIGNATURE_TITLE}
             </div>
@@ -236,7 +236,7 @@ export function ShipmentVerifyPage() {
               />
             </div>
             {shipment.signed_at && (
-              <p className="text-xs text-[var(--text-tertiary)] mt-2 text-center">
+              <p className="text-xs text-[var(--muted-foreground)] mt-2 text-center">
                 {MSG.SIGNED_AT} {formatDateTime(shipment.signed_at)}
               </p>
             )}
@@ -244,7 +244,7 @@ export function ShipmentVerifyPage() {
         )}
 
         {/* Footer */}
-        <p className="text-center text-[10px] text-[var(--text-tertiary)] pb-4">
+        <p className="text-center text-[10px] text-[var(--muted-foreground)] pb-4">
           {MSG.FOOTER_TEXT}
           <br />
           {MSG.FOOTER_SUBTEXT}

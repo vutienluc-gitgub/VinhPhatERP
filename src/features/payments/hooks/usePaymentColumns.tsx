@@ -22,7 +22,7 @@ export function usePaymentColumns({
         accessorKey: 'payment_number',
         header: MSG.COL_PAYMENT_NO,
         cell: ({ row }) => (
-          <span className="font-bold text-primary">
+          <span className="font-bold text-foreground">
             {row.original.payment_number}
           </span>
         ),
@@ -32,7 +32,7 @@ export function usePaymentColumns({
         header: MSG.COL_ORDER,
         accessorFn: (p) => p.orders?.order_number,
         cell: ({ row }) => (
-          <span className="text-muted">
+          <span className="text-muted-foreground">
             {row.original.orders?.order_number ?? '—'}
           </span>
         ),
@@ -50,7 +50,7 @@ export function usePaymentColumns({
       {
         accessorKey: 'payment_date',
         header: MSG.COL_DATE,
-        meta: { className: 'text-muted text-sm' },
+        meta: { className: 'text-muted-foreground text-sm' },
         cell: ({ row }) => row.original.payment_date,
       },
       {
@@ -64,7 +64,7 @@ export function usePaymentColumns({
       {
         accessorKey: 'payment_method',
         header: MSG.COL_METHOD,
-        meta: { className: 'text-muted text-sm' },
+        meta: { className: 'text-muted-foreground text-sm' },
         cell: ({ row }) => PAYMENT_METHOD_LABELS[row.original.payment_method],
       },
       {

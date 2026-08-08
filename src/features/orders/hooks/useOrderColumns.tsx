@@ -38,13 +38,13 @@ export function useOrderColumns({
           const order = row.original;
           return (
             <div className="flex flex-col">
-              <span className="font-bold text-primary">
+              <span className="font-bold text-foreground">
                 {order.order_number}
               </span>
               <span className="text-sm">
                 {order.customers?.name ?? '—'}
                 {order.customers?.code && (
-                  <span className="text-xs text-muted ml-1 italic">
+                  <span className="text-xs text-muted-foreground ml-1 italic">
                     ({order.customers.code})
                   </span>
                 )}
@@ -56,7 +56,7 @@ export function useOrderColumns({
       {
         accessorKey: 'order_date',
         header: ORDERS_LIST_LABELS.COL_ORDER_DATE,
-        meta: { className: 'text-muted text-sm' },
+        meta: { className: 'text-muted-foreground text-sm' },
         cell: ({ row }) => row.original.order_date,
       },
       {
@@ -70,7 +70,7 @@ export function useOrderColumns({
               <span className="text-sm">{order.delivery_date ?? '—'}</span>
               {due && (
                 <span
-                  className={`text-[10px] font-bold uppercase ${due.urgent ? 'text-danger animate-pulse' : 'text-muted'}`}
+                  className={`text-[10px] font-bold uppercase ${due.urgent ? 'text-danger animate-pulse' : 'text-muted-foreground'}`}
                 >
                   {due.text}
                 </span>

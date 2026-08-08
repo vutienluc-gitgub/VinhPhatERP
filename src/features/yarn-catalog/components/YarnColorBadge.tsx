@@ -9,7 +9,7 @@ export function YarnColorBadge({ colorName }: { colorName: string | null }) {
   const hex = getColorHex(option ? option.code : colorName);
 
   return (
-    <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted">
+    <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground">
       <span>Màu:</span>
       <span
         title={colorName}

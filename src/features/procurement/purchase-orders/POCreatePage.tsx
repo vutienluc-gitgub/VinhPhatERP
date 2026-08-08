@@ -156,11 +156,13 @@ export function POCreatePage() {
             <h1 className="text-2xl font-bold m-0">
               {PO_CONSTANTS.CREATE_PAGE_TITLE}
             </h1>
-            <span className="px-2 py-1 bg-surface-secondary text-muted text-xs rounded-md font-medium border border-default">
+            <span className="px-2 py-1 bg-surface-secondary text-muted-foreground text-xs rounded-md font-medium border border-default">
               {PO_CONSTANTS.STATUS_DRAFT}
             </span>
           </div>
-          <p className="text-muted mt-1">{PO_CONSTANTS.PAGE_SUBTITLE}</p>
+          <p className="text-muted-foreground mt-1">
+            {PO_CONSTANTS.PAGE_SUBTITLE}
+          </p>
         </div>
         <div className="flex gap-2">
           <CancelButton onClick={() => navigate('/purchase-orders')} />

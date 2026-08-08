@@ -51,7 +51,7 @@ export function RFQDetail() {
           size={48}
           className="text-destructive mx-auto mb-4"
         />
-        <p className="text-lg font-bold text-primary mb-2">
+        <p className="text-lg font-bold text-foreground mb-2">
           {rfqError ? getErrorMessage(rfqError) : RFQ_LABELS.DETAIL_NOT_FOUND}
         </p>
         <Button
@@ -94,7 +94,7 @@ export function RFQDetail() {
                 {RFQ_STATUS_LABELS[rfq.status] ?? rfq.status}
               </Badge>
             </h1>
-            <p className="text-sm text-muted mt-1">{rfq.title}</p>
+            <p className="text-sm text-muted-foreground mt-1">{rfq.title}</p>
           </div>
         </div>
 
@@ -126,13 +126,13 @@ export function RFQDetail() {
           <div className="panel-card p-4 md:p-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div>
-                <p className="text-xs text-muted mb-1 font-medium uppercase tracking-wider">
+                <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wider">
                   {RFQ_LABELS.COL_RFQ_CODE}
                 </p>
-                <p className="font-semibold text-primary">{rfq.rfq_code}</p>
+                <p className="font-semibold text-foreground">{rfq.rfq_code}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1 font-medium uppercase tracking-wider">
+                <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wider">
                   {RFQ_LABELS.COL_CREATED_AT}
                 </p>
                 <p className="font-medium">
@@ -140,7 +140,7 @@ export function RFQDetail() {
                 </p>
               </div>
               <div className="col-span-2 md:col-span-2">
-                <p className="text-xs text-muted mb-1 font-medium uppercase tracking-wider text-destructive">
+                <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wider text-destructive">
                   {RFQ_LABELS.DETAIL_DEADLINE}
                 </p>
                 <p className="font-semibold text-destructive">
@@ -153,7 +153,7 @@ export function RFQDetail() {
                 <p className="text-sm font-medium mb-2">
                   {RFQ_LABELS.LBL_NOTES}
                 </p>
-                <p className="text-sm text-muted whitespace-pre-wrap">
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                   {rfq.notes}
                 </p>
               </div>
@@ -178,13 +178,13 @@ export function RFQDetail() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-surface-subtle border-b border-border">
-                      <th className="px-4 py-3 text-left font-medium text-muted">
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                         #
                       </th>
-                      <th className="px-4 py-3 text-left font-medium text-muted">
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                         {RFQ_LABELS.COL_MATERIAL}
                       </th>
-                      <th className="px-4 py-3 text-left font-medium text-muted">
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                         {RFQ_LABELS.COL_MATERIAL_SPEC}
                       </th>
                       <th className="py-3 px-4 font-semibold text-right">
@@ -195,13 +195,19 @@ export function RFQDetail() {
                   <tbody className="divide-y divide-border/50">
                     {isLoadingItems ? (
                       <tr>
-                        <td colSpan={4} className="p-4 text-center text-muted">
+                        <td
+                          colSpan={4}
+                          className="p-4 text-center text-muted-foreground"
+                        >
                           {RFQ_LABELS.TXT_LOADING_MATERIAL}
                         </td>
                       </tr>
                     ) : items.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="p-4 text-center text-muted">
+                        <td
+                          colSpan={4}
+                          className="p-4 text-center text-muted-foreground"
+                        >
                           {RFQ_LABELS.TXT_NO_MATERIAL}
                         </td>
                       </tr>
@@ -211,11 +217,13 @@ export function RFQDetail() {
                           key={item.id}
                           className="hover:bg-surface-subtle/30"
                         >
-                          <td className="px-4 py-3 text-muted">{index + 1}</td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {index + 1}
+                          </td>
                           <td className="px-4 py-3 font-medium">
                             {item.material_name}
                           </td>
-                          <td className="px-4 py-3 text-muted">
+                          <td className="px-4 py-3 text-muted-foreground">
                             {item.material_specs || '-'}
                           </td>
                           <td className="px-4 py-3 text-right font-medium">
@@ -230,7 +238,7 @@ export function RFQDetail() {
             )}
 
             {activeTab === 'suppliers' && (
-              <div className="p-6 text-center text-muted">
+              <div className="p-6 text-center text-muted-foreground">
                 <RFQQuotesTab rfq={rfq} />
               </div>
             )}
@@ -243,9 +251,11 @@ export function RFQDetail() {
             <h3 className="font-semibold text-lg mb-2">
               {RFQ_LABELS.QR_TITLE}
             </h3>
-            <p className="text-sm text-muted mb-6">{RFQ_LABELS.QR_DESC}</p>
+            <p className="text-sm text-muted-foreground mb-6">
+              {RFQ_LABELS.QR_DESC}
+            </p>
 
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-border inline-block mb-6">
+            <div className="bg-surface p-4 rounded-xl shadow-sm border border-border inline-block mb-6">
               <QRCodeCanvas
                 id="rfq-qr-code"
                 value={qrUrl}
@@ -282,7 +292,7 @@ export function RFQDetail() {
                 {RFQ_LABELS.BTN_DOWNLOAD_QR}
               </Button>
 
-              <h2 className="text-sm font-bold uppercase tracking-wider text-muted mt-6 mb-4 border-b border-border pb-2">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mt-6 mb-4 border-b border-border pb-2">
                 {RFQ_LABELS.SHARE_QR_CODE}
               </h2>
               <div className="relative">
@@ -293,7 +303,7 @@ export function RFQDetail() {
                   className="field-input text-xs font-mono pr-10 bg-surface-subtle"
                 />
                 <button
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted hover:text-primary transition-colors p-1"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
                   onClick={() => {
                     navigator.clipboard.writeText(qrUrl);
                   }}
@@ -303,7 +313,7 @@ export function RFQDetail() {
                 </button>
               </div>
               <div className="mt-4 text-center">
-                <p className="text-xs text-muted">
+                <p className="text-xs text-muted-foreground">
                   {RFQ_LABELS.QR_HELPER_TEXT}
                 </p>
               </div>

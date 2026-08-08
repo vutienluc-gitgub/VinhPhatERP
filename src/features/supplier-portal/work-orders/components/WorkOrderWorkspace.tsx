@@ -50,10 +50,10 @@ export function WorkOrderWorkspace() {
               {/* Top Row: Breadcrumb & Title */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex flex-col">
-                  <div className="flex items-center space-x-2 text-muted mb-1 text-sm">
+                  <div className="flex items-center space-x-2 text-muted-foreground mb-1 text-sm">
                     <button
                       onClick={() => navigate('/portal/supplier/work-orders')}
-                      className="hover:text-primary flex items-center"
+                      className="hover:text-foreground flex items-center"
                     >
                       <Icon name="arrow-left" size={14} className="mr-1" /> Danh
                       sách
@@ -136,11 +136,11 @@ export function WorkOrderWorkspace() {
               {/* KPI Dashboard inside Header */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
                 <div className="flex flex-col border-r border-default pr-4">
-                  <span className="text-xs text-muted font-medium mb-1 uppercase">
+                  <span className="text-xs text-muted-foreground font-medium mb-1 uppercase">
                     Progress
                   </span>
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-semibold text-primary">
+                    <span className="text-lg font-semibold text-foreground">
                       72%
                     </span>
                     <div className="h-2 w-full bg-surface-secondary rounded-full overflow-hidden hidden md:block">
@@ -152,7 +152,7 @@ export function WorkOrderWorkspace() {
                   </div>
                 </div>
                 <div className="flex flex-col border-r border-default px-4">
-                  <span className="text-xs text-muted font-medium mb-1 uppercase">
+                  <span className="text-xs text-muted-foreground font-medium mb-1 uppercase">
                     Efficiency
                   </span>
                   <span className="text-lg font-semibold text-foreground">
@@ -160,7 +160,7 @@ export function WorkOrderWorkspace() {
                   </span>
                 </div>
                 <div className="flex flex-col border-r border-default px-4">
-                  <span className="text-xs text-muted font-medium mb-1 uppercase">
+                  <span className="text-xs text-muted-foreground font-medium mb-1 uppercase">
                     Defect
                   </span>
                   <span className="text-lg font-semibold text-danger">
@@ -168,7 +168,7 @@ export function WorkOrderWorkspace() {
                   </span>
                 </div>
                 <div className="flex flex-col border-r border-default px-4">
-                  <span className="text-xs text-muted font-medium mb-1 uppercase">
+                  <span className="text-xs text-muted-foreground font-medium mb-1 uppercase">
                     Mat. Loss
                   </span>
                   <span className="text-lg font-semibold text-foreground">
@@ -176,7 +176,7 @@ export function WorkOrderWorkspace() {
                   </span>
                 </div>
                 <div className="flex flex-col pl-4">
-                  <span className="text-xs text-muted font-medium mb-1 uppercase">
+                  <span className="text-xs text-muted-foreground font-medium mb-1 uppercase">
                     Delay
                   </span>
                   <span className="text-lg font-semibold text-warning">2h</span>

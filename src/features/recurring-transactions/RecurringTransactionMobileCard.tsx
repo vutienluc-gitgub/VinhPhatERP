@@ -46,8 +46,10 @@ export function RecurringTransactionMobileCard({
         </span>
       </div>
       <div className="mobile-card-body space-y-2">
-        <p className="text-sm text-muted line-clamp-2">{tx.description}</p>
-        <div className="flex items-center justify-between text-xs text-muted">
+        <p className="text-sm text-muted-foreground line-clamp-2">
+          {tx.description}
+        </p>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
             {FREQUENCY_LABELS[tx.frequency]} - {RECURRING_LABELS.dayPrefix}{' '}
             {tx.day_of_month}
@@ -58,7 +60,7 @@ export function RecurringTransactionMobileCard({
           </span>
         </div>
         {(tx.suppliers?.name || tx.employees?.name) && (
-          <div className="text-xs text-muted">
+          <div className="text-xs text-muted-foreground">
             {tx.suppliers?.name &&
               `${RECURRING_LABELS.supplierPrefix}: ${tx.suppliers.name}`}
             {tx.suppliers?.name && tx.employees?.name && ' | '}
@@ -81,7 +83,7 @@ export function RecurringTransactionMobileCard({
               : RECURRING_LABELS.actionActivateShort}
           </button>
           <button
-            className="btn-secondary flex-1 text-primary"
+            className="btn-secondary flex-1 text-foreground"
             onClick={(e) => {
               e.stopPropagation();
               onEdit(tx);

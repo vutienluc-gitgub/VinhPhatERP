@@ -5,6 +5,7 @@ dotenv.config({ path: '.env.local' });
 
 async function proveBomAutoIncrement() {
   console.log('\n=============================================');
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log('🚀 KIỂM CHỨNG CƠ CHẾ AUTO-INCREMENT BẰNG UNTYPED TRÊN DB');
   console.log('=============================================\n');
 
@@ -49,6 +50,7 @@ async function proveBomAutoIncrement() {
 
     if (!existing) {
       console.log(
+        // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
         `✅ KẾT QUẢ: Mã "${finalCode}" TRỐNG. HOÀN TOÀN AN TOÀN ĐỂ INSERT!`,
       );
       exists = false;
@@ -56,6 +58,7 @@ async function proveBomAutoIncrement() {
     }
 
     console.log(
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       `❌ BỊ TRÙNG! Mã "${finalCode}" đang được dùng. Đẩy hậu tố lên...`,
     );
     counter++;
@@ -63,6 +66,7 @@ async function proveBomAutoIncrement() {
   }
 
   console.log('\n=============================================');
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log('🎉 Bài test kết thúc tốt đẹp!');
 }
 

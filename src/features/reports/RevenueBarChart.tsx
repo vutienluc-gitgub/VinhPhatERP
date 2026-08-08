@@ -46,7 +46,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
   return (
     <div className="bg-surface border border-border rounded-[10px] py-2.5 px-3.5 shadow-[0_4px_20px_rgba(16,35,61,0.12)] text-xs min-w-[160px]">
-      <p className="text-[var(--muted)] font-bold text-[10px] uppercase tracking-wider mb-2">
+      <p className="text-[var(--surface-subtle)] font-bold text-[10px] uppercase tracking-wider mb-2">
         {label}
       </p>
       {payload.map((entry, idx) => (
@@ -56,11 +56,11 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
               className="w-2 h-2 rounded-[2px] shrink-0"
               style={{ background: entry.color }}
             />
-            <span className="text-[var(--muted)] text-[11px]">
+            <span className="text-[var(--surface-subtle)] text-[11px]">
               {String(entry.name)}
             </span>
           </div>
-          <span className="font-bold text-[var(--text)] text-[12px]">
+          <span className="font-bold text-[var(--foreground)] text-[12px]">
             {formatShort(Number(entry.value ?? 0))} đ
           </span>
         </div>
@@ -87,7 +87,7 @@ export function RevenueBarChart({
 
   if (data.length === 0) {
     return (
-      <div className="h-[220px] flex items-center justify-center text-[var(--muted)] text-[13px]">
+      <div className="h-[220px] flex items-center justify-center text-[var(--surface-subtle)] text-[13px]">
         Chưa có dữ liệu doanh thu theo tháng
       </div>
     );

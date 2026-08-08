@@ -60,13 +60,13 @@ export const VPEntityPicker = forwardRef<
                     className="h-full w-full rounded-full object-cover"
                   />
                 ) : (
-                  <Icon name="User" className="h-4 w-4 text-muted" />
+                  <Icon name="User" className="h-4 w-4 text-muted-foreground" />
                 )}
               </div>
               <div className="flex flex-col text-left">
                 <span className="text-sm font-medium">{opt.name}</span>
                 {(opt.code || opt.phone) && (
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted-foreground">
                     {opt.code && `${opt.code} `}
                     {opt.phone && `- ${opt.phone}`}
                   </span>
@@ -74,7 +74,7 @@ export const VPEntityPicker = forwardRef<
               </div>
             </div>
             {isSelected && (
-              <Icon name="Check" className="h-4 w-4 text-primary" />
+              <Icon name="Check" className="h-4 w-4 text-foreground" />
             )}
           </div>
         );
@@ -85,7 +85,7 @@ export const VPEntityPicker = forwardRef<
           <div className="flex w-full items-center justify-between">
             <span className="truncate text-sm">{opt.name}</span>
             {isSelected && (
-              <Icon name="Check" className="h-4 w-4 shrink-0 text-primary" />
+              <Icon name="Check" className="h-4 w-4 shrink-0 text-foreground" />
             )}
           </div>
         );
@@ -97,14 +97,14 @@ export const VPEntityPicker = forwardRef<
           <div className="flex flex-col text-left">
             <span className="text-sm font-medium">{opt.name}</span>
             {(opt.code || opt.phone) && (
-              <span className="text-xs text-muted">
+              <span className="text-xs text-muted-foreground">
                 {opt.code && `Mã: ${opt.code} `}
                 {opt.phone && `SĐT: ${opt.phone}`}
               </span>
             )}
           </div>
           {isSelected && (
-            <Icon name="Check" className="h-4 w-4 shrink-0 text-primary" />
+            <Icon name="Check" className="h-4 w-4 shrink-0 text-foreground" />
           )}
         </div>
       );

@@ -195,23 +195,23 @@ export function DyeingOrderForm({
         <section
           className={`bg-surface p-4 rounded-xl border border-border ${stepper.currentStep === 0 ? 'block' : 'hidden'}`}
         >
-          <h4 className="flex items-center gap-2 mb-4 text-sm font-bold uppercase tracking-wider text-muted">
+          <h4 className="flex items-center gap-2 mb-4 text-sm font-bold uppercase tracking-wider text-muted-foreground">
             <Icon name="Info" size={16} /> {MSG.SECTION_BASIC_INFO}
           </h4>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-muted uppercase">
+              <label className="text-xs font-bold text-muted-foreground uppercase">
                 {MSG.LBL_ORDER_NUMBER}
               </label>
               {isEdit ? (
                 <input
                   {...register('dyeing_order_number')}
-                  className="field-input font-bold text-primary"
+                  className="field-input font-bold text-foreground"
                   readOnly
                 />
               ) : (
                 <input
-                  className="field-input text-muted italic"
+                  className="field-input text-muted-foreground italic"
                   value={MSG.LBL_AUTO}
                   readOnly
                   disabled
@@ -220,7 +220,7 @@ export function DyeingOrderForm({
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-muted uppercase">
+              <label className="text-xs font-bold text-muted-foreground uppercase">
                 {MSG.LBL_SUPPLIER}
               </label>
               <VPEntityPicker
@@ -238,7 +238,7 @@ export function DyeingOrderForm({
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-muted uppercase">
+              <label className="text-xs font-bold text-muted-foreground uppercase">
                 {MSG.LBL_ORDER_DATE}
               </label>
               <input
@@ -249,7 +249,7 @@ export function DyeingOrderForm({
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-muted uppercase">
+              <label className="text-xs font-bold text-muted-foreground uppercase">
                 {MSG.LBL_RETURN_DATE}
               </label>
               <input
@@ -260,7 +260,7 @@ export function DyeingOrderForm({
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-muted uppercase">
+              <label className="text-xs font-bold text-muted-foreground uppercase">
                 {MSG.LBL_UNIT_PRICE}
               </label>
               <Controller
@@ -284,7 +284,7 @@ export function DyeingOrderForm({
           className={`bg-surface p-4 rounded-xl border border-border ${stepper.currentStep === 1 ? 'block' : 'hidden'}`}
         >
           <div className="flex justify-between items-center mb-4">
-            <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted">
+            <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
               <Icon name="Layers" size={16} /> {MSG.SECTION_ITEMS} (
               {fields.length})
             </h4>
@@ -307,7 +307,7 @@ export function DyeingOrderForm({
           {/* Bulk select by lot */}
           {lotOptions.length > 0 && (
             <div className="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/15">
-              <label className="text-[10px] font-bold text-muted uppercase block mb-2">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-2">
                 {MSG.LBL_BATCH_IMPORT}
               </label>
               <div className="flex flex-col sm:flex-row gap-2 items-center">
@@ -355,7 +355,7 @@ export function DyeingOrderForm({
               >
                 <button
                   type="button"
-                  className="absolute top-2 right-2 text-muted hover:text-danger"
+                  className="absolute top-2 right-2 text-muted-foreground hover:text-danger"
                   onClick={() => remove(index)}
                 >
                   <Icon name="X" size={16} />
@@ -363,7 +363,7 @@ export function DyeingOrderForm({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-muted uppercase block mb-1">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">
                       {MSG.LBL_RAW_ROLL}
                     </label>
                     <RollSelectionDropdown
@@ -389,7 +389,7 @@ export function DyeingOrderForm({
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-muted uppercase">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase">
                       {MSG.LBL_TARGET_COLOR}
                     </label>
                     <VPVirtualCombobox<{ code: string; name: string }>
@@ -468,7 +468,7 @@ export function DyeingOrderForm({
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-muted uppercase">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase">
                       {MSG.LBL_ITEM_NOTE}
                     </label>
                     <input
@@ -484,10 +484,10 @@ export function DyeingOrderForm({
 
           {/* Totals Summary */}
           <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10 flex justify-between items-center">
-            <span className="text-sm font-bold text-muted italic">
+            <span className="text-sm font-bold text-muted-foreground italic">
               {MSG.LBL_TOTAL_WEIGHT}
             </span>
-            <span className="text-xl font-extrabold text-primary tabular-nums">
+            <span className="text-xl font-extrabold text-foreground tabular-nums">
               {totalWeight.toFixed(2)} kg
             </span>
           </div>
@@ -497,7 +497,7 @@ export function DyeingOrderForm({
         <section
           className={`bg-surface p-4 rounded-xl border border-border ${stepper.currentStep === 2 ? 'block' : 'hidden'}`}
         >
-          <label className="text-xs font-bold text-muted uppercase block mb-2">
+          <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">
             {MSG.LBL_GLOBAL_NOTE}
           </label>
           <textarea

@@ -17,7 +17,7 @@ export function QuotationDetailItems({ quotation }: QuotationDetailItemsProps) {
   return (
     <div className="px-5 pb-5">
       <h4 className="mb-3 text-base flex items-center gap-2">
-        <Icon name="List" size={20} className="text-muted" />
+        <Icon name="List" size={20} className="text-muted-foreground" />
         {QUOTATION_LABELS.LINE_ITEMS} ({items.length})
       </h4>
       <div className="data-table-wrap">
@@ -44,12 +44,14 @@ export function QuotationDetailItems({ quotation }: QuotationDetailItemsProps) {
                 .sort((a, b) => a.sort_order - b.sort_order)
                 .map((item, idx) => (
                   <tr key={item.id}>
-                    <td className="text-muted">{idx + 1}</td>
+                    <td className="text-muted-foreground">{idx + 1}</td>
                     <td>
                       <span className="font-bold">{item.fabric_type}</span>
                     </td>
-                    <td className="text-muted">{item.color_name ?? '—'}</td>
-                    <td className="text-muted max-sm:hidden">
+                    <td className="text-muted-foreground">
+                      {item.color_name ?? '—'}
+                    </td>
+                    <td className="text-muted-foreground max-sm:hidden">
                       {item.width_cm ?? '—'}
                     </td>
                     <td className="text-right tabular-nums">
@@ -61,7 +63,7 @@ export function QuotationDetailItems({ quotation }: QuotationDetailItemsProps) {
                     <td className="text-right font-bold tabular-nums">
                       <MoneyText value={item.amount} />
                     </td>
-                    <td className="text-muted max-sm:hidden">
+                    <td className="text-muted-foreground max-sm:hidden">
                       {item.lead_time_days ?? '—'}
                     </td>
                   </tr>
@@ -101,7 +103,7 @@ export function QuotationDetailItems({ quotation }: QuotationDetailItemsProps) {
                   <td className="max-sm:hidden"></td>
                 </tr>
               )}
-              <tr className="font-extrabold text-primary bg-surface/50">
+              <tr className="font-extrabold text-foreground bg-surface/50">
                 <td colSpan={6} className="text-right">
                   {QUOTATION_LABELS.TOTAL}
                 </td>

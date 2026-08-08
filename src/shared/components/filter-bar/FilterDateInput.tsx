@@ -19,7 +19,7 @@ export function FilterDateInput({
     <div className="flex flex-col gap-1 flex-1 min-w-0">
       <label
         htmlFor={id}
-        className="text-[0.7rem] font-semibold text-muted uppercase tracking-wide"
+        className="text-[0.7rem] font-semibold text-muted-foreground uppercase tracking-wide"
       >
         {label}
       </label>

@@ -50,8 +50,14 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
   if (quotes.length === 0) {
     return (
       <div className="p-12 text-center border-2 border-dashed border-default rounded-xl">
-        <Icon name="Inbox" size={48} className="text-muted mx-auto mb-4" />
-        <p className="text-muted font-medium">{RFQ_LABELS.QUOTE_EMPTY_TITLE}</p>
+        <Icon
+          name="Inbox"
+          size={48}
+          className="text-muted-foreground mx-auto mb-4"
+        />
+        <p className="text-muted-foreground font-medium">
+          {RFQ_LABELS.QUOTE_EMPTY_TITLE}
+        </p>
         <p className="text-sm text-muted-foreground mt-1">
           {RFQ_LABELS.QUOTE_EMPTY_DESC}
         </p>
@@ -87,7 +93,7 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
         return (
           <div
             key={quote.id}
-            className={`bg-white border rounded-xl overflow-hidden shadow-sm transition-all ${
+            className={`bg-surface border rounded-xl overflow-hidden shadow-sm transition-all ${
               quote.status === 'awarded'
                 ? 'border-success ring-1 ring-emerald-500'
                 : 'border-default hover:border-info'
@@ -102,7 +108,7 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
                   </h3>
                   <StatusBadge domain="RFQ_QUOTE" status={quote.status} />
                 </div>
-                <div className="flex items-center gap-4 text-sm text-muted mt-2">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
                   <span className="flex items-center gap-1.5">
                     <Icon
                       name="Phone"
@@ -121,7 +127,7 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
                   </span>
                 </div>
                 {quote.notes && (
-                  <div className="mt-3 text-sm text-muted bg-amber-50 p-2.5 rounded-lg border border-warning">
+                  <div className="mt-3 text-sm text-muted-foreground bg-amber-50 p-2.5 rounded-lg border border-warning">
                     <span className="font-semibold text-warning-strong">
                       {RFQ_LABELS.LBL_NOTES}
                     </span>
@@ -131,10 +137,10 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
               </div>
 
               <div className="flex flex-col items-end md:min-w-[200px]">
-                <p className="text-xs text-muted font-medium uppercase tracking-wider mb-1">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1">
                   {RFQ_LABELS.LBL_TOTAL_TEMP}
                 </p>
-                <p className="text-xl font-bold text-primary">
+                <p className="text-xl font-bold text-foreground">
                   <MoneyText value={totalAmount} />
                 </p>
 
@@ -159,7 +165,7 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
             {/* Items Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50 text-muted text-xs uppercase font-semibold">
+                <thead className="bg-slate-50 text-muted-foreground text-xs uppercase font-semibold">
                   <tr>
                     <th className="px-5 py-3">{RFQ_LABELS.COL_MATERIAL}</th>
                     <th className="px-5 py-3 text-right">
@@ -178,7 +184,7 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
                   {quote.items?.map((item, idx) => (
                     <tr key={item.id} className="hover:bg-slate-50/50">
                       <td className="px-5 py-3">
-                        <p className="font-medium text-secondary">
+                        <p className="font-medium text-muted-foreground">
                           {idx + 1}.{' '}
                           {item.material_name ||
                             RFQ_LABELS.TXT_UNKNOWN_MATERIAL}
@@ -197,11 +203,11 @@ export function RFQQuotesTab({ rfq }: RFQQuotesTabProps) {
                       <td className="px-5 py-3 text-right">
                         <MoneyText value={item.unit_price} />
                       </td>
-                      <td className="px-5 py-3 text-right font-semibold text-primary">
+                      <td className="px-5 py-3 text-right font-semibold text-foreground">
                         <MoneyText value={item.unit_price * item.qty_offered} />
                       </td>
                       <td
-                        className="px-5 py-3 text-muted text-xs max-w-[200px] truncate"
+                        className="px-5 py-3 text-muted-foreground text-xs max-w-[200px] truncate"
                         title={item.notes || ''}
                       >
                         {item.notes || '-'}

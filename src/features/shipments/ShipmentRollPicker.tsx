@@ -122,9 +122,9 @@ export function ShipmentRollPicker({
         <Icon
           name="PackageOpen"
           size={32}
-          className="mx-auto text-muted mb-2"
+          className="mx-auto text-muted-foreground mb-2"
         />
-        <p className="text-muted font-medium">{MSG.EMPTY_ROLLS}</p>
+        <p className="text-muted-foreground font-medium">{MSG.EMPTY_ROLLS}</p>
       </div>
     );
   }
@@ -133,7 +133,7 @@ export function ShipmentRollPicker({
     <div className={`space-y-3 ${className ?? ''}`}>
       {/* Summary bar */}
       <div className="flex items-center justify-between px-1">
-        <span className="text-xs text-muted">
+        <span className="text-xs text-muted-foreground">
           {MSG.AVAILABLE_ROLLS(availableRolls.length)}
         </span>
         {totalSelected > 0 && (

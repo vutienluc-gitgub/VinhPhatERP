@@ -46,7 +46,7 @@ export function ContextualGuide({ activeGuides }: ContextualGuideProps) {
           aria-label={GUIDE_MESSAGES.CONTEXT_TITLE}
           title={GUIDE_MESSAGES.CONTEXT_TITLE}
         >
-          <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-primary-inverse transition-colors">
+          <div className="w-6 h-6 rounded-full bg-primary/10 text-foreground flex items-center justify-center group-hover:bg-primary group-hover:text-primary-inverse transition-colors">
             <Icon name="HelpCircle" size={16} />
           </div>
           <span className="text-sm font-medium pr-1">
@@ -72,7 +72,7 @@ export function ContextualGuide({ activeGuides }: ContextualGuideProps) {
                 </h2>
                 <button
                   onClick={() => setOpen(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-subtle text-muted hover:text-foreground transition-colors"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-subtle text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <Icon name="X" size={20} />
                 </button>
@@ -89,20 +89,20 @@ export function ContextualGuide({ activeGuides }: ContextualGuideProps) {
                   >
                     {/* Tóm tắt Section */}
                     <div className="flex items-start gap-3 mb-6 p-4 rounded-lg bg-primary/5 border border-primary/10">
-                      <div className="mt-0.5 text-primary">
+                      <div className="mt-0.5 text-foreground">
                         <Icon name="Lightbulb" size={20} />
                       </div>
                       <div>
                         <h3 className="text-sm font-semibold text-primary-strong mb-1">
                           {section.title}
                         </h3>
-                        <p className="text-sm text-muted">
+                        <p className="text-sm text-muted-foreground">
                           {GUIDE_MESSAGES.SUMMARY_DESC}
                         </p>
                       </div>
                     </div>
 
-                    <h4 className="text-xs font-bold text-muted uppercase tracking-wider mb-4">
+                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4">
                       {GUIDE_MESSAGES.STEPS_TITLE}
                     </h4>
                     <div className="space-y-4">
@@ -115,18 +115,18 @@ export function ContextualGuide({ activeGuides }: ContextualGuideProps) {
                             <h4 className="text-sm font-semibold text-foreground mb-1">
                               {step.title}
                             </h4>
-                            <div className="text-sm text-muted leading-relaxed">
+                            <div className="text-sm text-muted-foreground leading-relaxed">
                               {step.content.split('\n').map((line, i) => {
                                 if (line.startsWith('[CHECKLIST]')) {
                                   return (
                                     <div
                                       key={i}
-                                      className="mt-3 mb-1.5 font-semibold text-primary/90 bg-primary/5 inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs"
+                                      className="mt-3 mb-1.5 font-semibold text-foreground/90 bg-primary/5 inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs"
                                     >
                                       <Icon
                                         name="ClipboardList"
                                         size={14}
-                                        className="text-primary/70"
+                                        className="text-foreground/70"
                                       />
                                       {line.replace('[CHECKLIST]', '').trim()}
                                     </div>
@@ -164,7 +164,7 @@ export function ContextualGuide({ activeGuides }: ContextualGuideProps) {
                                 {step.actions.map((action, i) => (
                                   <button
                                     key={i}
-                                    className="text-xs font-semibold text-primary hover:text-primary-strong hover:underline flex items-center gap-1"
+                                    className="text-xs font-semibold text-foreground hover:text-primary-strong hover:underline flex items-center gap-1"
                                     onClick={() => {
                                       if (action.type === 'navigate') {
                                         setOpen(false);
@@ -192,7 +192,7 @@ export function ContextualGuide({ activeGuides }: ContextualGuideProps) {
                   variant="outline"
                   fullWidth
                   rightIcon="ArrowRight"
-                  className="border-primary/20 text-primary hover:bg-primary/5"
+                  className="border-primary/20 text-foreground hover:bg-primary/5"
                   onClick={() => {
                     setOpen(false);
                     const query = activeGuides[0]

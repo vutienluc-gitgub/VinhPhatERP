@@ -25,7 +25,7 @@ export function MoneyCell({
 
   const toneClass = {
     default: '',
-    muted: 'text-muted',
+    muted: 'text-muted-foreground',
     success: 'text-success',
     danger: 'text-danger',
     warning: 'text-warning',

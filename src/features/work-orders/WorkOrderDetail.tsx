@@ -59,7 +59,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
     return (
       <div className="panel-card p-12 flex flex-col items-center gap-3">
         <div className="spinner" />
-        <p className="text-muted text-sm">{MSG.LOADING_DETAIL}</p>
+        <p className="text-muted-foreground text-sm">{MSG.LOADING_DETAIL}</p>
       </div>
     );
   if (!wo) return <p className="error-inline p-8">{MSG.ERR_NOT_FOUND}</p>;
@@ -153,7 +153,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                   <StatusBadge domain="WORK_ORDER" status={wo.status} />
                 </span>
                 {wo.order && (
-                  <p className="text-xs text-muted mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     Sản xuất cho ĐH: {wo.order.order_number}
                   </p>
                 )}
@@ -249,7 +249,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
               </div>
               <div className="form-field">
                 <label>{MSG.LABEL_WEAVER}</label>
-                <p className="font-bold text-primary">
+                <p className="font-bold text-foreground">
                   {wo.supplier?.name || '—'}
                 </p>
               </div>
@@ -283,7 +283,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
         <FadeUp delay={0.2} className="md:col-span-1">
           <div className="panel-card p-6 h-full border-t-4 border-t-primary">
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2 border-b border-border pb-3">
-              <Icon name="Activity" size={20} className="text-primary" />
+              <Icon name="Activity" size={20} className="text-foreground" />
               Tiến trình lệnh SX
             </h3>
             <TimelineProgress steps={timelineSteps} />
@@ -295,7 +295,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
           <div className="panel-card card-flush h-full">
             <div className="card-header-area">
               <div className="flex items-center gap-2">
-                <Icon name="Package" size={20} className="text-primary" />
+                <Icon name="Package" size={20} className="text-foreground" />
                 <span className="font-bold text-lg">
                   {MSG.SECTION_REQUIREMENTS}
                 </span>
@@ -303,11 +303,11 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
             </div>
 
             {isLoadingReq ? (
-              <div className="p-8 text-center text-sm text-muted">
+              <div className="p-8 text-center text-sm text-muted-foreground">
                 {MSG.LOADING_DETAIL}
               </div>
             ) : !requirements || requirements.length === 0 ? (
-              <div className="p-8 text-center text-sm text-muted">
+              <div className="p-8 text-center text-sm text-muted-foreground">
                 {MSG.SECTION_REQUIREMENTS_EMPTY}
               </div>
             ) : (
@@ -328,11 +328,11 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                         <td>
                           <strong>{req.yarn_catalog?.name || '—'}</strong>
                         </td>
-                        <td className="max-sm:hidden text-muted text-sm">
+                        <td className="max-sm:hidden text-muted-foreground text-sm">
                           {req.yarn_catalog?.color_name || '—'}
                         </td>
                         <td className="text-right">{req.bom_ratio_pct}%</td>
-                        <td className="text-right font-bold text-primary">
+                        <td className="text-right font-bold text-foreground">
                           {formatQuantity(req.required_kg, 1)}
                         </td>
                         <td className="text-right font-bold text-success">
@@ -347,7 +347,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                       <td className="text-right">
                         {calcTotalBomRatio(requirements)}%
                       </td>
-                      <td className="text-right text-primary">
+                      <td className="text-right text-foreground">
                         {formatQuantity(calcTotalRequiredKg(requirements), 1)}{' '}
                         kg
                       </td>
@@ -374,7 +374,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
             <div className="flex flex-col gap-2">
               <div className="stat-card">
                 <span className="stat-label">{MSG.LABEL_TARGET_M}</span>
-                <span className="stat-value text-primary">
+                <span className="stat-value text-foreground">
                   {formatQuantity(wo.target_quantity)} m
                 </span>
               </div>
@@ -415,7 +415,7 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
             ) : (
               <div className="flex flex-col items-center justify-center py-8 gap-2">
                 <Icon name="Scissors" size={40} className="opacity-20" />
-                <p className="text-sm text-muted">
+                <p className="text-sm text-muted-foreground">
                   {MSG.SECTION_RESULTS_WAITING}
                 </p>
               </div>
@@ -452,21 +452,21 @@ export function WorkOrderDetail({ id, onBack, onEdit }: WorkOrderDetailProps) {
                   {yarnIssues.map((issue) => (
                     <tr key={issue.id}>
                       <td>
-                        <span className="font-bold text-primary">
+                        <span className="font-bold text-foreground">
                           {issue.receipt_number}
                         </span>
                       </td>
-                      <td className="max-sm:hidden text-muted text-sm">
+                      <td className="max-sm:hidden text-muted-foreground text-sm">
                         {issue.supplier_name}
                       </td>
                       <td className="font-medium">{issue.yarn_type}</td>
-                      <td className="max-sm:hidden text-muted text-sm">
+                      <td className="max-sm:hidden text-muted-foreground text-sm">
                         {issue.lot_number ?? '—'}
                       </td>
                       <td className="text-right font-bold text-success tabular-nums">
                         {formatQuantity(issue.issued_kg)}
                       </td>
-                      <td className="max-sm:hidden text-muted text-sm">
+                      <td className="max-sm:hidden text-muted-foreground text-sm">
                         {new Date(issue.created_at).toLocaleDateString('vi-VN')}
                       </td>
                     </tr>

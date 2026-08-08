@@ -52,7 +52,7 @@ export function GuidePage() {
         >
           <Icon name="Menu" size={20} />
         </button>
-        <Icon name="BookOpen" size={20} className="text-primary mr-2" />
+        <Icon name="BookOpen" size={20} className="text-foreground mr-2" />
         <span className="font-bold text-primary-strong">
           {GUIDE_MESSAGES.PAGE_TITLE}
         </span>

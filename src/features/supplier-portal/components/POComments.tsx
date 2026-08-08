@@ -48,17 +48,20 @@ export function POComments({ token }: POCommentsProps) {
   return (
     <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden mt-6 flex flex-col h-[500px]">
       <div className="bg-surface-secondary p-4 border-b border-border flex items-center gap-2">
-        <Icon name="message-square" className="w-5 h-5 text-primary" />
+        <Icon name="message-square" className="w-5 h-5 text-foreground" />
         <h3 className="font-semibold text-lg m-0">{TEXT.COMMENTS_TITLE}</h3>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {isLoading ? (
           <div className="flex justify-center py-4">
-            <Icon name="loader-2" className="w-6 h-6 animate-spin text-muted" />
+            <Icon
+              name="loader-2"
+              className="w-6 h-6 animate-spin text-muted-foreground"
+            />
           </div>
         ) : comments.length === 0 ? (
-          <div className="text-center py-8 text-muted">
+          <div className="text-center py-8 text-muted-foreground">
             <Icon
               name="message-circle"
               className="w-12 h-12 mx-auto mb-2 opacity-20"
@@ -87,7 +90,7 @@ export function POComments({ token }: POCommentsProps) {
                     {comment.content}
                   </p>
                 </div>
-                <div className="flex items-center gap-1 mt-1 text-[11px] text-muted">
+                <div className="flex items-center gap-1 mt-1 text-[11px] text-muted-foreground">
                   <span className="font-medium">
                     {isMine
                       ? TEXT.COMMENTS_SENDER_ME

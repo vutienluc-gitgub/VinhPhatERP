@@ -17,7 +17,7 @@ export function FabricPublicTab({
   return (
     <div className="space-y-6">
       {/* Command Center (Publish -> Preview) */}
-      <div className="bg-white rounded-2xl border border-default shadow-sm p-6 space-y-10">
+      <div className="bg-surface rounded-2xl border border-default shadow-sm p-6 space-y-10">
         <FabricPublicStatusSection
           publicUrl={publicUrl}
           updatedAt={updatedAt}
@@ -26,7 +26,7 @@ export function FabricPublicTab({
       </div>
 
       {/* Workflow (Planner -> Pricing -> Customer Exp) */}
-      <div className="bg-white rounded-2xl border border-default shadow-sm p-6 sm:p-8 space-y-12">
+      <div className="bg-surface rounded-2xl border border-default shadow-sm p-6 sm:p-8 space-y-12">
         <FabricPublicPlannerSection />
 
         <div className="h-px bg-surface-secondary w-full" />

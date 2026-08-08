@@ -24,7 +24,7 @@ export function NotificationBadge() {
           cursor: 'pointer',
           padding: '0.25rem',
           position: 'relative',
-          color: connectionWarning ? 'var(--warning)' : 'var(--muted)',
+          color: connectionWarning ? 'var(--warning)' : 'var(--surface-subtle)',
           fontSize: '1.1rem',
           lineHeight: 1,
         }}

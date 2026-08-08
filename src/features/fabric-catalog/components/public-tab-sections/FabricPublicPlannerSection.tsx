@@ -59,7 +59,7 @@ export function FabricPublicPlannerSection() {
           <div className="form-field col-span-2">
             <label
               htmlFor="b2b_planner.origin_country"
-              className="text-sm font-medium text-secondary mb-1"
+              className="text-sm font-medium text-muted-foreground mb-1"
             >
               {PUBLIC_PAGE_LABELS.origin}
             </label>
@@ -88,7 +88,7 @@ export function FabricPublicPlannerSection() {
         <div className="pt-2">
           <button
             type="button"
-            className="flex items-center text-sm font-medium text-muted hover:text-primary transition-colors"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
           >
             <span>{LABELS.ADVANCED_SETTINGS_TOGGLE}</span>

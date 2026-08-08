@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { chromium, request, type FullConfig } from '@playwright/test';
+import { request, type FullConfig } from '@playwright/test';
 import dotenv from 'dotenv';
 
 const thisFile = fileURLToPath(import.meta.url);
@@ -153,23 +153,28 @@ async function globalSetup(_config: FullConfig) {
   };
   await apiContext.dispose();
 
-  // Seed session vào localStorage của browser context với đúng storageKey
-  // của app (`vinhphat_session` — xem src/services/supabase/client.ts).
-  const browser = await chromium.launch();
-  const context = await browser.newContext();
-  await context.addInitScript((sessionJson: string) => {
-    localStorage.setItem('vinhphat_session', sessionJson);
-  }, JSON.stringify(session));
-
-  // Navigate 1 lần để init script chạy và localStorage được persist
-  const page = await context.newPage();
-  await page.goto('http://localhost:5174/', { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(500);
+  // Write storageState directly to avoid needing a running web server during globalSetup
+  const storageState = {
+    cookies: [],
+    origins: [
+      {
+        origin: 'http://localhost:5174',
+        localStorage: [
+          {
+            name: 'vinhphat_session',
+            value: JSON.stringify(session),
+          },
+        ],
+      },
+    ],
+  };
 
   fs.mkdirSync(path.dirname(STORAGE_PATH), { recursive: true });
-  await context.storageState({ path: STORAGE_PATH });
-
-  await browser.close();
+  fs.writeFileSync(
+    STORAGE_PATH,
+    JSON.stringify(storageState, null, 2),
+    'utf-8',
+  );
   console.log('[globalSetup] Session đã lưu vào', STORAGE_PATH);
 }
 

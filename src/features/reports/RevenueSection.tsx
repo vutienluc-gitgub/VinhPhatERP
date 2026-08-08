@@ -30,12 +30,12 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
     {
       header: REPORT_LABELS.COL_CUSTOMER,
       cell: (r) => r.customer_name,
-      className: 'max-sm:hidden text-muted text-sm',
+      className: 'max-sm:hidden text-muted-foreground text-sm',
     },
     {
       header: REPORT_LABELS.COL_ORDER_DATE,
       cell: (r) => r.order_date,
-      className: 'text-muted text-sm',
+      className: 'text-muted-foreground text-sm',
     },
     {
       header: REPORT_LABELS.COL_TOTAL_AMOUNT,
@@ -110,7 +110,9 @@ export function RevenueSection({ data, isLoading }: RevenueSectionProps) {
               <span className="font-bold">{r.order_number}</span>
               <Badge variant="info">{r.order_date}</Badge>
             </div>
-            <div className="text-sm text-muted mb-2">{r.customer_name}</div>
+            <div className="text-sm text-muted-foreground mb-2">
+              {r.customer_name}
+            </div>
             <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">
               <div>
                 <p className="opacity-70">{REPORT_LABELS.COL_TOTAL_AMOUNT}</p>

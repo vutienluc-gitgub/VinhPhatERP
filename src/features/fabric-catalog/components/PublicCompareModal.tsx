@@ -44,16 +44,16 @@ export function PublicCompareModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in">
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-foreground/50 z-50 flex items-center justify-center p-3 animate-fade-in">
+      <div className="bg-surface rounded-2xl w-full max-w-2xl max-h-[85vh] shadow-2xl flex flex-col overflow-hidden">
         <div className="p-4 border-b border-default flex justify-between items-center bg-slate-50">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <Icon name="Scale" className="w-5 h-5 text-primary" />
+            <Icon name="Scale" className="w-5 h-5 text-foreground" />
             {LABELS.compareTitle} ({compareList.length}/3)
           </h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-surface-secondary text-muted"
+            className="p-1 rounded-full hover:bg-surface-secondary text-muted-foreground"
           >
             <Icon name="X" className="w-5 h-5" />
           </button>
@@ -65,7 +65,7 @@ export function PublicCompareModal({
               {LABELS.compareEmpty}
             </div>
           ) : (
-            <table className="w-full border-collapse text-left text-xs text-secondary min-w-[500px]">
+            <table className="w-full border-collapse text-left text-xs text-muted-foreground min-w-[500px]">
               <thead>
                 <tr className="border-b border-default bg-slate-50">
                   <th className="p-3 font-semibold text-foreground w-1/4">
@@ -74,7 +74,7 @@ export function PublicCompareModal({
                   {compareList.map((item) => (
                     <th
                       key={item.id}
-                      className="p-3 font-bold text-primary w-1/4"
+                      className="p-3 font-bold text-foreground w-1/4"
                     >
                       <Link
                         to={`/p/fabric/${item.slug}`}
@@ -83,7 +83,7 @@ export function PublicCompareModal({
                       >
                         {item.code}
                       </Link>
-                      <span className="block text-[10px] text-muted font-normal mt-0.5 truncate">
+                      <span className="block text-[10px] text-muted-foreground font-normal mt-0.5 truncate">
                         {item.name}
                       </span>
                     </th>
@@ -92,7 +92,7 @@ export function PublicCompareModal({
               </thead>
               <tbody className="divide-y divide-slate-100">
                 <tr>
-                  <td className="p-3 font-medium text-primary">
+                  <td className="p-3 font-medium text-foreground">
                     {LABELS.composition}
                   </td>
                   {compareList.map((item) => (
@@ -102,7 +102,7 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-primary">
+                  <td className="p-3 font-medium text-foreground">
                     {LABELS.width}
                   </td>
                   {compareList.map((item) => (
@@ -114,7 +114,9 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-primary">{LABELS.gsm}</td>
+                  <td className="p-3 font-medium text-foreground">
+                    {LABELS.gsm}
+                  </td>
                   {compareList.map((item) => (
                     <td key={item.id} className="p-3">
                       {item.target_gsm ? `${item.target_gsm} gsm` : LABELS.na}
@@ -122,7 +124,7 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-primary">
+                  <td className="p-3 font-medium text-foreground">
                     {LABELS.stretch}
                   </td>
                   {compareList.map((item) => (
@@ -135,7 +137,7 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-primary">
+                  <td className="p-3 font-medium text-foreground">
                     {LABELS.thickness}
                   </td>
                   {compareList.map((item) => (
@@ -147,24 +149,24 @@ export function PublicCompareModal({
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-primary">MOQ</td>
+                  <td className="p-3 font-medium text-foreground">MOQ</td>
                   {compareList.map((item) => (
                     <td
                       key={item.id}
-                      className="p-3 font-semibold text-primary"
+                      className="p-3 font-semibold text-foreground"
                     >
                       {item.moq}
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-3 font-medium text-primary">
+                  <td className="p-3 font-medium text-foreground">
                     Thời gian giao
                   </td>
                   {compareList.map((item) => (
                     <td
                       key={item.id}
-                      className="p-3 font-semibold text-primary"
+                      className="p-3 font-semibold text-foreground"
                     >
                       {item.lead_time}
                     </td>

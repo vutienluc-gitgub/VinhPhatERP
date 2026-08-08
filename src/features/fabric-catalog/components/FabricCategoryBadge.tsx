@@ -31,7 +31,8 @@ export const FabricCategoryBadge = memo(function FabricCategoryBadge({
   category,
   className,
 }: FabricCategoryBadgeProps) {
-  if (!category) return <span className="text-muted text-sm italic">N/A</span>;
+  if (!category)
+    return <span className="text-muted-foreground text-sm italic">N/A</span>;
 
   return (
     <Badge

@@ -268,7 +268,7 @@ export function PODetailPage() {
             {PO_CONSTANTS.MSG_PO_DETAIL_TITLE} {po.po_code}
             <StatusBadge domain="PO" status={po.status} className="ml-2" />
           </h1>
-          <p className="text-muted mt-1">
+          <p className="text-muted-foreground mt-1">
             {PO_CONSTANTS.MSG_SUPPLIER_PREFIX} {po.supplier_name_snapshot}
           </p>
         </div>

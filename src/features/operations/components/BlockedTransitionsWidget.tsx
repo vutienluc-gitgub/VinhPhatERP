@@ -96,7 +96,7 @@ export function BlockedTransitionsWidget({
   };
 
   return (
-    <Card className="border-none shadow-sm bg-white/70 backdrop-blur-sm">
+    <Card className="border-none shadow-sm bg-surface/70 backdrop-blur-sm">
       <CardHeader className="border-b border-zinc-100/60 py-3 sm:py-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
@@ -190,7 +190,7 @@ export function BlockedTransitionsWidget({
                 {topBlockedReasons.map((item) => (
                   <div
                     key={item.reason}
-                    className="rounded-lg border border-zinc-200/80 bg-white px-2.5 py-2"
+                    className="rounded-lg border border-zinc-200/80 bg-surface px-2.5 py-2"
                   >
                     <p className="text-xs font-medium text-zinc-800 line-clamp-2">
                       {item.reason}

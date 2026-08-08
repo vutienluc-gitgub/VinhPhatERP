@@ -50,7 +50,7 @@ export function POItemsTable({
           <h3 className="font-semibold text-lg m-0">
             {PO_CONSTANTS.SECTION_ITEMS}
           </h3>
-          <span className="text-xs text-muted mt-1">
+          <span className="text-xs text-muted-foreground mt-1">
             {PO_CONSTANTS.TIP_KEYBOARD_NAV}
           </span>
         </div>
@@ -78,7 +78,7 @@ export function POItemsTable({
 
       <div className="overflow-x-auto overflow-y-auto max-h-[450px]">
         <table className="w-full text-sm text-left relative border-collapse">
-          <thead className="text-xs text-muted bg-gray-50/80 border-b border-border sticky top-0 z-20 backdrop-blur-sm">
+          <thead className="text-xs text-muted-foreground bg-gray-50/80 border-b border-border sticky top-0 z-20 backdrop-blur-sm">
             <tr>
               <th className="px-3 py-2.5 font-semibold align-middle w-[40px] text-center">
                 #
@@ -240,7 +240,7 @@ export function POItemsTable({
                       )}
                     />
                   </td>
-                  <td className="px-3 py-1.5 text-right tabular-nums text-primary font-semibold align-middle">
+                  <td className="px-3 py-1.5 text-right tabular-nums text-foreground font-semibold align-middle">
                     <MoneyText value={lineTotal} />
                   </td>
                   <td className="px-3 py-1.5 text-center whitespace-nowrap align-middle">
@@ -255,7 +255,7 @@ export function POItemsTable({
                           unit_price: currentItem.unit_price,
                         });
                       }}
-                      className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1 mr-1"
+                      className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity p-1 mr-1"
                       title={PO_CONSTANTS.BTN_DUPLICATE_ROW}
                     >
                       <Icon name="Copy" size={16} />
@@ -285,7 +285,7 @@ export function POItemsTable({
           type="button"
           variant="ghost"
           size="sm"
-          className="text-primary hover:bg-primary/10"
+          className="text-foreground hover:bg-primary/10"
           onClick={() =>
             append({
               material_id: '',

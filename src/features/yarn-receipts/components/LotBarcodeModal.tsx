@@ -49,19 +49,21 @@ export function LotBarcodeModal({ receipt, onClose }: LotBarcodeModalProps) {
       }
     >
       <div className="flex flex-col gap-3 mb-3">
-        <div className="text-sm text-muted">
+        <div className="text-sm text-muted-foreground">
           <strong>{LABELS.receiptNumber}:</strong> {receipt.receipt_number}
         </div>
-        <div className="text-sm text-muted">
+        <div className="text-sm text-muted-foreground">
           <strong>{LABELS.supplier}:</strong> {supplierName}
         </div>
-        <div className="text-sm text-muted">
+        <div className="text-sm text-muted-foreground">
           <strong>{LABELS.receiptDate}:</strong> {receipt.receipt_date}
         </div>
       </div>
 
       {items.length === 0 ? (
-        <p className="text-muted text-center py-8">{LABELS.noItems}</p>
+        <p className="text-muted-foreground text-center py-8">
+          {LABELS.noItems}
+        </p>
       ) : (
         <div ref={printAreaRef} className="flex flex-col gap-4">
           {items.map((item, idx) => {
@@ -90,11 +92,11 @@ export function LotBarcodeModal({ receipt, onClose }: LotBarcodeModalProps) {
                         item as unknown as Record<string, unknown>,
                       )}
                     </p>
-                    <p className="lot-detail text-xs text-muted mt-1">
+                    <p className="lot-detail text-xs text-muted-foreground mt-1">
                       #{idx + 1}
                     </p>
                   </div>
-                  <div className="barcode-wrapper w-full flex justify-center bg-white p-2 rounded">
+                  <div className="barcode-wrapper w-full flex justify-center bg-surface p-2 rounded">
                     <BarcodeDisplay value={barcodeData} />
                   </div>
                 </div>

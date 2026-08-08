@@ -63,7 +63,7 @@ export function ContractLinkedOrders({
                       {order.status}
                     </span>
                   </td>
-                  <td className="text-muted text-sm text-sm">
+                  <td className="text-muted-foreground text-sm text-sm">
                     {formatContractDate(order.linked_at)}
                   </td>
                   {canLinkOrder && (

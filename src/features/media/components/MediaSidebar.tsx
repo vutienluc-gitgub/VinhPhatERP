@@ -141,7 +141,7 @@ function FolderTreeItem({
     <>
       <div
         ref={setNodeRef}
-        className={`media-folder-row${isActive ? ' text-primary bg-primary/10' : ''}${isOver ? ' bg-primary/20 ring-1 ring-primary' : ''}`}
+        className={`media-folder-row${isActive ? ' text-foreground bg-primary/10' : ''}${isOver ? ' bg-primary/20 ring-1 ring-primary' : ''}`}
         style={{ paddingLeft: `${0.75 + depth * 1.25}rem` }}
         onClick={() => onSelect(node.folder.id)}
       >
@@ -218,7 +218,7 @@ export function MediaSidebar({
         <button
           ref={setRootNodeRef}
           type="button"
-          className={`media-folder-item${activeFolderId === null ? ' text-primary bg-primary/10' : ''}${isRootOver ? ' bg-primary/20 ring-1 ring-primary' : ''}`}
+          className={`media-folder-item${activeFolderId === null ? ' text-foreground bg-primary/10' : ''}${isRootOver ? ' bg-primary/20 ring-1 ring-primary' : ''}`}
           onClick={() => onFolderSelect(null)}
         >
           <Icon name="Home" size={16} />
@@ -229,7 +229,7 @@ export function MediaSidebar({
           <div
             style={{
               padding: '0.5rem 0.75rem',
-              color: 'var(--muted)',
+              color: 'var(--surface-subtle)',
               fontSize: '0.82rem',
             }}
           >
@@ -256,7 +256,7 @@ export function MediaSidebar({
             <button
               key={f.type}
               type="button"
-              className={`media-folder-item${activeFileType === f.type ? ' text-primary bg-primary/10' : ''}`}
+              className={`media-folder-item${activeFileType === f.type ? ' text-foreground bg-primary/10' : ''}`}
               onClick={() => onFileTypeChange(f.type)}
             >
               <Icon name={f.icon} size={16} />

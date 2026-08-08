@@ -58,12 +58,12 @@ export function POApprovalHistory({ logs }: POApprovalHistoryProps) {
             <div className="flex-1 pb-6">
               <div className="flex justify-between items-start mb-1">
                 <div>
-                  <span className="font-medium text-primary">
+                  <span className="font-medium text-foreground">
                     {log.profiles?.full_name ||
                       PO_CONSTANTS.APPROVAL_SYSTEM_USER}
                   </span>
-                  <span className="text-muted mx-2">•</span>
-                  <span className="text-sm text-muted">
+                  <span className="text-muted-foreground mx-2">•</span>
+                  <span className="text-sm text-muted-foreground">
                     {format(new Date(log.created_at), 'dd/MM/yyyy HH:mm', {
                       locale: vi,
                     })}
@@ -90,7 +90,7 @@ export function POApprovalHistory({ logs }: POApprovalHistoryProps) {
                 </Badge>
               </div>
               {log.comment && (
-                <div className="mt-2 text-sm text-secondary bg-gray-50 p-3 rounded-lg border border-default italic">
+                <div className="mt-2 text-sm text-muted-foreground bg-gray-50 p-3 rounded-lg border border-default italic">
                   "{log.comment}"
                 </div>
               )}

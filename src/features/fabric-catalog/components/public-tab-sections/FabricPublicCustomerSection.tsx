@@ -21,7 +21,7 @@ export function FabricPublicCustomerSection() {
       <div className="space-y-6">
         {/* Stock Display Mode - Segmented Control */}
         <div>
-          <label className="text-sm font-medium text-secondary block mb-3">
+          <label className="text-sm font-medium text-muted-foreground block mb-3">
             {LABELS.STOCK_DISPLAY_LABEL}
           </label>
           <div className="flex flex-wrap gap-4">
@@ -38,7 +38,7 @@ export function FabricPublicCustomerSection() {
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+              <span className="flex items-center text-sm text-muted-foreground group-hover:text-foreground">
                 <Icon name="EyeOff" size={16} className="text-success mr-1.5" />
                 {LABELS.STOCK_DISPLAY_NONE}
               </span>
@@ -57,7 +57,7 @@ export function FabricPublicCustomerSection() {
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+              <span className="flex items-center text-sm text-muted-foreground group-hover:text-foreground">
                 <Icon
                   name="Activity"
                   size={16}
@@ -80,7 +80,7 @@ export function FabricPublicCustomerSection() {
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+              <span className="flex items-center text-sm text-muted-foreground group-hover:text-foreground">
                 <Icon name="Hash" size={16} className="text-success mr-1.5" />
                 {LABELS.STOCK_DISPLAY_QUANTITY}
               </span>
@@ -92,7 +92,7 @@ export function FabricPublicCustomerSection() {
 
         {/* Trust Signals */}
         <div>
-          <label className="text-sm font-medium text-secondary block mb-3">
+          <label className="text-sm font-medium text-muted-foreground block mb-3">
             {LABELS.TRUST_SIGNALS_LABEL}
           </label>
           <div className="flex flex-wrap gap-4">
@@ -109,7 +109,7 @@ export function FabricPublicCustomerSection() {
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+              <span className="flex items-center text-sm text-muted-foreground group-hover:text-foreground">
                 <Icon
                   name="FlaskConical"
                   size={16}
@@ -132,7 +132,7 @@ export function FabricPublicCustomerSection() {
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+              <span className="flex items-center text-sm text-muted-foreground group-hover:text-foreground">
                 <Icon name="Truck" size={16} className="text-success mr-1.5" />
                 {LABELS.TRUST_FAST_DELIVERY}
               </span>
@@ -151,7 +151,7 @@ export function FabricPublicCustomerSection() {
                   />
                 )}
               />
-              <span className="flex items-center text-sm text-secondary group-hover:text-primary">
+              <span className="flex items-center text-sm text-muted-foreground group-hover:text-foreground">
                 <Icon name="Wrench" size={16} className="text-success mr-1.5" />
                 {LABELS.TRUST_TECH_SUPPORT}
               </span>

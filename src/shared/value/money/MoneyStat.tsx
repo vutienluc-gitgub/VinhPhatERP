@@ -36,7 +36,7 @@ export function MoneyStat({
   }[tone];
 
   const iconColorClass = {
-    default: 'text-muted bg-surface-secondary',
+    default: 'text-muted-foreground bg-surface-secondary',
     primary: 'text-info bg-info-soft',
     success: 'text-success bg-success-soft',
     danger: 'text-danger bg-danger-soft',
@@ -48,7 +48,9 @@ export function MoneyStat({
       className={cn('rounded-xl border p-5 flex flex-col', bgClass, className)}
     >
       <div className="flex justify-between items-start mb-2">
-        <span className="text-sm font-medium text-muted">{title}</span>
+        <span className="text-sm font-medium text-muted-foreground">
+          {title}
+        </span>
         {icon && (
           <div className={cn('p-2 rounded-lg', iconColorClass)}>
             <Icon name={icon} size={20} />
@@ -57,10 +59,10 @@ export function MoneyStat({
       </div>
 
       <div className="flex items-baseline gap-1 mt-1">
-        <span className="text-2xl font-bold tracking-tight text-primary tabular-nums">
+        <span className="text-2xl font-bold tracking-tight text-foreground tabular-nums">
           {text}
         </span>
-        <span className="text-sm font-semibold text-muted">đ</span>
+        <span className="text-sm font-semibold text-muted-foreground">đ</span>
       </div>
 
       {(trend !== undefined || subtitle) && (
@@ -86,7 +88,9 @@ export function MoneyStat({
               {Math.abs(trend)}%
             </span>
           )}
-          {subtitle && <span className="text-muted">{subtitle}</span>}
+          {subtitle && (
+            <span className="text-muted-foreground">{subtitle}</span>
+          )}
         </div>
       )}
     </div>

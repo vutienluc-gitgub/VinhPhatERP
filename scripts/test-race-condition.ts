@@ -12,6 +12,7 @@ const supabaseKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.error('❌ Missing Supabase environment variables');
   process.exit(1);
 }
@@ -19,6 +20,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function testRaceCondition() {
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log('\n🏎️  Testing Race Condition on rpc_allocate_rolls...\n');
 
   // 1. Create a fake roll for testing (we need a valid raw_fabric_roll_id)
@@ -44,12 +46,14 @@ async function testRaceCondition() {
   let actualRollId = fakeRollId;
 
   if (rollError) {
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.log('⚠️ Could not insert fake roll:', rollError);
     const { data: existingRolls } = await supabase
       .from('raw_fabric_rolls')
       .select('id')
       .limit(1);
     if (!existingRolls || existingRolls.length === 0) {
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       console.error('❌ No rolls available in DB to test race condition.');
       return;
     }
@@ -64,11 +68,13 @@ async function testRaceCondition() {
     actualRollId = rollData.id;
   }
 
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log(`🎯 Target Roll ID: ${actualRollId}`);
 
   // 2. Fire 10 concurrent allocation requests
   const CONCURRENT_REQUESTS = 10;
   console.log(
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     `🚀 Firing ${CONCURRENT_REQUESTS} concurrent allocation requests...`,
   );
 
@@ -97,24 +103,30 @@ async function testRaceCondition() {
     }
   }
 
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log('\n📊 Results:');
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log(`✅ Successes (Expected 1): ${successCount}`);
   console.log(
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     `❌ Failures (Expected ${CONCURRENT_REQUESTS - 1}): ${failCount}`,
   );
 
   if (successCount === 1 && failCount === CONCURRENT_REQUESTS - 1) {
     console.log(
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       '\n🎉 RACE CONDITION PREVENTED SUCCESSFULLY! (Pessimistic Locking Works)',
     );
   } else {
     console.error(
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       '\n💥 RACE CONDITION FAILED! Multiple processes managed to allocate the same roll.',
     );
     process.exit(1);
   }
 
   // 4. Cleanup
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log('\n🧹 Cleaning up test data...');
   await supabase.from('roll_allocations').delete().eq('target_id', targetId);
   if (actualRollId === fakeRollId) {

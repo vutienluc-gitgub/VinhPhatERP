@@ -44,7 +44,7 @@ export function MiniCalendar({
               className={cn(
                 'aspect-square rounded-md flex items-center justify-center text-xs relative cursor-default transition-colors',
                 isToday
-                  ? 'bg-info-soft text-white font-semibold'
+                  ? 'bg-info-soft text-inverse-foreground font-semibold'
                   : hl
                     ? 'bg-indigo-50 text-info font-medium'
                     : 'text-zinc-700 hover:bg-zinc-100',

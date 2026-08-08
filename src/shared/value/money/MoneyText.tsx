@@ -23,7 +23,7 @@ export function MoneyText({
 
   const toneClass = {
     default: '',
-    muted: 'text-muted text-sm',
+    muted: 'text-muted-foreground text-sm',
     success: 'text-success font-medium',
     danger: 'text-danger font-medium',
     warning: 'text-[var(--warning)] font-medium',

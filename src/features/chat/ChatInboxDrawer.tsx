@@ -36,7 +36,7 @@ function RoomRow({
   const unread = room.unreadCount;
 
   // Create an icon or initial based on entity type
-  const color = ENTITY_COLORS[room.entityType] || 'var(--text-muted)';
+  const color = ENTITY_COLORS[room.entityType] || 'var(--muted-foreground)';
 
   const initials =
     room.entityType === 'customer'

@@ -202,11 +202,11 @@ export function CustomerGroupList() {
           <input
             type="text"
             placeholder={CUSTOMER_GROUP_LABELS.searchPlaceholder}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border bg-surface text-text text-sm transition-all focus:outline-none focus:ring-2 focus:ring-input-focus focus:border-primary border-border placeholder:text-muted"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border bg-surface text-text text-sm transition-all focus:outline-none focus:ring-2 focus:ring-input-focus focus:border-primary border-border placeholder:text-muted-foreground"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <span className="absolute left-3.5 top-3 text-muted">
+          <span className="absolute left-3.5 top-3 text-muted-foreground">
             <Icon name="Search" size={18} />
           </span>
         </div>
@@ -220,13 +220,13 @@ export function CustomerGroupList() {
       {/* List / Grid layout */}
       {filteredGroups.length === 0 ? (
         <div className="py-16 px-6 text-center bg-surface-strong rounded-2xl border border-border flex flex-col items-center justify-center gap-3">
-          <div className="p-4 bg-surface-subtle rounded-full text-muted mb-2">
+          <div className="p-4 bg-surface-subtle rounded-full text-muted-foreground mb-2">
             <Icon name="Users" size={32} />
           </div>
           <h3 className="text-lg font-bold text-text">
             Chưa có nhóm khách hàng
           </h3>
-          <p className="text-sm text-muted max-w-sm mb-3">
+          <p className="text-sm text-muted-foreground max-w-sm mb-3">
             Tạo nhóm để phân loại và quản lý khách hàng hiệu quả hơn.
           </p>
           <Button variant="outline" onClick={handleOpenCreate} leftIcon="Plus">
@@ -245,11 +245,11 @@ export function CustomerGroupList() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-start">
                     <div className="space-y-2">
-                      <span className="text-[10px] uppercase font-extrabold tracking-widest text-primary bg-primary/10 border border-primary/20 rounded px-2 py-0.5 inline-flex items-center gap-1.5">
+                      <span className="text-[10px] uppercase font-extrabold tracking-widest text-foreground bg-primary/10 border border-primary/20 rounded px-2 py-0.5 inline-flex items-center gap-1.5">
                         <Icon name={groupIcon} size={12} />
                         {group.code}
                       </span>
-                      <h4 className="font-bold text-text text-sm md:text-base group-hover:text-primary transition-colors">
+                      <h4 className="font-bold text-text text-sm md:text-base group-hover:text-foreground transition-colors">
                         {group.name}
                       </h4>
                     </div>
@@ -271,13 +271,13 @@ export function CustomerGroupList() {
                     />
                   </div>
 
-                  <p className="text-xs text-muted line-clamp-2 h-8">
+                  <p className="text-xs text-muted-foreground line-clamp-2 h-8">
                     {group.description || '—'}
                   </p>
                 </div>
 
                 <div className="flex justify-between items-center mt-4 pt-4 border-t border-border">
-                  <span className="text-[10px] text-muted font-semibold">
+                  <span className="text-[10px] text-muted-foreground font-semibold">
                     {CUSTOMER_GROUP_LABELS.updatePrefix}{' '}
                     {new Date(group.updated_at).toLocaleDateString('vi-VN')}
                   </span>
@@ -285,7 +285,7 @@ export function CustomerGroupList() {
                     className={`text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1.5 ${
                       group.status === 'active'
                         ? 'bg-success/10 text-success border border-success/20'
-                        : 'bg-surface-subtle text-muted border border-border'
+                        : 'bg-surface-subtle text-muted-foreground border border-border'
                     }`}
                   >
                     {group.status === 'active' && (
@@ -340,7 +340,7 @@ export function CustomerGroupList() {
             <textarea
               placeholder={CUSTOMER_GROUP_LABELS.descriptionPlaceholder}
               rows={3}
-              className="w-full px-3 py-2 rounded-xl border bg-input text-text text-sm transition-all placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-input-focus focus:border-primary border-input-border resize-none"
+              className="w-full px-3 py-2 rounded-xl border bg-input text-text text-sm transition-all placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-input-focus focus:border-primary border-input-border resize-none"
               {...register('description')}
             />
           </div>

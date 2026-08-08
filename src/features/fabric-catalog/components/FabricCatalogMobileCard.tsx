@@ -46,12 +46,12 @@ export function FabricCatalogMobileCard({
       </div>
       <div className="mobile-card-body space-y-2">
         <p className="font-bold text-sm">{c.name}</p>
-        <p className="text-xs text-muted italic">
+        <p className="text-xs text-muted-foreground italic">
           {formatCompositionParts(c.composition_parts, c.composition) ||
             LABELS.NA}
         </p>
         {(c.target_width_cm || c.target_gsm) && (
-          <div className="text-xs text-muted bg-surface p-2 rounded border border-border">
+          <div className="text-xs text-muted-foreground bg-surface p-2 rounded border border-border">
             {c.target_width_cm && (
               <div>
                 {LABELS.WIDTH}:{' '}
@@ -66,7 +66,7 @@ export function FabricCatalogMobileCard({
             )}
           </div>
         )}
-        <div className="flex justify-between items-center text-xs text-muted pt-2 border-t border-border/10">
+        <div className="flex justify-between items-center text-xs text-muted-foreground pt-2 border-t border-border/10">
           <span>
             {LABELS.UNIT}: {c.unit}
           </span>

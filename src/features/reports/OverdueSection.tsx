@@ -27,12 +27,12 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
     {
       header: REPORT_LABELS.COL_CUSTOMER,
       cell: (r) => r.customer_name,
-      className: 'max-sm:hidden text-muted text-sm',
+      className: 'max-sm:hidden text-muted-foreground text-sm',
     },
     {
       header: REPORT_LABELS.COL_DELIVERY_DATE,
       cell: (r) => r.delivery_date,
-      className: 'text-muted text-sm',
+      className: 'text-muted-foreground text-sm',
     },
     {
       header: REPORT_LABELS.COL_LATE,
@@ -56,7 +56,7 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
           <MoneyText value={r.total_amount} />
         </>
       ),
-      className: 'text-right max-sm:hidden text-muted text-sm',
+      className: 'text-right max-sm:hidden text-muted-foreground text-sm',
     },
     {
       header: REPORT_LABELS.COL_BALANCE_DUE,
@@ -124,9 +124,11 @@ export function OverdueSection({ data, isLoading }: OverdueSectionProps) {
                 {r.days_overdue} {REPORT_LABELS.DAYS}
               </span>
             </div>
-            <div className="text-xs text-muted mb-2">{r.customer_name}</div>
+            <div className="text-xs text-muted-foreground mb-2">
+              {r.customer_name}
+            </div>
             <div className="flex justify-between items-center border-t pt-2 mt-2">
-              <span className="text-[10px] text-muted uppercase">
+              <span className="text-[10px] text-muted-foreground uppercase">
                 {REPORT_LABELS.DEBT_LABEL}
               </span>
               <span className="font-bold text-danger">

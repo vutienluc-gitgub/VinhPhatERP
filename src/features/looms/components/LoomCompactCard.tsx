@@ -15,11 +15,11 @@ type Props = {
 export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
   // Status colors based on MES standard
   const statusColorMap = {
-    running: 'bg-success-soft text-white',
-    idle: 'bg-surface-strong text-white',
-    maintenance: 'bg-warning-soft text-white',
-    breakdown: 'bg-danger-soft text-white',
-    setup: 'bg-purple-500 text-white',
+    running: 'bg-success-soft text-inverse-foreground',
+    idle: 'bg-surface-strong text-inverse-foreground',
+    maintenance: 'bg-warning-soft text-inverse-foreground',
+    breakdown: 'bg-danger-soft text-inverse-foreground',
+    setup: 'bg-purple-500 text-inverse-foreground',
   };
 
   const statusBg = statusColorMap[loom.status] ?? statusColorMap.idle;
@@ -41,7 +41,7 @@ export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
           >
             {statusLabel}
           </div>
-          <span className="text-xs text-muted font-medium truncate max-w-[120px]">
+          <span className="text-xs text-muted-foreground font-medium truncate max-w-[120px]">
             {loom.supplier?.code ?? 'N/A'}
           </span>
         </div>
@@ -95,7 +95,7 @@ export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
             </span>
           ) : null}
           {loom.needles ? (
-            <span className="px-2 py-1 bg-surface-secondary dark:bg-surface-strong text-secondary dark:text-muted rounded-md text-xs font-semibold">
+            <span className="px-2 py-1 bg-surface-secondary dark:bg-surface-strong text-muted-foreground dark:text-muted-foreground rounded-md text-xs font-semibold">
               {loom.needles} N
             </span>
           ) : null}

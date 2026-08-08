@@ -144,7 +144,7 @@ export function TaskFormView({
       {/* ERP Links */}
       <div className="grid grid-cols-2 gap-4 p-3 bg-surface rounded-lg border border-border">
         <div className="form-field">
-          <label className="text-sm font-medium text-primary mb-1 block">
+          <label className="text-sm font-medium text-foreground mb-1 block">
             Liên kết Đơn hàng
           </label>
           <Controller
@@ -162,7 +162,7 @@ export function TaskFormView({
         </div>
 
         <div className="form-field">
-          <label className="text-sm font-medium text-primary mb-1 block">
+          <label className="text-sm font-medium text-foreground mb-1 block">
             Lệnh sản xuất (WO)
           </label>
           <Controller

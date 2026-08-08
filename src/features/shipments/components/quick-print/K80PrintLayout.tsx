@@ -38,7 +38,7 @@ export const K80PrintLayout = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={`${isPrintPortal ? 'k80-print-container hidden print:flex' : 'k80-preview-container'} bg-white text-black p-2 font-mono mx-auto print-spacing-tight text-sm flex flex-col`}
+      className={`${isPrintPortal ? 'k80-print-container hidden print:flex' : 'k80-preview-container'} bg-surface text-foreground p-2 font-mono mx-auto print-spacing-tight text-sm flex flex-col`}
       style={{
         width: containerWidth,
         maxWidth: '100%',
@@ -197,7 +197,7 @@ export const K80PrintLayout = React.forwardRef<
           </table>
         </>
       ) : (
-        <div className="text-center italic text-muted my-4">
+        <div className="text-center italic text-muted-foreground my-4">
           {LABELS.NO_DATA}
         </div>
       )}

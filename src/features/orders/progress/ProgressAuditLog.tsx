@@ -88,7 +88,7 @@ function AuditLogEntry({
           <span className="audit-log-order">
             {orders.order_number}
             {orders.customers?.name && (
-              <span className="text-muted text-sm">
+              <span className="text-muted-foreground text-sm">
                 {' '}
                 — {orders.customers.name}
               </span>

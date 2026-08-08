@@ -57,7 +57,7 @@ export const GuideSidebar = memo(function GuideSidebar({
     <aside className="w-full md:w-64 border-r border-border bg-surface-subtle flex flex-col h-full">
       <div className="h-14 px-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Icon name="BookOpen" size={20} className="text-primary" />
+          <Icon name="BookOpen" size={20} className="text-foreground" />
           <h2 className="font-bold text-lg text-primary-strong tracking-tight">
             {GUIDE_MESSAGES.SIDEBAR_TITLE}
           </h2>
@@ -90,7 +90,7 @@ export const GuideSidebar = memo(function GuideSidebar({
                     'w-full min-h-[44px] flex items-center justify-between p-3 rounded-lg text-left text-sm font-semibold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary',
                     isActive
                       ? 'bg-primary text-primary-inverse shadow-sm'
-                      : 'text-muted hover:bg-surface-hover hover:text-foreground',
+                      : 'text-muted-foreground hover:bg-surface-hover hover:text-foreground',
                   )}
                 >
                   <span className="truncate pr-2">{section.title}</span>
@@ -105,7 +105,9 @@ export const GuideSidebar = memo(function GuideSidebar({
                       size={16}
                       className={cn(
                         'flex-shrink-0 transition-transform duration-200',
-                        isActive ? 'text-primary-inverse/80' : 'text-muted',
+                        isActive
+                          ? 'text-primary-inverse/80'
+                          : 'text-muted-foreground',
                       )}
                     />
                   </div>
@@ -119,7 +121,7 @@ export const GuideSidebar = memo(function GuideSidebar({
                           if (!isActive) onSelect(section.id);
                           setTimeout(() => handleStepClick(step.id), 100);
                         }}
-                        className="text-left text-xs text-muted hover:text-foreground py-1.5 px-2 rounded hover:bg-surface-hover transition-colors outline-none focus-visible:ring-1 focus-visible:ring-primary truncate"
+                        className="text-left text-xs text-muted-foreground hover:text-foreground py-1.5 px-2 rounded hover:bg-surface-hover transition-colors outline-none focus-visible:ring-1 focus-visible:ring-primary truncate"
                       >
                         {step.title}
                       </button>

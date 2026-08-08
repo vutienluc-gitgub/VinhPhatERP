@@ -90,14 +90,14 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Supplier Info */}
-      <div className="bg-white rounded-xl shadow-sm border border-border p-5 md:p-6">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-muted mb-4 border-b border-border pb-2 flex items-center gap-2">
+      <div className="bg-surface rounded-xl shadow-sm border border-border p-5 md:p-6">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4 border-b border-border pb-2 flex items-center gap-2">
           <Icon name="User" size={16} />
           {SUPPLIER_PORTAL_LABELS.SUPPLIER_INFO}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-secondary">
+            <label className="text-sm font-semibold text-muted-foreground">
               {SUPPLIER_PORTAL_LABELS.FORM_NAME}{' '}
               <span className="text-destructive">*</span>
             </label>
@@ -114,7 +114,7 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
             )}
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-secondary">
+            <label className="text-sm font-semibold text-muted-foreground">
               {SUPPLIER_PORTAL_LABELS.FORM_PHONE}{' '}
               <span className="text-destructive">*</span>
             </label>
@@ -131,7 +131,7 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
             )}
           </div>
           <div className="md:col-span-2 space-y-1.5">
-            <label className="text-sm font-semibold text-secondary">
+            <label className="text-sm font-semibold text-muted-foreground">
               {SUPPLIER_PORTAL_LABELS.FORM_NOTES}
             </label>
             <textarea
@@ -144,8 +144,8 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
       </div>
 
       {/* Items List */}
-      <div className="bg-white rounded-xl shadow-sm border border-border p-5 md:p-6">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-muted mb-4 border-b border-border pb-2 flex items-center gap-2">
+      <div className="bg-surface rounded-xl shadow-sm border border-border p-5 md:p-6">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4 border-b border-border pb-2 flex items-center gap-2">
           <Icon name="List" size={16} />
           {SUPPLIER_PORTAL_LABELS.ITEMS_INFO}
         </h2>
@@ -168,16 +168,16 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
                       {index + 1}. {originalItem.material_name}
                     </h3>
                     {originalItem.material_specs && (
-                      <p className="text-xs text-muted mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         {originalItem.material_specs}
                       </p>
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-muted-foreground">
                       {SUPPLIER_PORTAL_LABELS.LABEL_REQUIRED}
                     </p>
-                    <p className="font-semibold text-primary">
+                    <p className="font-semibold text-foreground">
                       {originalItem.qty_required} {originalItem.uom}
                     </p>
                   </div>
@@ -185,7 +185,7 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-secondary">
+                    <label className="text-xs font-semibold text-muted-foreground">
                       {SUPPLIER_PORTAL_LABELS.COL_PRICE}
                     </label>
                     <div className="relative">
@@ -222,7 +222,7 @@ export function SupplierQuoteForm({ rfq, onSuccess }: Props) {
                   />
 
                   <div className="sm:col-span-2 space-y-1.5">
-                    <label className="text-xs font-semibold text-secondary">
+                    <label className="text-xs font-semibold text-muted-foreground">
                       {SUPPLIER_PORTAL_LABELS.LABEL_ITEM_NOTES_FULL}
                     </label>
                     <input

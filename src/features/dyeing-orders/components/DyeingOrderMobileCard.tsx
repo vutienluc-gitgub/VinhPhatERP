@@ -17,17 +17,19 @@ export function DyeingOrderMobileCard({
     <div className="mobile-card">
       <div className="flex justify-between items-start mb-2">
         <div>
-          <div className="font-bold text-primary">
+          <div className="font-bold text-foreground">
             {row.dyeing_order_number}
           </div>
-          <div className="text-xs text-muted">{row.suppliers?.name}</div>
+          <div className="text-xs text-muted-foreground">
+            {row.suppliers?.name}
+          </div>
         </div>
         <Badge variant={getStatusVariant(row.status)}>
           {DYEING_ORDER_STATUSES[row.status]?.label ?? row.status}
         </Badge>
       </div>
       <div className="flex justify-between items-end mt-3 border-t border-border pt-2">
-        <div className="text-[0.7rem] text-muted flex items-center gap-1">
+        <div className="text-[0.7rem] text-muted-foreground flex items-center gap-1">
           <Icon name="Calendar" size={16} />
           {row.order_date ? dayjs(row.order_date).format('DD/MM/YYYY') : '—'}
         </div>

@@ -5,7 +5,10 @@ import {
   type Control,
 } from 'react-hook-form';
 
-import { Combobox, type ComboboxOption } from '@/shared/components/Combobox';
+import {
+  VPCombobox,
+  type VPComboboxOption,
+} from '@/shared/components/VPCombobox';
 
 /**
  * ComboboxField — eliminates repetitive Controller + Combobox boilerplate.
@@ -18,7 +21,7 @@ import { Combobox, type ComboboxOption } from '@/shared/components/Combobox';
 type ComboboxFieldProps<T extends FieldValues> = {
   name: Path<T>;
   control: Control<T>;
-  options: ComboboxOption[];
+  options: VPComboboxOption[];
   label?: string;
   placeholder?: string;
   allowInput?: boolean;
@@ -43,14 +46,14 @@ export function ComboboxField<T extends FieldValues>({
         name={name}
         control={control}
         render={({ field }) => (
-          <Combobox
+          <VPCombobox
             options={options}
             value={(field.value as string) ?? ''}
             onChange={field.onChange}
-            allowInput={allowInput}
-            placeholder={placeholder}
+            allowCreatable={allowInput}
             hasError={hasError}
             disabled={disabled}
+            placeholder={placeholder}
           />
         )}
       />

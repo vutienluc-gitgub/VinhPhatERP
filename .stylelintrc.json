@@ -1,0 +1,44 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "plugins": ["./scripts/stylelint-architecture-guard.cjs"],
+  "rules": {
+    "vinhphat/no-hardcoded-colors": true,
+    "color-named": null,
+    "color-no-hex": null,
+    "custom-property-pattern": null,
+    "selector-class-pattern": null,
+    "color-function-notation": null,
+    "color-function-alias-notation": null,
+    "media-feature-range-notation": null,
+    "color-hex-length": null,
+    "rule-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "property-no-vendor-prefix": null,
+    "import-notation": null,
+    "length-zero-no-unit": null,
+    "hue-degree-notation": null,
+    "alpha-value-notation": null,
+    "no-descending-specificity": null,
+    "keyframes-name-pattern": null,
+    "declaration-block-no-duplicate-properties": null,
+    "no-duplicate-selectors": null,
+    "declaration-property-value-keyword-no-deprecated": null,
+    "property-no-deprecated": null,
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "tailwind",
+          "apply",
+          "variants",
+          "responsive",
+          "screen",
+          "layer",
+          "config",
+          "source",
+          "theme"
+        ]
+      }
+    ]
+  }
+}

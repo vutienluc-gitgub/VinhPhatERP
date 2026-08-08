@@ -160,7 +160,7 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
                   : 'File'
             }
             size={56}
-            style={{ color: 'var(--muted)', opacity: 0.4 }}
+            style={{ color: 'var(--surface-subtle)', opacity: 0.4 }}
           />
         )}
       </div>

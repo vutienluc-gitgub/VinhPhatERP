@@ -37,7 +37,7 @@ export function ProductionItemRow({
   return (
     <div className="form-item-box">
       <div className="flex justify-between items-center mb-3 pb-2 border-b border-border">
-        <span className="text-sm font-semibold text-muted">
+        <span className="text-sm font-semibold text-muted-foreground">
           {ORDERS_FORM_LABELS.ITEM_ROW_PREFIX}
           {index + 1}
         </span>

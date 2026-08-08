@@ -30,7 +30,9 @@ export function WeavingInvoiceMobileCard({
       <div className="mobile-card-header">
         <div className="flex flex-col">
           <span className="mobile-card-title">{inv.invoice_number}</span>
-          <span className="text-xs text-muted">{inv.invoice_date}</span>
+          <span className="text-xs text-muted-foreground">
+            {inv.invoice_date}
+          </span>
         </div>
         <Badge variant={getStatusVariant(inv.status)}>
           {WEAVING_STATUS_LABELS[inv.status]}
@@ -39,34 +41,44 @@ export function WeavingInvoiceMobileCard({
       <div className="mobile-card-body space-y-2">
         <div className="flex justify-between items-start gap-2">
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-xs text-muted">{MSG.COL_SUPPLIER}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_SUPPLIER}
+            </span>
             <span className="font-bold break-words">
               {inv.suppliers?.name ?? '—'}
             </span>
           </div>
           <div className="flex flex-col text-right shrink-0">
-            <span className="text-xs text-muted">{MSG.COL_FABRIC}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_FABRIC}
+            </span>
             <span className="font-medium">{inv.fabric_type}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-2 text-sm mt-2">
           <div className="flex flex-col">
-            <span className="text-xs text-muted">{MSG.COL_WEIGHT}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_WEIGHT}
+            </span>
             <span className="font-bold">
               {formatQuantity(inv.total_weight_kg)}
             </span>
           </div>
           <div className="flex flex-col text-center">
-            <span className="text-xs text-muted">{MSG.COL_AMOUNT}</span>
-            <span className="font-bold text-primary">
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_AMOUNT}
+            </span>
+            <span className="font-bold text-foreground">
               <MoneyText value={inv.total_amount} />
             </span>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-xs text-muted">{MSG.COL_PAID}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_PAID}
+            </span>
             <span
-              className={`font-bold ${inv.paid_amount > 0 ? 'text-success' : 'text-muted'}`}
+              className={`font-bold ${inv.paid_amount > 0 ? 'text-success' : 'text-muted-foreground'}`}
             >
               <MoneyText value={inv.paid_amount} />
             </span>
@@ -76,7 +88,7 @@ export function WeavingInvoiceMobileCard({
         {inv.status === 'draft' && (
           <div className="flex gap-2 pt-3 mt-1 border-t border-border/10">
             <button
-              className="btn-secondary flex-1 text-primary"
+              className="btn-secondary flex-1 text-foreground"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(inv);
@@ -109,7 +121,7 @@ export function WeavingInvoiceMobileCard({
         {inv.status !== 'draft' && inv.lookup_code && (
           <div className="flex gap-2 pt-3 mt-1 border-t border-border/10">
             <button
-              className="btn-secondary flex-1 text-primary"
+              className="btn-secondary flex-1 text-foreground"
               onClick={(e) => {
                 e.stopPropagation();
                 window.open(`/tra-cuu/${inv.lookup_code}`, '_blank');

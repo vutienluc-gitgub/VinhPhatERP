@@ -41,7 +41,7 @@ export default function QuotationPrint() {
   const companyBankAccount = company?.bank_account || '';
 
   return (
-    <div className="bg-white text-black min-h-[100vh] py-8 px-4">
+    <div className="bg-surface text-foreground min-h-[100vh] py-8 px-4">
       <style>{`
         @media print {
           @page { size: A4; margin: 15mm; }

@@ -51,7 +51,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
             ))}
           </div>
         ) : orders.length === 0 ? (
-          <p className="px-2 py-6 text-center text-muted text-sm">
+          <p className="px-2 py-6 text-center text-muted-foreground text-sm">
             {DASHBOARD_LABELS.RECENT_ORDERS_EMPTY}
           </p>
         ) : (
@@ -63,7 +63,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                 className="flex flex-col items-stretch gap-1 px-5 py-[0.7rem] border-b border-border text-sm text-text no-underline transition-colors hover:bg-brand/5 last:border-none rounded-sm"
               >
                 <div className="flex items-center justify-between gap-2 min-w-0">
-                  <span className="font-bold text-sm text-primary truncate min-w-0">
+                  <span className="font-bold text-sm text-foreground truncate min-w-0">
                     {order.order_number}
                   </span>
                   <span
@@ -74,7 +74,7 @@ export function RecentOrdersCard({ orders, isLoading }: RecentOrdersCardProps) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2 min-w-0">
-                  <span className="text-muted text-sm text-[0.8rem] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <span className="text-muted-foreground text-sm text-[0.8rem] overflow-hidden text-ellipsis whitespace-nowrap">
                     {order.customer_name ?? '—'} ·{' '}
                     {formatDate(order.created_at)}
                   </span>

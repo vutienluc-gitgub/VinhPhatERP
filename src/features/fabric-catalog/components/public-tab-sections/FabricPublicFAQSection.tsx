@@ -52,7 +52,9 @@ export function FabricPublicFAQSection() {
           <h3 className="text-lg font-semibold tracking-tight text-foreground">
             {FAQ_SECTION_LABELS.title}
           </h3>
-          <p className="text-xs text-muted mt-0.5">{FAQ_SECTION_LABELS.desc}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {FAQ_SECTION_LABELS.desc}
+          </p>
         </div>
         <Button
           type="button"
@@ -76,8 +78,13 @@ export function FabricPublicFAQSection() {
 
       {fields.length === 0 && (
         <div className="text-center py-6 bg-slate-50 rounded-lg border border-dashed border-default">
-          <Icon name="HelpCircle" className="w-8 h-8 text-muted mx-auto mb-2" />
-          <p className="text-sm text-muted">{FAQ_SECTION_LABELS.desc}</p>
+          <Icon
+            name="HelpCircle"
+            className="w-8 h-8 text-muted-foreground mx-auto mb-2"
+          />
+          <p className="text-sm text-muted-foreground">
+            {FAQ_SECTION_LABELS.desc}
+          </p>
         </div>
       )}
 
@@ -95,7 +102,7 @@ export function FabricPublicFAQSection() {
               className="bg-slate-50 rounded-lg border border-default p-4 space-y-3 relative group"
             >
               <div className="flex items-start justify-between gap-2">
-                <span className="text-xs font-semibold text-muted mt-1">
+                <span className="text-xs font-semibold text-muted-foreground mt-1">
                   Q{index + 1}
                 </span>
                 <button
@@ -109,7 +116,7 @@ export function FabricPublicFAQSection() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-secondary block mb-1">
+                <label className="text-xs font-medium text-muted-foreground block mb-1">
                   {FAQ_SECTION_LABELS.questionLabel}
                 </label>
                 <input
@@ -131,7 +138,7 @@ export function FabricPublicFAQSection() {
               </div>
 
               <div>
-                <label className="text-xs font-medium text-secondary block mb-1">
+                <label className="text-xs font-medium text-muted-foreground block mb-1">
                   {FAQ_SECTION_LABELS.answerLabel}
                 </label>
                 <textarea

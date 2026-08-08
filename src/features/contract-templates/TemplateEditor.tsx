@@ -134,14 +134,14 @@ export function TemplateEditor({
               {TEMPLATE_PLACEHOLDERS.map((p) => (
                 <span
                   key={p.key}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-primary/10 text-primary border border-primary/20"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-primary/10 text-foreground border border-primary/20"
                   title={p.label}
                 >
                   {`{{${p.key}}}`}
                 </span>
               ))}
             </div>
-            <p className="text-xs text-muted mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {CONTRACT_TEMPLATE_LABELS.PLACEHOLDER_HINT}
             </p>
           </div>

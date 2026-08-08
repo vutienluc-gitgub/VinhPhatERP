@@ -283,7 +283,7 @@ export function ShipmentForm({
             <div className="form-field">
               <label>{FIELD_MSG.SHIPMENT_NUMBER}</label>
               <input
-                className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
+                className="field-input italic bg-[var(--surface-disabled)] text-[var(--muted-foreground)]"
                 value={MSG.AUTO_NUMBER}
                 readOnly
                 disabled
@@ -430,7 +430,7 @@ export function ShipmentForm({
 
             {isTrading ? (
               <div className="rounded-xl border border-default p-4 space-y-3">
-                <div className="flex items-center justify-between text-sm text-muted mb-2">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
                   <span>{MSG.TRADING_FROM_ORDER}</span>
                   <Badge variant="info">{MSG.TRADING_AUTO_DEDUCT}</Badge>
                 </div>
@@ -443,7 +443,7 @@ export function ShipmentForm({
                       <div className="font-semibold text-sm">
                         {item.fabric_type}
                       </div>
-                      <div className="text-xs text-muted">
+                      <div className="text-xs text-muted-foreground">
                         {item.color_name || MSG.COLOR_RAW}
                       </div>
                     </div>

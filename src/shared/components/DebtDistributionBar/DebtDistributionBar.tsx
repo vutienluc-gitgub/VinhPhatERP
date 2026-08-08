@@ -115,7 +115,7 @@ export function DebtDistributionBar({
       {/* Total Amount Header */}
       <div className="flex justify-between items-end">
         <div>
-          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-1">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
             Tổng nợ hiện tại
           </p>
           <div className="text-2xl font-bold text-foreground">
@@ -127,7 +127,9 @@ export function DebtDistributionBar({
                   duration={2}
                   preserveValue={true}
                 />
-                <span className="text-sm text-muted ml-1 font-normal">đ</span>
+                <span className="text-sm text-muted-foreground ml-1 font-normal">
+                  đ
+                </span>
               </>
             ) : (
               <MoneyText value={total} />
@@ -150,7 +152,7 @@ export function DebtDistributionBar({
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <span className="text-[10px] text-muted flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
               <Icon name="TrendingDown" className="w-3 h-3 text-success" /> Giảm
               6% (30 ngày)
             </span>
@@ -165,7 +167,7 @@ export function DebtDistributionBar({
             className="absolute top-0 bottom-0 w-px bg-foreground/20 z-10"
             style={{ left: `${showTarget}%` }}
           >
-            <div className="absolute -top-5 -translate-x-1/2 text-[10px] font-bold text-muted flex flex-col items-center">
+            <div className="absolute -top-5 -translate-x-1/2 text-[10px] font-bold text-muted-foreground flex flex-col items-center">
               <span>Target</span>
               <span>▼</span>
             </div>
@@ -228,7 +230,7 @@ export function DebtDistributionBar({
                         >
                           <MoneyText value={segment.value} />
                         </div>
-                        <div className="text-xs text-muted">
+                        <div className="text-xs text-muted-foreground">
                           Chiếm {percent.toFixed(1)}% tổng số
                         </div>
                         {segment.clickable && (
@@ -279,7 +281,7 @@ export function DebtDistributionBar({
       {/* AI Insight */}
       {aiInsight && (
         <div className="mt-2 p-3 bg-primary/5 border border-primary/10 rounded-lg flex gap-3 items-start">
-          <div className="mt-0.5 text-primary">
+          <div className="mt-0.5 text-foreground">
             <Icon name="AlertCircle" className="w-4 h-4" />
           </div>
           <div className="text-sm text-foreground/90 leading-relaxed">

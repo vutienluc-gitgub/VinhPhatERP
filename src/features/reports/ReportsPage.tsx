@@ -114,7 +114,7 @@ export function ReportsPage() {
               <h3 className="text-lg font-bold m-0 mb-1">
                 {REPORT_LABELS.PAGE_TITLE}
               </h3>
-              <p className="text-muted text-sm text-[0.82rem] m-0">
+              <p className="text-muted-foreground text-sm text-[0.82rem] m-0">
                 {REPORT_LABELS.PAGE_DESC}
               </p>
             </div>

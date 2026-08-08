@@ -44,14 +44,14 @@ export function WorkflowDesignerPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <Icon name="Loader2" className="w-8 h-8 text-primary animate-spin" />
+        <Icon name="Loader2" className="w-8 h-8 text-foreground animate-spin" />
       </div>
     );
   }
 
   if (!workflow) {
     return (
-      <div className="p-12 text-center text-muted">
+      <div className="p-12 text-center text-muted-foreground">
         Không tìm thấy quy trình.
       </div>
     );
@@ -70,7 +70,7 @@ export function WorkflowDesignerPage() {
           <h1 className="text-2xl font-bold text-foreground">
             {workflowId ? 'Chỉnh sửa Quy trình' : 'Tạo mới Quy trình'}
           </h1>
-          <p className="text-muted text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             Thiết kế sơ đồ phê duyệt bằng công cụ Low-Code.
           </p>
         </div>

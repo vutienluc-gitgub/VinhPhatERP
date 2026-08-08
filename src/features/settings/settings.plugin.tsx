@@ -36,7 +36,9 @@ const wrap = (C: ReturnType<typeof lazy>) => (
   <ModuleErrorBoundary>
     <Suspense
       fallback={
-        <div className="p-4 text-sm text-muted">Đang tải cấu hình...</div>
+        <div className="p-4 text-sm text-muted-foreground">
+          Đang tải cấu hình...
+        </div>
       }
     >
       <C />

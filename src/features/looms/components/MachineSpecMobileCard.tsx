@@ -40,11 +40,11 @@ export function MachineSpecMobileCard({
   onEdit,
 }: MachineSpecMobileCardProps) {
   return (
-    <div className="p-4 bg-white rounded-lg border border-default">
+    <div className="p-4 bg-surface rounded-lg border border-default">
       <div className="flex justify-between items-start mb-2">
         <div>
           <div className="font-semibold">{item.code || '-'}</div>
-          <div className="text-sm text-muted">
+          <div className="text-sm text-muted-foreground">
             {getTypeLabel(item.machine_type)}
           </div>
         </div>

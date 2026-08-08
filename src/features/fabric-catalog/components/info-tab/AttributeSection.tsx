@@ -38,7 +38,7 @@ export function AttributeSection({ catalog }: AttributeSectionProps) {
           />
           {catalog?.color &&
             (!watch('color_tags') || watch('color_tags')?.length === 0) && (
-              <p className="text-xs text-muted mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {LABELS.OLD_DATA_HINT}
                 {catalog.color}
               </p>

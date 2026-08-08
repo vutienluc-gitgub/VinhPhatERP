@@ -33,30 +33,30 @@ export function RollProgressBar({
           <span
             className={clsx(
               'text-2xl font-black tabular-nums transition-colors',
-              isComplete ? 'text-success' : 'text-[var(--text-primary)]',
+              isComplete ? 'text-success' : 'text-[var(--foreground)]',
             )}
           >
             {scanned}
-            <span className="text-base font-medium text-[var(--text-secondary)]">
+            <span className="text-base font-medium text-[var(--muted-foreground)]">
               {' '}
               / {total}
             </span>
           </span>
-          <span className="text-sm font-semibold text-[var(--text-secondary)]">
+          <span className="text-sm font-semibold text-[var(--muted-foreground)]">
             {isComplete ? 'Hoàn thành!' : 'cuộn đã nhập'}
           </span>
         </div>
 
-        <div className="flex gap-4 text-sm text-[var(--text-secondary)]">
+        <div className="flex gap-4 text-sm text-[var(--muted-foreground)]">
           <span>
             Tổng KG:{' '}
-            <strong className="text-[var(--text-primary)]">
+            <strong className="text-[var(--foreground)]">
               {totalKg.toFixed(2)}
             </strong>
           </span>
           <span>
             Thành tiền:{' '}
-            <strong className="text-[var(--text-primary)]">
+            <strong className="text-[var(--foreground)]">
               <MoneyText value={totalAmount} />
             </strong>
           </span>

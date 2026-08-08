@@ -106,7 +106,7 @@ export function NotificationBell() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Thông báo"
-        className="relative flex items-center justify-center bg-transparent hover:bg-surface rounded-full w-9 h-9 cursor-pointer text-muted hover:text-text transition-colors border-none p-0"
+        className="relative flex items-center justify-center bg-transparent hover:bg-surface rounded-full w-9 h-9 cursor-pointer text-muted-foreground hover:text-text transition-colors border-none p-0"
       >
         <Icon name="Bell" size={20} strokeWidth={1.5} />
         {unreadCount > 0 && (
@@ -126,7 +126,7 @@ export function NotificationBell() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="text-muted hover:text-danger mix-blend-multiply opacity-60 hover:opacity-100 transition-opacity"
+              className="text-muted-foreground hover:text-danger mix-blend-multiply opacity-60 hover:opacity-100 transition-opacity"
             >
               <Icon name="X" size={16} />
             </button>
@@ -134,7 +134,7 @@ export function NotificationBell() {
 
           <div className="max-h-[350px] overflow-y-auto">
             {pendingOrders.length === 0 ? (
-              <div className="py-8 px-4 text-center text-muted flex flex-col items-center gap-2">
+              <div className="py-8 px-4 text-center text-muted-foreground flex flex-col items-center gap-2">
                 <Icon name="CheckCircle2" size={24} className="opacity-50" />
                 <p className="text-sm">{NOTIFICATION_BELL_LABELS.EMPTY}</p>
               </div>
@@ -157,7 +157,7 @@ export function NotificationBell() {
                       <p className="text-sm font-bold leading-tight mb-1 uppercase tracking-wide">
                         {NOTIFICATION_BELL_LABELS.NEW_ORDER_WAITING}
                       </p>
-                      <p className="text-[13px] text-muted leading-relaxed line-clamp-3">
+                      <p className="text-[13px] text-muted-foreground leading-relaxed line-clamp-3">
                         {NOTIFICATION_BELL_LABELS.TIME_PREFIX}{' '}
                         {/* eslint-disable-next-line no-restricted-syntax */}
                         {new Date(order.created_at).toLocaleString(
@@ -186,7 +186,7 @@ export function NotificationBell() {
                   setIsOpen(false);
                   navigate('/orders');
                 }}
-                className="text-xs font-semibold text-text hover:text-primary transition-colors inline-flex items-center gap-1"
+                className="text-xs font-semibold text-text hover:text-foreground transition-colors inline-flex items-center gap-1"
               >
                 {NOTIFICATION_BELL_LABELS.SEE_MORE}{' '}
                 <Icon name="ChevronRight" size={14} />

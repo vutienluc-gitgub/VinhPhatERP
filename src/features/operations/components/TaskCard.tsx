@@ -41,7 +41,7 @@ export const TaskCard = forwardRef(function TaskCard(
   const getCardClasses = () => {
     switch (task.status) {
       case 'todo':
-        return 'border-zinc-200 hover:border-zinc-400 bg-white';
+        return 'border-zinc-200 hover:border-zinc-400 bg-surface';
       case 'in_progress':
         return 'border-info hover:border-info bg-indigo-50/40';
       case 'review':
@@ -51,7 +51,7 @@ export const TaskCard = forwardRef(function TaskCard(
       case 'done':
         return 'border-success hover:border-success bg-emerald-50/40';
       default:
-        return 'border-zinc-200 hover:border-info bg-white';
+        return 'border-zinc-200 hover:border-info bg-surface';
     }
   };
 
@@ -102,7 +102,7 @@ export const TaskCard = forwardRef(function TaskCard(
       className={`rounded-lg border p-3 text-xs shadow-sm transition-all group relative cursor-grab active:cursor-grabbing hover:shadow-md hover:-translate-y-0.5 ${getCardClasses()} ${className}`}
     >
       {/* Quick Action Hover Menu */}
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity z-10 bg-white/80 backdrop-blur-sm rounded-md px-1 border border-zinc-100 shadow-sm">
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity z-10 bg-surface/80 backdrop-blur-sm rounded-md px-1 border border-zinc-100 shadow-sm">
         {onTapMove && (
           <button
             type="button"
@@ -122,7 +122,7 @@ export const TaskCard = forwardRef(function TaskCard(
             event.stopPropagation();
             onClick();
           }}
-          className="p-1 text-zinc-400 hover:text-primary transition-colors font-bold"
+          className="p-1 text-zinc-400 hover:text-foreground transition-colors font-bold"
           title="Thao tác"
         >
           ⋯
@@ -146,7 +146,7 @@ export const TaskCard = forwardRef(function TaskCard(
         <div className="flex items-center gap-1.5">
           {assignee ? (
             <div className="flex items-center gap-1">
-              <span className="h-4 w-4 rounded-full bg-info-soft text-white flex items-center justify-center text-[8px] font-bold">
+              <span className="h-4 w-4 rounded-full bg-info-soft text-inverse-foreground flex items-center justify-center text-[8px] font-bold">
                 {assignee.name.slice(0, 1)}
               </span>
               <span className="truncate max-w-[70px] font-medium">

@@ -32,18 +32,18 @@ export function WorkflowNode({ step, index, isLast }: WorkflowNodeProps) {
         <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           {step.title}
         </h3>
-        <div className="mt-3 text-sm text-muted leading-relaxed">
+        <div className="mt-3 text-sm text-muted-foreground leading-relaxed">
           {step.content.split('\n').map((line, i) => {
             if (line.startsWith('[CHECKLIST]')) {
               return (
                 <div
                   key={i}
-                  className="mt-4 mb-2 font-semibold text-primary/90 bg-primary/5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded"
+                  className="mt-4 mb-2 font-semibold text-foreground/90 bg-primary/5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded"
                 >
                   <Icon
                     name="ClipboardList"
                     size={16}
-                    className="text-primary/70"
+                    className="text-foreground/70"
                   />
                   {line.replace('[CHECKLIST]', '').trim()}
                 </div>

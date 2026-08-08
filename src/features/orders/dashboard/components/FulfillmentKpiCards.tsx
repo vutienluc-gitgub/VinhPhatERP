@@ -74,7 +74,7 @@ export function FulfillmentKpiCards({
         >
           <div className="flex items-center gap-2 mb-2">
             <div
-              className={`h-8 w-8 rounded-lg flex items-center justify-center ${card.color} bg-white/70`}
+              className={`h-8 w-8 rounded-lg flex items-center justify-center ${card.color} bg-surface/70`}
             >
               <Icon name={card.icon} size={16} />
             </div>

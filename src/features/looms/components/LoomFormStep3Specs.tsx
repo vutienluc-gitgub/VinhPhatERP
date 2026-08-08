@@ -17,7 +17,7 @@ export function LoomFormStep3Specs({ isTechnicalLocked }: Props) {
 
   return (
     <section>
-      <h3 className="text-sm font-semibold text-foreground dark:text-muted mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+      <h3 className="text-sm font-semibold text-foreground dark:text-muted-foreground mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
         <Icon name="Settings" size={16} className="text-info" />
         Thông số kỹ thuật chi tiết
       </h3>

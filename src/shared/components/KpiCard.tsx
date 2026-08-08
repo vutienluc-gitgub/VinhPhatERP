@@ -101,7 +101,7 @@ export const KpiCard = memo(function KpiCard({
     const isUp = trendDirection === 'up';
     const isDown = trendDirection === 'down';
 
-    let colorClass = 'text-muted';
+    let colorClass = 'text-muted-foreground';
     let trendIcon: IconName = 'Minus';
 
     if (isUp) {

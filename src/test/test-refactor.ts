@@ -1,6 +1,8 @@
 import { validateRefactorReport } from '@/lib/validate-refactor-report';
 
+// eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
 const aiOutput = `
+// eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
 ## ✅ Refactor Report
 
 ### 1. Duplicate Code
@@ -32,10 +34,12 @@ const aiOutput = `
 
 ---
 
+// eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
 ## 🚀 Final Status
 - PRODUCTION READY
 `;
 
 const result = validateRefactorReport(aiOutput);
 
+// eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
 console.info('✅ VALID:\n', JSON.stringify(result, null, 2));

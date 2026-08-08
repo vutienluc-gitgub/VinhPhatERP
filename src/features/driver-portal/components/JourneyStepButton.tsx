@@ -31,12 +31,12 @@ export function JourneyStepButton({
       } ${isDone || disabled ? 'cursor-default' : 'cursor-pointer'}`}
     >
       <div
-        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white ${
+        className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-inverse-foreground ${
           isDone
             ? 'bg-[var(--success)]'
             : isActive
               ? 'bg-[var(--primary)]'
-              : 'bg-[var(--muted)]'
+              : 'bg-[var(--surface-subtle)]'
         }`}
       >
         {isDone ? (
@@ -47,7 +47,7 @@ export function JourneyStepButton({
           <Icon
             name="Circle"
             size={14}
-            className="text-[var(--text-tertiary)]"
+            className="text-[var(--muted-foreground)]"
           />
         )}
       </div>
@@ -57,7 +57,7 @@ export function JourneyStepButton({
             ? 'text-[var(--success)]'
             : isActive
               ? 'text-[var(--primary)]'
-              : 'text-[var(--muted)]'
+              : 'text-[var(--surface-subtle)]'
         }`}
       >
         {label}

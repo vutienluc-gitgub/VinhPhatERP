@@ -148,7 +148,7 @@ export function MediaLibraryModal({
                       loading="lazy"
                     />
                     {isSelected && (
-                      <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1 shadow-sm">
+                      <div className="absolute top-2 right-2 bg-primary text-inverse-foreground rounded-full p-1 shadow-sm">
                         <Icon name="Check" size={14} strokeWidth={3} />
                       </div>
                     )}

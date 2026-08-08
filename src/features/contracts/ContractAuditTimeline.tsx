@@ -63,7 +63,7 @@ function AuditLogEntry({ log, isLast }: AuditLogEntryProps) {
     <div className="flex gap-3 group">
       {/* Timeline line */}
       <div className="flex flex-col items-center shrink-0">
-        <div className="w-7 h-7 rounded-full bg-surface-subtle border border-border flex items-center justify-center text-muted group-hover:border-primary/30 transition-colors">
+        <div className="w-7 h-7 rounded-full bg-surface-subtle border border-border flex items-center justify-center text-muted-foreground group-hover:border-primary/30 transition-colors">
           <Icon name={iconName} size={14} />
         </div>
         {!isLast && <div className="w-px flex-1 bg-border min-h-[20px] mt-1" />}
@@ -83,7 +83,7 @@ function AuditLogEntry({ log, isLast }: AuditLogEntryProps) {
             {MSG.LBL_REASON} {cancelReason}
           </p>
         )}
-        <p className="text-xs text-muted mt-0.5">{formattedTime}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{formattedTime}</p>
       </div>
     </div>
   );

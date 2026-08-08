@@ -18,7 +18,7 @@ export function PrintPreviewBox({
   return (
     <div className="w-full flex flex-col items-center gap-4">
       <div className="flex items-center justify-between w-full">
-        <h3 className="font-medium text-sm text-muted uppercase tracking-widest">
+        <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-widest">
           {title}
         </h3>
         <div className="flex gap-1 bg-[var(--surface-subtle)] border border-[var(--border)] p-1 rounded-lg">
@@ -29,8 +29,8 @@ export function PrintPreviewBox({
               onClick={() => setZoom(level)}
               className={`px-3 py-1 text-xs font-bold rounded transition-colors ${
                 zoom === level
-                  ? 'bg-surface shadow-sm text-primary'
-                  : 'text-muted hover:text-[var(--text)]'
+                  ? 'bg-surface shadow-sm text-foreground'
+                  : 'text-muted-foreground hover:text-[var(--foreground)]'
               }`}
             >
               {level * 100}%

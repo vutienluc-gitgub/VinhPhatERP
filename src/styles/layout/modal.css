@@ -2,9 +2,10 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+
+  /* @architecture-exception: legacy color migration */
+  background: rgb(0, 0, 0, 0.45);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   align-items: flex-end; /* Mobile: trượt từ đáy */
@@ -33,7 +34,7 @@
   border-radius: 2px;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .modal-sheet-handle {
     display: none;
   }
@@ -43,6 +44,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -52,6 +54,7 @@
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -61,6 +64,7 @@
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
@@ -70,6 +74,7 @@
   from {
     transform: translateY(0);
   }
+
   to {
     transform: translateY(100%);
   }
@@ -80,6 +85,7 @@
     opacity: 0;
     transform: scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -91,6 +97,7 @@
     opacity: 1;
     transform: scale(1);
   }
+
   to {
     opacity: 0;
     transform: scale(0.97);
@@ -101,12 +108,13 @@
   from {
     transform: translateY(0);
   }
+
   to {
     transform: translateY(100%);
   }
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .modal-overlay {
     align-items: center;
     padding: 2rem;
@@ -121,7 +129,7 @@
   flex-direction: column;
   background: var(--surface-strong);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 -8px 40px rgb(0, 0, 0, 0.2);
   border: 1px solid var(--border);
   padding: 0;
   z-index: 1001;
@@ -130,10 +138,10 @@
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .modal-sheet {
     border-radius: var(--radius-xl);
-    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 80px rgb(0, 0, 0, 0.5);
     animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     max-height: 75vh;
   }
@@ -147,7 +155,7 @@
   animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .modal-sheet--closing {
     animation: modalPopOut 0.2s ease-in forwards;
   }
@@ -198,6 +206,7 @@
   position: sticky;
   bottom: 0;
   z-index: 10;
+
   /* Chống bị vỡ trên Mobile khi dùng Bottom Sheet */
   padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
 }

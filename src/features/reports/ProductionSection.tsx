@@ -209,7 +209,7 @@ export function ProductionSection({
                 {st.latePct}% {REPORT_LABELS.COL_LATE}
               </span>
             </div>
-            <div className="grid grid-cols-3 gap-2 text-center mt-3 border-t pt-2 text-[10px] text-muted">
+            <div className="grid grid-cols-3 gap-2 text-center mt-3 border-t pt-2 text-[10px] text-muted-foreground">
               <div>
                 <p>{REPORT_LABELS.TOTAL_ORDERS}</p>
                 <p className="font-bold text-text">{st.totalOrders}</p>

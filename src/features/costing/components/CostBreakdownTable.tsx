@@ -19,7 +19,7 @@ export function CostBreakdownTable({
         {COSTING_LABELS.COST_STRUCTURE}
       </div>
       <table className="w-full text-sm">
-        <thead className="text-muted text-xs text-left">
+        <thead className="text-muted-foreground text-xs text-left">
           <tr>
             <th className="p-3 font-normal">{COSTING_LABELS.COMPONENT}</th>
             <th className="p-3 font-normal text-right">
@@ -34,7 +34,7 @@ export function CostBreakdownTable({
           {breakdown.map((item) => (
             <tr key={item.key}>
               <td className="p-3 font-medium text-foreground">{item.label}</td>
-              <td className="p-3 text-right text-muted">
+              <td className="p-3 text-right text-muted-foreground">
                 {item.percentage.toFixed(1)}%
               </td>
               <td className="p-3 text-right">
@@ -47,7 +47,7 @@ export function CostBreakdownTable({
           <tr>
             <td className="p-3">{COSTING_LABELS.TOTAL_COST}</td>
             <td className="p-3 text-right">100%</td>
-            <td className="p-3 text-right text-primary">
+            <td className="p-3 text-right text-foreground">
               <MoneyText value={totalCost} />
             </td>
           </tr>

@@ -197,7 +197,7 @@ export function MediaManagerPage() {
                           color:
                             u.status === 'error'
                               ? 'var(--danger)'
-                              : 'var(--text)',
+                              : 'var(--foreground)',
                         }}
                       >
                         {u.fileName}
@@ -262,7 +262,7 @@ export function MediaManagerPage() {
                     : 'File'
                 }
                 size={16}
-                className="text-primary"
+                className="text-foreground"
               />
               <div className="font-medium text-text truncate">
                 {activeDragAsset.original_name}

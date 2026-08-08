@@ -317,7 +317,7 @@ export function OrderForm({ order, onClose }: OrderFormProps) {
                     ) : (
                       <input
                         id="orderNumber"
-                        className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
+                        className="field-input italic bg-[var(--surface-disabled)] text-[var(--muted-foreground)]"
                         type="text"
                         value={ORDERS_FORM_LABELS.AUTO_NUMBER}
                         readOnly

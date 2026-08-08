@@ -123,7 +123,7 @@ function PublicFabricDetailPageInner() {
         <h1 className="text-xl font-bold text-foreground mb-2">
           {LABELS.notFound}
         </h1>
-        <p className="text-muted mb-2">{LABELS.notFoundDesc}</p>
+        <p className="text-muted-foreground mb-2">{LABELS.notFoundDesc}</p>
         {isError && error instanceof Error && (
           <p className="text-xs text-danger mb-6 font-mono break-all">
             {error.message}

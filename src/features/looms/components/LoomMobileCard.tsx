@@ -20,7 +20,7 @@ function SaaSBadge({ status }: { status: LoomStatus }) {
     maintenance:
       'bg-warning-soft/10 text-warning-strong dark:text-warning ring-amber-500/20',
     inactive:
-      'bg-surface-strong/10 text-secondary dark:text-muted-foreground ring-slate-500/20',
+      'bg-surface-strong/10 text-muted-foreground dark:text-muted-foreground ring-slate-500/20',
   };
   const dotColors: Record<string, string> = {
     active: 'bg-success-soft',
@@ -57,24 +57,24 @@ export function LoomMobileCard({
       </div>
       <div className="mobile-card-body space-y-2">
         <p className="font-bold text-sm">{l.name}</p>
-        <p className="text-xs text-muted italic">
+        <p className="text-xs text-muted-foreground italic">
           {LOOM_TYPE_LABELS[l.loom_type]}
         </p>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="flex flex-col">
-            <span className="text-xs text-muted">Nhà dệt</span>
+            <span className="text-xs text-muted-foreground">Nhà dệt</span>
             <span className="font-medium">{l.supplier?.name ?? '—'}</span>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-xs text-muted">Công suất</span>
-            <span className="font-bold text-primary">
+            <span className="text-xs text-muted-foreground">Công suất</span>
+            <span className="font-bold text-foreground">
               {l.daily_capacity_m
                 ? `${formatQuantity(l.daily_capacity_m, 0)} m/ngày`
                 : '—'}
             </span>
           </div>
         </div>
-        <div className="flex justify-between items-center text-xs text-muted pt-2 border-t border-border/10">
+        <div className="flex justify-between items-center text-xs text-muted-foreground pt-2 border-t border-border/10">
           <span>
             {l.max_width_cm ? `Khổ: ${l.max_width_cm} cm` : ''}
             {l.max_width_cm && (l.diameter_inch || l.gauge) ? ' | ' : ''}

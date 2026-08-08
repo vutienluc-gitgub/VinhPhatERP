@@ -200,7 +200,7 @@ export function ProgressBoard() {
                   <div className="grid grid-cols-[1fr_auto] gap-2 items-start mb-2">
                     <div className="flex flex-wrap items-center gap-2 min-w-0">
                       <strong className="shrink-0">{group.orderNumber}</strong>
-                      <span className="text-muted text-sm truncate max-w-full">
+                      <span className="text-muted-foreground text-sm truncate max-w-full">
                         {group.customerName}
                       </span>
                       {group.fabricInfo && (

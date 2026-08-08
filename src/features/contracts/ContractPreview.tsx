@@ -74,7 +74,7 @@ export function ContractPreview({
   return (
     <div className="flex flex-col gap-2 w-full">
       {contractNumber && (
-        <p className="text-xs text-muted font-mono">
+        <p className="text-xs text-muted-foreground font-mono">
           {MSG.LBL_CONTRACT_NUMBER}
           {contractNumber}
         </p>

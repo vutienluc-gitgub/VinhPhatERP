@@ -43,10 +43,10 @@ export function useExpenseColumns({
         header: MSG.COL_EXPENSE_NO,
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-bold text-primary">
+            <span className="font-bold text-foreground">
               {row.original.expense_number}
             </span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-muted-foreground">
               {row.original.expense_date}
             </span>
           </div>
@@ -68,7 +68,7 @@ export function useExpenseColumns({
           <div className="flex flex-col">
             <span>{row.original.description}</span>
             {row.original.suppliers?.name && (
-              <span className="text-xs text-muted">
+              <span className="text-xs text-muted-foreground">
                 {MSG.LBL_SUPPLIER_PREFIX}
                 {row.original.suppliers.name}
               </span>
@@ -88,7 +88,7 @@ export function useExpenseColumns({
         id: 'payment_accounts',
         header: MSG.COL_ACCOUNT,
         accessorFn: (exp) => exp.payment_accounts?.name,
-        meta: { className: 'text-muted text-sm' },
+        meta: { className: 'text-muted-foreground text-sm' },
         cell: ({ row }) => row.original.payment_accounts?.name ?? '—',
       },
       {

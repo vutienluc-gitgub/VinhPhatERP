@@ -22,7 +22,7 @@ export function useRawFabricColumns({
         id: 'roll_number',
         sortable: true,
         cell: ({ row: { original: r } }) => (
-          <span className="font-bold text-primary">{r.roll_number}</span>
+          <span className="font-bold text-foreground">{r.roll_number}</span>
         ),
       },
       {
@@ -30,7 +30,9 @@ export function useRawFabricColumns({
         id: 'lot_number',
         sortable: true,
         cell: ({ row: { original: r } }) => (
-          <span className="font-medium text-muted">{r.lot_number || '—'}</span>
+          <span className="font-medium text-muted-foreground">
+            {r.lot_number || '—'}
+          </span>
         ),
       },
       {
@@ -40,7 +42,9 @@ export function useRawFabricColumns({
         cell: ({ row: { original: r } }) => (
           <div className="flex flex-col">
             <span className="font-medium">{r.fabric_type}</span>
-            <span className="text-xs text-muted">{r.color_name}</span>
+            <span className="text-xs text-muted-foreground">
+              {r.color_name}
+            </span>
           </div>
         ),
       },
@@ -52,7 +56,7 @@ export function useRawFabricColumns({
         cell: ({ row: { original: r } }) => (
           <span className="font-medium">
             {formatQuantity(r.weight_kg)}
-            <span className="text-xs ml-1 text-muted">kg</span>
+            <span className="text-xs ml-1 text-muted-foreground">kg</span>
           </span>
         ),
       },
@@ -64,7 +68,7 @@ export function useRawFabricColumns({
         cell: ({ row: { original: r } }) => (
           <span className="font-medium text-success">
             {formatQuantity(r.length_m)}
-            <span className="text-xs ml-1 text-muted">m</span>
+            <span className="text-xs ml-1 text-muted-foreground">m</span>
           </span>
         ),
       },

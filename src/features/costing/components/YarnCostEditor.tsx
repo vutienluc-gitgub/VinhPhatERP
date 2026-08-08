@@ -22,7 +22,7 @@ export function YarnCostEditor({ items, onChange }: YarnCostEditorProps) {
         >
           <div className="flex-1">
             <p className="text-sm font-medium">{item.yarn_code}</p>
-            <p className="text-xs text-muted truncate max-w-[200px]">
+            <p className="text-xs text-muted-foreground truncate max-w-[200px]">
               {item.yarn_name}
             </p>
             <p className="text-xs text-info mt-1">
@@ -36,7 +36,7 @@ export function YarnCostEditor({ items, onChange }: YarnCostEditorProps) {
             <label className="flex items-center gap-2 cursor-pointer text-xs select-none">
               <input
                 type="checkbox"
-                className="rounded border-border text-primary focus:ring-primary/20"
+                className="rounded border-border text-foreground focus:ring-primary/20"
                 checked={item.is_override}
                 onChange={(e) => {
                   onChange(item.id, {

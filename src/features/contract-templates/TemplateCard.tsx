@@ -143,11 +143,11 @@ export function TemplateCard({
           </div>
           {sanitizedContent ? (
             <div
-              className="text-[11px] leading-relaxed text-muted/80 font-medium select-none ql-editor !p-0"
+              className="text-[11px] leading-relaxed text-muted-foreground/80 font-medium select-none ql-editor !p-0"
               dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
           ) : (
-            <p className="text-[11px] leading-relaxed text-muted/80 font-medium italic select-none">
+            <p className="text-[11px] leading-relaxed text-muted-foreground/80 font-medium italic select-none">
               {CONTRACT_TEMPLATE_LABELS.NO_CONTENT}
             </p>
           )}
@@ -161,7 +161,7 @@ export function TemplateCard({
             className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 active:opacity-100 transition-opacity bg-surface/40 backdrop-blur-[1px]"
             onClick={() => onEdit(template)}
           >
-            <span className="bg-surface px-4 py-2 rounded-xl shadow-xl border border-border/50 text-xs font-bold text-primary flex items-center gap-2">
+            <span className="bg-surface px-4 py-2 rounded-xl shadow-xl border border-border/50 text-xs font-bold text-foreground flex items-center gap-2">
               <Icon name="Eye" size={14} />
               {CONTRACT_TEMPLATE_LABELS.VIEW_DETAIL}
             </span>
@@ -178,7 +178,7 @@ export function TemplateCard({
                 ? CONTRACT_TEMPLATE_LABELS.STATUS_ACTIVE
                 : CONTRACT_TEMPLATE_LABELS.STATUS_PAUSED}
             </Badge>
-            <p className="text-xs font-medium text-muted whitespace-nowrap">
+            <p className="text-xs font-medium text-muted-foreground whitespace-nowrap">
               {CONTRACT_TEMPLATE_LABELS.UPDATED_AT}
               {formattedDate}
             </p>

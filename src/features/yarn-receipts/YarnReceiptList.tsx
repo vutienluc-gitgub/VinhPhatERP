@@ -241,7 +241,7 @@ export function YarnReceiptList({
               accessorKey: 'receipt_number',
               enableSorting: true,
               cell: ({ row }) => (
-                <span className="font-bold text-primary">
+                <span className="font-bold text-foreground">
                   {row.original.receipt_number}
                 </span>
               ),
@@ -256,7 +256,7 @@ export function YarnReceiptList({
                   <span className="font-medium">
                     {row.original.suppliers?.name ?? '—'}
                   </span>
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted-foreground">
                     {row.original.suppliers?.code}
                   </span>
                 </div>
@@ -267,7 +267,9 @@ export function YarnReceiptList({
               accessorKey: 'receipt_date',
               enableSorting: true,
               cell: ({ row }) => (
-                <span className="text-muted">{row.original.receipt_date}</span>
+                <span className="text-muted-foreground">
+                  {row.original.receipt_date}
+                </span>
               ),
             },
             {
@@ -277,7 +279,7 @@ export function YarnReceiptList({
               enableSorting: true,
               meta: { className: 'text-right' },
               cell: ({ row }) => (
-                <span className="text-secondary">
+                <span className="text-muted-foreground">
                   {getReceiptUnitPriceDisplay(row.original)}
                 </span>
               ),
@@ -371,7 +373,9 @@ export function YarnReceiptList({
               </div>
               <div className="mobile-card-body space-y-2">
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs text-muted">{MSG.COL_SUPPLIER}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {MSG.COL_SUPPLIER}
+                  </span>
                   <span className="font-medium break-words">
                     {r.suppliers?.name}
                   </span>
@@ -379,7 +383,7 @@ export function YarnReceiptList({
                 <div className="grid grid-cols-2 gap-4 pb-2 border-b border-border/10">
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-col">
-                      <span className="text-xs text-muted">
+                      <span className="text-xs text-muted-foreground">
                         {MSG.COL_RECEIPT_DATE}
                       </span>
                       <span className="font-medium text-sm">
@@ -387,7 +391,7 @@ export function YarnReceiptList({
                       </span>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-xs text-muted">
+                      <span className="text-xs text-muted-foreground">
                         {MSG.COL_UNIT_PRICE}
                       </span>
                       <span className="font-medium text-sm">
@@ -396,10 +400,10 @@ export function YarnReceiptList({
                     </div>
                   </div>
                   <div className="flex flex-col text-right justify-end">
-                    <span className="text-xs text-muted">
+                    <span className="text-xs text-muted-foreground">
                       {MSG.COL_TOTAL_AMOUNT}
                     </span>
-                    <span className="font-bold text-primary">
+                    <span className="font-bold text-foreground">
                       <MoneyText value={r.total_amount ?? 0} />
                     </span>
                   </div>

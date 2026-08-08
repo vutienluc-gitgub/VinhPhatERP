@@ -71,7 +71,7 @@ export function ShipmentDispatchPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="flex flex-col items-center gap-2 text-muted">
+        <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <Icon name="Loader2" className="w-8 h-8 animate-spin" />
           <p>{MSG.LOADING}</p>
         </div>
@@ -83,7 +83,7 @@ export function ShipmentDispatchPage() {
     <TacticalBoard onMoveComplete={handleMoveComplete}>
       <div className="flex flex-col gap-6 p-4 sm:p-6">
         {/* ── HEADER ── */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-surface-strong p-5 sm:p-6 text-white shadow-xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-surface-strong p-5 sm:p-6 text-inverse-foreground shadow-xl">
           <div>
             <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-success">
               {MSG.TITLE}
@@ -115,7 +115,7 @@ export function ShipmentDispatchPage() {
                 variant="secondary"
                 onClick={autoOptimizeFleet}
                 disabled={isCommitting || unassignedRolls.length === 0}
-                className="bg-surface-strong text-muted hover:bg-surface-strong hover:text-white border-transparent"
+                className="bg-surface-strong text-muted-foreground hover:bg-surface-strong hover:text-white border-transparent"
               >
                 <Icon name="Wand2" size={16} className="mr-2" />
                 {MSG.BTN_AUTO_ASSIGN}

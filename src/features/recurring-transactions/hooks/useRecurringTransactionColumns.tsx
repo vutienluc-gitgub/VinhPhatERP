@@ -49,7 +49,7 @@ export function useRecurringTransactionColumns({
                   {badge.label}
                 </Badge>
               </div>
-              <span className="text-xs text-muted line-clamp-1">
+              <span className="text-xs text-muted-foreground line-clamp-1">
                 {tx.description}
               </span>
             </div>
@@ -82,7 +82,7 @@ export function useRecurringTransactionColumns({
         cell: (tx: RecurringTransaction) => (
           <div className="flex flex-col">
             <span>{FREQUENCY_LABELS[tx.frequency]}</span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-muted-foreground">
               {RECURRING_LABELS.dayPrefix} {tx.day_of_month}
             </span>
           </div>
@@ -95,7 +95,7 @@ export function useRecurringTransactionColumns({
         cell: (tx: RecurringTransaction) => {
           if (!tx.is_active) {
             return (
-              <span className="text-muted italic">
+              <span className="text-muted-foreground italic">
                 {new Date(tx.next_run_date).toLocaleDateString('vi-VN')}
               </span>
             );
@@ -119,7 +119,7 @@ export function useRecurringTransactionColumns({
           return (
             <div className="flex flex-col gap-0.5">
               <span className={colorClass}>{relativeText}</span>
-              <span className="text-xs text-muted">
+              <span className="text-xs text-muted-foreground">
                 {new Date(tx.next_run_date).toLocaleDateString('vi-VN')}
               </span>
             </div>
@@ -132,17 +132,17 @@ export function useRecurringTransactionColumns({
         cell: (tx: RecurringTransaction) => (
           <div className="flex flex-col text-sm">
             {tx.suppliers?.name && (
-              <span className="text-muted">
+              <span className="text-muted-foreground">
                 {RECURRING_LABELS.supplierPrefix}: {tx.suppliers.name}
               </span>
             )}
             {tx.employees?.name && (
-              <span className="text-muted">
+              <span className="text-muted-foreground">
                 {RECURRING_LABELS.employeePrefix}: {tx.employees.name}
               </span>
             )}
             {!tx.suppliers?.name && !tx.employees?.name && (
-              <span className="text-muted">—</span>
+              <span className="text-muted-foreground">—</span>
             )}
           </div>
         ),

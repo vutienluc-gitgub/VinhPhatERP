@@ -38,7 +38,7 @@ export function FabricPricingTable({
   }, [pricingTiers, canViewWholesale]);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <div className="bg-surface rounded-xl shadow-sm p-4">
       <div className="flex justify-between items-end mb-3">
         <h3 className="text-base font-bold text-foreground">
           {PUBLIC_PAGE_LABELS.pricingTierTitle}
@@ -46,7 +46,7 @@ export function FabricPricingTable({
         {!canViewWholesale && (
           <button
             onClick={onOpenLogin}
-            className="text-xs text-primary font-semibold hover:underline"
+            className="text-xs text-foreground font-semibold hover:underline"
           >
             {PUBLIC_PAGE_LABELS.loginToViewPrice}
           </button>
@@ -56,14 +56,14 @@ export function FabricPricingTable({
         <div className="overflow-hidden border border-default rounded-xl">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-surface-secondary text-muted font-semibold">
+              <tr className="bg-surface-secondary text-muted-foreground font-semibold">
                 <th className="p-3">{PUBLIC_PAGE_LABELS.pricingTierColQty}</th>
                 <th className="p-3 text-right">
                   {PUBLIC_PAGE_LABELS.pricingTierColPrice}
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-secondary">
+            <tbody className="divide-y divide-slate-100 text-muted-foreground">
               {sortedTiers.map((tier) => {
                 const rangeLabel = tier.max_quantity
                   ? PUBLIC_PAGE_LABELS.fromTo
@@ -83,7 +83,7 @@ export function FabricPricingTable({
                 return (
                   <tr key={tier.id} className="hover:bg-surface-secondary/50">
                     <td className="p-3 font-medium">{buyLabel}</td>
-                    <td className="p-3 text-right font-semibold text-primary">
+                    <td className="p-3 text-right font-semibold text-foreground">
                       <MoneyText
                         value={tier.unit_price}
                         suffix={
@@ -101,7 +101,7 @@ export function FabricPricingTable({
         </div>
       ) : canViewWholesale ? (
         <div className="p-4 rounded-xl bg-surface-secondary text-center border border-dashed border-default">
-          <p className="text-xs text-muted">
+          <p className="text-xs text-muted-foreground">
             {PUBLIC_PAGE_LABELS.noPricingTiersDesc}
           </p>
         </div>

@@ -45,7 +45,7 @@ export function BomDetail({
   if (!bom) {
     return (
       <div className="panel-card card-flush">
-        <div className="p-8 text-center text-sm text-muted">
+        <div className="p-8 text-center text-sm text-muted-foreground">
           Đang tải dữ liệu...
         </div>
       </div>
@@ -162,7 +162,9 @@ export function BomDetail({
           </div>
           <div className="form-field">
             <label>Hao hụt mặc định</label>
-            <p className="font-bold text-primary">{bom.standard_loss_pct}%</p>
+            <p className="font-bold text-foreground">
+              {bom.standard_loss_pct}%
+            </p>
           </div>
           <div className="form-field">
             <label>Phiên bản</label>
@@ -171,7 +173,9 @@ export function BomDetail({
         </div>
 
         {bom.notes && (
-          <p className="mt-4 text-sm italic text-muted">{bom.notes}</p>
+          <p className="mt-4 text-sm italic text-muted-foreground">
+            {bom.notes}
+          </p>
         )}
       </div>
 
@@ -196,15 +200,15 @@ export function BomDetail({
               <tr key={item.id}>
                 <td>
                   <strong>{item.yarn_catalogs?.code}</strong>
-                  <div className="text-muted text-sm text-xs">
+                  <div className="text-muted-foreground text-sm text-xs">
                     {item.yarn_catalogs?.name}
                   </div>
                 </td>
-                <td className="max-sm:hidden text-muted text-sm">
+                <td className="max-sm:hidden text-muted-foreground text-sm">
                   {item.yarn_catalogs?.composition || '\u2014'}
                 </td>
                 <td className="text-right font-bold">{item.ratio_pct}%</td>
-                <td className="text-right text-muted text-sm">
+                <td className="text-right text-muted-foreground text-sm">
                   {item.consumption_kg_per_m} kg/m
                 </td>
               </tr>
@@ -212,7 +216,7 @@ export function BomDetail({
             {(!bom.bom_yarn_items || bom.bom_yarn_items.length === 0) && (
               <tr>
                 <td colSpan={4}>
-                  <div className="py-8 text-center text-sm text-muted">
+                  <div className="py-8 text-center text-sm text-muted-foreground">
                     Chưa có dữ liệu nguyên liệu
                   </div>
                 </td>
@@ -226,7 +230,7 @@ export function BomDetail({
       <div className="p-5">
         <span className="font-bold text-lg block mb-3">Lich su phien ban</span>
         {versions.length === 0 ? (
-          <p className="text-muted text-sm text-sm italic">
+          <p className="text-muted-foreground text-sm text-sm italic">
             Chưa có lịch sử (chưa từng được duyệt).
           </p>
         ) : (
@@ -241,7 +245,7 @@ export function BomDetail({
                   <p className="text-sm font-bold">
                     {ver.change_reason || 'Phê duyệt ban đầu'}
                   </p>
-                  <p className="text-muted text-sm text-xs mt-0.5">
+                  <p className="text-muted-foreground text-sm text-xs mt-0.5">
                     {ver.created_by_profile?.full_name ?? 'N/A'} •{' '}
                     {/* eslint-disable-next-line no-restricted-syntax */}
                     {new Date(ver.created_at).toLocaleString('vi-VN')}

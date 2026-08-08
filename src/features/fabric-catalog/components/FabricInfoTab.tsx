@@ -31,7 +31,7 @@ export function FabricInfoTab({
         uploadImageMutation={uploadImageMutation}
         deleteImageMutation={deleteImageMutation}
       />
-      <div className="bg-white rounded-2xl border border-default shadow-sm p-6 sm:p-8 space-y-12">
+      <div className="bg-surface rounded-2xl border border-default shadow-sm p-6 sm:p-8 space-y-12">
         <BasicInfoSection
           catalog={catalog}
           categoryOptions={categoryOptions}

@@ -211,13 +211,13 @@ export function WorkOrderList({
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex bg-surface-secondary p-1 rounded-lg mr-2">
               <button
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white shadow text-primary' : 'text-muted hover:text-primary'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-surface shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 onClick={() => setViewMode('kanban')}
               >
                 {MSG.VIEW_KANBAN}
               </button>
               <button
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-white shadow text-primary' : 'text-muted hover:text-primary'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-surface shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 onClick={() => setViewMode('table')}
               >
                 {MSG.VIEW_TABLE}

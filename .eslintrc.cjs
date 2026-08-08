@@ -11,6 +11,37 @@
 //   [ADD]  Overrides cho server/ và agent/
 //   [ADD]  boundaries/elements cho server schema
 
+const fs = require('fs');
+const path = require('path');
+
+// Đọc danh sách file legacy cần exemption khỏi no-legacy-combobox (nếu có)
+let legacyComboboxFiles = [];
+try {
+  legacyComboboxFiles = JSON.parse(fs.readFileSync(path.join(__dirname, '.eslint-legacy-combobox.json'), 'utf-8'));
+} catch (e) {
+  console.log('[Architecture Guard] Không tìm thấy list Combobox legacy, bỏ qua migration boundary.');
+}
+
+const architectureGuardRules = [
+  {
+    selector: "Literal[value=/[\\p{Extended_Pictographic}]/u], JSXText[value=/[\\p{Extended_Pictographic}]/u], TemplateElement[value.raw=/[\\p{Extended_Pictographic}]/u]",
+    message: "[Architecture Guard] Không sử dụng Emoji trực tiếp trong source code (bao gồm cả chuỗi kết hợp modifiers/ZWJ). Bắt buộc dùng component <Icon /> từ lucide-react."
+  },
+  {
+    selector: "JSXAttribute[name.name='className'] Literal[value=/.*(?:^|\\s)(text|bg|border)-(white|black|transparent|(gray|red|blue|green|yellow|orange|purple|pink|indigo|slate|emerald|teal|amber|rose)-\\d{3})(?:\\/\\d+)?(?:\\s|$).*/]",
+    message: "[Architecture Guard] Bắt buộc dùng Semantic Design Tokens (vd: text-muted, bg-surface) thay vì Hardcoded Tailwind Colors (vd: text-white, bg-white/95, text-gray-900)."
+  },
+  {
+    selector: "JSXElement[openingElement.name.name='select']",
+    message: "[Architecture Guard] Không sử dụng thẻ <select> native. Bắt buộc dùng <VPSelect> để đồng bộ UI/UX."
+  }
+];
+
+const legacyComboboxRule = {
+  selector: "ImportDeclaration[source.value='@/shared/components/Combobox']",
+  message: "[Architecture Guard] Legacy Combobox bị cấm sử dụng ở code mới. Hãy dùng VPCombobox, VPSelect hoặc VPVirtualCombobox."
+};
+
 module.exports = {
   root: true,
   env: {
@@ -155,16 +186,12 @@ module.exports = {
     ],
 
     // ========================
-    // 🎨 UI DESIGN TOKENS
+    // 🛡️ ARCHITECTURE GUARD
     // ========================
     'no-restricted-syntax': [
-      'warn',
-      {
-        selector:
-          "JSXAttribute[name.name='className'] Literal[value=/.*(?:^|\\s)(text|bg|border)-(gray|red|blue|green|yellow|orange|purple|pink|indigo|slate|emerald|teal|amber|rose)-\\d{3}(?:\\s|$).*/]",
-        message:
-          '🚨 Không sử dụng Hardcoded Tailwind Colors (VD: text-gray-900, bg-red-100). BẮT BUỘC dùng Semantic Tokens (VD: text-muted, bg-danger-soft, text-primary, bg-surface) theo chuẩn Design System.',
-      },
+      'error',
+      ...architectureGuardRules,
+      legacyComboboxRule
     ],
 
     // ========================
@@ -373,5 +400,34 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'warn',
       },
     },
+
+    // ========================
+    // 🚧 MIGRATION EXEMPTIONS
+    // ========================
+    ...(legacyComboboxFiles.length > 0 ? [{
+      files: legacyComboboxFiles,
+      rules: {
+        'no-restricted-syntax': [
+          'error',
+          ...architectureGuardRules
+          // Legacy Combobox được phép ở đây (bỏ legacyComboboxRule)
+        ]
+      }
+    }] : []),
+
+    // ========================
+    // 🛠️ UI CORE IMPLEMENTATION EXEMPTION
+    // ========================
+    {
+      files: ['src/components/ui/**/*.tsx', 'src/shared/components/**/*.tsx'],
+      rules: {
+        'no-restricted-syntax': [
+          'error',
+          // Bỏ luật cấm <select> raw cho thư mục core
+          ...architectureGuardRules.filter(r => !r.selector.includes("'select'")),
+          legacyComboboxRule
+        ]
+      }
+    }
   ],
 }

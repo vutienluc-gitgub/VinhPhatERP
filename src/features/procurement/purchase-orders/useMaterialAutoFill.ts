@@ -116,6 +116,7 @@ export function useMaterialAutoFill({
           : materialId;
         toast(
           `${PO_CONSTANTS.LABEL_SUPPLIER} ${PO_CONSTANTS.MSG_MOQ_REQUIRED} ${cached.moq} ${cached.uom} ${PO_CONSTANTS.MSG_FOR_MATERIAL} ${displayName}`,
+          // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
           { icon: 'ℹ️' },
         );
       }
@@ -140,6 +141,7 @@ export function useMaterialAutoFill({
             : materialId;
           toast(
             `${PO_CONSTANTS.LABEL_SUPPLIER} ${PO_CONSTANTS.MSG_MOQ_REQUIRED} ${priceInfo.moq} ${priceInfo.uom} ${PO_CONSTANTS.MSG_FOR_MATERIAL} ${displayName}`,
+            // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
             { icon: 'ℹ️' },
           );
         }
@@ -148,6 +150,7 @@ export function useMaterialAutoFill({
         const displayName = material
           ? `[${material.code}] ${material.name}`
           : materialId;
+        // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
         toast(MSG.ERR_NO_CONTRACT_PRICE(displayName), { icon: 'ℹ️' });
       }
     } catch (error) {

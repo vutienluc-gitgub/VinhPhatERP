@@ -50,7 +50,7 @@ export function NumericField<TFieldValues extends FieldValues>({
         {...inputProps}
       />
       {helpText && !error && (
-        <p className="text-xs text-muted mt-1">{helpText}</p>
+        <p className="text-xs text-muted-foreground mt-1">{helpText}</p>
       )}
       {error && <span className="field-error">{error.message}</span>}
     </div>

@@ -21,14 +21,14 @@ export function DriverPortalLayout() {
       {/* Top bar */}
       <header className="sticky top-0 z-50 px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center text-white font-extrabold text-sm">
+          <div className="w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center text-inverse-foreground font-extrabold text-sm">
             {DRIVER_PORTAL_MESSAGES.LAYOUT.AVATAR_INITIAL}
           </div>
           <div>
-            <p className="text-sm font-bold text-[var(--text)] m-0">
+            <p className="text-sm font-bold text-[var(--foreground)] m-0">
               {profile?.full_name ?? DRIVER_PORTAL_MESSAGES.LAYOUT.DEFAULT_NAME}
             </p>
-            <p className="text-xs text-[var(--text-tertiary)] m-0">
+            <p className="text-xs text-[var(--muted-foreground)] m-0">
               {DRIVER_PORTAL_MESSAGES.LAYOUT.ROLE}
             </p>
           </div>
@@ -36,7 +36,7 @@ export function DriverPortalLayout() {
         <button
           type="button"
           onClick={() => void signOut()}
-          className="text-sm text-[var(--muted)] bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 cursor-pointer hover:bg-[var(--surface-hover)]"
+          className="text-sm text-[var(--surface-subtle)] bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 cursor-pointer hover:bg-[var(--surface-hover)]"
         >
           {DRIVER_PORTAL_MESSAGES.LAYOUT.LOGOUT}
         </button>

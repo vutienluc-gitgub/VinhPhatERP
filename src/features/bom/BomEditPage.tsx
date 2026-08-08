@@ -12,7 +12,7 @@ export function BomEditPage() {
   if (isLoading || !id) {
     return (
       <div className="panel-card card-flush">
-        <div className="p-8 text-center text-sm text-muted">
+        <div className="p-8 text-center text-sm text-muted-foreground">
           Dang tai du lieu...
         </div>
       </div>
@@ -22,7 +22,7 @@ export function BomEditPage() {
   if (!bom) {
     return (
       <div className="panel-card card-flush">
-        <div className="p-8 text-center text-sm text-muted">
+        <div className="p-8 text-center text-sm text-muted-foreground">
           Khong tim thay BOM.
         </div>
       </div>

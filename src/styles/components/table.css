@@ -19,8 +19,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--muted);
-  background: rgba(var(--base-rgb), 0.03);
+  color: var(--surface-subtle);
+  background: rgb(var(--base-rgb), 0.03);
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
@@ -35,19 +35,19 @@
 }
 
 .data-table tbody tr:hover {
-  background: rgba(var(--brand-rgb), 0.04);
+  background: rgb(var(--brand-rgb), 0.04);
 }
 
 .data-table td {
   padding: 0.8rem 1.25rem;
   vertical-align: middle;
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .table-empty {
   padding: 3rem 1rem;
   text-align: center;
-  color: var(--muted);
+  color: var(--surface-subtle);
 }
 
 /* Compact Table Variant */
@@ -55,6 +55,7 @@
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
 }
+
 .data-table-compact th {
   padding: 0.5rem 1rem;
   font-size: 0.72rem;
@@ -95,7 +96,7 @@
 
 .trace-node--active {
   border-color: var(--primary);
-  background: rgba(var(--brand-rgb), 0.04);
+  background: rgb(var(--brand-rgb), 0.04);
 }
 
 .trace-node--empty {
@@ -124,14 +125,14 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--muted);
+  color: var(--surface-subtle);
 }
 
 .trace-node-title {
   margin: 0.15rem 0 0.35rem;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .trace-node-details {
@@ -139,13 +140,13 @@
   flex-wrap: wrap;
   gap: 0.35rem 0.75rem;
   font-size: 0.85rem;
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .trace-node-meta {
   margin: 0.3rem 0 0;
   font-size: 0.82rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
 }
 
 .trace-connector {
@@ -162,24 +163,28 @@
   flex-wrap: wrap;
   gap: 1rem;
 }
+
 .legend-prefix {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
   font-weight: 500;
 }
+
 .legend-item {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--surface-subtle);
   cursor: default;
   position: relative;
 }
+
 .legend-item:hover {
-  color: var(--text);
+  color: var(--foreground);
 }
+
 .legend-dot {
   width: 10px;
   height: 10px;
@@ -187,9 +192,11 @@
   flex-shrink: 0;
   transition: transform 0.2s ease;
 }
+
 .legend-item:hover .legend-dot {
   transform: scale(1.1);
 }
+
 .legend-tooltip {
   position: absolute;
   bottom: 100%;
@@ -199,7 +206,11 @@
   padding: 3px 8px;
   font-size: 0.7rem;
   font-weight: 600;
+
+  /* @architecture-exception: legacy color migration */
   background: #111827;
+
+  /* @architecture-exception: legacy color migration */
   color: #fff;
   border-radius: 4px;
   white-space: nowrap;
@@ -208,6 +219,7 @@
   transition: opacity 150ms ease;
   z-index: 50;
 }
+
 .legend-item:hover .legend-tooltip {
   opacity: 1;
 }

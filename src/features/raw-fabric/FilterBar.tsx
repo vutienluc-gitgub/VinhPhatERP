@@ -163,7 +163,7 @@ export function FilterBar({
         <div className="flex items-center gap-3 flex-wrap">
           <ClearFilterButton onClick={handleClear} label="Xóa lọc" />
           {resultCount !== undefined && (
-            <span className="text-sm text-muted">
+            <span className="text-sm text-muted-foreground">
               Đang hiển thị {resultCount} cuộn
             </span>
           )}

@@ -54,7 +54,7 @@ export function NotificationCenter({ onClose }: Props) {
     >
       {/* Header */}
       <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-        <span className="text-[0.875rem] font-semibold text-[var(--text)]">
+        <span className="text-[0.875rem] font-semibold text-[var(--foreground)]">
           Thông báo
         </span>
         <button
@@ -84,7 +84,7 @@ export function NotificationCenter({ onClose }: Props) {
               </span>
               <div className="flex-1 min-w-0">
                 <p
-                  className={`m-0 text-[0.8rem] ${item.isRead ? 'font-normal' : 'font-semibold'} text-[var(--text)] whitespace-nowrap overflow-hidden text-ellipsis`}
+                  className={`m-0 text-[0.8rem] ${item.isRead ? 'font-normal' : 'font-semibold'} text-[var(--foreground)] whitespace-nowrap overflow-hidden text-ellipsis`}
                 >
                   {item.title}
                 </p>

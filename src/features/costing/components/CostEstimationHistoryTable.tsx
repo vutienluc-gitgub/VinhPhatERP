@@ -25,7 +25,7 @@ export function CostEstimationHistoryTable({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-muted">
+      <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
         <div className="spinner mb-2" />
         <p className="text-sm">{COSTING_LABELS.LOADING_HISTORY}</p>
       </div>
@@ -34,7 +34,7 @@ export function CostEstimationHistoryTable({
 
   if (!history || history.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-muted">
+      <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
         <Icon name="History" size={40} className="mb-2 opacity-30" />
         <p className="text-sm">{COSTING_LABELS.EMPTY_HISTORY}</p>
       </div>
@@ -69,7 +69,7 @@ export function CostEstimationHistoryTable({
                     )}
                   </div>
                 </td>
-                <td className="text-muted text-sm">
+                <td className="text-muted-foreground text-sm">
                   {/* eslint-disable-next-line no-restricted-syntax */}
                   {new Date(record.created_at).toLocaleString('vi-VN')}
                 </td>
@@ -79,7 +79,7 @@ export function CostEstimationHistoryTable({
                 <td className="text-right font-medium">
                   <MoneyText value={record.est_total_cost} />
                 </td>
-                <td className="text-right font-bold text-primary">
+                <td className="text-right font-bold text-foreground">
                   <MoneyText value={record.suggested_price} />
                 </td>
                 <td className="text-right">

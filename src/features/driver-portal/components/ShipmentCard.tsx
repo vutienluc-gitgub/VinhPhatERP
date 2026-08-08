@@ -130,10 +130,10 @@ export function ShipmentCard({
           <div className="text-left flex-1">
             <div className="flex items-start justify-between">
               <div>
-                <p className="font-bold text-base text-[var(--text)]">
+                <p className="font-bold text-base text-[var(--foreground)]">
                   {shipment.shipment_number}
                 </p>
-                <p className="text-sm text-[var(--muted)] mt-0.5">
+                <p className="text-sm text-[var(--surface-subtle)] mt-0.5">
                   {shipment.customers?.name ??
                     DRIVER_PORTAL_MESSAGES.CARD.DEFAULT_CUSTOMER}
                 </p>
@@ -159,7 +159,7 @@ export function ShipmentCard({
         <Icon
           name={expanded ? 'ChevronUp' : 'ChevronDown'}
           size={18}
-          className="text-[var(--text-tertiary)] shrink-0"
+          className="text-[var(--muted-foreground)] shrink-0"
         />
       </div>
 
@@ -169,16 +169,16 @@ export function ShipmentCard({
           {/* Info row */}
           <div className="grid grid-cols-2 gap-2 p-3 bg-[var(--surface-subtle)] rounded-xl mb-4 text-sm">
             <div>
-              <p className="text-[var(--text-tertiary)]">
+              <p className="text-[var(--muted-foreground)]">
                 {DRIVER_PORTAL_MESSAGES.CARD.DELIVERY_DATE}
               </p>
               <p className="font-semibold">{shipment.shipment_date}</p>
             </div>
             <div>
-              <p className="text-[var(--text-tertiary)]">
+              <p className="text-[var(--muted-foreground)]">
                 {DRIVER_PORTAL_MESSAGES.CARD.SHIPPING_COST}
               </p>
-              <p className="font-semibold text-primary">
+              <p className="font-semibold text-foreground">
                 {totalCost ? (
                   <MoneyText value={totalCost} suffix="đ" />
                 ) : (
@@ -188,7 +188,7 @@ export function ShipmentCard({
             </div>
             {shipment.delivery_address && (
               <div className="col-span-full mt-2">
-                <p className="text-[var(--text-tertiary)]">
+                <p className="text-[var(--muted-foreground)]">
                   {DRIVER_PORTAL_MESSAGES.CARD.DELIVERY_ADDRESS}
                 </p>
                 <div className="flex items-start justify-between gap-2 mt-0.5">
@@ -210,7 +210,7 @@ export function ShipmentCard({
             )}
             {shipment.vehicle_info && (
               <div>
-                <p className="text-[var(--text-tertiary)]">
+                <p className="text-[var(--muted-foreground)]">
                   {DRIVER_PORTAL_MESSAGES.CARD.VEHICLE}
                 </p>
                 <p className="font-medium">{shipment.vehicle_info}</p>
@@ -219,7 +219,7 @@ export function ShipmentCard({
           </div>
 
           {/* Journey steps */}
-          <p className="text-xs font-bold uppercase text-[var(--text-tertiary)] tracking-[0.06em] mb-2">
+          <p className="text-xs font-bold uppercase text-[var(--muted-foreground)] tracking-[0.06em] mb-2">
             {DRIVER_PORTAL_MESSAGES.CARD.JOURNEY_UPDATE}
           </p>
           <div className="flex flex-col gap-2 mb-4">
@@ -250,11 +250,11 @@ export function ShipmentCard({
           {nextStatus && shipment.status !== 'delivered' && (
             <div className="mb-3 flex flex-col gap-2">
               <div>
-                <label className="text-sm text-[var(--muted)] block mb-1">
+                <label className="text-sm text-[var(--surface-subtle)] block mb-1">
                   {DRIVER_PORTAL_MESSAGES.CARD.NOTES_LABEL}
                 </label>
                 <input
-                  className="field-input w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--text)] text-sm focus:border-[var(--primary)] outline-none"
+                  className="field-input w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--foreground)] text-sm focus:border-[var(--primary)] outline-none"
                   value={notesInput}
                   onChange={(e) => setNotesInput(e.target.value)}
                   placeholder={DRIVER_PORTAL_MESSAGES.CARD.NOTES_PLACEHOLDER}
@@ -263,7 +263,7 @@ export function ShipmentCard({
 
               {nextStatus === 'delivered_confirmed' && (
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-[var(--muted)] block">
+                  <label className="text-sm font-semibold text-[var(--surface-subtle)] block">
                     {DRIVER_PORTAL_MESSAGES.CARD.PROOF_LABEL}
                     <span className="text-[var(--danger)] font-bold ml-1">
                       (*)
@@ -272,19 +272,19 @@ export function ShipmentCard({
 
                   {/* Signature */}
                   {signatureDataUrl ? (
-                    <div className="relative rounded-xl border border-[var(--border)] bg-white overflow-hidden">
+                    <div className="relative rounded-xl border border-[var(--border)] bg-surface overflow-hidden">
                       <img
                         src={signatureDataUrl}
                         alt={DRIVER_PORTAL_MESSAGES.CARD.SIGNATURE_ALT}
                         className="w-full max-h-24 object-contain"
                       />
-                      <div className="absolute top-1 left-2 text-[10px] text-[var(--text-tertiary)] font-semibold uppercase">
+                      <div className="absolute top-1 left-2 text-[10px] text-[var(--muted-foreground)] font-semibold uppercase">
                         {DRIVER_PORTAL_MESSAGES.CARD.SIGNATURE_TAG}
                       </div>
                       <button
                         type="button"
                         onClick={() => setSignatureDataUrl(null)}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70"
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-foreground/50 flex items-center justify-center text-inverse-foreground hover:bg-black/70"
                       >
                         <Icon name="X" size={12} />
                       </button>
@@ -293,7 +293,7 @@ export function ShipmentCard({
                     <button
                       type="button"
                       onClick={() => setShowSignaturePad(true)}
-                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--muted)] text-sm hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
+                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--surface-subtle)] text-sm hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
                     >
                       <Icon name="PenLine" size={16} />
                       {DRIVER_PORTAL_MESSAGES.CARD.GET_SIGNATURE}
@@ -316,7 +316,7 @@ export function ShipmentCard({
                         alt={DRIVER_PORTAL_MESSAGES.CARD.PHOTO_ALT}
                         className="w-full max-h-32 object-cover"
                       />
-                      <div className="absolute top-1 left-2 text-[10px] text-[var(--text-tertiary)] font-semibold uppercase drop-shadow-md">
+                      <div className="absolute top-1 left-2 text-[10px] text-[var(--muted-foreground)] font-semibold uppercase drop-shadow-md">
                         {DRIVER_PORTAL_MESSAGES.CARD.PHOTO_TAG}
                       </div>
                       <button
@@ -325,7 +325,7 @@ export function ShipmentCard({
                           setPhotoFile(null);
                           setPhotoPreview(null);
                         }}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70"
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-foreground/50 flex items-center justify-center text-inverse-foreground hover:bg-black/70"
                       >
                         <Icon name="X" size={12} />
                       </button>
@@ -334,7 +334,7 @@ export function ShipmentCard({
                     <button
                       type="button"
                       onClick={() => photoInputRef.current?.click()}
-                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--muted)] text-sm hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
+                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--surface-subtle)] text-sm hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
                     >
                       <Icon name="Camera" size={16} />
                       {DRIVER_PORTAL_MESSAGES.CARD.TAKE_PHOTO}
@@ -355,22 +355,22 @@ export function ShipmentCard({
           {/* Journey log */}
           {logs.length > 0 && (
             <div>
-              <p className="text-xs font-bold uppercase text-[var(--text-tertiary)] tracking-[0.06em] mb-2">
+              <p className="text-xs font-bold uppercase text-[var(--muted-foreground)] tracking-[0.06em] mb-2">
                 {DRIVER_PORTAL_MESSAGES.CARD.JOURNEY_LOG}
               </p>
               <div className="flex flex-col gap-1">
                 {logs.map((log) => (
                   <div
                     key={log.id}
-                    className="flex gap-2 text-xs text-[var(--muted)]"
+                    className="flex gap-2 text-xs text-[var(--surface-subtle)]"
                   >
                     <Icon name="Clock" size={13} className="shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold text-[var(--text)]">
+                      <span className="font-semibold text-[var(--foreground)]">
                         {JOURNEY_STATUS_LABELS[log.journey_status]}
                       </span>
                       {log.notes && <span> — {log.notes}</span>}
-                      <span className="text-[var(--text-tertiary)] ml-1">
+                      <span className="text-[var(--muted-foreground)] ml-1">
                         {new Date(log.created_at).toLocaleTimeString('vi-VN', {
                           hour: '2-digit',
                           minute: '2-digit',

@@ -57,7 +57,7 @@ export function SupplierInvoicesPage() {
           <h1 className="text-2xl font-bold text-foreground">
             {TEXT.INVOICES_TITLE}
           </h1>
-          <p className="text-muted mt-1">{TEXT.INVOICES_DESC}</p>
+          <p className="text-muted-foreground mt-1">{TEXT.INVOICES_DESC}</p>
         </div>
         <div className="w-full sm:w-72">
           <SearchInput
@@ -75,7 +75,7 @@ export function SupplierInvoicesPage() {
         <CardContent>
           <div className="rounded-md border border-default overflow-hidden">
             <table className="w-full text-sm text-left text-foreground">
-              <thead className="text-xs text-muted bg-surface uppercase border-b border-default">
+              <thead className="text-xs text-muted-foreground bg-surface uppercase border-b border-default">
                 <tr>
                   <th className="px-6 py-3 font-medium">
                     {TEXT.INVOICES_COL_CODE}

@@ -216,6 +216,7 @@ export const PAYMENTS_PAGE_MESSAGES = {
 };
 
 export const PAYMENT_FORM_MESSAGES = {
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   SUCCESS_FULLY_PAID: '✅ Đơn hàng đã được thanh toán đầy đủ.',
 };
 

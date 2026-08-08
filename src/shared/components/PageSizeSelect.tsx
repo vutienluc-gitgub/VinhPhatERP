@@ -24,7 +24,7 @@ export function PageSizeSelect({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-muted whitespace-nowrap">
+      <span className="text-sm text-muted-foreground whitespace-nowrap">
         {TABLE_LABELS.DISPLAY_LABEL}
       </span>
       <VPSelect<number>

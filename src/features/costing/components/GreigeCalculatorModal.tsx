@@ -125,7 +125,7 @@ export function GreigeCalculatorModal({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] transition-opacity"
+        className="fixed inset-0 bg-foreground/60 backdrop-blur-sm z-[100] transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -146,7 +146,7 @@ export function GreigeCalculatorModal({
           </div>
           <button
             type="button"
-            className="p-1.5 text-muted hover:text-foreground hover:bg-border/50 rounded transition-colors"
+            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-border/50 rounded transition-colors"
             onClick={onClose}
             aria-label={COSTING_LABELS.BTN_CLOSE}
           >
@@ -174,7 +174,7 @@ export function GreigeCalculatorModal({
               ))}
             </select>
             {isLoadingBom && (
-              <p className="text-xs text-primary mt-2 animate-pulse">
+              <p className="text-xs text-foreground mt-2 animate-pulse">
                 {COSTING_LABELS.LOADING_BOM}
               </p>
             )}
@@ -185,8 +185,8 @@ export function GreigeCalculatorModal({
               <button
                 className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
                   activeTab === 'simulation'
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted hover:text-foreground'
+                    ? 'border-primary text-foreground'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => setActiveTab('simulation')}
               >
@@ -195,8 +195,8 @@ export function GreigeCalculatorModal({
               <button
                 className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
                   activeTab === 'history'
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted hover:text-foreground'
+                    ? 'border-primary text-foreground'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => setActiveTab('history')}
               >
@@ -289,7 +289,7 @@ export function GreigeCalculatorModal({
                 </div>
                 <div className="w-full md:w-[250px] flex flex-col gap-4">
                   <div className="p-4 bg-primary/10 border border-primary/30 rounded-xl">
-                    <p className="text-xs font-semibold text-primary/80 uppercase tracking-wider mb-1">
+                    <p className="text-xs font-semibold text-foreground/80 uppercase tracking-wider mb-1">
                       {COSTING_LABELS.SUGGESTED_PRICE}
                     </p>
                     <div className="text-2xl font-black text-primary-strong">
@@ -299,7 +299,7 @@ export function GreigeCalculatorModal({
                       <span className="font-semibold">
                         {COSTING_LABELS.CURRENCY_SYMBOL}
                       </span>
-                      <span className="text-sm font-normal text-muted">
+                      <span className="text-sm font-normal text-muted-foreground">
                         /{COSTING_LABELS.UNIT_PRICE.split('/')[1]}
                       </span>
                     </div>

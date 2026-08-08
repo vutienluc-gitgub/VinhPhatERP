@@ -55,7 +55,7 @@ export function FabricPublicSeoSection({
                   size={14}
                   className="text-muted-foreground shrink-0"
                 />
-                <span className="text-sm font-medium text-secondary truncate">
+                <span className="text-sm font-medium text-muted-foreground truncate">
                   {watchSlug || LABELS.NA}
                 </span>
               </div>
@@ -64,7 +64,7 @@ export function FabricPublicSeoSection({
                 variant="ghost"
                 size="sm"
                 onClick={handleSlugEditStart}
-                className="shrink-0 h-8 text-xs px-2 text-muted hover:text-primary"
+                className="shrink-0 h-8 text-xs px-2 text-muted-foreground hover:text-foreground"
               >
                 {LABELS.SLUG_EDIT}
               </Button>
@@ -89,7 +89,7 @@ export function FabricPublicSeoSection({
                 type="button"
                 variant="ghost"
                 onClick={handleSlugEditCancel}
-                className="shrink-0 text-muted hover:text-primary"
+                className="shrink-0 text-muted-foreground hover:text-foreground"
               >
                 {LABELS.SLUG_CANCEL}
               </Button>
@@ -108,7 +108,7 @@ export function FabricPublicSeoSection({
             {LABELS.PUBLIC_PAGE_LABEL}
           </label>
           <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center min-w-0 w-full">
-            <div className="text-xs text-muted break-all p-2 bg-slate-50 rounded border border-default flex-1 min-w-0 w-full">
+            <div className="text-xs text-muted-foreground break-all p-2 bg-slate-50 rounded border border-default flex-1 min-w-0 w-full">
               {publicUrl}
             </div>
 
@@ -118,7 +118,7 @@ export function FabricPublicSeoSection({
                   type="button"
                   title="Copy Link"
                   onClick={handleCopyLink}
-                  className="w-8 h-8 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-surface-secondary transition-colors"
+                  className="w-8 h-8 flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-surface-secondary transition-colors"
                 >
                   <Icon name="Copy" size={16} />
                 </button>
@@ -126,7 +126,7 @@ export function FabricPublicSeoSection({
                   type="button"
                   title="Open Link"
                   onClick={() => window.open(publicUrl, '_blank')}
-                  className="w-8 h-8 flex items-center justify-center rounded text-muted-foreground hover:text-primary hover:bg-surface-secondary transition-colors"
+                  className="w-8 h-8 flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-surface-secondary transition-colors"
                 >
                   <Icon name="ExternalLink" size={16} />
                 </button>
@@ -145,14 +145,14 @@ export function FabricPublicSeoSection({
               <button
                 type="button"
                 onClick={handleDownloadQR}
-                className="text-xs font-medium text-muted hover:text-primary transition-colors flex items-center gap-1"
+                className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
               >
                 <Icon name="Download" size={14} /> PNG
               </button>
               <button
                 type="button"
                 onClick={handlePrintQR}
-                className="text-xs font-medium text-muted hover:text-primary transition-colors flex items-center gap-1 ml-2"
+                className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 ml-2"
               >
                 <Icon name="Printer" size={14} /> In
               </button>

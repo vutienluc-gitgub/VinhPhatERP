@@ -96,7 +96,7 @@ export function FabricCatalogForm({
           </div>
           {isEditing && catalog && (
             <div className="flex items-center gap-2 text-xs font-normal text-muted-foreground mt-0.5">
-              <span className="font-mono bg-surface-secondary px-1.5 py-0.5 rounded text-muted font-medium">
+              <span className="font-mono bg-surface-secondary px-1.5 py-0.5 rounded text-muted-foreground font-medium">
                 {catalog.code}
               </span>
               {catalog.category_id && (
@@ -144,7 +144,7 @@ export function FabricCatalogForm({
         </div>
       }
       subHeader={
-        <div className="px-6 py-2 border-b border-default bg-white/80 backdrop-blur-md sticky top-0 z-10">
+        <div className="px-6 py-2 border-b border-default bg-surface/80 backdrop-blur-md sticky top-0 z-10">
           <TabSwitcher
             tabs={FORM_TABS}
             active={activeTab}

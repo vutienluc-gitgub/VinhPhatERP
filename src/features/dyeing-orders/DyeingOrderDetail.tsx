@@ -36,7 +36,11 @@ export function DyeingOrderDetail({
   const confirm = useConfirm();
 
   if (isLoading)
-    return <div className="p-10 text-center text-muted">{MSG.ERR_LOAD}</div>;
+    return (
+      <div className="p-10 text-center text-muted-foreground">
+        {MSG.ERR_LOAD}
+      </div>
+    );
   if (error || !order)
     return (
       <div className="p-10 text-center text-danger">{MSG.ERR_NOT_FOUND}</div>
@@ -102,7 +106,7 @@ export function DyeingOrderDetail({
             <span className="font-bold text-lg flex items-center gap-2">
               {order.dyeing_order_number}
             </span>
-            <p className="text-muted mt-0.5 font-medium">
+            <p className="text-muted-foreground mt-0.5 font-medium">
               {order.suppliers?.name}
             </p>
           </div>
@@ -116,7 +120,7 @@ export function DyeingOrderDetail({
         {/* Info Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 bg-surface/50 p-4 rounded-xl">
           <div>
-            <label className="text-xs font-bold text-muted uppercase block mb-1">
+            <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
               {MSG.LBL_DATE}
             </label>
             <div className="font-semibold">
@@ -124,13 +128,13 @@ export function DyeingOrderDetail({
             </div>
           </div>
           <div>
-            <label className="text-xs font-bold text-muted uppercase block mb-1">
+            <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
               {MSG.LBL_NOTE}
             </label>
             <div className="font-semibold">{order.notes || '—'}</div>
           </div>
           <div>
-            <label className="text-xs font-bold text-muted uppercase block mb-1">
+            <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
               {MSG.COL_RETURN_DATE}
             </label>
             <div className="font-semibold">
@@ -140,16 +144,16 @@ export function DyeingOrderDetail({
             </div>
           </div>
           <div>
-            <label className="text-xs font-bold text-muted uppercase block mb-1">
+            <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
               {MSG.COL_PRICE}
             </label>
-            <div className="font-semibold text-primary">
+            <div className="font-semibold text-foreground">
               <MoneyText value={order.unit_price_per_kg} />
               /kg
             </div>
           </div>
           <div>
-            <label className="text-xs font-bold text-muted uppercase block mb-1">
+            <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">
               {MSG.LBL_WO_LINK}
             </label>
             <div className="font-semibold">{order.work_order_id || '—'}</div>
@@ -203,7 +207,7 @@ export function DyeingOrderDetail({
         {/* Notes */}
         {order.notes && (
           <div className="mb-8 p-3 bg-surface border border-border rounded-lg text-sm">
-            <span className="font-bold text-muted uppercase text-[0.7rem] block mb-1">
+            <span className="font-bold text-muted-foreground uppercase text-[0.7rem] block mb-1">
               {MSG.LBL_NOTE}
             </span>
             {order.notes}
@@ -211,7 +215,7 @@ export function DyeingOrderDetail({
         )}
 
         {/* Items Table */}
-        <h4 className="flex items-center gap-2 mb-4 text-sm font-bold uppercase tracking-wider text-muted">
+        <h4 className="flex items-center gap-2 mb-4 text-sm font-bold uppercase tracking-wider text-muted-foreground">
           <Icon name="List" size={16} /> {MSG.TITLE_ITEMS} (
           {order.dyeing_order_items?.length || 0})
         </h4>
@@ -230,11 +234,11 @@ export function DyeingOrderDetail({
             <tbody>
               {order.dyeing_order_items?.map((item, idx) => (
                 <tr key={item.id}>
-                  <td className="text-muted">{idx + 1}</td>
+                  <td className="text-muted-foreground">{idx + 1}</td>
                   <td className="font-bold">
                     {item.raw_fabric_roll?.roll_number}
                   </td>
-                  <td className="text-muted">
+                  <td className="text-muted-foreground">
                     {item.raw_fabric_roll?.fabric_type}
                   </td>
                   <td className="text-right tabular-nums">
@@ -242,15 +246,15 @@ export function DyeingOrderDetail({
                   </td>
                   <td>
                     <div className="flex flex-col">
-                      <span className="font-medium text-primary">
+                      <span className="font-medium text-foreground">
                         {item.color_name}
                       </span>
-                      <span className="text-[0.7rem] text-muted">
+                      <span className="text-[0.7rem] text-muted-foreground">
                         {item.color_code}
                       </span>
                     </div>
                   </td>
-                  <td className="text-muted max-sm:hidden">
+                  <td className="text-muted-foreground max-sm:hidden">
                     {item.notes || '—'}
                   </td>
                 </tr>

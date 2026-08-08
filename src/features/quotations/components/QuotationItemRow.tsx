@@ -123,7 +123,7 @@ export function QuotationItemRow({
   return (
     <div className="border border-border rounded-lg p-3 bg-surface">
       <div className="flex justify-between items-center mb-2">
-        <span className="text-[0.85rem] font-bold text-muted uppercase tracking-wider">
+        <span className="text-[0.85rem] font-bold text-muted-foreground uppercase tracking-wider">
           {QUOTATION_LABELS.LINE} {index + 1}
         </span>
         <button

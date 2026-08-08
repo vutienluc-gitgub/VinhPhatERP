@@ -119,7 +119,9 @@ export function PRList() {
         accessorKey: 'pr_no',
         header: PR_LABELS.COL_PR_NO,
         cell: ({ row }) => (
-          <span className="font-bold text-primary">{row.original.pr_no}</span>
+          <span className="font-bold text-foreground">
+            {row.original.pr_no}
+          </span>
         ),
       },
       {
@@ -155,7 +157,7 @@ export function PRList() {
         accessorKey: 'created_at',
         header: PR_LABELS.COL_CREATED_AT,
         cell: ({ row }) => (
-          <span className="text-sm text-muted">
+          <span className="text-sm text-muted-foreground">
             {formatDate(row.original.created_at)}
           </span>
         ),
@@ -271,14 +273,18 @@ export function PRList() {
             </div>
             <div className="mobile-card-body space-y-2">
               <p className="font-medium">{pr.requester_dept ?? 'N/A'}</p>
-              <div className="flex items-center justify-between text-sm text-muted">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <Badge variant={PR_PRIORITY_COLORS[pr.priority] ?? 'gray'}>
                   {PR_PRIORITY_LABELS[pr.priority] ?? pr.priority}
                 </Badge>
                 <span>{formatDate(pr.created_at)}</span>
               </div>
               <div className="flex justify-end pt-2 border-t border-border/10">
-                <Icon name="ChevronRight" size={16} className="text-muted" />
+                <Icon
+                  name="ChevronRight"
+                  size={16}
+                  className="text-muted-foreground"
+                />
               </div>
             </div>
           </div>

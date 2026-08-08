@@ -31,13 +31,13 @@ export function ProductionDomain() {
           <div className="space-y-6">
             <div>
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-muted">Đã hoàn thành</span>
+                <span className="text-muted-foreground">Đã hoàn thành</span>
                 <span className="font-medium text-foreground">
                   {progressPct}%
                 </span>
               </div>
               <ProgressBar value={progressPct} />
-              <div className="flex justify-between text-xs mt-2 text-muted">
+              <div className="flex justify-between text-xs mt-2 text-muted-foreground">
                 <span>{formatQuantity(actual)} m</span>
                 <span>{formatQuantity(target)} m</span>
               </div>
@@ -45,14 +45,18 @@ export function ProductionDomain() {
 
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-default">
               <div>
-                <p className="text-xs text-muted mb-1 uppercase">Thực tế</p>
+                <p className="text-xs text-muted-foreground mb-1 uppercase">
+                  Thực tế
+                </p>
                 <p className="text-xl font-bold text-success">
                   {formatQuantity(actual)}{' '}
                   <span className="text-sm font-normal">m</span>
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1 uppercase">Mục tiêu</p>
+                <p className="text-xs text-muted-foreground mb-1 uppercase">
+                  Mục tiêu
+                </p>
                 <p className="text-xl font-bold text-foreground">
                   {formatQuantity(target)}{' '}
                   <span className="text-sm font-normal">m</span>
@@ -67,9 +71,11 @@ export function ProductionDomain() {
             Máy móc (IoT Ready)
           </h2>
           <div className="p-4 bg-surface-secondary rounded text-center border border-dashed border-default">
-            <p className="text-sm text-muted">Chưa gán máy dệt/nhuộm.</p>
+            <p className="text-sm text-muted-foreground">
+              Chưa gán máy dệt/nhuộm.
+            </p>
             {capabilities.canUpdateProduction && (
-              <button className="text-primary text-sm font-medium mt-2 hover:underline">
+              <button className="text-foreground text-sm font-medium mt-2 hover:underline">
                 Gán máy & Ca làm việc
               </button>
             )}

@@ -42,7 +42,7 @@ export function getFinishedFabricColumns(
           />
         ) : (
           <div className="w-10 h-10 rounded bg-surface-subtle flex items-center justify-center">
-            <Icon name="Image" size={16} className="text-muted" />
+            <Icon name="Image" size={16} className="text-muted-foreground" />
           </div>
         );
       },
@@ -54,9 +54,11 @@ export function getFinishedFabricColumns(
         const r = row.original;
         return (
           <div className="flex flex-col">
-            <span className="font-bold text-primary">{r.roll_number}</span>
+            <span className="font-bold text-foreground">{r.roll_number}</span>
             {r.color_name && (
-              <span className="text-xs text-muted">{r.color_name}</span>
+              <span className="text-xs text-muted-foreground">
+                {r.color_name}
+              </span>
             )}
           </div>
         );
@@ -77,14 +79,14 @@ export function getFinishedFabricColumns(
             {r.quality_grade}
           </span>
         ) : (
-          <span className="text-muted">—</span>
+          <span className="text-muted-foreground">—</span>
         );
       },
     },
     {
       accessorKey: 'length_m',
       header: 'Khổ × Dài',
-      meta: { className: 'text-muted' },
+      meta: { className: 'text-muted-foreground' },
       cell: ({ row }) => {
         const r = row.original;
         return (
@@ -126,7 +128,7 @@ export function getFinishedFabricColumns(
       accessorKey: 'warehouse_location',
       header: 'Vị trí',
       cell: ({ row }) => (
-        <span className="text-xs text-muted">
+        <span className="text-xs text-muted-foreground">
           {row.original.warehouse_location ?? '—'}
         </span>
       ),
@@ -193,11 +195,11 @@ export function renderFinishedFabricMobileCard(
       <div className="mobile-card-body">
         <div className="flex justify-between items-start mb-1">
           <span className="text-sm font-bold">{r.fabric_type}</span>
-          <span className="text-xs text-muted">{r.color_name}</span>
+          <span className="text-xs text-muted-foreground">{r.color_name}</span>
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-muted">
+            <span className="text-[10px] uppercase text-muted-foreground">
               Trọng lượng
             </span>
             <span className="text-sm font-medium">
@@ -207,7 +209,9 @@ export function renderFinishedFabricMobileCard(
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-muted">Chất lượng</span>
+            <span className="text-[10px] uppercase text-muted-foreground">
+              Chất lượng
+            </span>
             <span className="text-sm font-bold">{r.quality_grade || '—'}</span>
           </div>
         </div>
@@ -224,7 +228,7 @@ export function renderFinishedFabricMobileCard(
         </button>
         {canEditRoll(r.status) && (
           <button
-            className="btn-secondary flex-1 text-primary"
+            className="btn-secondary flex-1 text-foreground"
             onClick={(e) => {
               e.stopPropagation();
               actions.onEdit(r);

@@ -86,6 +86,7 @@ function DataTableInner<T>({
   skeletonRows = 8,
   emptyStateTitle = 'Không tìm thấy dữ liệu',
   emptyStateDescription = 'Hãy thử thay đổi điều kiện lọc hoặc tạo mới.',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   emptyStateIcon = '🔍',
   emptyStateActionLabel,
   onEmptyStateAction,

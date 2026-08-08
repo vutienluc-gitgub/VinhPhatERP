@@ -233,7 +233,7 @@ export function QuotationForm({
                 ) : (
                   <input
                     id="quotationNumber"
-                    className="field-input italic text-[var(--text-tertiary)]"
+                    className="field-input italic text-[var(--muted-foreground)]"
                     type="text"
                     value={QUOTATION_PLACEHOLDERS.AUTO_NUMBER}
                     readOnly

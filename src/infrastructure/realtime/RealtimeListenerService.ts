@@ -55,6 +55,7 @@ export class RealtimeListenerService {
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
+          // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
           console.info('🟢 [RealtimeService] Subscribed to erp:receivables');
         }
       });

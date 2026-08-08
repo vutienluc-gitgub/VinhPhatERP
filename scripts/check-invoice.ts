@@ -10,8 +10,10 @@ async function checkInvoice() {
     console.error('Lỗi:', error);
   } else {
     if (data && data.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       console.log('✅ Đã tìm thấy trên Database:', data);
     } else {
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       console.log('❌ KHÔNG tìm thấy phiếu GC2604-003 trong cơ sở dữ liệu.');
 
       // Let's also print ALL invoices to see what is currently in there
@@ -20,6 +22,7 @@ async function checkInvoice() {
         .select('invoice_number')
         .order('created_at', { ascending: false })
         .limit(5);
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       console.log('⚠️ 5 phiếu được tạo gần đây nhất là:');
       console.table(all);
     }

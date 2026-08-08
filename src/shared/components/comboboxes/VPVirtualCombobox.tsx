@@ -173,7 +173,7 @@ function VirtualList<T>({
                     {isSelected && (
                       <Icon
                         name="Check"
-                        className="h-4 w-4 shrink-0 text-primary"
+                        className="h-4 w-4 shrink-0 text-foreground"
                       />
                     )}
                   </div>

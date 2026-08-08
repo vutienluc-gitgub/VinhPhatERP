@@ -27,20 +27,20 @@ export function InquiryCartDrawer({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-50 animate-fade-in"
+        className="fixed inset-0 bg-foreground/50 z-50 animate-fade-in"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-50 flex flex-col animate-slide-left">
+      <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-surface shadow-2xl z-50 flex flex-col animate-slide-left">
         <div className="p-4 border-b border-default flex justify-between items-center bg-slate-50">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <Icon name="ShoppingCart" className="w-5 h-5 text-primary" />
+            <Icon name="ShoppingCart" className="w-5 h-5 text-foreground" />
             {LABELS.inquiryCartTitle} ({itemsList.length})
           </h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-surface-secondary text-muted"
+            className="p-1 rounded-full hover:bg-surface-secondary text-muted-foreground"
           >
             <Icon name="X" className="w-5 h-5" />
           </button>
@@ -48,12 +48,15 @@ export function InquiryCartDrawer({
 
         <div className="flex-1 overflow-y-auto p-4">
           {itemsList.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-muted space-y-3">
-              <Icon name="PackageOpen" className="w-12 h-12 text-muted" />
+            <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-3">
+              <Icon
+                name="PackageOpen"
+                className="w-12 h-12 text-muted-foreground"
+              />
               <p className="text-sm">{LABELS.inquiryCartEmpty}</p>
               <button
                 onClick={onClose}
-                className="text-primary text-sm font-semibold hover:underline"
+                className="text-foreground text-sm font-semibold hover:underline"
               >
                 {LABELS.inquiryCartContinue}
               </button>
@@ -63,7 +66,7 @@ export function InquiryCartDrawer({
               {itemsList.map((item) => (
                 <div
                   key={item.id}
-                  className="flex gap-3 p-3 border border-default rounded-xl hover:shadow-sm transition-shadow bg-white group relative"
+                  className="flex gap-3 p-3 border border-default rounded-xl hover:shadow-sm transition-shadow bg-surface group relative"
                 >
                   <div className="w-16 h-16 bg-surface-secondary rounded-lg overflow-hidden shrink-0">
                     {item.image_url ? (
@@ -74,18 +77,20 @@ export function InquiryCartDrawer({
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted">
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                         <Icon name="Image" className="w-6 h-6" />
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0 py-1">
-                    <p className="text-sm font-bold text-primary truncate">
+                    <p className="text-sm font-bold text-foreground truncate">
                       {item.code}
                     </p>
-                    <p className="text-xs text-muted truncate">{item.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {item.name}
+                    </p>
                     {item.color_name && (
-                      <p className="text-[10px] bg-surface-secondary text-muted px-1.5 py-0.5 rounded inline-block mt-1">
+                      <p className="text-[10px] bg-surface-secondary text-muted-foreground px-1.5 py-0.5 rounded inline-block mt-1">
                         {LABELS.colorViewing.replace(':', '')} {item.color_name}
                       </p>
                     )}
@@ -104,22 +109,22 @@ export function InquiryCartDrawer({
         </div>
 
         {itemsList.length > 0 && (
-          <div className="p-4 border-t border-default bg-white space-y-2">
+          <div className="p-4 border-t border-default bg-surface space-y-2">
             <button
               onClick={onRequestSample}
-              className="w-full bg-success-soft hover:bg-success-soft text-white font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
+              className="w-full bg-success-soft hover:bg-success-soft text-inverse-foreground font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
             >
               <Icon name="PackageSearch" className="w-4 h-4" />
               {LABELS.requestSampleTitle}
             </button>
             <button
               onClick={onRequestRFQ}
-              className="w-full bg-info-soft hover:bg-info-soft text-white font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
+              className="w-full bg-info-soft hover:bg-info-soft text-inverse-foreground font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
             >
               <Icon name="FileText" className="w-4 h-4" />
               {LABELS.rfqBtn}
             </button>
-            <p className="text-[11px] text-center text-muted mt-3">
+            <p className="text-[11px] text-center text-muted-foreground mt-3">
               {LABELS.inquiryCartNotice}
             </p>
           </div>

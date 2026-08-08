@@ -193,7 +193,7 @@ export function ExpenseForm({
               </label>
               <input
                 id="expenseNumber"
-                className="field-input bg-[var(--surface-disabled)] text-[var(--text-tertiary)] italic"
+                className="field-input bg-[var(--surface-disabled)] text-[var(--muted-foreground)] italic"
                 type="text"
                 readOnly
                 {...register('expenseNumber')}

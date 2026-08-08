@@ -279,7 +279,7 @@ export function CompanySettingsForm({
                   {errors.default_user_role.message}
                 </p>
               )}
-              <p className="text-xs text-muted mt-1 italic">
+              <p className="text-xs text-muted-foreground mt-1 italic">
                 {SETTINGS_MESSAGES.DEFAULT_ROLE_HINT}
               </p>
             </div>

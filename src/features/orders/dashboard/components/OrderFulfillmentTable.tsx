@@ -117,14 +117,14 @@ export function OrderFulfillmentTable({
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-zinc-100 bg-white p-8 flex items-center justify-center">
+      <div className="rounded-xl border border-zinc-100 bg-surface p-8 flex items-center justify-center">
         <div className="animate-spin h-6 w-6 border-2 border-info border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-zinc-100 bg-white overflow-hidden">
+    <div className="rounded-xl border border-zinc-100 bg-surface overflow-hidden">
       {/* Filter tabs */}
       <div className="flex items-center gap-1 px-4 pt-4 pb-3 border-b border-zinc-50">
         {filterButtons.map((btn) => (

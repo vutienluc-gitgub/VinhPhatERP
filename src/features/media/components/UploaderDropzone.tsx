@@ -72,7 +72,7 @@ export function UploaderDropzone({
   return (
     <>
       <div
-        className={`media-dropzone${isDragActive ? ' text-primary bg-primary/10' : ''}`}
+        className={`media-dropzone${isDragActive ? ' text-foreground bg-primary/10' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -118,7 +118,10 @@ export function UploaderDropzone({
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
-                  color: u.status === 'error' ? 'var(--danger)' : 'var(--text)',
+                  color:
+                    u.status === 'error'
+                      ? 'var(--danger)'
+                      : 'var(--foreground)',
                 }}
               >
                 {u.fileName}
@@ -138,7 +141,7 @@ export function UploaderDropzone({
               <span
                 style={{
                   fontSize: '0.72rem',
-                  color: 'var(--muted)',
+                  color: 'var(--surface-subtle)',
                   whiteSpace: 'nowrap',
                 }}
               >

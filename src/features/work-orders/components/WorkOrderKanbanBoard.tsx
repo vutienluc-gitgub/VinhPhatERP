@@ -70,7 +70,7 @@ function KanbanCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white rounded-xl p-3 shadow-sm border ${
+      className={`bg-surface rounded-xl p-3 shadow-sm border ${
         isDragging
           ? 'border-primary ring-2 ring-primary/20 opacity-50'
           : 'border-border'
@@ -79,7 +79,7 @@ function KanbanCard({
       {...listeners}
     >
       <div className="flex justify-between items-start mb-2">
-        <span className="font-bold text-primary text-sm">
+        <span className="font-bold text-foreground text-sm">
           {wo.work_order_number}
         </span>
         {wo.order && (
@@ -143,7 +143,7 @@ function KanbanCard({
               e.stopPropagation();
               onEdit(wo);
             }}
-            className="h-7 flex-1 text-[11px] text-primary"
+            className="h-7 flex-1 text-[11px] text-foreground"
           >
             Sửa lệnh
           </Button>
@@ -174,7 +174,10 @@ function DroppableColumn({
         <h3 className="font-bold text-foreground text-[13px] uppercase tracking-wider">
           {col.label}
         </h3>
-        <Badge variant="gray" className="bg-white/60 text-muted font-bold">
+        <Badge
+          variant="gray"
+          className="bg-surface/60 text-muted-foreground font-bold"
+        >
           {items.length}
         </Badge>
       </div>
@@ -285,9 +288,9 @@ export function WorkOrderKanbanBoard({
 
       <DragOverlay>
         {activeWO ? (
-          <div className="bg-white rounded-xl p-3 shadow-2xl border border-primary ring-2 ring-primary/20 rotate-3 scale-105 cursor-grabbing w-[280px]">
+          <div className="bg-surface rounded-xl p-3 shadow-2xl border border-primary ring-2 ring-primary/20 rotate-3 scale-105 cursor-grabbing w-[280px]">
             <div className="flex justify-between items-start mb-2">
-              <span className="font-bold text-primary text-sm">
+              <span className="font-bold text-foreground text-sm">
                 {activeWO.work_order_number}
               </span>
             </div>

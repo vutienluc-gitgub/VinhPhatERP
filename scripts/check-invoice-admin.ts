@@ -17,11 +17,14 @@ async function checkInvoice() {
     // Exact check for GC2604-003
     const exists = data.find((d) => d.invoice_number === 'GC2604-003');
     if (exists) {
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       console.log('✅ Đã tìm thấy trên Database:', exists);
     } else {
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       console.log('❌ KHÔNG tìm thấy phiếu GC2604-003 trong cơ sở dữ liệu.');
     }
 
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.log(`\n⚠️ Hiện tại có tổng cộng ${data.length} phiếu GC26...`);
     if (data.length > 0) {
       console.log('Dưới đây là danh sách toàn bộ các phiếu đã lưu:');

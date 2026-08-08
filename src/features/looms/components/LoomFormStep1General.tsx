@@ -28,7 +28,7 @@ export function LoomFormStep1General({
 
   return (
     <section>
-      <h3 className="text-sm font-semibold text-foreground dark:text-muted mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+      <h3 className="text-sm font-semibold text-foreground dark:text-muted-foreground mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
         <Icon name="Info" size={16} className="text-info" />
         Loại máy & Mã máy
       </h3>
@@ -108,7 +108,7 @@ export function LoomFormStep1General({
               readOnly
               {...register('code')}
             />
-            <span className="text-xs text-muted dark:text-muted-foreground mt-1">
+            <span className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
               Tự động: {smartPrefix}-###
             </span>
             {errors.code && (

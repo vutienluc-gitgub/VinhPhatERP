@@ -40,7 +40,9 @@ export function StatusBadge({
       <div className="flex flex-col gap-1.5 w-full min-w-[100px]">
         <div className="flex justify-between items-center gap-2">
           {badgeNode}
-          <span className="text-xs font-medium text-muted">{p}%</span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {p}%
+          </span>
         </div>
         <div className="w-full h-1.5 bg-surface-secondary rounded-full overflow-hidden">
           <div

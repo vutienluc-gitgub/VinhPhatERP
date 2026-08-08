@@ -36,7 +36,7 @@ export function FabricAdminTab({
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl border border-default shadow-sm p-6 space-y-6">
+      <div className="bg-surface rounded-2xl border border-default shadow-sm p-6 space-y-6">
         <div>
           <h3 className="text-lg font-semibold tracking-tight text-foreground mb-4">
             {LABELS.ADMIN_GENERAL_CONFIG}
@@ -72,7 +72,7 @@ export function FabricAdminTab({
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-default shadow-sm p-6">
+      <div className="bg-surface rounded-2xl border border-default shadow-sm p-6">
         <FabricPublicSeoSection
           publicUrl={publicUrl}
           isSlugEditing={isSlugEditing}

@@ -25,7 +25,7 @@ const SupplierForm = lazy(() =>
 function PreviewLoading() {
   return (
     <div className="flex items-center justify-center p-8 h-40">
-      <Icon name="Loader2" className="w-8 h-8 animate-spin text-primary" />
+      <Icon name="Loader2" className="w-8 h-8 animate-spin text-foreground" />
     </div>
   );
 }

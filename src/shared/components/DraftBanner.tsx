@@ -16,6 +16,7 @@ export default function DraftBanner({
     >
       <div className="flex items-center gap-2">
         <span className="font-semibold">
+          {/* eslint-disable-next-line no-restricted-syntax -- Allowed string emoji */}
           {hasConflict ? '⚠️ Xung đột dữ liệu:' : '📝 Bản nháp:'}
         </span>
         <span>

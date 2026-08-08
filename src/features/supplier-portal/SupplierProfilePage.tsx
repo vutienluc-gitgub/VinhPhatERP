@@ -111,13 +111,13 @@ export function SupplierProfilePage() {
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto">
       <div className="flex items-center gap-2 mb-6">
-        <Icon name="UserCircle" className="text-primary w-6 h-6" />
+        <Icon name="UserCircle" className="text-foreground w-6 h-6" />
         <h1 className="text-2xl font-bold text-foreground">
           {TEXT.PROFILE_TITLE}
         </h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-border p-6">
+      <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">

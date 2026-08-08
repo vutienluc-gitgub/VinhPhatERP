@@ -21,10 +21,10 @@ function WeavingInvoiceFormWrapper({
 
   if (invoiceId && isPending) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-        <div className="bg-white p-6 rounded-xl shadow-xl flex items-center space-x-3">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm">
+        <div className="bg-surface p-6 rounded-xl shadow-xl flex items-center space-x-3">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-medium text-secondary">
+          <span className="text-sm font-medium text-muted-foreground">
             {MSG.LOADING_INVOICE}
           </span>
         </div>

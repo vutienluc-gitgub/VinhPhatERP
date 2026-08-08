@@ -174,7 +174,7 @@ export function FabricSampleQRModal({
         )}
         <div ref={printAreaRef}>
           <div
-            className="border border-border rounded-lg overflow-hidden bg-white shadow-sm flex justify-center items-center p-2"
+            className="border border-border rounded-lg overflow-hidden bg-surface shadow-sm flex justify-center items-center p-2"
             style={{ width: 'fit-content', margin: '0 auto' }}
           >
             {/* Scale down the 800x400 AST view for UI preview */}

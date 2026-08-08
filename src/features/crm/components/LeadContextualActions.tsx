@@ -62,7 +62,7 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
         <Button
           variant="secondary"
           onClick={() => navigate(`/app/customers?id=${lead.customer_id}`)}
-          className="bg-white hover:bg-teal-50 text-success border-success"
+          className="bg-surface hover:bg-teal-50 text-success border-success"
         >
           Mở hồ sơ
         </Button>
@@ -94,12 +94,14 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
             {duplicates.customers.map((c) => (
               <div
                 key={c.id}
-                className="flex items-center justify-between bg-white p-3 rounded-lg border border-warning shadow-sm"
+                className="flex items-center justify-between bg-surface p-3 rounded-lg border border-warning shadow-sm"
               >
                 <div className="flex items-center gap-2">
                   <Icon name="Building2" className="h-4 w-4 text-warning" />
                   <div>
-                    <p className="text-sm font-bold text-primary">{c.name}</p>
+                    <p className="text-sm font-bold text-foreground">
+                      {c.name}
+                    </p>
                   </div>
                 </div>
                 <Button
@@ -117,7 +119,7 @@ export function LeadContextualActions({ lead }: LeadContextualActionsProps) {
           <div className="flex justify-end">
             <Button
               variant="outline"
-              className="bg-white text-warning-strong border-warning hover:bg-warning-soft"
+              className="bg-surface text-warning-strong border-warning hover:bg-warning-soft"
               onClick={() => setShowDuplicates(true)}
             >
               Xem khách hàng trùng

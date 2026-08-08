@@ -21,10 +21,10 @@ import { vietnameseAuthError } from './utils';
 /* ── Shared Styles ───────────────────────────────────────── */
 
 const FLOATING_INPUT =
-  'peer w-full px-4 pt-5 pb-2 bg-black/20 border border-white/10 rounded-xl text-white placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200';
+  'peer w-full px-4 pt-5 pb-2 bg-foreground/20 border border-transparent/10 rounded-xl text-inverse-foreground placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200';
 
 const FLOATING_LABEL =
-  'absolute left-4 top-1/2 -translate-y-1/2 text-white/40 text-sm pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-white/80 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-white/80';
+  'absolute left-4 top-1/2 -translate-y-1/2 text-inverse-foreground/40 text-sm pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-white/80 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-white/80';
 
 /* ── Component ───────────────────────────────────────────── */
 
@@ -112,10 +112,10 @@ export function LoginForm({
         <p className="text-warning font-semibold text-sm uppercase tracking-wider mb-2">
           {AUTH_MESSAGES.missingEnvTitle}
         </p>
-        <h2 className="text-xl font-bold text-white mb-4">
+        <h2 className="text-xl font-bold text-inverse-foreground mb-4">
           {AUTH_MESSAGES.missingEnvDesc}
         </h2>
-        <p className="text-white/70 text-sm leading-relaxed">
+        <p className="text-inverse-foreground/70 text-sm leading-relaxed">
           {AUTH_MESSAGES.missingEnvInstruction}
         </p>
       </div>
@@ -136,10 +136,12 @@ export function LoginForm({
     >
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="text-center mb-2">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold text-inverse-foreground mb-2">
           {AUTH_MESSAGES.welcomeBack}
         </h2>
-        <p className="text-white/50 text-sm">{AUTH_MESSAGES.loginToContinue}</p>
+        <p className="text-inverse-foreground/50 text-sm">
+          {AUTH_MESSAGES.loginToContinue}
+        </p>
       </div>
 
       {/* ── Form Fields ────────────────────────────────────── */}
@@ -209,12 +211,12 @@ export function LoginForm({
               type="checkbox"
               id="rememberMe"
               disabled={isLocked}
-              className="w-4 h-4 rounded border-white/20 bg-black/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-4 h-4 rounded border-transparent/20 bg-foreground/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               {...register('rememberMe')}
             />
             <label
               htmlFor="rememberMe"
-              className="text-sm text-white/70 cursor-pointer select-none"
+              className="text-sm text-inverse-foreground/70 cursor-pointer select-none"
             >
               {AUTH_LABELS.rememberMe}
             </label>
@@ -242,11 +244,11 @@ export function LoginForm({
 
       {/* ── Divider ────────────────────────────────────────── */}
       <div className="flex items-center gap-4 my-2">
-        <div className="flex-1 h-px bg-white/10" />
-        <span className="text-xs font-medium text-white/40 uppercase tracking-wider">
+        <div className="flex-1 h-px bg-surface/10" />
+        <span className="text-xs font-medium text-inverse-foreground/40 uppercase tracking-wider">
           {AUTH_MESSAGES.or}
         </span>
-        <div className="flex-1 h-px bg-white/10" />
+        <div className="flex-1 h-px bg-surface/10" />
       </div>
 
       {/* ── Google Button (with Glow) ──────────────────────── */}
@@ -254,7 +256,7 @@ export function LoginForm({
         type="button"
         onClick={handleGoogleLogin}
         disabled={isLocked}
-        className="group relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-slate-50 text-primary rounded-xl font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        className="group relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-surface hover:bg-slate-50 text-foreground rounded-xl font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           transform: `scale(1)`,
           transition: `transform ${AuthMotion.duration.fast}ms ease`,
@@ -292,7 +294,7 @@ export function LoginForm({
         type="submit"
         disabled={isLocked || !captchaToken}
         aria-busy={isSubmitting}
-        className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#818cf8] hover:to-[#6366f1] border-none shadow-lg shadow-[#6366f1]/30 text-white font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#818cf8] hover:to-[#6366f1] border-none shadow-lg shadow-[#6366f1]/30 text-inverse-foreground font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {isSubmitting && (
           <Icon name="LoaderCircle" size={18} className="animate-spin" />

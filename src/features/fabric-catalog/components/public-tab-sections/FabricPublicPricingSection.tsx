@@ -78,7 +78,7 @@ export function FabricPublicPricingSection() {
             <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
               Lowest Price
             </div>
-            <div className="font-bold text-primary text-lg">
+            <div className="font-bold text-foreground text-lg">
               {lowestPrice !== null ? (
                 <MoneyText
                   value={lowestPrice}
@@ -94,7 +94,7 @@ export function FabricPublicPricingSection() {
             <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
               MOQ
             </div>
-            <div className="font-bold text-primary text-lg">
+            <div className="font-bold text-foreground text-lg">
               {moq} {unit}
             </div>
           </div>
@@ -103,7 +103,7 @@ export function FabricPublicPricingSection() {
             <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
               Visible Tiers
             </div>
-            <div className="font-bold text-primary text-lg">
+            <div className="font-bold text-foreground text-lg">
               {visibleTiersCount}
             </div>
           </div>
@@ -122,7 +122,7 @@ export function FabricPublicPricingSection() {
         <div className="pt-2">
           <button
             type="button"
-            className="flex items-center text-sm font-medium text-muted hover:text-primary transition-colors"
+            className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             onClick={() => setIsEditorOpen(!isEditorOpen)}
           >
             <span>Edit Pricing</span>
@@ -167,7 +167,7 @@ export function FabricPublicPricingSection() {
             {pricingTiers.length > 0 ? (
               <div className="border border-default rounded-lg overflow-x-auto">
                 <table className="w-full text-sm text-left min-w-[850px]">
-                  <thead className="bg-slate-50 text-muted font-medium">
+                  <thead className="bg-slate-50 text-muted-foreground font-medium">
                     <tr>
                       <th className="p-3 w-28">{LABELS.PRICING_COL_MIN}</th>
                       <th className="p-3 w-28">{LABELS.PRICING_COL_MAX}</th>
@@ -189,7 +189,7 @@ export function FabricPublicPricingSection() {
                       return (
                         <tr
                           key={field.id}
-                          className="bg-white hover:bg-slate-50/50"
+                          className="bg-surface hover:bg-slate-50/50"
                         >
                           {/* Min Qty */}
                           <td className="p-2">
@@ -310,7 +310,7 @@ export function FabricPublicPricingSection() {
                 </table>
               </div>
             ) : (
-              <div className="p-8 border border-dashed border-muted rounded-lg text-center text-muted text-sm bg-slate-50">
+              <div className="p-8 border border-dashed border-muted rounded-lg text-center text-muted-foreground text-sm bg-slate-50">
                 {LABELS.PRICING_EMPTY}
               </div>
             )}
@@ -360,8 +360,8 @@ function GroupSelector({ selectedIds, onChange, groups }: GroupSelectorProps) {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-10 mt-1 w-64 bg-white border border-default rounded-xl shadow-xl z-50 p-3.5 space-y-3 text-xs max-h-60 overflow-y-auto">
-            <span className="font-bold text-secondary block mb-1">
+          <div className="absolute right-0 top-10 mt-1 w-64 bg-surface border border-default rounded-xl shadow-xl z-50 p-3.5 space-y-3 text-xs max-h-60 overflow-y-auto">
+            <span className="font-bold text-muted-foreground block mb-1">
               Chọn nhóm khách hàng
             </span>
             <div className="space-y-2">
@@ -370,7 +370,7 @@ function GroupSelector({ selectedIds, onChange, groups }: GroupSelectorProps) {
                 return (
                   <label
                     key={g.id}
-                    className="flex items-center gap-2 cursor-pointer text-muted hover:text-primary select-none py-1 hover:bg-slate-50 rounded px-1"
+                    className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground select-none py-1 hover:bg-slate-50 rounded px-1"
                   >
                     <input
                       type="checkbox"
@@ -398,7 +398,7 @@ function GroupSelector({ selectedIds, onChange, groups }: GroupSelectorProps) {
               <button
                 type="button"
                 onClick={() => onChange([])}
-                className="w-full text-center text-primary font-bold hover:underline border-t border-default pt-2 block mt-2 cursor-pointer bg-transparent border-none"
+                className="w-full text-center text-foreground font-bold hover:underline border-t border-default pt-2 block mt-2 cursor-pointer bg-transparent border-none"
               >
                 Xóa tất cả (Chung)
               </button>

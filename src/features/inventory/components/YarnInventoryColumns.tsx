@@ -43,7 +43,7 @@ export function useYarnInventoryColumns(
       cell: ({ row }) => (
         <button
           onClick={() => onCodeClick?.(row.original)}
-          className="font-bold text-primary hover:underline text-left"
+          className="font-bold text-foreground hover:underline text-left"
           title="Xem thẻ kho"
         >
           {row.original.code}
@@ -70,7 +70,7 @@ export function useYarnInventoryColumns(
       id: 'total_stock_qty',
       accessorKey: 'total_stock_qty',
       cell: ({ row }) => <WeightText value={row.original.total_stock_qty} />,
-      meta: { className: 'text-right max-sm:hidden text-muted' },
+      meta: { className: 'text-right max-sm:hidden text-muted-foreground' },
     },
     {
       header: MSG.LBL_YARN_RESERVED_KG,
@@ -81,7 +81,7 @@ export function useYarnInventoryColumns(
           className={
             row.original.reserved_qty > 0
               ? 'text-warning font-medium'
-              : 'text-muted'
+              : 'text-muted-foreground'
           }
         >
           {row.original.reserved_qty > 0 ? (
@@ -146,11 +146,11 @@ export function YarnInventoryMobileCard({
         <div className="flex flex-col">
           <button
             onClick={() => onCodeClick?.(row)}
-            className="mobile-card-title hover:underline text-left text-primary cursor-pointer"
+            className="mobile-card-title hover:underline text-left text-foreground cursor-pointer"
           >
             {row.code}
           </button>
-          <span className="text-[10px] text-muted font-bold uppercase">
+          <span className="text-[10px] text-muted-foreground font-bold uppercase">
             {row.name}
           </span>
         </div>
@@ -160,7 +160,7 @@ export function YarnInventoryMobileCard({
       </div>
       <div className="mobile-card-body space-y-3">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted">{MSG.LBL_COLOR}</span>
+          <span className="text-xs text-muted-foreground">{MSG.LBL_COLOR}</span>
           <span className="text-xs font-medium">{row.color_name || '—'}</span>
         </div>
 
@@ -173,15 +173,15 @@ export function YarnInventoryMobileCard({
 
         <div className="grid grid-cols-3 gap-2 text-center bg-surface-subtle/50 p-2 rounded-lg border border-border/30">
           <div>
-            <p className="text-[9px] uppercase text-muted font-bold mb-0.5">
+            <p className="text-[9px] uppercase text-muted-foreground font-bold mb-0.5">
               {MSG.LBL_SHORT_TOTAL}
             </p>
             <WeightText
               value={row.total_stock_qty}
-              className="text-sm font-black text-secondary"
+              className="text-sm font-black text-muted-foreground"
               suffix=""
             />
-            <span className="text-[10px] ml-0.5 font-black text-secondary">
+            <span className="text-[10px] ml-0.5 font-black text-muted-foreground">
               kg
             </span>
           </div>

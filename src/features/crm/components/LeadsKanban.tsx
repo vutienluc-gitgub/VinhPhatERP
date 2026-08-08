@@ -137,7 +137,7 @@ function KanbanColumn({ status, leads, onSelectLead }: KanbanColumnProps) {
             {meta.label}
           </h2>
         </div>
-        <span className="bg-surface-subtle text-muted text-xs font-medium px-2 py-0.5 rounded-full">
+        <span className="bg-surface-subtle text-muted-foreground text-xs font-medium px-2 py-0.5 rounded-full">
           {leads.length}
         </span>
       </div>
@@ -159,7 +159,7 @@ function KanbanColumn({ status, leads, onSelectLead }: KanbanColumnProps) {
           {leads.length === 0 && (
             <div
               id={status}
-              className="h-20 border-2 border-dashed border-border rounded-lg flex items-center justify-center text-xs text-muted"
+              className="h-20 border-2 border-dashed border-border rounded-lg flex items-center justify-center text-xs text-muted-foreground"
             >
               Kéo thả vào đây
             </div>

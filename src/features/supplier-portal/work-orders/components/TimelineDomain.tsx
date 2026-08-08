@@ -63,7 +63,7 @@ export function TimelineDomain() {
   const getEventIcon = (type: TimelineEvent['type']) => {
     switch (type) {
       case 'status_change':
-        return <Icon name="activity" size={16} className="text-primary" />;
+        return <Icon name="activity" size={16} className="text-foreground" />;
       case 'material_receipt':
         return <Icon name="package" size={16} className="text-success" />;
       case 'qc_check':
@@ -92,8 +92,12 @@ export function TimelineDomain() {
                   <span className="font-medium text-foreground">
                     {evt.actor}
                   </span>
-                  <span className="text-sm text-muted hidden md:inline">•</span>
-                  <span className="text-sm text-muted">{evt.time}</span>
+                  <span className="text-sm text-muted-foreground hidden md:inline">
+                    •
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {evt.time}
+                  </span>
                 </div>
 
                 {evt.type === 'status_change' && (
@@ -126,7 +130,7 @@ export function TimelineDomain() {
                 )}
 
                 {evt.metadata.note && (
-                  <p className="text-sm text-muted mt-1 italic">
+                  <p className="text-sm text-muted-foreground mt-1 italic">
                     "{evt.metadata.note}"
                   </p>
                 )}

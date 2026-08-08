@@ -57,7 +57,7 @@ export function FabricHeroGallery({
   }, [displayImage]);
 
   return (
-    <div className="w-full bg-white relative">
+    <div className="w-full bg-surface relative">
       <div className="w-full aspect-[4/3] bg-surface-secondary relative overflow-hidden border border-black/5">
         {displayImage && !imageError ? (
           <img
@@ -76,7 +76,7 @@ export function FabricHeroGallery({
         )}
 
         {(fabric.view_count ?? 0) > 0 && (
-          <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm">
+          <div className="absolute top-3 right-3 bg-foreground/60 backdrop-blur-md text-inverse-foreground px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm">
             <Icon name="Flame" className="w-3.5 h-3.5 text-orange-400" />
             {COMP_LABELS.HERO_VIEWS.replace(
               '{count}',
@@ -87,7 +87,7 @@ export function FabricHeroGallery({
       </div>
 
       {galleryImages.length > 0 && (
-        <div className="flex overflow-x-auto gap-3 p-3 bg-white scrollbar-none scroll-smooth">
+        <div className="flex overflow-x-auto gap-3 p-3 bg-surface scrollbar-none scroll-smooth">
           {galleryImages.map((img, index) => {
             const label = IMAGE_TYPE_MAP[img.type] || img.type;
             const isActive = !activeColorImage && currentImageIndex === index;
@@ -112,8 +112,8 @@ export function FabricHeroGallery({
                   alt={img.alt_text || label}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-sm py-1 px-0.5">
-                  <p className="text-[9px] text-white font-medium text-center truncate leading-tight">
+                <div className="absolute bottom-0 inset-x-0 bg-foreground/60 backdrop-blur-sm py-1 px-0.5">
+                  <p className="text-[9px] text-inverse-foreground font-medium text-center truncate leading-tight">
                     {label}
                   </p>
                 </div>

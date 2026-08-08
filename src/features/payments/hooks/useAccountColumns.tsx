@@ -33,8 +33,10 @@ export function useAccountColumns({
         header: MSG.COL_ACCOUNT,
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-bold text-primary">{row.original.name}</span>
-            <span className="text-xs text-muted">
+            <span className="font-bold text-foreground">
+              {row.original.name}
+            </span>
+            <span className="text-xs text-muted-foreground">
               {ACCOUNT_TYPE_LABELS[row.original.type]}
             </span>
           </div>
@@ -47,7 +49,7 @@ export function useAccountColumns({
           <div className="flex flex-col">
             <span className="font-medium">{row.original.bank_name ?? '—'}</span>
             {row.original.account_number && (
-              <span className="text-xs text-muted">
+              <span className="text-xs text-muted-foreground">
                 {row.original.account_number}
               </span>
             )}

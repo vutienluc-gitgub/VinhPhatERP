@@ -22,19 +22,19 @@ export function RawFabricMobileCard({ roll: r }: RawFabricMobileCardProps) {
           <span className="text-sm font-medium break-words min-w-0 flex-1">
             {r.fabric_type}
           </span>
-          <span className="text-xs text-muted shrink-0 text-right">
+          <span className="text-xs text-muted-foreground shrink-0 text-right">
             {MSG.LBL_LOT} {r.lot_number || '—'}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-4 mt-2">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-muted">
+            <span className="text-[10px] uppercase text-muted-foreground">
               {MSG.COL_WEIGHT}
             </span>
             <span className="font-bold text-sm">{r.weight_kg} kg</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-muted">
+            <span className="text-[10px] uppercase text-muted-foreground">
               {MSG.COL_LENGTH}
             </span>
             <span className="font-bold text-sm text-success">

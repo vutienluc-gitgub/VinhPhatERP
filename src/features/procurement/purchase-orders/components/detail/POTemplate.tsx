@@ -34,7 +34,7 @@ export function POTemplate({
   return (
     <div
       id="po-print-template"
-      className="p-8 bg-white text-primary text-sm font-sans relative"
+      className="p-8 bg-surface text-foreground text-sm font-sans relative"
       style={{ width: '210mm', minHeight: '297mm', boxSizing: 'border-box' }}
     >
       <style>{`
@@ -59,17 +59,17 @@ export function POTemplate({
       {/* Header */}
       <div className="flex justify-between items-start border-b-2 border-primary pb-4 mb-6">
         <div className="flex gap-4 items-center">
-          <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-2xl">
+          <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center text-inverse-foreground font-bold text-2xl">
             VP
           </div>
           <div>
-            <h2 className="font-bold text-lg text-primary m-0">
+            <h2 className="font-bold text-lg text-foreground m-0">
               {PO_CONSTANTS.TPL_COMPANY_NAME}
             </h2>
-            <p className="text-xs text-muted m-0">
+            <p className="text-xs text-muted-foreground m-0">
               {PO_CONSTANTS.TPL_COMPANY_ADDRESS}
             </p>
-            <p className="text-xs text-muted m-0">
+            <p className="text-xs text-muted-foreground m-0">
               {PO_CONSTANTS.TPL_COMPANY_CONTACT}
             </p>
           </div>
@@ -87,7 +87,7 @@ export function POTemplate({
         <h1 className="font-bold text-2xl text-foreground m-0 uppercase">
           {PO_CONSTANTS.TPL_DOC_TITLE}
         </h1>
-        <p className="text-muted font-semibold mt-1">
+        <p className="text-muted-foreground font-semibold mt-1">
           {PO_CONSTANTS.COL_PO_CODE}: {po.po_code}
         </p>
       </div>
@@ -204,7 +204,7 @@ export function POTemplate({
       {/* Summary calculations */}
       <div className="flex justify-between items-start mb-12">
         <div className="w-1/2">
-          <p className="text-xs text-muted italic">
+          <p className="text-xs text-muted-foreground italic">
             * {PO_CONSTANTS.TPL_VAT_NOTE}
           </p>
         </div>
@@ -237,7 +237,7 @@ export function POTemplate({
               </span>
             </div>
           )}
-          <div className="flex justify-between py-1.5 text-sm font-bold text-primary">
+          <div className="flex justify-between py-1.5 text-sm font-bold text-foreground">
             <span>Tổng cộng (Total):</span>
             <span>
               {formatValue(po.total_amount)} {currency}
@@ -253,7 +253,7 @@ export function POTemplate({
             {PO_CONSTANTS.TPL_SIGN_CREATOR}
           </span>
           <div className="h-0.5 w-32 bg-surface-secondary mx-auto mb-1"></div>
-          <span className="text-xs text-muted">
+          <span className="text-xs text-muted-foreground">
             {creatorProfile?.name || 'N/A'}
           </span>
         </div>
@@ -262,7 +262,7 @@ export function POTemplate({
             {PO_CONSTANTS.TPL_SIGN_MANAGER}
           </span>
           <div className="h-0.5 w-32 bg-surface-secondary mx-auto mb-1"></div>
-          <span className="text-xs text-muted">
+          <span className="text-xs text-muted-foreground">
             {PO_CONSTANTS.TPL_SIGN_INTERNAL_NOTE}
           </span>
         </div>
@@ -271,7 +271,7 @@ export function POTemplate({
             {PO_CONSTANTS.TPL_SIGN_DIRECTOR}
           </span>
           <div className="h-0.5 w-32 bg-surface-secondary mx-auto mb-1"></div>
-          <span className="text-xs text-muted">
+          <span className="text-xs text-muted-foreground">
             {po.status === 'approved' || po.status === 'completed'
               ? PO_CONSTANTS.TPL_SIGN_APPROVED
               : PO_CONSTANTS.TPL_SIGN_PENDING}

@@ -214,6 +214,7 @@ export function useCreateOrderV2() {
 
         // Connection error → fallback direct insert
         console.warn(
+          // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
           '[createOrder] ⚠️ Edge Function không thể kết nối, chuyển sang direct insert.',
           edgeFnError,
         );
@@ -227,6 +228,7 @@ export function useCreateOrderV2() {
       void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] });
       void queryClient.invalidateQueries({ queryKey: ['customers'] });
       console.info(
+        // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
         `[createOrder] ✅ ${result.orderNumber} created. ` +
           `Allocated ${result.allocation.length} rolls.`,
       );
@@ -234,6 +236,7 @@ export function useCreateOrderV2() {
 
     onError: (err: Error | CreateOrderError) => {
       const code = 'code' in err ? err.code : 'UNKNOWN';
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       console.error('[createOrder] ❌ Error:', code, err.message);
     },
   });

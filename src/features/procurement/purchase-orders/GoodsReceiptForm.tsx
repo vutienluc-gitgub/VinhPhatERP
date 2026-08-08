@@ -119,16 +119,18 @@ export function GoodsReceiptForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 backdrop-blur-sm p-4">
       <div className="bg-surface rounded-xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b border-border flex justify-between items-center bg-gray-50">
           <div>
             <h2 className="text-xl font-bold m-0">{PO_CONSTANTS.GR_TITLE}</h2>
-            <p className="text-sm text-muted mt-1">PO: {po.po_code}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              PO: {po.po_code}
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="text-muted hover:text-primary text-2xl"
+            className="text-muted-foreground hover:text-foreground text-2xl"
           >
             &times;
           </button>
@@ -161,7 +163,7 @@ export function GoodsReceiptForm({
 
             <div className="border border-border rounded-lg overflow-hidden">
               <table className="w-full text-left">
-                <thead className="bg-gray-50 text-sm text-muted border-b border-border">
+                <thead className="bg-gray-50 text-sm text-muted-foreground border-b border-border">
                   <tr>
                     <th className="p-3">{PO_CONSTANTS.GR_COL_MATERIAL}</th>
                     <th className="p-3 text-right">
@@ -183,7 +185,7 @@ export function GoodsReceiptForm({
                           <div className="font-medium text-sm">
                             {getMaterialName(detail.material_id)}
                           </div>
-                          <div className="text-xs text-muted mt-0.5">
+                          <div className="text-xs text-muted-foreground mt-0.5">
                             Đơn vị: {detail.uom}
                           </div>
                         </td>
@@ -219,7 +221,10 @@ export function GoodsReceiptForm({
                   })}
                   {fields.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="p-4 text-center text-muted">
+                      <td
+                        colSpan={4}
+                        className="p-4 text-center text-muted-foreground"
+                      >
                         {PO_CONSTANTS.GR_ALL_RECEIVED}
                       </td>
                     </tr>

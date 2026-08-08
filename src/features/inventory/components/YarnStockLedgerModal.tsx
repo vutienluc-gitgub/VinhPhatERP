@@ -84,7 +84,9 @@ export function YarnStockLedgerModal({
               {
                 header: 'Ghi chú',
                 cell: (row) => (
-                  <span className="text-muted text-sm">{row.notes || '—'}</span>
+                  <span className="text-muted-foreground text-sm">
+                    {row.notes || '—'}
+                  </span>
                 ),
               },
             ]}
@@ -93,16 +95,16 @@ export function YarnStockLedgerModal({
             renderMobileCard={(row) => (
               <div className="mobile-card flex flex-col gap-1 p-3">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-sm text-primary">
+                  <span className="font-bold text-sm text-foreground">
                     {row.receipt_number}
                   </span>
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted-foreground">
                     {new Date(row.receipt_date).toLocaleDateString('vi-VN')}
                   </span>
                 </div>
                 <div className="text-sm">{row.supplier_name || '—'}</div>
                 <div className="flex justify-between mt-1 items-end">
-                  <span className="text-xs text-muted italic">
+                  <span className="text-xs text-muted-foreground italic">
                     {row.notes || ''}
                   </span>
                   <span className="font-bold">
@@ -150,7 +152,9 @@ export function YarnStockLedgerModal({
               {
                 header: 'Ghi chú',
                 cell: (row) => (
-                  <span className="text-muted text-sm">{row.notes || '—'}</span>
+                  <span className="text-muted-foreground text-sm">
+                    {row.notes || '—'}
+                  </span>
                 ),
               },
             ]}
@@ -159,16 +163,16 @@ export function YarnStockLedgerModal({
             renderMobileCard={(row) => (
               <div className="mobile-card flex flex-col gap-1 p-3">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-sm text-primary">
+                  <span className="font-bold text-sm text-foreground">
                     {row.adjustment_type}
                   </span>
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted-foreground">
                     {new Date(row.created_at).toLocaleDateString('vi-VN')}
                   </span>
                 </div>
                 <div className="text-sm">{row.reason}</div>
                 <div className="flex justify-between mt-1 items-end">
-                  <span className="text-xs text-muted italic">
+                  <span className="text-xs text-muted-foreground italic">
                     {row.notes || ''}
                   </span>
                   <span className="font-bold">

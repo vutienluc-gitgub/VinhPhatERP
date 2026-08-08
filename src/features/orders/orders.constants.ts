@@ -127,6 +127,7 @@ export const ORDERS_PROG_LABELS = {
   PROG_STATUS_DOING: 'Đang làm',
   PROG_STATUS_DONE: 'Hoàn thành',
   PROG_STATUS_SKIPPED: 'Bỏ qua',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   PROG_BTN_START: '▶ Bắt đầu',
   PROG_BTN_COMPLETE: '✓ Hoàn thành',
   PROG_BTN_SKIP: 'Bỏ qua',
@@ -157,6 +158,7 @@ export const ORDERS_RES_LABELS = {
   RES_COL_WEIGHT: 'Nặng',
   RES_COL_LOCATION: 'Vị trí',
   RES_COL_GRADE: 'CL',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   RES_TITLE: '🔒 Giữ cuộn — ',
   RES_REQUIRED: '— Cần:',
   RES_RESERVED_LIST_TITLE: 'Cuộn đang giữ',

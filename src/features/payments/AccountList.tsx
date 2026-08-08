@@ -57,7 +57,7 @@ export function AccountList({ onEdit, onNew }: AccountListProps) {
         subtitle={MSG.SUBTITLE}
         actions={
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
               <input
                 type="checkbox"
                 className="w-4 h-4 rounded"

@@ -80,8 +80,8 @@ export function POTimeline({ status, auditLogs = [] }: POTimelineProps) {
   }
   if (status === 'cancelled') {
     return (
-      <div className="flex items-center gap-4 py-4 px-6 bg-gray-50 border border-default rounded-xl shadow-sm mb-6 text-secondary">
-        <Icon name="Slash" size={24} className="text-muted" />
+      <div className="flex items-center gap-4 py-4 px-6 bg-gray-50 border border-default rounded-xl shadow-sm mb-6 text-muted-foreground">
+        <Icon name="Slash" size={24} className="text-muted-foreground" />
         <span className="font-semibold text-lg">
           {PO_CONSTANTS.TIMELINE_CANCELLED}
         </span>

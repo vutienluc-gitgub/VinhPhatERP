@@ -39,7 +39,7 @@ export function FabricReadinessScore({
       )}
     >
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-sm border font-black text-lg text-secondary">
+        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-surface shadow-sm border font-black text-lg text-muted-foreground">
           {score}
         </div>
         <div>
@@ -80,7 +80,7 @@ export function FabricReadinessScore({
           <div
             key={check.id}
             className={clsx(
-              'flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-full border bg-white shadow-sm',
+              'flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-full border bg-surface shadow-sm',
               check.passed
                 ? 'border-success text-success'
                 : 'border-warning text-warning-strong',
