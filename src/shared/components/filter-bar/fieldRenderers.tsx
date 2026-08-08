@@ -60,7 +60,7 @@ export const FieldRenderers: FieldRenderersRegistry = {
             ...field.options,
           ]}
           value={(value[field.key] as string) || ''}
-          onChange={(val) => onChange(val, field.key)}
+          onChange={(val) => onChange(field.key, val)}
           placeholder={
             field.placeholder ||
             `${UI_LABELS.SELECT_PLACEHOLDER.replace('...', '')} ${field.label.toLowerCase()}...`

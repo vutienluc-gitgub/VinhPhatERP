@@ -23,6 +23,7 @@ export type CustomersFilter = {
   salesperson_id?: string;
   created_from?: string;
   created_to?: string;
+  source?: NonNullable<CustomerInsert['source']>;
 };
 
 export interface PortalAccount {

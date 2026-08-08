@@ -10,6 +10,10 @@ const CORE_ROUTES = [
   '/payments',
   '/reports',
   '/settings',
+  '/dyeing-orders',
+  '/quotations',
+  '/inventory',
+  '/fabric-catalog',
 ];
 
 function isSevereConsoleError(message: ConsoleMessage): boolean {

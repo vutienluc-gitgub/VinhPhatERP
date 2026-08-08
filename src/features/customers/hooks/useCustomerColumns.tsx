@@ -49,6 +49,7 @@ type UseCustomerColumnsProps = {
   isSale: boolean;
   onDeposit?: (customer: Customer) => void;
   onChat?: (customer: Customer) => void;
+  onFilterSource?: (source: string) => void;
 };
 
 export function useCustomerColumns({
@@ -59,6 +60,7 @@ export function useCustomerColumns({
   isSale,
   onDeposit,
   onChat,
+  onFilterSource,
 }: UseCustomerColumnsProps): ColumnDef<Customer>[] {
   return [
     {
@@ -78,12 +80,12 @@ export function useCustomerColumns({
       accessorKey: 'name',
       enableSorting: true,
       cell: (info) => {
-        const c = info.row.original;
+        const customer = info.row.original;
         return (
           <div className="flex flex-col">
-            <span className="font-bold">{c.name}</span>
+            <span className="font-bold">{customer.name}</span>
             <span className="text-xs text-muted-foreground truncate max-w-[300px]">
-              {c.address || '—'}
+              {customer.address || '—'}
             </span>
           </div>
         );
@@ -96,7 +98,23 @@ export function useCustomerColumns({
       enableSorting: true,
       meta: { className: 'text-sm font-medium' },
       cell: (info) => {
-        return <PhoneContact phone={info.row.original.phone} />;
+        const customer = info.row.original;
+        return (
+          <div className="flex flex-col gap-1">
+            <PhoneContact phone={customer.phone} />
+            {customer.contact_person ? (
+              <div className="flex items-center gap-1.5">
+                <Icon
+                  name="User"
+                  className="w-3.5 h-3.5 text-muted-foreground"
+                />
+                <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+                  {customer.contact_person}
+                </span>
+              </div>
+            ) : null}
+          </div>
+        );
       },
     },
     {
@@ -115,12 +133,22 @@ export function useCustomerColumns({
       cell: (info) => {
         const sourceKey = info.row.original.source || 'other';
         return (
-          <Badge
-            variant={SOURCE_BADGE_VARIANT[sourceKey] ?? 'gray'}
-            icon={CUSTOMER_SOURCE_ICONS[sourceKey] as IconName}
+          <button
+            type="button"
+            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md inline-block cursor-pointer hover:scale-105 transition-transform"
+            title="Nhấn để lọc các khách hàng từ nguồn này"
+            onClick={(e) => {
+              e.stopPropagation();
+              onFilterSource?.(sourceKey);
+            }}
           >
-            {CUSTOMER_SOURCE_LABELS[sourceKey]}
-          </Badge>
+            <Badge
+              variant={SOURCE_BADGE_VARIANT[sourceKey] ?? 'gray'}
+              icon={CUSTOMER_SOURCE_ICONS[sourceKey] as IconName}
+            >
+              {CUSTOMER_SOURCE_LABELS[sourceKey]}
+            </Badge>
+          </button>
         );
       },
     },
@@ -148,13 +176,13 @@ export function useCustomerColumns({
       accessorKey: 'status',
       enableSorting: true,
       cell: (info) => {
-        const c = info.row.original;
+        const customer = info.row.original;
         return (
           <Badge
-            variant={c.status === 'active' ? 'success' : 'gray'}
-            icon={c.status === 'active' ? 'CheckCircle2' : 'XCircle'}
+            variant={customer.status === 'active' ? 'success' : 'gray'}
+            icon={customer.status === 'active' ? 'CheckCircle2' : 'XCircle'}
           >
-            {CUSTOMER_STATUS_LABELS[c.status]}
+            {CUSTOMER_STATUS_LABELS[customer.status]}
           </Badge>
         );
       },
@@ -181,13 +209,13 @@ export function useCustomerColumns({
       id: 'actions',
       meta: { className: 'text-right' },
       cell: (info) => {
-        const c = info.row.original;
+        const customer = info.row.original;
         return (
           <ActionMenu
             items={[
               {
                 icon: 'MessageSquare',
-                onClick: () => onChat?.(c),
+                onClick: () => onChat?.(customer),
                 label: CUSTOMER_COLUMNS_LABELS.actionMessage,
               },
               ...(!isSale
@@ -195,7 +223,7 @@ export function useCustomerColumns({
                     {
                       icon: 'Wallet' as const,
                       onClick: () => {
-                        if (onDeposit) onDeposit(c);
+                        if (onDeposit) onDeposit(customer);
                       },
                       label: CUSTOMER_COLUMNS_LABELS.actionDeposit,
                     },
@@ -203,19 +231,19 @@ export function useCustomerColumns({
                 : []),
               {
                 icon: 'FileText',
-                onClick: () => onCreateContract(c),
+                onClick: () => onCreateContract(customer),
                 label: CUSTOMER_COLUMNS_LABELS.actionContract,
               },
               {
                 icon: 'Pencil',
-                onClick: () => onEdit(c),
+                onClick: () => onEdit(customer),
                 label: CUSTOMER_COLUMNS_LABELS.actionEdit,
               },
               ...(!isSale
                 ? [
                     {
                       icon: 'Trash2' as const,
-                      onClick: () => handleDelete(c),
+                      onClick: () => handleDelete(customer),
                       label: CUSTOMER_COLUMNS_LABELS.actionDelete,
                       danger: true,
                       separated: true,

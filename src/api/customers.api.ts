@@ -52,6 +52,9 @@ export async function fetchCustomers(
   if (filters.created_to) {
     query = query.lte('created_at', filters.created_to);
   }
+  if (filters.source) {
+    query = query.eq('source', filters.source);
+  }
 
   const { data, error } = await query;
   if (error) throw error;
