@@ -42,8 +42,8 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
       };
       return (
         <div className="flex flex-col">
-          <span className="font-bold text-primary">{map[type] || type}</span>
-          <span className="text-xs text-muted truncate max-w-[200px]">
+          <span className="font-bold text-foreground">{map[type] || type}</span>
+          <span className="text-xs text-muted-foreground truncate max-w-[200px]">
             {r.reason}
           </span>
         </div>
@@ -52,7 +52,9 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
   },
   {
     header: MSG.COL_ADJUST_BEFORE,
-    cell: (r) => <span className="text-muted">{r.before_qty ?? 0}</span>,
+    cell: (r) => (
+      <span className="text-muted-foreground">{r.before_qty ?? 0}</span>
+    ),
     className: 'text-right max-sm:hidden',
   },
   {

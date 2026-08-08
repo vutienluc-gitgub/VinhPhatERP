@@ -24,7 +24,7 @@ export function useSupplierColumns({
       accessorKey: 'code',
       header: SUPPLIER_LIST_LABELS.COL_CODE,
       cell: ({ row }) => (
-        <span className="font-bold text-primary">{row.original.code}</span>
+        <span className="font-bold text-foreground">{row.original.code}</span>
       ),
     },
     {
@@ -36,7 +36,7 @@ export function useSupplierColumns({
           <div className="flex flex-col">
             <span className="font-bold">{supplier.name}</span>
             {supplier.address && (
-              <span className="text-xs text-muted truncate max-w-[250px]">
+              <span className="text-xs text-muted-foreground truncate max-w-[250px]">
                 {supplier.address}
               </span>
             )}
@@ -56,7 +56,7 @@ export function useSupplierColumns({
     {
       accessorKey: 'phone',
       header: SUPPLIER_LIST_LABELS.COL_PHONE,
-      meta: { className: 'text-muted text-sm' },
+      meta: { className: 'text-muted-foreground text-sm' },
       cell: ({ row }) => {
         const supplier = row.original;
         return (
@@ -85,7 +85,7 @@ export function useSupplierColumns({
             <span className="font-medium text-success">
               {SUPPLIER_LIST_LABELS.LBL_OTD} {supplier.on_time_rate ?? 0}%
             </span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-muted-foreground">
               {SUPPLIER_LIST_LABELS.LBL_RATING} {supplier.rating ?? 0}/5.0
             </span>
           </div>
@@ -99,13 +99,13 @@ export function useSupplierColumns({
         const limit = row.original.credit_limit;
         if (!limit || limit === 0)
           return (
-            <span className="text-muted">
+            <span className="text-muted-foreground">
               {SUPPLIER_LIST_LABELS.NOT_AVAILABLE}
             </span>
           );
         // We can format it roughly
         return (
-          <span className="font-semibold text-primary">
+          <span className="font-semibold text-foreground">
             <MoneyText value={limit} />
           </span>
         );

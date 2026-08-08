@@ -23,12 +23,12 @@ export function GuideContent({ section }: GuideContentProps) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-          <Icon name="BookOpen" size={32} className="text-primary/60" />
+          <Icon name="BookOpen" size={32} className="text-foreground/60" />
         </div>
         <h3 className="text-xl font-bold text-foreground mb-2">
           {GUIDE_MESSAGES.EMPTY_CONTENT_TITLE}
         </h3>
-        <p className="text-muted max-w-md">
+        <p className="text-muted-foreground max-w-md">
           {GUIDE_MESSAGES.EMPTY_CONTENT_DESC}
         </p>
       </div>
@@ -42,7 +42,7 @@ export function GuideContent({ section }: GuideContentProps) {
           <h1 className="text-3xl font-black text-primary-strong tracking-tight">
             {section.title}
           </h1>
-          <p className="mt-2 text-muted">
+          <p className="mt-2 text-muted-foreground">
             Luồng nghiệp vụ dành cho các module:{' '}
             <span className="font-medium text-foreground">
               {section.modules.join(', ')}

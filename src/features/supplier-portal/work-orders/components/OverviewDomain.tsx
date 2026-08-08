@@ -62,11 +62,11 @@ export function OverviewDomain() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {details.map((detail, idx) => (
             <div key={idx} className="flex items-start space-x-3">
-              <div className="p-2 bg-surface-secondary rounded-lg text-muted">
+              <div className="p-2 bg-surface-secondary rounded-lg text-muted-foreground">
                 <Icon name={detail.icon as IconName} size={20} />
               </div>
               <div>
-                <p className="text-sm text-muted">{detail.label}</p>
+                <p className="text-sm text-muted-foreground">{detail.label}</p>
                 <p className="font-medium text-foreground">{detail.value}</p>
               </div>
             </div>
@@ -79,7 +79,7 @@ export function OverviewDomain() {
           <h2 className="text-lg font-semibold mb-2 text-foreground">
             Ghi chú từ công ty
           </h2>
-          <p className="text-sm text-muted whitespace-pre-wrap">
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
             {workOrder.notes}
           </p>
         </Card>

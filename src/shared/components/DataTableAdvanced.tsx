@@ -29,7 +29,7 @@ import { PageSizeSelect } from './PageSizeSelect';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const CHECKBOX_CLASS =
-  'w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer';
+  'w-4 h-4 rounded border-border text-foreground focus:ring-primary cursor-pointer';
 
 const CHECKBOX_WRAPPER_CLASS = 'px-1 flex items-center justify-center';
 
@@ -100,7 +100,7 @@ function BulkActionsFloatingBar<TData>({
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-3 bg-surface shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-border/80 rounded-full animate-in slide-in-from-bottom-8">
       <div className="flex items-center gap-2 pr-4 border-r border-border">
-        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-foreground text-xs font-bold">
           {selectedCount}
         </span>
         <span className="text-sm font-medium whitespace-nowrap">
@@ -131,7 +131,7 @@ function BulkActionsFloatingBar<TData>({
         variant="ghost"
         size="icon"
         onClick={onClearSelection}
-        className="w-8 h-8 rounded-full ml-2 hover:bg-surface-subtle text-muted"
+        className="w-8 h-8 rounded-full ml-2 hover:bg-surface-subtle text-muted-foreground"
         title={TABLE_LABELS.CANCEL_SELECTION}
       >
         <Icon name="X" size={16} />
@@ -182,7 +182,7 @@ function ColumnVisibilityMenu<TData>({
               >
                 <input
                   type="checkbox"
-                  className="rounded border-border text-primary focus:ring-primary"
+                  className="rounded border-border text-foreground focus:ring-primary"
                   checked={column.getIsVisible()}
                   onChange={column.getToggleVisibilityHandler()}
                 />
@@ -224,7 +224,7 @@ function SortIcon({ direction }: { direction: false | 'asc' | 'desc' }) {
   return (
     <Icon
       name="ChevronsUpDown"
-      className="w-4 h-4 text-muted/50 shrink-0"
+      className="w-4 h-4 text-muted-foreground/50 shrink-0"
       strokeWidth={1.5}
     />
   );

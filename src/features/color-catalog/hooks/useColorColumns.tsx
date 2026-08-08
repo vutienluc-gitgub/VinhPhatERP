@@ -26,7 +26,7 @@ export const useColorColumns = (): ColumnDef<ColorRow, unknown>[] => {
                 className="inline-block w-4 h-4 rounded-full border-[1.5px] border-border shrink-0"
                 style={{ background: getColorHex(code) }}
               />
-              <span className="font-mono text-xs font-bold text-primary">
+              <span className="font-mono text-xs font-bold text-foreground">
                 {code}
               </span>
             </div>
@@ -47,7 +47,7 @@ export const useColorColumns = (): ColumnDef<ColorRow, unknown>[] => {
         accessorKey: 'color_group',
         cell: (info: CellContext<ColorRow, unknown>) => {
           const group = info.getValue() as string;
-          if (!group) return <span className="text-muted">—</span>;
+          if (!group) return <span className="text-muted-foreground">—</span>;
 
           return (
             <Badge

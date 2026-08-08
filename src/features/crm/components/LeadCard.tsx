@@ -46,7 +46,7 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
       </div>
 
       {lead.company_name && (
-        <div className="flex items-center gap-1.5 text-xs text-muted mb-1.5">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1.5">
           <Icon name="Building2" size={12} className="shrink-0" />
           <span className="line-clamp-1">{lead.company_name}</span>
         </div>
@@ -61,7 +61,7 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
           <Icon
             name="PackageSearch"
             size={12}
-            className="text-primary shrink-0"
+            className="text-foreground shrink-0"
           />
           <span className="line-clamp-1">
             {lead.rfq_detail.quantity} {lead.rfq_detail.unit} -{' '}

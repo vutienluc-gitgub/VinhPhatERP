@@ -200,7 +200,7 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
               />
             </div>
             <div className="col-span-2 text-right">
-              <span className="text-xs text-muted">
+              <span className="text-xs text-muted-foreground">
                 {INVENTORY_MESSAGES.LBL_DIFF}{' '}
               </span>
               <span

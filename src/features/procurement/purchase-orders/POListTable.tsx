@@ -30,7 +30,9 @@ export function POListTable({
         accessorKey: 'po_code',
         header: PO_CONSTANTS.COL_PO_CODE,
         cell: ({ row }) => (
-          <span className="font-bold text-primary">{row.original.po_code}</span>
+          <span className="font-bold text-foreground">
+            {row.original.po_code}
+          </span>
         ),
       },
       {
@@ -98,7 +100,9 @@ export function POListTable({
           <h1 className="text-lg font-bold m-0 text-foreground">
             {PO_CONSTANTS.PAGE_TITLE}
           </h1>
-          <p className="text-sm text-muted">{PO_CONSTANTS.PAGE_SUBTITLE}</p>
+          <p className="text-sm text-muted-foreground">
+            {PO_CONSTANTS.PAGE_SUBTITLE}
+          </p>
         </div>
         <AddButton
           label={PO_CONSTANTS.BTN_CREATE_NEW}
@@ -127,21 +131,25 @@ export function POListTable({
                   <div className="font-bold text-lg text-success">
                     <MoneyText value={po.total_amount} />
                   </div>
-                  <div className="text-sm text-muted flex items-center gap-1">
+                  <div className="text-sm text-muted-foreground flex items-center gap-1">
                     <Icon name="Calendar" size={14} />
                     {dayjs(po.order_date).format('DD/MM/YYYY')}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm">
-                  <Icon name="Truck" size={16} className="text-muted" />
+                  <Icon
+                    name="Truck"
+                    size={16}
+                    className="text-muted-foreground"
+                  />
                   <span className="font-medium">
                     {po.supplier_name_snapshot}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 pt-2 border-t border-border/10">
-                  <span className="text-xs text-muted w-14">
+                  <span className="text-xs text-muted-foreground w-14">
                     {PO_CONSTANTS.COL_PROGRESS}:
                   </span>
                   <div className="flex-1 h-2 bg-surface-secondary rounded-full overflow-hidden">

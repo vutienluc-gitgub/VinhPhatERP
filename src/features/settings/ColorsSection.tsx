@@ -166,13 +166,13 @@ export function ColorsSection() {
         <div>
           {/* Desktop header row */}
           <div className="hidden md:grid grid-cols-[100px_1fr_auto_auto] px-5 py-2 border-b border-border bg-[rgba(16,35,61,0.03)]">
-            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
+            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--surface-subtle)]">
               Mã
             </span>
-            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
+            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--surface-subtle)]">
               Tên màu
             </span>
-            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--muted)] w-28 text-center">
+            <span className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[var(--surface-subtle)] w-28 text-center">
               Xu hướng
             </span>
             <span className="w-20" />
@@ -208,7 +208,7 @@ export function ColorsSection() {
                     <span className="font-mono text-xs font-bold text-[var(--primary)] whitespace-nowrap min-w-[4.5rem]">
                       {item.code}
                     </span>
-                    <span className="font-medium text-[var(--text)] overflow-hidden text-ellipsis whitespace-nowrap">
+                    <span className="font-medium text-[var(--foreground)] overflow-hidden text-ellipsis whitespace-nowrap">
                       {item.name}
                     </span>
                     {item.trend_year && (

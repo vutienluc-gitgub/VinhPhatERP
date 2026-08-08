@@ -39,7 +39,7 @@ export function EntityLink({
     <a
       href={href}
       onClick={handleClick}
-      className={`inline-flex items-center gap-1 text-primary hover:text-primary-focus hover:underline font-medium transition-colors group ${className}`}
+      className={`inline-flex items-center gap-1 text-foreground hover:text-primary-focus hover:underline font-medium transition-colors group ${className}`}
       title="Nhấn để xem chi tiết, chuột giữa để mở tab mới"
     >
       <span>{label || '—'}</span>

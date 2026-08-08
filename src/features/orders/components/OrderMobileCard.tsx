@@ -21,7 +21,7 @@ export function OrderMobileCard({ order }: OrderMobileCardProps) {
   return (
     <div className="mobile-card">
       <div className="mobile-card-header border-b border-border/10 pb-2 mb-2">
-        <span className="font-bold text-primary">{order.order_number}</span>
+        <span className="font-bold text-foreground">{order.order_number}</span>
         <Badge variant={ORDER_STATUS_BADGE_VARIANTS[order.status] ?? 'gray'}>
           {ORDER_STATUS_LABELS[order.status]}
         </Badge>
@@ -31,13 +31,13 @@ export function OrderMobileCard({ order }: OrderMobileCardProps) {
           <span className="text-sm font-bold break-words min-w-0 flex-1">
             {order.customers?.name}
           </span>
-          <span className="text-xs text-muted shrink-0 text-right">
+          <span className="text-xs text-muted-foreground shrink-0 text-right">
             {order.order_date}
           </span>
         </div>
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-muted">
+            <span className="text-[10px] uppercase text-muted-foreground">
               {ORDERS_FORM_LABELS.LBL_TOTAL_AMOUNT}
             </span>
             <MoneyText
@@ -47,7 +47,7 @@ export function OrderMobileCard({ order }: OrderMobileCardProps) {
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase text-muted">
+            <span className="text-[10px] uppercase text-muted-foreground">
               {ORDERS_FORM_LABELS.LBL_BALANCE_DUE}
             </span>
             <MoneyText
@@ -59,7 +59,7 @@ export function OrderMobileCard({ order }: OrderMobileCardProps) {
         </div>
         {due && (
           <div
-            className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted'}`}
+            className={`mt-2 p-1.5 rounded text-[10px] font-bold text-center uppercase ${due.urgent ? 'bg-danger/10 text-danger' : 'bg-surface-subtle text-muted-foreground'}`}
           >
             {ORDERS_FORM_LABELS.LBL_DELIVERY}
             {due.text} ({order.delivery_date})

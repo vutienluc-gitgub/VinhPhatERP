@@ -238,7 +238,7 @@ export function EmployeeListPage() {
               id: 'code',
               sortable: true,
               cell: (emp) => (
-                <span className="font-bold text-primary">{emp.code}</span>
+                <span className="font-bold text-foreground">{emp.code}</span>
               ),
             },
             {
@@ -258,7 +258,7 @@ export function EmployeeListPage() {
               header: EMPLOYEE_LABELS.TABLE_EMAIL,
               id: 'email',
               sortable: true,
-              className: 'text-sm text-muted',
+              className: 'text-sm text-muted-foreground',
               cell: (emp) => emp.email || '—',
             },
             {
@@ -328,7 +328,7 @@ export function EmployeeListPage() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/10">
-                  <span className="text-[10px] uppercase font-bold text-muted bg-surface-subtle px-1.5 py-0.5 rounded">
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground bg-surface-subtle px-1.5 py-0.5 rounded">
                     {roleLabels[emp.role] ?? emp.role}
                   </span>
                 </div>

@@ -30,8 +30,8 @@ function SpecItem({
 }) {
   return (
     <div className={cn('flex items-baseline gap-1.5', className)}>
-      <span className="text-xs text-muted shrink-0">{label}:</span>
-      <span className="font-semibold text-primary text-sm break-words">
+      <span className="text-xs text-muted-foreground shrink-0">{label}:</span>
+      <span className="font-semibold text-foreground text-sm break-words">
         {value}
       </span>
     </div>
@@ -49,7 +49,7 @@ export function FabricSpecsList({
   return (
     <>
       {/* Technical Specifications */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
+      <div className="bg-surface rounded-xl shadow-sm p-4">
         <h3 className="text-base font-bold text-foreground mb-3">
           {LABELS.specs}
         </h3>
@@ -116,7 +116,7 @@ export function FabricSpecsList({
       </div>
 
       {/* Commercial Specifications (MOQ & Lead times) */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
+      <div className="bg-surface rounded-xl shadow-sm p-4">
         <h3 className="text-base font-bold text-foreground mb-3">
           {LABELS.specsCommercial}
         </h3>
@@ -141,7 +141,7 @@ export function FabricSpecsList({
 
           {canViewInventory && activeVariant && activeVariant.stock_status && (
             <div className="flex items-baseline gap-1.5 col-span-2 mt-2 pt-2">
-              <span className="text-xs text-muted shrink-0">
+              <span className="text-xs text-muted-foreground shrink-0">
                 {COMP_LABELS.INVENTORY_STATUS_TITLE.replace(
                   '{color}',
                   activeVariant.color_name,

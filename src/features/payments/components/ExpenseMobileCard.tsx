@@ -23,7 +23,9 @@ export function ExpenseMobileCard({
       <div className="mobile-card-header">
         <div className="flex flex-col">
           <span className="mobile-card-title">{exp.expense_number}</span>
-          <span className="text-xs text-muted">{exp.expense_date}</span>
+          <span className="text-xs text-muted-foreground">
+            {exp.expense_date}
+          </span>
         </div>
         <span className="font-bold text-danger text-lg">
           <MoneyText value={exp.amount} tone="danger" />
@@ -35,11 +37,13 @@ export function ExpenseMobileCard({
             {EXPENSE_CATEGORY_LABELS[exp.category]}
           </Badge>
           {exp.suppliers?.name && (
-            <span className="text-xs text-muted">{exp.suppliers.name}</span>
+            <span className="text-xs text-muted-foreground">
+              {exp.suppliers.name}
+            </span>
           )}
         </div>
         <p className="text-sm">{exp.description}</p>
-        <div className="text-xs text-muted">
+        <div className="text-xs text-muted-foreground">
           {MSG.LBL_FUND_PREFIX}
           {exp.payment_accounts?.name ?? '—'}
         </div>

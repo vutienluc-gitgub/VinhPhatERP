@@ -47,7 +47,7 @@ export function YarnReceiptItemRow({
   return (
     <div className="form-item-box">
       <div className="flex justify-between items-center mb-2">
-        <span className="text-[0.85rem] font-semibold text-muted">
+        <span className="text-[0.85rem] font-semibold text-muted-foreground">
           {L.ROW} {index + 1}
         </span>
         {canRemove && onRemove && (

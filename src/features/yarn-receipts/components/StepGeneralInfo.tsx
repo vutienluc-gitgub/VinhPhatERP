@@ -45,7 +45,7 @@ export function StepGeneralInfo({
             ) : (
               <input
                 id="receiptNumber"
-                className="field-input text-muted italic bg-[var(--surface-disabled)]"
+                className="field-input text-muted-foreground italic bg-[var(--surface-disabled)]"
                 type="text"
                 value={formLabels.receiptNumberAuto}
                 readOnly

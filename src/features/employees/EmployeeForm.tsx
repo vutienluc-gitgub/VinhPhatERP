@@ -192,7 +192,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
       >
         {isEditing && (
           <div className="mb-4">
-            <span className="text-muted text-sm">
+            <span className="text-muted-foreground text-sm">
               Mã nhân viên: <strong>{employee.code}</strong>
             </span>
           </div>
@@ -321,7 +321,7 @@ export function EmployeeForm({ open, onClose, employee }: EmployeeFormProps) {
         {form.watch('role') === 'driver' && (
           <div className="form-field mt-4 p-4 bg-[var(--surface-accent)] rounded-[var(--radius)]">
             <label>Tài khoản đăng nhập (Cổng tài xế)</label>
-            <p className="text-[0.8rem] text-[var(--text-secondary)] mb-2">
+            <p className="text-[0.8rem] text-[var(--muted-foreground)] mb-2">
               Liên kết hồ sơ này với một tài khoản (email) có Role = Tài xế trên
               hệ thống để họ đăng nhập vào Cổng Tài Xế.
             </p>

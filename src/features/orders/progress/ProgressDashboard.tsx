@@ -175,7 +175,7 @@ function DashboardSection({
               <div className="flex justify-between items-center flex-wrap gap-[0.4rem] mb-[0.4rem]">
                 <div>
                   <strong>{order.orderNumber}</strong>
-                  <span className="text-muted text-sm ml-2">
+                  <span className="text-muted-foreground text-sm ml-2">
                     {order.customerName}
                   </span>
                   {order.fabricInfo && (

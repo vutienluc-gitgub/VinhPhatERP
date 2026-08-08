@@ -51,7 +51,7 @@ export function YarnCatalogMobileCard({
             triggerIcon="MoreVertical"
             placement="left"
           >
-            <button className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-subtle text-muted">
+            <button className="flex h-11 w-11 items-center justify-center rounded-md hover:bg-surface-subtle text-muted-foreground">
               <svg
                 width="24"
                 height="24"
@@ -74,23 +74,29 @@ export function YarnCatalogMobileCard({
       <div className="mobile-card-body space-y-3">
         <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
           <div className="flex flex-col">
-            <span className="text-xs text-muted">{MSG.LBL_COMPOSITION}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.LBL_COMPOSITION}
+            </span>
             <span className="font-medium">{c.composition ?? '—'}</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs text-muted">{LABEL_ORIGIN}</span>
+            <span className="text-xs text-muted-foreground">
+              {LABEL_ORIGIN}
+            </span>
             <span className="font-medium">{c.origin ?? '—'}</span>
           </div>
           {c.lot_no && (
             <div className="flex flex-col min-w-0">
-              <span className="text-xs text-muted">{MSG.LBL_LOT_GRADE}</span>
+              <span className="text-xs text-muted-foreground">
+                {MSG.LBL_LOT_GRADE}
+              </span>
               <div
                 className="flex items-center gap-1.5 cursor-pointer bg-surface-secondary px-2 py-1 rounded-md mt-1"
                 onClick={() => {
                   // Mở rộng hoặc hiển thị popup sau này nếu cần
                 }}
               >
-                <span className="font-mono text-primary flex-1 min-w-0 truncate text-sm">
+                <span className="font-mono text-foreground flex-1 min-w-0 truncate text-sm">
                   {c.lot_no}
                 </span>
                 {c.grade && (
@@ -102,7 +108,9 @@ export function YarnCatalogMobileCard({
             </div>
           )}
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-muted">{MSG.LBL_UNIT}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.LBL_UNIT}
+            </span>
             <span className="font-medium">{c.unit}</span>
           </div>
         </div>

@@ -194,7 +194,9 @@ export const CHAT_LABELS = {
   COPY_TEXT: 'Sao chép nội dung',
   DEPARTMENT: 'Bộ phận',
   UNKNOWN_USER: 'Chưa rõ tên',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   MENTION_DOC_ICON: '📄',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   MENTION_USER_ICON: '👤',
 } as const;
 

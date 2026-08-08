@@ -28,12 +28,16 @@ export function WorkOrderMobileCard({
       <div className="mobile-card-body space-y-2">
         <div className="flex justify-between items-start gap-2">
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-xs text-muted">{MSG.COL_SUPPLIER}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_SUPPLIER}
+            </span>
             <span className="font-bold break-words">{wo.supplier?.name}</span>
           </div>
           <div className="flex flex-col text-right shrink-0">
-            <span className="text-xs text-muted">{MSG.COL_TARGET}</span>
-            <span className="font-bold text-primary">
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_TARGET}
+            </span>
+            <span className="font-bold text-foreground">
               {formatQuantity(wo.target_quantity)} m
             </span>
           </div>
@@ -41,13 +45,15 @@ export function WorkOrderMobileCard({
 
         <div className="grid grid-cols-2 gap-2 text-sm mt-2">
           <div className="flex flex-col">
-            <span className="text-xs text-muted">{MSG.COL_BOM}</span>
+            <span className="text-xs text-muted-foreground">{MSG.COL_BOM}</span>
             <span className="font-medium">
               {wo.bom_template?.code} (V{wo.bom_version})
             </span>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-xs text-muted">{MSG.COL_PRICE}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_PRICE}
+            </span>
             <span className="font-medium">
               <MoneyText value={wo.weaving_unit_price} />
               /m
@@ -70,7 +76,7 @@ export function WorkOrderMobileCard({
           {wo.status === 'draft' && (
             <Button
               variant="secondary"
-              className="flex-1 text-primary"
+              className="flex-1 text-foreground"
               leftIcon="Pencil"
               onClick={(e) => {
                 e.stopPropagation();

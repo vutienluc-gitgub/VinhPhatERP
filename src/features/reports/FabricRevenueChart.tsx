@@ -53,7 +53,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
   return (
     <div className="bg-surface border border-border rounded-[10px] py-2.5 px-3.5 shadow-[0_4px_20px_rgba(16,35,61,0.12)] min-w-[180px]">
-      <p className="text-[var(--muted)] font-bold text-[10px] uppercase tracking-wider mb-1.5 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
+      <p className="text-[var(--surface-subtle)] font-bold text-[10px] uppercase tracking-wider mb-1.5 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
         {label}
       </p>
       <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
           className="w-2 h-2 rounded-[2px] shrink-0"
           style={{ background: entry?.color ?? '#3b82f6' }}
         />
-        <span className="text-[var(--text)] font-bold text-[13px]">
+        <span className="text-[var(--foreground)] font-bold text-[13px]">
           {formatShort(entry?.value ?? 0)} đ
         </span>
       </div>
@@ -87,7 +87,7 @@ export function FabricRevenueChart({
 
   if (data.length === 0) {
     return (
-      <div className="h-[280px] flex items-center justify-center text-[var(--muted)] text-[13px]">
+      <div className="h-[280px] flex items-center justify-center text-[var(--surface-subtle)] text-[13px]">
         Chưa có dữ liệu cơ cấu vải
       </div>
     );

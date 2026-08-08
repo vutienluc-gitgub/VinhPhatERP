@@ -46,7 +46,7 @@ export function AppProviders({ children }: PropsWithChildren) {
                         style: {
                           background: 'var(--surface)',
                           backdropFilter: 'blur(12px)',
-                          color: 'var(--text)',
+                          color: 'var(--foreground)',
                           border: '1px solid var(--border)',
                           borderRadius: '16px',
                           padding: '14px 20px',

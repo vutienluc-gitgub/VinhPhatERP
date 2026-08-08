@@ -106,7 +106,7 @@ export function QuickSupplierForm({
     <div className="border-[1.5px] border-primary rounded-lg p-3 bg-[rgba(11,107,203,0.03)]">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <span className="text-sm font-bold text-primary">
+        <span className="text-sm font-bold text-foreground">
           {L.QUICK_CREATE_TITLE}
         </span>
         <Button

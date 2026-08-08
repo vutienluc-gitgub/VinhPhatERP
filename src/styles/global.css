@@ -1,36 +1,37 @@
-@import 'tailwindcss';
+@import url('tailwindcss');
 
 /* Theme & Base */
-@import './theme/tokens.css';
-@import './theme/dark-mode.css';
-@import './theme/motion.css';
-@import './theme/interaction.css';
-@import './base/reset.css';
-@import './base/animations.css';
+@import url('./theme/tokens.css');
+@import url('./theme/dark-mode.css');
+@import url('./theme/motion.css');
+@import url('./theme/interaction.css');
+@import url('./base/reset.css');
+@import url('./base/animations.css');
 
 /* Layouts */
-@import './layout/app-shell.css';
-@import './layout/modal.css';
+@import url('./layout/app-shell.css');
+@import url('./layout/modal.css');
 
 /* Components */
-@import './components/form.css';
-@import './components/table.css';
-@import './components/badge.css';
-@import './components/card.css';
-@import './components/buttons.css';
-@import './components/tabs.css';
-@import './components/kpi.css';
-@import './components/feedback.css';
-@import './components/perm-matrix.css';
-@import './components/switch.css';
+@import url('./components/form.css');
+@import url('./components/table.css');
+@import url('./components/badge.css');
+@import url('./components/card.css');
+@import url('./components/buttons.css');
+@import url('./components/tabs.css');
+@import url('./components/kpi.css');
+@import url('./components/feedback.css');
+@import url('./components/perm-matrix.css');
+@import url('./components/switch.css');
 
 /* Specific Views & Vendors */
-@import './dashboard-v3.css';
-@import './auth.css';
+@import url('./dashboard-v3.css');
+@import url('./auth.css');
 
 /* Utilities */
-@import './utilities/print.css';
+@import url('./utilities/print.css');
 
 /* Tailwind directives */
 @config "../../tailwind.config.js";
+
 @source "../";

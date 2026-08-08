@@ -35,14 +35,14 @@ export function QuickCreateModal({
       }
     >
       <div className="p-6 flex flex-col items-center justify-center text-center gap-4 min-h-[300px]">
-        <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center">
+        <div className="w-16 h-16 bg-primary/10 text-foreground rounded-full flex items-center justify-center">
           <Icon name={action.icon} size={32} />
         </div>
         <div>
           <h3 className="text-lg font-bold mb-2">
             {APP_SHELL_LABELS.QUICK_CREATE_DEV_TITLE}
           </h3>
-          <p className="text-muted text-sm max-w-sm">
+          <p className="text-muted-foreground text-sm max-w-sm">
             {APP_SHELL_LABELS.QUICK_CREATE_DEV_DESC.replace(
               '{action}',
               action.label,

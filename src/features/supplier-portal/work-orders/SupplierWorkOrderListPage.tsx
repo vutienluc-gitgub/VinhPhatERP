@@ -137,7 +137,7 @@ export function SupplierWorkOrderListPage() {
                 <p className="font-medium">
                   WO-{(item?.id || '').split('-')[0]!.toUpperCase()}
                 </p>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-muted-foreground">
                   {item.target_quantity} {item.target_unit}
                 </p>
               </div>

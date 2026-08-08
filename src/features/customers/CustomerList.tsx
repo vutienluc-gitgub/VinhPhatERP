@@ -402,7 +402,7 @@ export function CustomerList({
         }
       >
         <div className="flex flex-col gap-4 py-4">
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             {CUSTOMER_LIST_LABELS.bulkAssignDesc.replace(
               '{count}',
               String(selectedBulkCustomers.length),
@@ -457,7 +457,7 @@ export function CustomerList({
         }
       >
         <div className="flex flex-col gap-4 py-4">
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             {CUSTOMER_LIST_LABELS.bulkStatusDesc.replace(
               '{count}',
               String(selectedBulkCustomers.length),

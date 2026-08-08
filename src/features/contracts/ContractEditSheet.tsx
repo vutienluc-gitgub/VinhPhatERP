@@ -78,7 +78,7 @@ export function ContractEditSheet({
       }
     >
       <div className="form-grid">
-        <p className="text-sm font-semibold text-muted mb-2">
+        <p className="text-sm font-semibold text-muted-foreground mb-2">
           {CONTRACT_LABELS.PARTY_A_INFO}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -132,7 +132,7 @@ export function ContractEditSheet({
           </div>
         </div>
 
-        <p className="text-sm font-semibold text-muted mb-2 mt-2">
+        <p className="text-sm font-semibold text-muted-foreground mb-2 mt-2">
           {CONTRACT_LABELS.PARTY_B_INFO}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -186,7 +186,7 @@ export function ContractEditSheet({
           </div>
         </div>
 
-        <p className="text-sm font-semibold text-muted mb-2 mt-2">
+        <p className="text-sm font-semibold text-muted-foreground mb-2 mt-2">
           {CONTRACT_LABELS.TERMS_SECTION}
         </p>
         <div className="form-field">

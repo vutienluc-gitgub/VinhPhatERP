@@ -20,7 +20,7 @@ export function FabricFAQ({ faqItems }: FabricFAQProps) {
   if (displayItems.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <div className="bg-surface rounded-xl shadow-sm p-4">
       <h3 className="text-base font-bold text-foreground mb-3 uppercase">
         {PUBLIC_PAGE_LABELS.faqTitle}
       </h3>
@@ -30,10 +30,10 @@ export function FabricFAQ({ faqItems }: FabricFAQProps) {
             key={item.question}
             className="bg-slate-50 p-3 rounded-lg text-sm"
           >
-            <p className="font-semibold text-primary mb-1">
+            <p className="font-semibold text-foreground mb-1">
               Q{index + 1}: {item.question}
             </p>
-            <p className="text-secondary leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed">
               A{index + 1}: {item.answer}
             </p>
           </div>

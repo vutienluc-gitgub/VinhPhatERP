@@ -65,7 +65,7 @@ export function ProgressBar({
           <span
             className={cn(
               'text-xs font-bold',
-              percent >= 100 ? 'text-success' : 'text-secondary',
+              percent >= 100 ? 'text-success' : 'text-muted-foreground',
             )}
           >
             {percent}%

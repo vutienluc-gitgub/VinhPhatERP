@@ -94,7 +94,9 @@ export function VPCombobox({
             {value ? (
               <span className="truncate">{displayLabel}</span>
             ) : (
-              <span className="text-muted truncate">{placeholder}</span>
+              <span className="text-muted-foreground truncate">
+                {placeholder}
+              </span>
             )}
           </div>
           <Icon
@@ -129,7 +131,7 @@ export function VPCombobox({
                     <div className="flex flex-col text-left">
                       <span>{opt.label}</span>
                       {(opt.code || opt.phone || opt.desc) && (
-                        <span className="text-xs text-muted mt-0.5">
+                        <span className="text-xs text-muted-foreground mt-0.5">
                           {opt.code && `Mã: ${opt.code} `}
                           {opt.phone && `SĐT: ${formatPhoneNumber(opt.phone)} `}
                           {opt.desc && opt.desc}
@@ -139,7 +141,7 @@ export function VPCombobox({
                     {value === opt.value && (
                       <Icon
                         name="Check"
-                        className="h-4 w-4 shrink-0 text-primary"
+                        className="h-4 w-4 shrink-0 text-foreground"
                       />
                     )}
                   </div>
@@ -159,7 +161,10 @@ export function VPCombobox({
                       Tạo mới:{' '}
                       <span className="font-semibold">{searchValue}</span>
                     </span>
-                    <Icon name="Plus" className="h-4 w-4 shrink-0 text-muted" />
+                    <Icon
+                      name="Plus"
+                      className="h-4 w-4 shrink-0 text-muted-foreground"
+                    />
                   </div>
                 </CommandItem>
               )}

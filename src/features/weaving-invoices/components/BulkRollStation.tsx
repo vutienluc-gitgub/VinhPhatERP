@@ -59,7 +59,7 @@ function RollTile({
         !isActive && isScanned && 'bg-emerald-50 border-success text-success',
         !isActive &&
           !isScanned &&
-          'bg-[var(--surface-subtle)] border-dashed border-[var(--border)] text-[var(--text-secondary)] hover:border-info',
+          'bg-[var(--surface-subtle)] border-dashed border-[var(--border)] text-[var(--muted-foreground)] hover:border-info',
       )}
     >
       <span className="text-[10px] font-bold truncate w-full">
@@ -145,7 +145,7 @@ export function BulkRollStation({
       <div className="lg:w-[280px] xl:w-[320px] flex-shrink-0">
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-bold text-[var(--text-primary)]">
+            <h4 className="text-sm font-bold text-[var(--foreground)]">
               Xe tải ({fields.length} cuộn)
             </h4>
             <span className="text-xs font-semibold text-success tabular-nums">
@@ -179,7 +179,7 @@ export function BulkRollStation({
           >
             {/* Combo badge */}
             {comboCount >= 2 && (
-              <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-black px-3 py-1 rounded-full animate-bounce shadow-lg">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-400 to-orange-500 text-inverse-foreground text-xs font-black px-3 py-1 rounded-full animate-bounce shadow-lg">
                 COMBO x{comboCount}
               </div>
             )}
@@ -190,10 +190,10 @@ export function BulkRollStation({
                 <Icon name="ScanBarcode" size={20} />
               </div>
               <div>
-                <h4 className="text-lg font-black text-[var(--text-primary)]">
+                <h4 className="text-lg font-black text-[var(--foreground)]">
                   Cuộn #{activeIndex + 1}
                 </h4>
-                <p className="text-xs text-[var(--text-secondary)]">
+                <p className="text-xs text-[var(--muted-foreground)]">
                   Quét mã hoặc gõ tay. Enter để nhảy sang cuộn tiếp.
                 </p>
               </div>
@@ -309,7 +309,7 @@ export function BulkRollStation({
               >
                 Cuộn trước
               </Button>
-              <span className="text-sm font-bold tabular-nums text-[var(--text-secondary)]">
+              <span className="text-sm font-bold tabular-nums text-[var(--muted-foreground)]">
                 {activeIndex + 1} / {fields.length}
               </span>
               <div className="flex gap-2">
@@ -339,7 +339,7 @@ export function BulkRollStation({
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-40 text-[var(--text-secondary)]">
+          <div className="flex items-center justify-center h-40 text-[var(--muted-foreground)]">
             Chưa có cuộn nào. Hãy thêm cuộn hoặc paste từ Excel.
           </div>
         )}

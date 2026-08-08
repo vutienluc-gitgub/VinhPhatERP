@@ -233,6 +233,7 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
 
       if (rollsToAssign.length === 0) {
         toast(MSG.ERR_NO_VALID_ROLLS, {
+          // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
           icon: 'ℹ️',
         });
         return prev;
@@ -285,6 +286,7 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
         return nextMap;
       } else {
         toast(MSG.ERR_FLEET_FULL, {
+          // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
           icon: '⚠️',
         });
         return prev;
@@ -333,6 +335,7 @@ export function useFleetCommander(availableRolls: AvailableRoll[]) {
 
         toast.success(MSG.MSG_DISPATCH_SUCCESS(successCount), {
           duration: 4000,
+          // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
           icon: '🚀',
         });
 

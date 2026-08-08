@@ -53,7 +53,7 @@ export function LeadsPage() {
           <h1 className="text-xl font-bold tracking-tight text-foreground">
             Khách hàng Tiềm năng
           </h1>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             Quản lý yêu cầu báo giá và mẫu vải từ khách hàng
           </p>
         </div>
@@ -88,7 +88,7 @@ export function LeadsPage() {
               className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
                 !statusFilter
                   ? 'bg-foreground text-background'
-                  : 'bg-surface-subtle text-muted hover:text-foreground'
+                  : 'bg-surface-subtle text-muted-foreground hover:text-foreground'
               }`}
             >
               Tất cả
@@ -100,7 +100,7 @@ export function LeadsPage() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
                   statusFilter === status
                     ? 'bg-foreground text-background'
-                    : 'bg-surface-subtle text-muted hover:text-foreground'
+                    : 'bg-surface-subtle text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {meta.dot} {meta.label}

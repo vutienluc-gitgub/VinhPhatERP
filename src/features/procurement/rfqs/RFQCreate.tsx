@@ -125,7 +125,7 @@ export function RFQCreate() {
           </button>
           <div>
             <h1 className="text-xl font-bold">{RFQ_LABELS.CREATE_TITLE}</h1>
-            <p className="text-sm text-muted">
+            <p className="text-sm text-muted-foreground">
               {RFQ_LABELS.CREATE_DESCRIPTION}
             </p>
           </div>
@@ -204,7 +204,7 @@ export function RFQCreate() {
               <h2 className="text-lg font-semibold">
                 {RFQ_LABELS.PR_SELECTION_TITLE}
               </h2>
-              <p className="text-sm text-muted">
+              <p className="text-sm text-muted-foreground">
                 {RFQ_LABELS.PR_SELECTION_DESC}
               </p>
             </div>
@@ -226,7 +226,7 @@ export function RFQCreate() {
                   <th className="px-4 py-3 text-left w-12">
                     <input
                       type="checkbox"
-                      className="rounded border-border text-primary focus:ring-primary"
+                      className="rounded border-border text-foreground focus:ring-primary"
                       checked={
                         pendingItems.length > 0 &&
                         fields.length === pendingItems.length
@@ -252,13 +252,19 @@ export function RFQCreate() {
               <tbody className="divide-y divide-border/50">
                 {isLoadingItems ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-muted">
+                    <td
+                      colSpan={5}
+                      className="p-8 text-center text-muted-foreground"
+                    >
                       {RFQ_LABELS.TXT_LOADING_LIST}
                     </td>
                   </tr>
                 ) : pendingItems.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-muted">
+                    <td
+                      colSpan={5}
+                      className="p-8 text-center text-muted-foreground"
+                    >
                       {RFQ_LABELS.NO_PENDING_ITEMS}
                     </td>
                   </tr>
@@ -283,7 +289,7 @@ export function RFQCreate() {
                         >
                           <input
                             type="checkbox"
-                            className="rounded border-border text-primary focus:ring-primary cursor-pointer"
+                            className="rounded border-border text-foreground focus:ring-primary cursor-pointer"
                             checked={isSelected}
                             readOnly
                           />
@@ -292,7 +298,7 @@ export function RFQCreate() {
                           className="px-4 py-3 cursor-pointer"
                           onClick={() => !isSelected && toggleItem(item.id)}
                         >
-                          <div className="font-mono text-xs font-bold text-primary">
+                          <div className="font-mono text-xs font-bold text-foreground">
                             {item.pr_no}
                           </div>
                           <div className="font-medium mt-1">
@@ -328,12 +334,12 @@ export function RFQCreate() {
                               )}
                             </div>
                           ) : (
-                            <span className="text-muted italic text-xs">
+                            <span className="text-muted-foreground italic text-xs">
                               {RFQ_LABELS.TXT_MAP_REQUIRED}
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-muted">
+                        <td className="px-4 py-3 text-muted-foreground">
                           {item.material_specs || '-'}
                         </td>
                         <td className="px-4 py-3 text-right">

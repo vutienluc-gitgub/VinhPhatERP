@@ -209,7 +209,7 @@ export function AppShell() {
             <div className="topbar-actions" ref={userMenuRef}>
               <NavLink
                 to="/guide"
-                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted hover:bg-surface-subtle hover:text-foreground transition-colors mr-1"
+                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground hover:bg-surface-subtle hover:text-foreground transition-colors mr-1"
                 title={APP_SHELL_LABELS.GUIDE_TITLE}
               >
                 <Icon name="BookOpen" size={16} strokeWidth={1.5} />
@@ -225,21 +225,21 @@ export function AppShell() {
                     new KeyboardEvent('keydown', { key: 'k', metaKey: true }),
                   )
                 }
-                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted hover:bg-surface-subtle hover:text-foreground transition-colors mr-1"
+                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground hover:bg-surface-subtle hover:text-foreground transition-colors mr-1"
                 title={APP_SHELL_LABELS.SEARCH_PLACEHOLDER}
               >
                 <Icon name="Search" size={16} strokeWidth={1.5} />
                 <span className="hidden md:inline">
                   {APP_SHELL_LABELS.SEARCH}
                 </span>
-                <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 rounded border border-border bg-surface-subtle text-[10px] font-medium text-muted">
+                <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 rounded border border-border bg-surface-subtle text-[10px] font-medium text-muted-foreground">
                   {APP_SHELL_LABELS.SEARCH_KBD}
                 </kbd>
               </button>
 
               <button
                 type="button"
-                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-primary hover:bg-primary/10 transition-colors mr-1"
+                className="hidden sm:flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-foreground hover:bg-primary/10 transition-colors mr-1"
                 onClick={() => setShowCostingModal(true)}
                 title={APP_SHELL_LABELS.CALCULATOR_TITLE}
               >
@@ -371,7 +371,7 @@ export function AppShell() {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `mobile-nav-link${isActive ? ' text-primary bg-primary/10' : ''}`
+                  `mobile-nav-link${isActive ? ' text-foreground bg-primary/10' : ''}`
                 }
                 end={item.path === '/'}
               >
@@ -390,7 +390,7 @@ export function AppShell() {
           })}
           <button
             type="button"
-            className={`mobile-nav-link mobile-menu-btn${isDrawerActive ? ' text-primary bg-primary/10' : ''}`}
+            className={`mobile-nav-link mobile-menu-btn${isDrawerActive ? ' text-foreground bg-primary/10' : ''}`}
             onClick={() => setShowMore(true)}
             aria-label="Menu"
           >

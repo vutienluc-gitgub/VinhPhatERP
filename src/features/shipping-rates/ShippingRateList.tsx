@@ -124,7 +124,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
           {
             header: MSG.TITLE_NAME,
             cell: (item) => (
-              <span className="font-bold text-primary">{item.name}</span>
+              <span className="font-bold text-foreground">{item.name}</span>
             ),
           },
           {
@@ -136,7 +136,7 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
           {
             header: MSG.TITLE_RATE,
             cell: (item) => (
-              <span className="text-sm text-muted">
+              <span className="text-sm text-muted-foreground">
                 {rateDescription(item)}
               </span>
             ),
@@ -201,11 +201,13 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
             <div className="mobile-card-body space-y-2">
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex flex-col">
-                  <span className="text-xs text-muted">{MSG.TITLE_AREA}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {MSG.TITLE_AREA}
+                  </span>
                   <span className="font-bold">{item.destination_area}</span>
                 </div>
                 <div className="flex flex-col text-right">
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted-foreground">
                     {MSG.TITLE_MIN_CHARGE}
                   </span>
                   <span className="font-medium">
@@ -220,10 +222,12 @@ export function ShippingRateList({ onEdit, onNew }: Props) {
                   </span>
                 </div>
               </div>
-              <div className="text-xs text-muted">{rateDescription(item)}</div>
+              <div className="text-xs text-muted-foreground">
+                {rateDescription(item)}
+              </div>
               <div className="flex gap-2 pt-2 border-t border-border/10">
                 <button
-                  className="btn-secondary flex-1 text-primary"
+                  className="btn-secondary flex-1 text-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
                     onEdit(item);

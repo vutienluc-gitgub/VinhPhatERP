@@ -20,7 +20,7 @@ export function LiveIndicator({
     <div className={clsx('inline-flex items-center gap-2', className)}>
       <span className={clsx('live-dot', dotClassName)} />
       {label && (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </span>
       )}

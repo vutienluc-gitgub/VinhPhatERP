@@ -24,7 +24,10 @@ export function useYarnCatalogColumns(
           const c = info.row.original;
           return (
             <div className="flex flex-col max-w-[200px]">
-              <span className="font-bold text-primary truncate" title={c.code}>
+              <span
+                className="font-bold text-foreground truncate"
+                title={c.code}
+              >
                 {c.code}
               </span>
               <span className="text-sm truncate" title={c.name}>
@@ -41,7 +44,7 @@ export function useYarnCatalogColumns(
           const c = info.row.original;
           return (
             <span
-              className="text-sm text-muted block truncate max-w-[150px]"
+              className="text-sm text-muted-foreground block truncate max-w-[150px]"
               title={c.composition ?? ''}
             >
               {c.composition ?? '—'}
@@ -87,14 +90,14 @@ export function useYarnCatalogColumns(
           return (
             <div className="flex flex-col max-w-[200px]">
               <span
-                className="text-sm font-bold text-primary truncate cursor-help whitespace-pre-wrap"
+                className="text-sm font-bold text-foreground truncate cursor-help whitespace-pre-wrap"
                 title={mainTooltip}
               >
                 {mainText}
               </span>
               {subText && (
                 <span
-                  className="text-xs text-muted truncate cursor-help whitespace-pre-wrap"
+                  className="text-xs text-muted-foreground truncate cursor-help whitespace-pre-wrap"
                   title={subTooltip}
                 >
                   {subText}
@@ -110,7 +113,7 @@ export function useYarnCatalogColumns(
           const c = info.row.original;
           return (
             <span
-              className="text-sm font-mono text-primary block truncate max-w-[120px]"
+              className="text-sm font-mono text-foreground block truncate max-w-[120px]"
               title={c.lot_no ?? ''}
             >
               {c.lot_no ?? '—'}
@@ -151,7 +154,7 @@ export function useYarnCatalogColumns(
           const c = info.row.original;
           return (
             <span
-              className="text-sm text-muted italic truncate max-w-[200px] block"
+              className="text-sm text-muted-foreground italic truncate max-w-[200px] block"
               title={c.notes ?? ''}
             >
               {c.notes ?? '—'}

@@ -1,0 +1,1911 @@
+{
+  "\\src\\app\\layouts\\AppShell.tsx": [
+    {
+      "line": 159,
+      "content": "<h1 className=\"hidden sm:block title-premium-gradient text-base font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary\">",
+      "match": "text-transparent"
+    }
+  ],
+  "\\src\\app\\layouts\\NotificationBell.tsx": [
+    {
+      "line": 109,
+      "content": "className=\"relative flex items-center justify-center bg-transparent hover:bg-surface rounded-full w-9 h-9 cursor-pointer text-muted hover:text-text transition-colors border-none p-0\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\app\\router\\GlobalErrorElement.tsx": [
+    {
+      "line": 35,
+      "content": "<div className=\"w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl border border-default\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 54,
+      "content": "className=\"inline-flex items-center justify-center gap-2 rounded-lg bg-info-soft px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-info-soft\"",
+      "match": "text-white"
+    },
+    {
+      "line": 64,
+      "content": "className=\"inline-flex items-center justify-center gap-2 rounded-lg border border-muted bg-white px-5 py-2.5 text-sm font-medium text-secondary transition-colors hover:bg-gray-50\"",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\components\\ui\\command.tsx": [
+    {
+      "line": 34,
+      "content": "'flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted disabled:cursor-not-allowed disabled:opacity-50',",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\components\\ui\\ModuleErrorBoundary.tsx": [
+    {
+      "line": 33,
+      "content": "className=\"px-3 py-1 bg-danger-soft text-white rounded text-sm hover:bg-danger-soft\"",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\domains\\approval\\ui\\ApprovalActions.tsx": [
+    {
+      "line": 116,
+      "content": "className=\"inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-md transition-colors disabled:opacity-50\"",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\approval\\ApprovalPoCPage.tsx": [
+    {
+      "line": 268,
+      "content": "className=\"px-4 py-2 font-medium text-white bg-primary hover:bg-primary/90 rounded-md transition-colors\"",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\auth\\AuthPage.tsx": [
+    {
+      "line": 24,
+      "content": "<p className=\"text-white/60 font-medium\">",
+      "match": "text-white/60"
+    },
+    {
+      "line": 34,
+      "content": "<div className=\"min-h-screen w-full flex flex-col items-center justify-center bg-[#0B0F19] p-4 text-white\">",
+      "match": "text-white"
+    },
+    {
+      "line": 35,
+      "content": "<div className=\"max-w-md w-full bg-surface-strong/10 border border-white/10 p-8 rounded-2xl backdrop-blur-xl animate-in fade-in zoom-in duration-500\">",
+      "match": "border-white/10"
+    },
+    {
+      "line": 44,
+      "content": "<p className=\"text-center mb-8 text-white/50 text-sm\">",
+      "match": "text-white/50"
+    },
+    {
+      "line": 59,
+      "content": "<div className=\"flex min-h-screen w-full bg-[#0B0F19] text-white overflow-hidden font-sans\">",
+      "match": "text-white"
+    },
+    {
+      "line": 61,
+      "content": "<div className=\"hidden lg:flex w-5/12 xl:w-[45%] relative flex-col justify-between p-12 lg:p-16 border-r border-white/5\">",
+      "match": "border-white/5"
+    },
+    {
+      "line": 71,
+      "content": "<Icon name=\"Layers\" className=\"text-white\" size={24} />",
+      "match": "text-white"
+    },
+    {
+      "line": 73,
+      "content": "<span className=\"text-2xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70\">",
+      "match": "text-transparent"
+    },
+    {
+      "line": 80,
+      "content": "<h1 className=\"text-4xl xl:text-5xl font-bold text-white mb-6 leading-[1.15]\">",
+      "match": "text-white"
+    },
+    {
+      "line": 82,
+      "content": "<span className=\"text-transparent bg-clip-text bg-gradient-to-r from-[#818cf8] to-[#c084fc]\">",
+      "match": "text-transparent"
+    },
+    {
+      "line": 86,
+      "content": "<p className=\"text-lg text-white/60 mb-8 max-w-md leading-relaxed\">",
+      "match": "text-white/60"
+    },
+    {
+      "line": 91,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "bg-white/5"
+    },
+    {
+      "line": 91,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "border-white/10"
+    },
+    {
+      "line": 91,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "text-white/80"
+    },
+    {
+      "line": 94,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "bg-white/5"
+    },
+    {
+      "line": 94,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "border-white/10"
+    },
+    {
+      "line": 94,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "text-white/80"
+    },
+    {
+      "line": 97,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "bg-white/5"
+    },
+    {
+      "line": 97,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "border-white/10"
+    },
+    {
+      "line": 97,
+      "content": "<span className=\"px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium tracking-wide text-white/80\">",
+      "match": "text-white/80"
+    },
+    {
+      "line": 104,
+      "content": "<div className=\"relative z-10 flex items-center justify-between text-xs text-white/40 font-medium tracking-wide uppercase\">",
+      "match": "text-white/40"
+    },
+    {
+      "line": 120,
+      "content": "<Icon name=\"Layers\" className=\"text-white\" size={24} />",
+      "match": "text-white"
+    },
+    {
+      "line": 122,
+      "content": "<span className=\"text-xl font-bold tracking-wider text-white\">",
+      "match": "text-white"
+    },
+    {
+      "line": 127,
+      "content": "<div className=\"bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700\">",
+      "match": "bg-white/5"
+    },
+    {
+      "line": 127,
+      "content": "<div className=\"bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700\">",
+      "match": "border-white/10"
+    },
+    {
+      "line": 133,
+      "content": "<div className=\"mt-6 text-center text-sm text-white/50\">",
+      "match": "text-white/50"
+    },
+    {
+      "line": 146,
+      "content": "<div className=\"mt-6 text-center text-sm text-white/50\">",
+      "match": "text-white/50"
+    },
+    {
+      "line": 172,
+      "content": "className=\"border border-white/20 text-white hover:bg-white/10\"",
+      "match": "border-white/20"
+    }
+  ],
+  "\\src\\features\\auth\\ForgotPasswordForm.tsx": [
+    {
+      "line": 58,
+      "content": "<p className=\"auth-status-body text-center text-white/70\">",
+      "match": "text-white/70"
+    },
+    {
+      "line": 74,
+      "content": "<p className=\"auth-subtitle text-center mb-6 text-[0.85rem] text-white/60\">",
+      "match": "text-white/60"
+    },
+    {
+      "line": 110,
+      "content": "className=\"auth-submit-btn mt-3 bg-transparent border border-white/20 shadow-none\"",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 110,
+      "content": "className=\"auth-submit-btn mt-3 bg-transparent border border-white/20 shadow-none\"",
+      "match": "border-white/20"
+    }
+  ],
+  "\\src\\features\\auth\\LoginForm.tsx": [
+    {
+      "line": 24,
+      "content": "'peer w-full px-4 pt-5 pb-2 bg-black/20 border border-white/10 rounded-xl text-white placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200';",
+      "match": "bg-black/20"
+    },
+    {
+      "line": 24,
+      "content": "'peer w-full px-4 pt-5 pb-2 bg-black/20 border border-white/10 rounded-xl text-white placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200';",
+      "match": "border-white/10"
+    },
+    {
+      "line": 24,
+      "content": "'peer w-full px-4 pt-5 pb-2 bg-black/20 border border-white/10 rounded-xl text-white placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200';",
+      "match": "text-white"
+    },
+    {
+      "line": 27,
+      "content": "'absolute left-4 top-1/2 -translate-y-1/2 text-white/40 text-sm pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-white/80 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-white/80';",
+      "match": "text-white/40"
+    },
+    {
+      "line": 115,
+      "content": "<h2 className=\"text-xl font-bold text-white mb-4\">",
+      "match": "text-white"
+    },
+    {
+      "line": 118,
+      "content": "<p className=\"text-white/70 text-sm leading-relaxed\">",
+      "match": "text-white/70"
+    },
+    {
+      "line": 139,
+      "content": "<h2 className=\"text-2xl md:text-3xl font-bold text-white mb-2\">",
+      "match": "text-white"
+    },
+    {
+      "line": 142,
+      "content": "<p className=\"text-white/50 text-sm\">{AUTH_MESSAGES.loginToContinue}</p>",
+      "match": "text-white/50"
+    },
+    {
+      "line": 212,
+      "content": "className=\"w-4 h-4 rounded border-white/20 bg-black/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed\"",
+      "match": "border-white/20"
+    },
+    {
+      "line": 217,
+      "content": "className=\"text-sm text-white/70 cursor-pointer select-none\"",
+      "match": "text-white/70"
+    },
+    {
+      "line": 245,
+      "content": "<div className=\"flex-1 h-px bg-white/10\" />",
+      "match": "bg-white/10"
+    },
+    {
+      "line": 246,
+      "content": "<span className=\"text-xs font-medium text-white/40 uppercase tracking-wider\">",
+      "match": "text-white/40"
+    },
+    {
+      "line": 249,
+      "content": "<div className=\"flex-1 h-px bg-white/10\" />",
+      "match": "bg-white/10"
+    },
+    {
+      "line": 257,
+      "content": "className=\"group relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-slate-50 text-primary rounded-xl font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 295,
+      "content": "className=\"w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#818cf8] hover:to-[#6366f1] border-none shadow-lg shadow-[#6366f1]/30 text-white font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed\"",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\auth\\RegisterForm.tsx": [
+    {
+      "line": 74,
+      "content": "<p className=\"text-center text-white/70\">",
+      "match": "text-white/70"
+    }
+  ],
+  "\\src\\features\\auth\\ResetPasswordPage.tsx": [
+    {
+      "line": 49,
+      "content": "<p className=\"auth-status-body text-center text-white/70\">",
+      "match": "text-white/70"
+    },
+    {
+      "line": 77,
+      "content": "<p className=\"auth-subtitle text-center mb-6 text-[0.85rem] text-white/60\">",
+      "match": "text-white/60"
+    }
+  ],
+  "\\src\\features\\costing\\components\\GreigeCalculatorModal.tsx": [
+    {
+      "line": 128,
+      "content": "className=\"fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] transition-opacity\"",
+      "match": "bg-black/60"
+    },
+    {
+      "line": 189,
+      "content": ": 'border-transparent text-muted hover:text-foreground'",
+      "match": "border-transparent"
+    },
+    {
+      "line": 199,
+      "content": ": 'border-transparent text-muted hover:text-foreground'",
+      "match": "border-transparent"
+    }
+  ],
+  "\\src\\features\\crm\\components\\CreateLeadModal.tsx": [
+    {
+      "line": 225,
+      "content": "className=\"flex items-center justify-between bg-white p-3 rounded-lg border border-warning shadow-sm\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 257,
+      "content": "className=\"flex items-center gap-2 bg-white/60 p-3 rounded-lg border border-warning\"",
+      "match": "bg-white/60"
+    }
+  ],
+  "\\src\\features\\crm\\components\\LeadCard.tsx": [
+    {
+      "line": 75,
+      "content": "<Icon name=\"Layers\" size={12} className=\"text-purple-600 shrink-0\" />",
+      "match": "text-purple-600"
+    }
+  ],
+  "\\src\\features\\crm\\components\\LeadContextualActions.tsx": [
+    {
+      "line": 65,
+      "content": "className=\"bg-white hover:bg-teal-50 text-success border-success\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 97,
+      "content": "className=\"flex items-center justify-between bg-white p-3 rounded-lg border border-warning shadow-sm\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 120,
+      "content": "className=\"bg-white text-warning-strong border-warning hover:bg-warning-soft\"",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\crm\\components\\LeadDetailDrawer.tsx": [
+    {
+      "line": 86,
+      "content": "className={`text-sm border-0 bg-transparent py-1 pr-8 pl-2 font-medium focus:ring-0 ${statusMeta?.colorClass}`}",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\crm\\crm.constants.ts": [
+    {
+      "line": 18,
+      "content": "colorClass: 'bg-purple-50 text-purple-700 border-purple-100',",
+      "match": "text-purple-700"
+    },
+    {
+      "line": 54,
+      "content": "colorClass: 'bg-purple-100 text-purple-800',",
+      "match": "bg-purple-100"
+    },
+    {
+      "line": 79,
+      "content": "colorClass: 'text-purple-600 bg-purple-50',",
+      "match": "text-purple-600"
+    }
+  ],
+  "\\src\\features\\customer-portal\\dashboard\\PortalDashboardPage.tsx": [
+    {
+      "line": 32,
+      "content": "<div className=\"bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-white flex items-center justify-between gap-4 flex-wrap\">",
+      "match": "text-white"
+    },
+    {
+      "line": 34,
+      "content": "<p className=\"m-0 text-[0.78rem] text-white/55 uppercase tracking-[0.06em] font-semibold\">",
+      "match": "text-white/55"
+    },
+    {
+      "line": 41,
+      "content": "<div className=\"text-[0.78rem] text-white/50 text-right\">",
+      "match": "text-white/50"
+    },
+    {
+      "line": 43,
+      "content": "<p className=\"mt-1 mb-0 text-white/30\">Vĩnh Phát ERP</p>",
+      "match": "text-white/30"
+    }
+  ],
+  "\\src\\features\\customer-portal\\notifications\\NotificationCenter.tsx": [
+    {
+      "line": 62,
+      "content": "className=\"bg-transparent border-none cursor-pointer text-muted-foreground text-base p-0 leading-none\"",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 80,
+      "content": "className={`px-4 py-3 border-b border-border/50 ${item.orderId || item.shipmentId || item.quotationId ? 'cursor-pointer' : 'cursor-default'} ${item.isRead ? 'bg-transparent' : 'bg-primary/5'} transition-colors duration-150 flex gap-[0.625rem] items-start`}",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\customer-portal\\quotations\\PortalQuotationDetail.tsx": [
+    {
+      "line": 235,
+      "content": "<div className=\"absolute -left-[21px] bg-success-soft w-3 h-3 rounded-full border-4 border-white\"></div>",
+      "match": "border-white"
+    },
+    {
+      "line": 246,
+      "content": "<div className=\"absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-white\"></div>",
+      "match": "border-white"
+    },
+    {
+      "line": 254,
+      "content": "<div className=\"absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-white\"></div>",
+      "match": "border-white"
+    }
+  ],
+  "\\src\\features\\customers\\CustomerForm.tsx": [
+    {
+      "line": 456,
+      "content": ": 'bg-white border-default text-muted hover:bg-slate-50'",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\customers\\CustomerTimeline.tsx": [
+    {
+      "line": 13,
+      "content": "colorClass: 'bg-purple-100 text-purple-800',",
+      "match": "bg-purple-100"
+    },
+    {
+      "line": 63,
+      "content": "className={`absolute -left-3 sm:-left-3.5 top-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center border-2 border-white ${",
+      "match": "border-white"
+    },
+    {
+      "line": 67,
+      "content": "? 'bg-purple-100 text-purple-600'",
+      "match": "bg-purple-100"
+    },
+    {
+      "line": 78,
+      "content": "<div className=\"bg-white border border-default rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\driver-portal\\components\\JourneyStepButton.tsx": [
+    {
+      "line": 34,
+      "content": "className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white ${",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\driver-portal\\components\\ShipmentCard.tsx": [
+    {
+      "line": 124,
+      "content": "className=\"flex items-center justify-between w-full p-4 bg-transparent cursor-pointer gap-3 hover:bg-[var(--surface-hover)] transition-colors\"",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 275,
+      "content": "<div className=\"relative rounded-xl border border-[var(--border)] bg-white overflow-hidden\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 287,
+      "content": "className=\"absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70\"",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 287,
+      "content": "className=\"absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70\"",
+      "match": "text-white"
+    },
+    {
+      "line": 328,
+      "content": "className=\"absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70\"",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 328,
+      "content": "className=\"absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black/70\"",
+      "match": "text-white"
+    },
+    {
+      "line": 403,
+      "content": "className=\"flex items-center justify-center gap-2 w-full py-3 mt-3 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-semibold text-sm bg-transparent cursor-pointer hover:bg-[var(--surface-selected)] transition-colors\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\driver-portal\\DriverPortalLayout.tsx": [
+    {
+      "line": 24,
+      "content": "<div className=\"w-8 h-8 rounded-full bg-[var(--primary)] flex items-center justify-center text-white font-extrabold text-sm\">",
+      "match": "text-white"
+    },
+    {
+      "line": 39,
+      "content": "className=\"text-sm text-[var(--muted)] bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 cursor-pointer hover:bg-[var(--surface-hover)]\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\B2BPlanner.tsx": [
+    {
+      "line": 89,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm overflow-hidden flex flex-col\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 108,
+      "content": "className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'weight' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}",
+      "match": "bg-white"
+    },
+    {
+      "line": 117,
+      "content": "className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'length' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}",
+      "match": "bg-white"
+    },
+    {
+      "line": 126,
+      "content": "className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'garment' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}",
+      "match": "bg-white"
+    },
+    {
+      "line": 384,
+      "content": "<div className=\"w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-muted border border-default shrink-0\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricColorSelector.tsx": [
+    {
+      "line": 24,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricFAQ.tsx": [
+    {
+      "line": 23,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricHeaderActions.tsx": [
+    {
+      "line": 28,
+      "content": "<header className=\"bg-white shadow-sm sticky top-0 z-30 px-4 py-3 flex items-center justify-between\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 53,
+      "content": "<span className=\"absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center\">",
+      "match": "text-white"
+    },
+    {
+      "line": 65,
+      "content": "<span className=\"absolute -top-1 -right-1 bg-danger-soft text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricHeroGallery.tsx": [
+    {
+      "line": 60,
+      "content": "<div className=\"w-full bg-white relative\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 61,
+      "content": "<div className=\"w-full aspect-[4/3] bg-surface-secondary relative overflow-hidden border border-black/5\">",
+      "match": "border-black/5"
+    },
+    {
+      "line": 79,
+      "content": "<div className=\"absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm\">",
+      "match": "bg-black/60"
+    },
+    {
+      "line": 79,
+      "content": "<div className=\"absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm\">",
+      "match": "text-white"
+    },
+    {
+      "line": 80,
+      "content": "<Icon name=\"Flame\" className=\"w-3.5 h-3.5 text-orange-400\" />",
+      "match": "text-orange-400"
+    },
+    {
+      "line": 90,
+      "content": "<div className=\"flex overflow-x-auto gap-3 p-3 bg-white scrollbar-none scroll-smooth\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 106,
+      "content": ": 'border-transparent hover:border-muted',",
+      "match": "border-transparent"
+    },
+    {
+      "line": 115,
+      "content": "<div className=\"absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-sm py-1 px-0.5\">",
+      "match": "bg-black/60"
+    },
+    {
+      "line": 116,
+      "content": "<p className=\"text-[9px] text-white font-medium text-center truncate leading-tight\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricPricingTable.tsx": [
+    {
+      "line": 41,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricRecommendations.tsx": [
+    {
+      "line": 56,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 67,
+      "content": "<div className=\"w-full aspect-square rounded-lg bg-gray-50 overflow-hidden mb-1.5 relative border border-black/5 shadow-sm\">",
+      "match": "border-black/5"
+    },
+    {
+      "line": 94,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 105,
+      "content": "<div className=\"w-14 h-14 rounded-lg bg-gray-50 overflow-hidden shrink-0 border border-black/5 shadow-sm\">",
+      "match": "border-black/5"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricRichContent.tsx": [
+    {
+      "line": 20,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 51,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricSpecsList.tsx": [
+    {
+      "line": 52,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 119,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricStickyCTA.tsx": [
+    {
+      "line": 22,
+      "content": "'flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff] hover:bg-[#0054cc] text-white py-2.5 px-2 rounded-xl transition-colors shadow-sm shadow-[#0068ff]/30',",
+      "match": "text-white"
+    },
+    {
+      "line": 67,
+      "content": "<div className=\"fixed bottom-0 left-0 right-0 bg-white shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\detail\\FabricTitleAndBadges.tsx": [
+    {
+      "line": 22,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\FabricAdminTab.tsx": [
+    {
+      "line": 39,
+      "content": "<div className=\"bg-white rounded-2xl border border-default shadow-sm p-6 space-y-6\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 75,
+      "content": "<div className=\"bg-white rounded-2xl border border-default shadow-sm p-6\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\FabricImageGalleryCard.tsx": [
+    {
+      "line": 50,
+      "content": "className=\"bg-white rounded-xl border border-default overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col sm:flex-row items-stretch\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 61,
+      "content": "className=\"absolute top-2 right-2 bg-white/90 hover:bg-red-50 text-muted hover:text-danger p-1.5 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-all\"",
+      "match": "bg-white/90"
+    },
+    {
+      "line": 92,
+      "content": "className=\"w-full border-default bg-white text-primary rounded-lg text-xs py-1.5 px-2 focus:ring-1 focus:ring-primary/20 transition-all\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 108,
+      "content": "className=\"w-full border-default bg-white text-primary rounded-lg text-xs py-1.5 px-3 focus:ring-1 focus:ring-primary/20 transition-all\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 120,
+      "content": "className=\"w-full border-default bg-white text-primary rounded-lg text-xs py-1.5 px-3 focus:ring-1 focus:ring-primary/20 transition-all\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 126,
+      "content": "<label className=\"flex items-center gap-2 cursor-pointer bg-white border border-default px-3 py-1.5 rounded-lg hover:border-primary/50 transition-colors w-full sm:w-auto\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\FabricImageGalleryEditor.tsx": [
+    {
+      "line": 29,
+      "content": "className={`relative cursor-pointer bg-white border border-default px-4 py-2 rounded-lg text-sm font-semibold text-secondary transition-colors flex items-center gap-2 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\FabricInfoTab.tsx": [
+    {
+      "line": 34,
+      "content": "<div className=\"bg-white rounded-2xl border border-default shadow-sm p-6 sm:p-8 space-y-12\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\FabricPublicTab.tsx": [
+    {
+      "line": 20,
+      "content": "<div className=\"bg-white rounded-2xl border border-default shadow-sm p-6 space-y-10\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 29,
+      "content": "<div className=\"bg-white rounded-2xl border border-default shadow-sm p-6 sm:p-8 space-y-12\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\FabricReadinessScore.tsx": [
+    {
+      "line": 42,
+      "content": "<div className=\"flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-sm border font-black text-lg text-secondary\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 83,
+      "content": "'flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-full border bg-white shadow-sm',",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\FabricSampleQRModal.tsx": [
+    {
+      "line": 177,
+      "content": "className=\"border border-border rounded-lg overflow-hidden bg-white shadow-sm flex justify-center items-center p-2\"",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\InquiryCartDrawer.tsx": [
+    {
+      "line": 30,
+      "content": "className=\"fixed inset-0 bg-black/50 z-50 animate-fade-in\"",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 35,
+      "content": "<div className=\"fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-50 flex flex-col animate-slide-left\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 66,
+      "content": "className=\"flex gap-3 p-3 border border-default rounded-xl hover:shadow-sm transition-shadow bg-white group relative\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 107,
+      "content": "<div className=\"p-4 border-t border-default bg-white space-y-2\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 110,
+      "content": "className=\"w-full bg-success-soft hover:bg-success-soft text-white font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm\"",
+      "match": "text-white"
+    },
+    {
+      "line": 117,
+      "content": "className=\"w-full bg-info-soft hover:bg-info-soft text-white font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm\"",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\public-tab-sections\\FabricPublicPreview.tsx": [
+    {
+      "line": 44,
+      "content": "<div className=\"w-[320px] bg-white rounded-2xl overflow-hidden flex flex-col shadow-sm border border-default\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 64,
+      "content": "<span className=\"bg-white/90 backdrop-blur text-primary text-[10px] font-bold px-2 py-1 rounded-full border border-default\">",
+      "match": "bg-white/90"
+    },
+    {
+      "line": 71,
+      "content": "className=\"w-8 h-8 rounded-full bg-white/90 border border-default flex items-center justify-center text-muted hover:text-primary transition-colors\"",
+      "match": "bg-white/90"
+    },
+    {
+      "line": 79,
+      "content": "<div className=\"p-4 bg-white border-b border-default\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 93,
+      "content": "<div className=\"p-4 bg-white space-y-3 border-b border-default\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 138,
+      "content": "<div className=\"p-4 bg-white border-b border-default\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 178,
+      "content": "<div className=\"p-4 bg-white\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 181,
+      "content": "className=\"w-full py-2.5 bg-surface-strong text-white font-bold rounded-lg text-sm hover:bg-surface-strong transition-colors shadow-sm\"",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\public-tab-sections\\FabricPublicPricingSection.tsx": [
+    {
+      "line": 192,
+      "content": "className=\"bg-white hover:bg-slate-50/50\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 363,
+      "content": "<div className=\"absolute right-0 top-10 mt-1 w-64 bg-white border border-default rounded-xl shadow-xl z-50 p-3.5 space-y-3 text-xs max-h-60 overflow-y-auto\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 401,
+      "content": "className=\"w-full text-center text-primary font-bold hover:underline border-t border-default pt-2 block mt-2 cursor-pointer bg-transparent border-none\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\public-tab-sections\\FabricPublicSeoSection.tsx": [
+    {
+      "line": 141,
+      "content": "<div id=\"qr-container\" className=\"p-0 border-none bg-transparent\">",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\PublicCompareModal.tsx": [
+    {
+      "line": 47,
+      "content": "<div className=\"fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in\">",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 48,
+      "content": "<div className=\"bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] shadow-2xl flex flex-col overflow-hidden\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\PublicFabricDetailSkeleton.tsx": [
+    {
+      "line": 5,
+      "content": "<header className=\"bg-white shadow-sm sticky top-0 z-30 px-4 py-3 text-center\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 14,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 21,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 34,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm p-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\PublicInquiryModal.tsx": [
+    {
+      "line": 263,
+      "content": "<div className=\"fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in\">",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 264,
+      "content": "<div className=\"bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 434,
+      "content": "className=\"w-full text-sm border border-default rounded-xl pl-3 pr-12 py-2 focus:outline-none focus:border-primary bg-white\"",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\PublicLoginModal.tsx": [
+    {
+      "line": 68,
+      "content": "<div className=\"fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in\">",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 69,
+      "content": "<div className=\"bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\PublicSampleModal.tsx": [
+    {
+      "line": 81,
+      "content": "<div className=\"fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in\">",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 82,
+      "content": "<div className=\"bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\components\\PublicStickyCTA.tsx": [
+    {
+      "line": 40,
+      "content": "<div className=\"fixed bottom-0 left-0 right-0 p-3 bg-white border-t border-default shadow-[0_-4px_12px_-1px_rgba(0,0,0,0.08)] z-40\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 58,
+      "content": "className=\"flex-[2] flex flex-col items-center justify-center gap-1 bg-[#0068ff] hover:bg-[#0054cc] text-white py-2.5 px-2 rounded-xl transition-colors shadow-sm shadow-[#0068ff]/30\"",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\FabricCatalogForm.tsx": [
+    {
+      "line": 147,
+      "content": "<div className=\"px-6 py-2 border-b border-default bg-white/80 backdrop-blur-md sticky top-0 z-10\">",
+      "match": "bg-white/80"
+    }
+  ],
+  "\\src\\features\\fabric-catalog\\FabricVariantList.tsx": [
+    {
+      "line": 100,
+      "content": "? 'bg-primary text-white border-primary'",
+      "match": "text-white"
+    },
+    {
+      "line": 112,
+      "content": "? 'bg-primary text-white border-primary'",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\finished-fabric\\components\\FinishedFabricBulkFormStep1General.tsx": [
+    {
+      "line": 131,
+      "content": "<div className=\"form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] p-3 bg-white border border-border rounded-md\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\guide-system\\components\\GuideCommandPalette.tsx": [
+    {
+      "line": 196,
+      "content": "className=\"flex-1 bg-transparent border-none outline-none text-lg text-foreground placeholder:text-muted/60\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\looms\\components\\LoomCompactCard.tsx": [
+    {
+      "line": 18,
+      "content": "running: 'bg-success-soft text-white',",
+      "match": "text-white"
+    },
+    {
+      "line": 19,
+      "content": "idle: 'bg-surface-strong text-white',",
+      "match": "text-white"
+    },
+    {
+      "line": 20,
+      "content": "maintenance: 'bg-warning-soft text-white',",
+      "match": "text-white"
+    },
+    {
+      "line": 21,
+      "content": "breakdown: 'bg-danger-soft text-white',",
+      "match": "text-white"
+    },
+    {
+      "line": 22,
+      "content": "setup: 'bg-purple-500 text-white',",
+      "match": "bg-purple-500"
+    }
+  ],
+  "\\src\\features\\looms\\components\\MachineSpecMobileCard.tsx": [
+    {
+      "line": 20,
+      "content": "<span className=\"inline-flex items-center rounded-sm bg-purple-50 px-1.5 py-0.5 text-[10px] font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10\">",
+      "match": "text-purple-700"
+    },
+    {
+      "line": 43,
+      "content": "<div className=\"p-4 bg-white rounded-lg border border-default\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\operations\\components\\ActivityFeed.tsx": [
+    {
+      "line": 17,
+      "content": "'h-8 w-8 shrink-0 rounded-full text-white text-xs font-semibold flex items-center justify-center',",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\operations\\components\\BlockedTransitionsWidget.tsx": [
+    {
+      "line": 99,
+      "content": "<Card className=\"border-none shadow-sm bg-white/70 backdrop-blur-sm\">",
+      "match": "bg-white/70"
+    },
+    {
+      "line": 193,
+      "content": "className=\"rounded-lg border border-zinc-200/80 bg-white px-2.5 py-2\"",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\operations\\components\\KanbanColumn.tsx": [
+    {
+      "line": 103,
+      "content": "if (blockedReason) return 'bg-rose-100/70 border border-danger/80';",
+      "match": "bg-rose-100/70"
+    },
+    {
+      "line": 109,
+      "content": "return 'bg-indigo-100/60 border border-info';",
+      "match": "bg-indigo-100/60"
+    },
+    {
+      "line": 113,
+      "content": "return 'bg-red-100/60 border border-danger';",
+      "match": "bg-red-100/60"
+    },
+    {
+      "line": 115,
+      "content": "return 'bg-emerald-100/60 border border-success';",
+      "match": "bg-emerald-100/60"
+    },
+    {
+      "line": 134,
+      "content": "? 'bg-danger text-white border-danger'",
+      "match": "text-white"
+    },
+    {
+      "line": 135,
+      "content": ": 'text-zinc-400 bg-white border-zinc-100'",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\operations\\components\\MiniCalendar.tsx": [
+    {
+      "line": 47,
+      "content": "? 'bg-info-soft text-white font-semibold'",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\operations\\components\\TaskCard.tsx": [
+    {
+      "line": 44,
+      "content": "return 'border-zinc-200 hover:border-zinc-400 bg-white';",
+      "match": "bg-white"
+    },
+    {
+      "line": 54,
+      "content": "return 'border-zinc-200 hover:border-info bg-white';",
+      "match": "bg-white"
+    },
+    {
+      "line": 105,
+      "content": "<div className=\"absolute top-2 right-2 opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity z-10 bg-white/80 backdrop-blur-sm rounded-md px-1 border border-zinc-100 shadow-sm\">",
+      "match": "bg-white/80"
+    },
+    {
+      "line": 149,
+      "content": "<span className=\"h-4 w-4 rounded-full bg-info-soft text-white flex items-center justify-center text-[8px] font-bold\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\operations\\OperationsPage.tsx": [
+    {
+      "line": 178,
+      "content": "<div className=\"sticky top-0 z-10 bg-white/95 backdrop-blur-sm pb-4 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0\">",
+      "match": "bg-white/95"
+    },
+    {
+      "line": 236,
+      "content": "? 'bg-primary text-white border-primary'",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\order-kanban\\OrderKanbanPage.tsx": [
+    {
+      "line": 88,
+      "content": "? 'bg-danger text-white border-danger'",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\orders\\dashboard\\components\\FulfillmentKpiCards.tsx": [
+    {
+      "line": 77,
+      "content": "className={`h-8 w-8 rounded-lg flex items-center justify-center ${card.color} bg-white/70`}",
+      "match": "bg-white/70"
+    }
+  ],
+  "\\src\\features\\orders\\dashboard\\components\\OrderFulfillmentTable.tsx": [
+    {
+      "line": 120,
+      "content": "<div className=\"rounded-xl border border-zinc-100 bg-white p-8 flex items-center justify-center\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 127,
+      "content": "<div className=\"rounded-xl border border-zinc-100 bg-white overflow-hidden\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\detail\\POApproveModal.tsx": [
+    {
+      "line": 24,
+      "content": "<div className=\"fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4\">",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 25,
+      "content": "<div className=\"bg-white rounded-xl shadow-xl border border-border p-6 max-w-md w-full space-y-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\detail\\POChatWidget.tsx": [
+    {
+      "line": 142,
+      "content": ": 'bg-white border border-border text-foreground rounded-tl-sm'",
+      "match": "bg-white"
+    },
+    {
+      "line": 169,
+      "content": "className=\"p-3 border-t border-border bg-white flex gap-2\"",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\detail\\POGoodsReceiptsList.tsx": [
+    {
+      "line": 33,
+      "content": "<div className=\"w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center mb-5 text-muted-foreground\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\detail\\POInfoCard.tsx": [
+    {
+      "line": 115,
+      "content": "<div className=\"bg-danger text-white rounded-full p-1 shrink-0 mt-0.5\">",
+      "match": "text-white"
+    },
+    {
+      "line": 137,
+      "content": "<div className=\"bg-success text-white rounded-full p-1 shrink-0 mt-0.5\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\detail\\PORejectModal.tsx": [
+    {
+      "line": 21,
+      "content": "<div className=\"fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4\">",
+      "match": "bg-black/50"
+    },
+    {
+      "line": 22,
+      "content": "<div className=\"bg-white rounded-xl shadow-xl border border-border p-6 max-w-md w-full space-y-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\detail\\POSupplierPortalStatus.tsx": [
+    {
+      "line": 63,
+      "content": "className=\"flex-1 text-xs px-2 py-1.5 bg-white border border-border rounded text-muted-foreground outline-none\"",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\detail\\POTemplate.tsx": [
+    {
+      "line": 37,
+      "content": "className=\"p-8 bg-white text-primary text-sm font-sans relative\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 62,
+      "content": "<div className=\"w-16 h-16 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-2xl\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\POAttachmentsCard.tsx": [
+    {
+      "line": 74,
+      "content": "<div className=\"absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center\">",
+      "match": "bg-black/40"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\POGeneralInfoCard.tsx": [
+    {
+      "line": 112,
+      "content": "? 'bg-white text-primary shadow-sm border border-black/5'",
+      "match": "bg-white"
+    },
+    {
+      "line": 112,
+      "content": "? 'bg-white text-primary shadow-sm border border-black/5'",
+      "match": "border-black/5"
+    },
+    {
+      "line": 123,
+      "content": "? 'bg-white text-primary shadow-sm border border-black/5'",
+      "match": "bg-white"
+    },
+    {
+      "line": 123,
+      "content": "? 'bg-white text-primary shadow-sm border border-black/5'",
+      "match": "border-black/5"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\components\\POPaymentPanel.tsx": [
+    {
+      "line": 43,
+      "content": "className=\"field-select h-9 w-full bg-white font-normal\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 65,
+      "content": "className=\"h-9 w-full text-right bg-white font-medium tabular-nums\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 81,
+      "content": "className=\"h-9 w-full text-right bg-white font-medium tabular-nums\"",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\procurement\\purchase-orders\\GoodsReceiptForm.tsx": [
+    {
+      "line": 122,
+      "content": "<div className=\"fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4\">",
+      "match": "bg-black/50"
+    }
+  ],
+  "\\src\\features\\procurement\\rfqs\\components\\RFQQuotesTab.tsx": [
+    {
+      "line": 90,
+      "content": "className={`bg-white border rounded-xl overflow-hidden shadow-sm transition-all ${",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\procurement\\rfqs\\RFQDetail.tsx": [
+    {
+      "line": 248,
+      "content": "<div className=\"bg-white p-4 rounded-xl shadow-sm border border-border inline-block mb-6\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\quotations\\QuotationPrint.tsx": [
+    {
+      "line": 44,
+      "content": "<div className=\"bg-white text-black min-h-[100vh] py-8 px-4\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 87,
+      "content": "<hr className=\"my-4 mx-0 border-none border-b-2 border-black\" />",
+      "match": "border-black"
+    }
+  ],
+  "\\src\\features\\settings\\CompanySettingsForm.tsx": [
+    {
+      "line": 243,
+      "content": "<div className=\"w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0\">",
+      "match": "bg-purple-500/10"
+    }
+  ],
+  "\\src\\features\\settings\\PermissionMatrixForm.tsx": [
+    {
+      "line": 320,
+      "content": "<div className=\"flex items-center gap-2 text-white\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\settings\\UiSettingsForm.tsx": [
+    {
+      "line": 66,
+      "content": "<div className=\"w-10 h-10 rounded-xl bg-pink-500/10 text-pink-600 flex items-center justify-center shrink-0\">",
+      "match": "bg-pink-500/10"
+    }
+  ],
+  "\\src\\features\\shipments\\AdHocShipmentItemsTable.tsx": [
+    {
+      "line": 107,
+      "content": "className=\"border-none rounded-none focus:ring-0 shadow-none h-9 bg-transparent\"",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 170,
+      "content": "className=\"border-none rounded-none focus:ring-0 shadow-none bg-transparent\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\shipments\\components\\quick-print\\K80PrintLayout.tsx": [
+    {
+      "line": 41,
+      "content": "className={`${isPrintPortal ? 'k80-print-container hidden print:flex' : 'k80-preview-container'} bg-white text-black p-2 font-mono mx-auto print-spacing-tight text-sm flex flex-col`}",
+      "match": "bg-white"
+    },
+    {
+      "line": 139,
+      "content": "className=\"text-right border-b border-dashed border-black pb-1\"",
+      "match": "border-black"
+    },
+    {
+      "line": 165,
+      "content": "<div className=\"border-t border-dashed border-black w-full\" />",
+      "match": "border-black"
+    },
+    {
+      "line": 193,
+      "content": "<div className=\"border-t border-dashed border-black w-full\" />",
+      "match": "border-black"
+    }
+  ],
+  "\\src\\features\\shipments\\components\\ShipmentMobileCard.tsx": [
+    {
+      "line": 17,
+      "content": "'bg-purple-500/10 text-purple-700 dark:text-purple-400 ring-purple-500/20',",
+      "match": "bg-purple-500/10"
+    },
+    {
+      "line": 25,
+      "content": "partially_returned: 'bg-purple-500',",
+      "match": "bg-purple-500"
+    }
+  ],
+  "\\src\\features\\shipments\\hooks\\useShipmentColumns.tsx": [
+    {
+      "line": 130,
+      "content": "<div className=\"flex bg-transparent w-full group cursor-default\">",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\shipments\\ops-ui\\ResourceBay\\ResourceBay.tsx": [
+    {
+      "line": 50,
+      "content": "<div className=\"flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface-strong text-white shadow-inner\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\shipments\\pages\\ShipmentDispatchPage.tsx": [
+    {
+      "line": 86,
+      "content": "<div className=\"flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-surface-strong p-5 sm:p-6 text-white shadow-xl\">",
+      "match": "text-white"
+    },
+    {
+      "line": 118,
+      "content": "className=\"bg-surface-strong text-muted hover:bg-surface-strong hover:text-white border-transparent\"",
+      "match": "border-transparent"
+    }
+  ],
+  "\\src\\features\\shipments\\ShipmentList.tsx": [
+    {
+      "line": 225,
+      "content": "<button className=\"btn-primary bg-success-soft hover:bg-success-soft text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\shipments\\ShipmentVerifyPage.tsx": [
+    {
+      "line": 100,
+      "content": "<div className=\"bg-white rounded-2xl shadow-sm border border-[#dce6f0] overflow-hidden\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 105,
+      "content": "<div className=\"text-white text-2xl font-bold tracking-tight\">",
+      "match": "text-white"
+    },
+    {
+      "line": 131,
+      "content": "<div className=\"bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4 flex flex-col gap-2\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 153,
+      "content": "<div className=\"bg-white rounded-2xl shadow-sm border border-[#dce6f0] overflow-hidden\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 184,
+      "content": "<div className=\"bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 200,
+      "content": "? 'bg-[#0f3460] text-white'",
+      "match": "text-white"
+    },
+    {
+      "line": 227,
+      "content": "<div className=\"bg-white rounded-2xl shadow-sm border border-[#dce6f0] px-5 py-4\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\supplier-portal\\components\\POViewer.tsx": [
+    {
+      "line": 39,
+      "content": "<div className=\"bg-[#0f3460] text-white py-6 px-4 md:px-8\">",
+      "match": "text-white"
+    },
+    {
+      "line": 54,
+      "content": "<div className=\"bg-red-500/20 text-red-200 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 print:hidden\">",
+      "match": "bg-red-500/20"
+    },
+    {
+      "line": 60,
+      "content": "className=\"p-2 bg-white/10 hover:bg-white/20 text-white rounded transition-colors print:hidden flex items-center gap-2\"",
+      "match": "bg-white/10"
+    },
+    {
+      "line": 60,
+      "content": "className=\"p-2 bg-white/10 hover:bg-white/20 text-white rounded transition-colors print:hidden flex items-center gap-2\"",
+      "match": "text-white"
+    },
+    {
+      "line": 110,
+      "content": "<div className=\"w-12 h-12 bg-success text-white rounded-full flex items-center justify-center mx-auto mb-3\">",
+      "match": "text-white"
+    },
+    {
+      "line": 125,
+      "content": "<div className=\"w-12 h-12 bg-danger text-white rounded-full flex items-center justify-center mx-auto mb-3\">",
+      "match": "text-white"
+    },
+    {
+      "line": 149,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm border border-border p-5 md:p-6 relative z-10\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 181,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm border border-border p-5 md:p-6\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 190,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm border border-border overflow-hidden\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 248,
+      "content": "className=\"flex items-center gap-2 px-3 py-2 bg-white border border-border rounded-lg hover:border-primary transition-colors text-sm\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 265,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm border border-border p-5 md:p-6\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\supplier-portal\\components\\RFQViewer.tsx": [
+    {
+      "line": 20,
+      "content": "<div className=\"bg-white p-8 rounded-2xl shadow-sm border border-border text-center max-w-md w-full\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 40,
+      "content": "<div className=\"bg-[#0f3460] text-white py-6 px-4 md:px-8\">",
+      "match": "text-white"
+    },
+    {
+      "line": 50,
+      "content": "className=\"p-2 bg-white/10 hover:bg-white/20 text-white rounded transition-colors print:hidden flex items-center gap-2\"",
+      "match": "bg-white/10"
+    },
+    {
+      "line": 50,
+      "content": "className=\"p-2 bg-white/10 hover:bg-white/20 text-white rounded transition-colors print:hidden flex items-center gap-2\"",
+      "match": "text-white"
+    },
+    {
+      "line": 86,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm border border-border p-5 md:p-6 relative z-10\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\supplier-portal\\dashboard\\SupplierDashboardPage.tsx": [
+    {
+      "line": 147,
+      "content": "<div className=\"bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-white flex items-center justify-between gap-4 flex-wrap\">",
+      "match": "text-white"
+    },
+    {
+      "line": 149,
+      "content": "<p className=\"m-0 text-[0.78rem] text-white/55 uppercase tracking-[0.06em] font-semibold\">",
+      "match": "text-white/55"
+    },
+    {
+      "line": 156,
+      "content": "<div className=\"text-[0.78rem] text-white/50 text-right\">",
+      "match": "text-white/50"
+    },
+    {
+      "line": 158,
+      "content": "<p className=\"mt-1 mb-0 text-white/30\">{TEXT.DASHBOARD_BRAND}</p>",
+      "match": "text-white/30"
+    }
+  ],
+  "\\src\\features\\supplier-portal\\notifications\\NotificationCenter.tsx": [
+    {
+      "line": 69,
+      "content": "className=\"relative bg-transparent border-none cursor-pointer p-1 text-muted-foreground hover:text-foreground text-lg leading-none\"",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 74,
+      "content": "<span className=\"absolute -top-1 -right-1 bg-danger text-white rounded-full text-[0.65rem] font-bold min-w-[16px] h-[16px] flex items-center justify-center px-[3px] leading-none\">",
+      "match": "text-white"
+    },
+    {
+      "line": 99,
+      "content": "className=\"bg-transparent border-none cursor-pointer text-muted-foreground hover:text-foreground p-1\"",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 106,
+      "content": "className=\"bg-transparent border-none cursor-pointer text-muted-foreground hover:text-danger p-1\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\features\\supplier-portal\\SupplierProfilePage.tsx": [
+    {
+      "line": 120,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm border border-border p-6\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\supplier-portal\\SupplierQuoteForm.tsx": [
+    {
+      "line": 93,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm border border-border p-5 md:p-6\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 147,
+      "content": "<div className=\"bg-white rounded-xl shadow-sm border border-border p-5 md:p-6\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\weaving-invoices\\components\\BulkRollStation.tsx": [
+    {
+      "line": 182,
+      "content": "<div className=\"absolute top-3 right-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-black px-3 py-1 rounded-full animate-bounce shadow-lg\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\features\\weaving-invoices\\InvoiceSearchPage.tsx": [
+    {
+      "line": 138,
+      "content": "<div className=\"max-w-md w-full bg-white rounded-3xl shadow-xl border border-[#dce6f0] overflow-hidden transition-all duration-300 hover:shadow-2xl\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 144,
+      "content": "<div className=\"inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl backdrop-blur-md mb-4 text-white text-3xl\">",
+      "match": "bg-white/10"
+    },
+    {
+      "line": 144,
+      "content": "<div className=\"inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl backdrop-blur-md mb-4 text-white text-3xl\">",
+      "match": "text-white"
+    },
+    {
+      "line": 147,
+      "content": "<h1 className=\"text-xl font-bold text-white tracking-wide uppercase\">",
+      "match": "text-white"
+    },
+    {
+      "line": 277,
+      "content": "className=\"w-full bg-[#0f3460] hover:bg-[#15467e] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer border-none\"",
+      "match": "text-white"
+    },
+    {
+      "line": 281,
+      "content": "<div className=\"w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin\" />",
+      "match": "border-white"
+    }
+  ],
+  "\\src\\features\\weaving-invoices\\PublicInvoiceDetailPage.tsx": [
+    {
+      "line": 158,
+      "content": "<div className=\"max-w-4xl w-full bg-white rounded-3xl shadow-xl p-8 space-y-6\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 214,
+      "content": "className=\"flex items-center justify-center sm:justify-start gap-2 text-sm font-semibold text-[#0f3460] hover:text-[#1a6bb5] transition-all bg-transparent border-none p-2 cursor-pointer\"",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 229,
+      "content": "className=\"flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-info\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 240,
+      "content": "className=\"flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-secondary\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 250,
+      "content": "className=\"flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-success\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 261,
+      "content": "className=\"flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-info\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 273,
+      "content": "className=\"flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 shadow-sm bg-white border border-[#dce6f0] hover:bg-slate-50\"",
+      "match": "bg-white"
+    },
+    {
+      "line": 283,
+      "content": "<div className=\"max-w-4xl mx-auto bg-white rounded-3xl shadow-xl border border-[#dce6f0] p-8 md:p-12 print:shadow-none print:border-none print:p-0\">",
+      "match": "bg-white"
+    },
+    {
+      "line": 457,
+      "content": "<div className=\"bg-white p-2 border border-default rounded-2xl shadow-sm print:p-0 print:border-none\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\weaving-invoices\\WeavingInvoicesPage.tsx": [
+    {
+      "line": 24,
+      "content": "<div className=\"fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm\">",
+      "match": "bg-black/20"
+    },
+    {
+      "line": 25,
+      "content": "<div className=\"bg-white p-6 rounded-xl shadow-xl flex items-center space-x-3\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\work-orders\\components\\WorkOrderKanbanBoard.tsx": [
+    {
+      "line": 73,
+      "content": "className={`bg-white rounded-xl p-3 shadow-sm border ${",
+      "match": "bg-white"
+    },
+    {
+      "line": 177,
+      "content": "<Badge variant=\"gray\" className=\"bg-white/60 text-muted font-bold\">",
+      "match": "bg-white/60"
+    },
+    {
+      "line": 288,
+      "content": "<div className=\"bg-white rounded-xl p-3 shadow-2xl border border-primary ring-2 ring-primary/20 rotate-3 scale-105 cursor-grabbing w-[280px]\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\work-orders\\components\\WorkOrderQCModal.tsx": [
+    {
+      "line": 30,
+      "content": "className=\"fixed inset-0 bg-black/50 backdrop-blur-sm\"",
+      "match": "bg-black/50"
+    }
+  ],
+  "\\src\\features\\work-orders\\components\\YarnAvailabilityWarning.tsx": [
+    {
+      "line": 71,
+      "content": "className=\"flex items-center justify-between text-[11px] text-warning-strong bg-white/60 rounded-md px-2 py-1.5\"",
+      "match": "bg-white/60"
+    }
+  ],
+  "\\src\\features\\work-orders\\WorkOrderList.tsx": [
+    {
+      "line": 214,
+      "content": "className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white shadow text-primary' : 'text-muted hover:text-primary'}`}",
+      "match": "bg-white"
+    },
+    {
+      "line": 220,
+      "content": "className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-white shadow text-primary' : 'text-muted hover:text-primary'}`}",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\yarn-catalog\\components\\StepKnittingEngineering.tsx": [
+    {
+      "line": 108,
+      "content": "<div className=\"p-4 bg-white rounded-lg border border-default\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\features\\yarn-receipts\\components\\LotBarcodeModal.tsx": [
+    {
+      "line": 97,
+      "content": "<div className=\"barcode-wrapper w-full flex justify-center bg-white p-2 rounded\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\shared\\components\\Button.tsx": [
+    {
+      "line": 53,
+      "content": "'border border-border bg-transparent text-text active:bg-primary/[0.06]',",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 55,
+      "content": "'bg-transparent text-muted active:text-foreground active:bg-surface-subtle',",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\shared\\components\\Card.tsx": [
+    {
+      "line": 12,
+      "content": "'rounded-xl bg-white',",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\shared\\components\\Combobox.tsx": [
+    {
+      "line": 201,
+      "content": "className={`border-none outline-none bg-transparent flex-1 px-3 focus:ring-0 ${minHeightClass}`}",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 337,
+      "content": "className=\"w-full text-sm outline-none bg-transparent border-none min-h-[32px]\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\shared\\components\\comboboxes\\VPBaseCombobox.tsx": [
+    {
+      "line": 245,
+      "content": "className=\"flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\shared\\components\\FAB.tsx": [
+    {
+      "line": 25,
+      "content": "className={`fixed z-40 flex items-center justify-center w-14 h-14 text-white transition-all duration-200 rounded-full shadow-lg hover:scale-105 active:scale-95 right-4 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\shared\\components\\media\\MediaLibraryModal.tsx": [
+    {
+      "line": 151,
+      "content": "<div className=\"absolute top-2 right-2 bg-primary text-white rounded-full p-1 shadow-sm\">",
+      "match": "text-white"
+    }
+  ],
+  "\\src\\shared\\components\\roll-grid\\RollGridItem.tsx": [
+    {
+      "line": 50,
+      "content": "'bg-surface-strong text-white shadow-lg',",
+      "match": "text-white"
+    },
+    {
+      "line": 130,
+      "content": "<span className=\"absolute -top-1.5 -right-1.5 w-6 h-6 bg-success-soft rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-in zoom-in-50 duration-200\">",
+      "match": "border-white"
+    },
+    {
+      "line": 131,
+      "content": "<Icon name=\"Check\" size={14} className=\"text-white\" />",
+      "match": "text-white"
+    },
+    {
+      "line": 316,
+      "content": "className=\"w-full text-center bg-transparent border-none outline-none font-black text-base focus:ring-0 p-0 m-0\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\shared\\components\\SignaturePad.tsx": [
+    {
+      "line": 27,
+      "content": "<div className=\"fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm\">",
+      "match": "bg-black/60"
+    },
+    {
+      "line": 44,
+      "content": "<div className=\"relative border-2 border-dashed border-[var(--border)] rounded-xl overflow-hidden bg-white\">",
+      "match": "bg-white"
+    }
+  ],
+  "\\src\\shared\\components\\Switch.tsx": [
+    {
+      "line": 42,
+      "content": "default: 'bg-white shadow',",
+      "match": "bg-white"
+    },
+    {
+      "line": 200,
+      "content": "className=\"switch-premium-label switch-premium-label-on left-2.5 text-white\"",
+      "match": "text-white"
+    },
+    {
+      "line": 206,
+      "content": "className=\"switch-premium-label switch-premium-label-off right-2.5 text-white/80\"",
+      "match": "text-white/80"
+    }
+  ],
+  "\\src\\shared\\components\\TagInput.tsx": [
+    {
+      "line": 76,
+      "content": "className=\"flex-1 min-w-[120px] bg-transparent border-none outline-none p-0 text-sm\"",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\shared\\components\\TimelineProgress.tsx": [
+    {
+      "line": 46,
+      "content": "completed: 'bg-success text-white border-success',",
+      "match": "text-white"
+    },
+    {
+      "line": 50,
+      "content": "error: 'bg-danger text-white border-danger',",
+      "match": "text-white"
+    },
+    {
+      "line": 81,
+      "content": "' border-dashed border-border bg-transparent'",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 121,
+      "content": "'bg-transparent border-transparent pt-1 px-0',",
+      "match": "bg-transparent"
+    }
+  ],
+  "\\src\\shared\\components\\VPSelect.tsx": [
+    {
+      "line": 56,
+      "content": "outline: 'border-border bg-transparent',",
+      "match": "bg-transparent"
+    },
+    {
+      "line": 57,
+      "content": "ghost: 'border-transparent bg-transparent hover:bg-surface-subtle',",
+      "match": "border-transparent"
+    }
+  ]
+}

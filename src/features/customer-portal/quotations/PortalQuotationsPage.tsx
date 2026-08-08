@@ -25,7 +25,11 @@ export function PortalQuotationsPage() {
   if (loading)
     return (
       <div className="portal-loading">
-        <Icon name="Loader2" size={24} className="animate-spin text-primary" />
+        <Icon
+          name="Loader2"
+          size={24}
+          className="animate-spin text-foreground"
+        />
         Đang tải báo giá…
       </div>
     );
@@ -59,7 +63,7 @@ export function PortalQuotationsPage() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="portal-page-title mb-1">Báo giá</h1>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             Danh sách các báo giá Vĩnh Phát gửi tới bạn.
           </p>
         </div>
@@ -107,15 +111,15 @@ export function PortalQuotationsPage() {
                       <td>
                         <Link
                           to={`/portal/quotations/${q.id}`}
-                          className="font-semibold text-primary hover:underline"
+                          className="font-semibold text-foreground hover:underline"
                         >
                           {q.quotation_number}
                         </Link>
                       </td>
-                      <td className="text-muted text-sm">
+                      <td className="text-muted-foreground text-sm">
                         {dayjs(q.quotation_date).format('DD/MM/YYYY')}
                       </td>
-                      <td className="text-muted text-sm">
+                      <td className="text-muted-foreground text-sm">
                         {q.valid_until ? (
                           <span className={isExpired ? 'text-danger' : ''}>
                             {dayjs(q.valid_until).format('DD/MM/YYYY')}
@@ -124,7 +128,7 @@ export function PortalQuotationsPage() {
                           '—'
                         )}
                       </td>
-                      <td className="right font-bold text-primary">
+                      <td className="right font-bold text-foreground">
                         <MoneyText value={q.total_amount} suffix=" đ" />
                       </td>
                       <td>
@@ -167,7 +171,7 @@ export function PortalQuotationsPage() {
                   className="block portal-order-card hover:bg-slate-50 transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <span className="font-bold text-primary">
+                    <span className="font-bold text-foreground">
                       {q.quotation_number}
                     </span>
                     <span
@@ -177,7 +181,7 @@ export function PortalQuotationsPage() {
                     </span>
                   </div>
                   <div className="flex justify-between items-end">
-                    <div className="text-xs text-muted space-y-0.5">
+                    <div className="text-xs text-muted-foreground space-y-0.5">
                       <div>
                         Gửi: {dayjs(q.quotation_date).format('DD/MM/YYYY')}
                       </div>
@@ -189,7 +193,7 @@ export function PortalQuotationsPage() {
                         </div>
                       )}
                     </div>
-                    <div className="font-bold text-primary">
+                    <div className="font-bold text-foreground">
                       <MoneyText value={q.total_amount} suffix=" đ" />
                     </div>
                   </div>

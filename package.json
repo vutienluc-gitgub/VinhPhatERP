@@ -12,25 +12,29 @@
     "build:server": "cd server && npm run build",
     "build:all": "npm run build && npm run build:server",
     "lint": "eslint . --ext ts,tsx",
+    "lint:css": "stylelint \"src/**/*.css\"",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write .",
-    "check": "npm run lint && npm run typecheck",
+    "check": "npm run lint && npm run lint:css && npm run typecheck",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:visual": "playwright test visual-regression.spec.ts",
+    "test:visual-update": "playwright test visual-regression.spec.ts --update-snapshots",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "ai:audit": "node scripts/ai-audit.js",
     "typecheck:server": "cd server && npm run typecheck",
     "server:install": "cd server && npm install",
-    "audit:full": "npm run rpc:check && npm run lint && npm run typecheck",
+    "audit:full": "npm run rpc:check && npm run lint && npm run typecheck && npm run theme:check",
     "db:push": "npx supabase db push",
     "db:new": "npx supabase migration new",
     "db:status": "npx supabase migration list",
     "db:reload": "node scripts/db-reload-schema.mjs",
     "prepare": "husky",
     "rpc:check": "tsx scripts/rpc-sync.ts",
-    "rpc:fix": "tsx scripts/rpc-sync.ts --fix"
+    "rpc:fix": "tsx scripts/rpc-sync.ts --fix",
+    "theme:check": "node scripts/check-theme-contract.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",
@@ -115,6 +119,8 @@
     "prettier": "^3.8.1",
     "puppeteer": "^24.40.0",
     "sql-lint": "^1.0.2",
+    "stylelint": "^17.14.1",
+    "stylelint-config-standard": "^40.0.0",
     "tailwindcss": "^4.2.2",
     "ts-morph": "^28.0.0",
     "ts-node": "^10.9.2",
@@ -131,7 +137,11 @@
       "eslint --fix",
       "prettier --write"
     ],
-    "*.{json,md,css}": [
+    "*.{json,md}": [
+      "prettier --write"
+    ],
+    "*.css": [
+      "stylelint --fix",
       "prettier --write"
     ]
   },

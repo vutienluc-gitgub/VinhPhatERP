@@ -113,7 +113,7 @@ export function K80QuickShipmentPage() {
                   className="flex flex-col gap-2 bg-[var(--surface-subtle)] p-3 rounded-xl border border-[var(--border)]"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm text-muted">
+                    <span className="font-medium text-sm text-muted-foreground">
                       {LABELS.COLUMN} {idx + 1}
                     </span>
                     {columns.length > 1 && (
@@ -160,13 +160,15 @@ export function K80QuickShipmentPage() {
           <div className="w-full bg-surface rounded-2xl shadow-sm border border-[var(--border)] p-6 flex flex-col gap-6">
             <div className="text-center">
               <h2 className="font-bold text-xl">{`${LABELS.PROCESS_AND_PRINT} ${paperSize}`}</h2>
-              <p className="text-sm text-muted mt-1">{LABELS.CHECK_INFO}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {LABELS.CHECK_INFO}
+              </p>
             </div>
 
             <label className="flex items-center gap-3 cursor-pointer p-4 bg-[var(--surface-subtle)] hover:bg-[var(--surface-hover)] rounded-xl border border-[var(--border)] transition-all">
               <input
                 type="checkbox"
-                className="rounded border-[var(--border)] text-primary focus:ring-primary w-5 h-5 shadow-sm"
+                className="rounded border-[var(--border)] text-foreground focus:ring-primary w-5 h-5 shadow-sm"
                 checked={saveToDb}
                 onChange={(e) => setSaveToDb(e.target.checked)}
               />
@@ -181,7 +183,7 @@ export function K80QuickShipmentPage() {
                   value="K80"
                   checked={paperSize === 'K80'}
                   onChange={() => setPaperSize('K80')}
-                  className="text-primary focus:ring-primary w-4 h-4"
+                  className="text-foreground focus:ring-primary w-4 h-4"
                 />
                 <span className="font-medium">{LABELS.PAPER_SIZE_K80}</span>
               </label>
@@ -192,7 +194,7 @@ export function K80QuickShipmentPage() {
                   value="A5"
                   checked={paperSize === 'A5'}
                   onChange={() => setPaperSize('A5')}
-                  className="text-primary focus:ring-primary w-4 h-4"
+                  className="text-foreground focus:ring-primary w-4 h-4"
                 />
                 <span className="font-medium">{LABELS.PAPER_SIZE_A5}</span>
               </label>

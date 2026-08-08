@@ -1,0 +1,6 @@
+legacy-combobox-list.json
+eslint-report.json
+stylelint-report.json
+audit_results.json
+dark_mode_audit_report.json
+*.sql

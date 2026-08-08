@@ -129,14 +129,14 @@ export function CustomerPortalAccountPanel({
       {/* Header/Status Badge */}
       {account !== null && (
         <div className="flex justify-between items-center">
-          <span className="text-[11px] font-mono text-muted truncate max-w-[140px] md:max-w-[180px]">
+          <span className="text-[11px] font-mono text-muted-foreground truncate max-w-[140px] md:max-w-[180px]">
             {account.email}
           </span>
           <span
             className={`text-[10px] font-semibold px-2 py-0.5 rounded-[20px] flex items-center gap-1.5 ${
               account.is_active
                 ? 'bg-[#16a34a]/10 text-[#16a34a]'
-                : 'bg-surface-secondary text-muted'
+                : 'bg-surface-secondary text-muted-foreground'
             }`}
           >
             <span
@@ -156,7 +156,7 @@ export function CustomerPortalAccountPanel({
           <>
             {!showForm ? (
               <div className="flex flex-col gap-2">
-                <p className="text-[12px] text-muted italic">
+                <p className="text-[12px] text-muted-foreground italic">
                   {CUSTOMER_PORTAL_LABELS.noAccountMsg}
                 </p>
                 <button
@@ -170,7 +170,7 @@ export function CustomerPortalAccountPanel({
             ) : (
               <div className="space-y-2">
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                     {CUSTOMER_PORTAL_LABELS.emailLabel}
                   </label>
                   <input
@@ -183,7 +183,7 @@ export function CustomerPortalAccountPanel({
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                     {CUSTOMER_PORTAL_LABELS.passwordLabel}
                   </label>
                   <input

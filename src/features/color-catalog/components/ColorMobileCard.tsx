@@ -27,7 +27,7 @@ export function ColorMobileCard({
           style={{ background: getColorHex(color.code) }}
         />
         <div>
-          <div className="font-mono text-xs font-bold text-primary mb-1">
+          <div className="font-mono text-xs font-bold text-foreground mb-1">
             {color.code}
           </div>
           <div className="font-medium text-text">{color.name}</div>
@@ -42,7 +42,7 @@ export function ColorMobileCard({
             {color.color_group}
           </Badge>
         ) : (
-          <span className="text-muted text-xs">—</span>
+          <span className="text-muted-foreground text-xs">—</span>
         )}
       </div>
     </div>

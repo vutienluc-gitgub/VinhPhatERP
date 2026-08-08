@@ -65,8 +65,8 @@ export function BomList({
             const bom = row.original;
             return (
               <div className="flex flex-col">
-                <span className="font-bold text-primary">{bom.code}</span>
-                <span className="text-xs text-muted truncate max-w-[200px]">
+                <span className="font-bold text-foreground">{bom.code}</span>
+                <span className="text-xs text-muted-foreground truncate max-w-[200px]">
                   {bom.name}
                 </span>
               </div>
@@ -86,7 +86,7 @@ export function BomList({
                   {bom.fabric_catalogs?.name || '---'}
                 </span>
                 {bom.target_width_cm && (
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted-foreground">
                     Khổ: {bom.target_width_cm}cm
                   </span>
                 )}
@@ -131,7 +131,7 @@ export function BomList({
                 <span>
                   {new Date(bom.updated_at).toLocaleDateString('vi-VN')}
                 </span>
-                <span className="text-xs text-muted">
+                <span className="text-xs text-muted-foreground">
                   bởi {bom.created_by_profile?.full_name || '---'}
                 </span>
               </div>
@@ -174,7 +174,7 @@ export function BomList({
           <div className="mobile-card-header">
             <div className="flex flex-col">
               <span className="mobile-card-title">{bom.code}</span>
-              <span className="text-xs text-muted">
+              <span className="text-xs text-muted-foreground">
                 Phiên bản: v{bom.active_version}
               </span>
             </div>
@@ -187,20 +187,24 @@ export function BomList({
 
             <div className="grid grid-cols-2 gap-2 text-sm mt-2">
               <div className="flex flex-col">
-                <span className="text-xs text-muted">Sản phẩm Vải</span>
+                <span className="text-xs text-muted-foreground">
+                  Sản phẩm Vải
+                </span>
                 <span className="font-medium">
                   {bom.fabric_catalogs?.name || '---'}
                 </span>
               </div>
               <div className="flex flex-col text-right">
-                <span className="text-xs text-muted">Khổ mục tiêu</span>
+                <span className="text-xs text-muted-foreground">
+                  Khổ mục tiêu
+                </span>
                 <span className="font-medium">
                   {bom.target_width_cm ? `${bom.target_width_cm} cm` : '---'}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-muted mt-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
               <Icon name="User" size={16} />
               <span>
                 Người tạo: {bom.created_by_profile?.full_name || 'N/A'}
@@ -219,7 +223,7 @@ export function BomList({
               </button>
               {bom.status === 'draft' && (
                 <button
-                  className="btn-secondary flex-1 text-primary"
+                  className="btn-secondary flex-1 text-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
                     onEdit(bom);

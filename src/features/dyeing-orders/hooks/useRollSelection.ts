@@ -1,6 +1,11 @@
 import { useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import type { UseFormSetValue, FieldValues, Path } from 'react-hook-form';
+import type {
+  UseFormSetValue,
+  FieldValues,
+  Path,
+  PathValue,
+} from 'react-hook-form';
 
 import type { RawFabricRoll } from '@/domain/inventory/raw-fabric.types';
 import {
@@ -45,6 +50,7 @@ export function useRollSelection<
       );
       if (rollsToAdd.length === 0) {
         toast(`Tất cả cuộn mộc của lô ${lotNumber} đã được thêm.`, {
+          // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
           icon: 'ℹ️',
         });
         return;
@@ -52,11 +58,17 @@ export function useRollSelection<
 
       const newItems = rollsToAdd.map((roll) => createEmptyItem(roll));
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setValue('items' as Path<TFormValues>, [...items, ...newItems] as any, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
+      setValue(
+        'items' as Path<TFormValues>,
+        [...items, ...newItems] as unknown as PathValue<
+          TFormValues,
+          Path<TFormValues>
+        >,
+        {
+          shouldValidate: true,
+          shouldDirty: true,
+        },
+      );
 
       toast.success(
         `Đã thêm ${rollsToAdd.length} cuộn mộc từ lô ${lotNumber}.`,

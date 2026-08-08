@@ -40,7 +40,7 @@ export function POPaymentPanel({
           <div className="form-field">
             <label>{PO_CONSTANTS.LABEL_CURRENCY}</label>
             <select
-              className="field-select h-9 w-full bg-white font-normal"
+              className="field-select h-9 w-full bg-surface font-normal"
               {...register('currency')}
             >
               {PO_CONSTANTS.CURRENCY_OPTIONS.map((c) => (
@@ -62,7 +62,7 @@ export function POPaymentPanel({
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="0"
-                    className="h-9 w-full text-right bg-white font-medium tabular-nums"
+                    className="h-9 w-full text-right bg-surface font-medium tabular-nums"
                   />
                 )}
               />
@@ -78,7 +78,7 @@ export function POPaymentPanel({
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="0"
-                    className="h-9 w-full text-right bg-white font-medium tabular-nums"
+                    className="h-9 w-full text-right bg-surface font-medium tabular-nums"
                   />
                 )}
               />
@@ -88,37 +88,37 @@ export function POPaymentPanel({
 
         {/* Invoice Financial Breakdown */}
         <div className="bg-gray-50/20 rounded-xl p-4 border border-dashed border-border flex flex-col gap-3.5">
-          <div className="flex justify-between items-center text-sm text-muted">
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
             <span>{PO_CONSTANTS.SUBTOTAL}</span>
-            <span className="font-semibold tabular-nums text-primary">
+            <span className="font-semibold tabular-nums text-foreground">
               <MoneyText value={subtotal} /> {watchCurrency}
             </span>
           </div>
 
-          <div className="flex justify-between items-center text-sm text-muted">
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
             <span>VAT ({watchVatRate}%)</span>
-            <span className="font-semibold tabular-nums text-primary">
+            <span className="font-semibold tabular-nums text-foreground">
               <MoneyText value={vatAmount} /> {watchCurrency}
             </span>
           </div>
 
-          <div className="flex justify-between items-center text-sm text-muted">
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
             <span>{PO_CONSTANTS.SHIPPING_FEE}</span>
-            <span className="font-semibold tabular-nums text-primary">
+            <span className="font-semibold tabular-nums text-foreground">
               <MoneyText value={watchShippingFee} /> {watchCurrency}
             </span>
           </div>
 
           <div className="border-t border-dashed border-muted pt-3.5">
             <div className="flex justify-between items-baseline">
-              <span className="font-bold text-sm text-primary uppercase tracking-wider">
+              <span className="font-bold text-sm text-foreground uppercase tracking-wider">
                 {PO_CONSTANTS.GRAND_TOTAL}
               </span>
               <div className="text-right">
-                <span className="text-2xl font-extrabold text-primary tabular-nums">
+                <span className="text-2xl font-extrabold text-foreground tabular-nums">
                   <MoneyText value={totalAmount} />
                 </span>
-                <span className="text-xs font-bold text-muted ml-1.5 uppercase">
+                <span className="text-xs font-bold text-muted-foreground ml-1.5 uppercase">
                   {watchCurrency}
                 </span>
               </div>

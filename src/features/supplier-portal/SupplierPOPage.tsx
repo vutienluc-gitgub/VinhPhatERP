@@ -67,7 +67,7 @@ export function SupplierPOPage() {
         <h2 className="text-lg font-bold text-foreground text-center">
           {TEXT.PO_PUBLIC_NOT_FOUND_TITLE}
         </h2>
-        <p className="text-muted text-center mt-2 text-sm max-w-md">
+        <p className="text-muted-foreground text-center mt-2 text-sm max-w-md">
           {TEXT.PO_PUBLIC_NOT_FOUND_DESC}
         </p>
       </div>

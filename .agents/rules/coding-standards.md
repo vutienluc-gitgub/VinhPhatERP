@@ -11,6 +11,35 @@ trigger: always_on
 Must follow:
 agents/rules/refactor-checklist.md
 
+## ESLint Architecture Guard
+
+VinhPhatERP sử dụng ESLint không chỉ để bắt lỗi cú pháp, mà còn hoạt động như một **Architecture Guard** với cơ chế bảo vệ 3 tầng:
+
+```text
+Developer
+   │
+   ▼
+ESLint Architecture Guard
+   ├── no-emoji                  (ERROR) - Cấm hoàn toàn Emoji (kể cả sequence, ZWJ, modifiers).
+   ├── no-hardcoded-colors       (ERROR) - Bắt buộc dùng Design Tokens (text-muted, bg-surface).
+   ├── no-raw-select             (ERROR) - Cấm thẻ <select> native (phải dùng <VPSelect>).
+   ├── no-legacy-combobox        (ERROR) - Cấm import <Combobox> cũ (chỉ cho phép trong migration boundary).
+   ├── no-cross-feature-import   (ERROR) - Cấm feature import chéo nhau.
+   └── no-business-logic-in-ui   (ERROR) - Cấm dùng `reduce` trong UI components.
+   │
+   ▼
+Pre-push
+   └── npm run lint -- --max-warnings=0 (Chặn ngay tại máy Dev nếu vi phạm)
+   │
+   ▼
+CI / GitHub
+   └── lint + typecheck + test (Lá chắn cuối trước khi merge)
+```
+
+_Ghi chú:_ Việc tuân thủ Architecture Guard là **BẮT BUỘC**.
+
+---
+
 ## Database Safety (CRITICAL)
 
 Helper: `src/lib/db-guard.ts`

@@ -30,7 +30,10 @@ export function ContractLifecycleMetadata({
           <span className="font-medium">{CONTRACT_LABELS.CANCELLED_AT}:</span>{' '}
           {formatContractDate(contract.cancelled_at)}
           {contract.cancel_reason && (
-            <span className="text-muted"> — {contract.cancel_reason}</span>
+            <span className="text-muted-foreground">
+              {' '}
+              — {contract.cancel_reason}
+            </span>
           )}
         </p>
       )}
@@ -40,7 +43,7 @@ export function ContractLifecycleMetadata({
             href={contract.signed_file_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary underline"
+            className="text-foreground underline"
           >
             {CONTRACT_LABELS.VIEW_SIGNED_FILE}
           </a>

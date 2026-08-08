@@ -6,9 +6,11 @@ async function test(url: string) {
   try {
     const sql = postgres(url, { max: 1, connect_timeout: 5, ssl: 'require' });
     const [{ now }] = await sql`SELECT now()`;
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.log('✅ Success!', now);
     await sql.end();
   } catch (err: unknown) {
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.log('❌ Failed:', err instanceof Error ? err.message : err);
   }
 }
@@ -16,6 +18,7 @@ async function test(url: string) {
 async function run() {
   const dbUrl = process.env.DATABASE_URL;
   if (!dbUrl) {
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.log('❌ DATABASE_URL not set in .env');
     return;
   }

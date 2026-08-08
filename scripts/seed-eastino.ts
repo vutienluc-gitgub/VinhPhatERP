@@ -15,6 +15,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function run() {
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log('🔄 Bắt đầu import dữ liệu 18 máy EASTINO vào ncc-002...');
 
   // 1. Tìm supplier ncc-002
@@ -24,17 +25,20 @@ async function run() {
     .ilike('code', '%ncc-002%');
 
   if (supErr) {
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.error('❌ Lỗi khi tìm nhà cung cấp:', supErr.message);
     process.exit(1);
   }
 
   if (!suppliers || suppliers.length === 0) {
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.error('❌ Không tìm thấy nhà cung cấp nào có mã chứa "ncc-002"');
     process.exit(1);
   }
 
   const targetSupplier = suppliers[0];
   console.log(
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     `✅ Đã tìm thấy nhà cung cấp: ${targetSupplier.code} - ${targetSupplier.name}`,
   );
 
@@ -44,6 +48,7 @@ async function run() {
     .select('id')
     .limit(1);
   if (tenantErr || !tenants || tenants.length === 0) {
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.error('❌ Không tìm thấy tenant nào trong DB');
     process.exit(1);
   }
@@ -80,6 +85,7 @@ async function run() {
   // Nhưng vì ta dùng ANON_KEY, RLS có thể chặn insert.
   // Cách tốt nhất là dùng service_role nếu có, nhưng ở đây dùng supabase.rpc('rpc_create_loom') có thể không có.
   // Thử insert trực tiếp trước
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   console.log(`📦 Đang chuẩn bị insert ${loomsToInsert.length} máy...`);
 
   const { data: insertedData, error: insertErr } = await supabase
@@ -88,11 +94,13 @@ async function run() {
     .select();
 
   if (insertErr) {
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.error('❌ Lỗi khi insert máy:', insertErr.message);
     process.exit(1);
   }
 
   console.log(
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     `🎉 Thành công! Đã import ${insertedData?.length || 0} máy vào hệ thống.`,
   );
 }

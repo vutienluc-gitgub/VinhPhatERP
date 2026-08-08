@@ -57,8 +57,7 @@ export function ConditionEditor({ condition, onChange }: ConditionEditorProps) {
   ) => {
     const newRules = rules.map((r, i) => {
       if (i === index) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const rule = r as any;
+        const rule = r as ConditionRule;
 
         // Try to parse number if applicable to keep strict typed conditions working better
         let parsedValue: string | number = val;
@@ -91,8 +90,7 @@ export function ConditionEditor({ condition, onChange }: ConditionEditorProps) {
       {rules.length > 0 && (
         <div className="space-y-2">
           {rules.map((rule, idx) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const r = rule as any;
+            const r = rule as ConditionRule;
             return (
               <div key={idx} className="flex items-center gap-2">
                 <Input
@@ -131,7 +129,7 @@ export function ConditionEditor({ condition, onChange }: ConditionEditorProps) {
         </div>
       )}
       {rules.length === 0 && (
-        <p className="text-sm text-muted italic">
+        <p className="text-sm text-muted-foreground italic">
           Quy trình sẽ luôn đi qua bước này (không có điều kiện rẽ nhánh).
         </p>
       )}

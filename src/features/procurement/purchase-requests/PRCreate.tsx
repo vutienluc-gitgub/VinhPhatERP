@@ -61,7 +61,9 @@ export function PRCreate() {
           </button>
           <div>
             <h1 className="text-xl font-bold">{PR_LABELS.CREATE_TITLE}</h1>
-            <p className="text-sm text-muted">{PR_LABELS.CREATE_DESCRIPTION}</p>
+            <p className="text-sm text-muted-foreground">
+              {PR_LABELS.CREATE_DESCRIPTION}
+            </p>
           </div>
         </div>
       </div>

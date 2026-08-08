@@ -72,6 +72,7 @@ export const WEAVING_INVOICE_MESSAGES = {
   BTN_SUBMIT_CREATE: 'Lưu nháp',
   BTN_ADD_ROLL: '+ Thêm 1 cuộn',
   ERR_ROLLS_INVALID:
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     '⚠️ Không thể lưu: Tồn tại {count} cuộn bị lỗi dữ liệu (chưa điền KG hoặc sai mã). Hãy điền đủ hoặc Xóa cuộn dư.',
   PLACEHOLDER_FABRIC_INPUT: 'Chọn hoặc nhập loại vải...',
   LABEL_NOTES: 'Ghi chú',

@@ -2,68 +2,76 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {
-      colors: {
-        background: 'var(--background)',
-        card: 'var(--card)',
-        primary: {
-          DEFAULT: 'var(--primary)',
-          strong: 'var(--primary-strong)',
-          hover: 'var(--primary-hover)',
-        },
-        secondary: 'var(--secondary)',
-        accent: 'var(--accent)',
-        brand: {
-          zalo: 'rgba(var(--brand-zalo-rgb), <alpha-value>)',
-        },
-        success: {
-          DEFAULT: 'var(--success)',
-          strong: 'var(--success-strong)',
-          soft: 'var(--success-soft)',
-        },
-        danger: {
-          DEFAULT: 'var(--danger)',
-          strong: 'var(--danger-strong)',
-          soft: 'var(--danger-soft)',
-        },
-        warning: {
-          DEFAULT: 'var(--warning)',
-          strong: 'var(--warning-strong)',
-          soft: 'var(--warning-soft)',
-        },
-        info: {
-          DEFAULT: 'var(--info)',
-          strong: 'var(--info-strong)',
-          soft: 'var(--info-soft)',
-        },
-        muted: {
-          DEFAULT: 'var(--muted)',
-          foreground: 'var(--text-muted-foreground)',
-        },
-        surface: {
-          DEFAULT: 'var(--surface)',
-          secondary: 'var(--surface-secondary)',
-          strong: 'var(--surface-strong)',
-          subtle: 'var(--surface-subtle)',
-          hover: 'var(--surface-hover)',
-          selected: 'var(--surface-selected)',
-          disabled: 'var(--surface-disabled)',
-        },
-        border: {
-          DEFAULT: 'var(--border-default)',
-          muted: 'var(--border-muted)',
-          focus: 'var(--border-focus)',
-          danger: 'var(--border-danger)',
-        },
-        input: {
-          DEFAULT: 'var(--input)',
-          border: 'var(--input-border)',
-          focus: 'var(--input-focus-ring)',
-        },
-        label: 'var(--text-label)',
-        foreground: 'var(--foreground)',
-        link: 'var(--link)',
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+      background: 'var(--background)',
+      card: 'var(--card)',
+      primary: {
+        DEFAULT: 'var(--primary)',
+        strong: 'var(--primary-strong)',
+        hover: 'var(--primary-hover)',
       },
+      secondary: 'var(--secondary)',
+      accent: 'var(--accent)',
+      brand: {
+        zalo: 'rgba(var(--brand-zalo-rgb), <alpha-value>)',
+      },
+      success: {
+        DEFAULT: 'var(--success)',
+        strong: 'var(--success-strong)',
+        soft: 'var(--success-soft)',
+      },
+      danger: {
+        DEFAULT: 'var(--danger)',
+        strong: 'var(--danger-strong)',
+        soft: 'var(--danger-soft)',
+      },
+      warning: {
+        DEFAULT: 'var(--warning)',
+        strong: 'var(--warning-strong)',
+        soft: 'var(--warning-soft)',
+      },
+      info: {
+        DEFAULT: 'var(--info)',
+        strong: 'var(--info-strong)',
+        soft: 'var(--info-soft)',
+      },
+      muted: {
+        DEFAULT: 'var(--surface-subtle)',
+        foreground: 'var(--muted-foreground)',
+      },
+      disabled: {
+        foreground: 'var(--disabled-foreground)',
+      },
+      inverse: {
+        foreground: 'var(--inverse-foreground)',
+      },
+      surface: {
+        DEFAULT: 'var(--surface)',
+        secondary: 'var(--surface-secondary)',
+        strong: 'var(--surface-strong)',
+        subtle: 'var(--surface-subtle)',
+        hover: 'var(--surface-hover)',
+        selected: 'var(--surface-selected)',
+        disabled: 'var(--surface-disabled)',
+      },
+      border: {
+        DEFAULT: 'var(--border-default)',
+        muted: 'var(--border-muted)',
+        focus: 'var(--border-focus)',
+        danger: 'var(--border-danger)',
+      },
+      input: {
+        DEFAULT: 'var(--input)',
+        border: 'var(--input-border)',
+        focus: 'var(--input-focus-ring)',
+      },
+      label: 'var(--text-label)',
+      foreground: 'var(--foreground)',
+      link: 'var(--link)',
+    },
+    extend: {
       borderRadius: {
         sm: 'var(--radius-sm)',
         md: 'var(--radius-md)',
@@ -87,7 +95,6 @@ export default {
       variants: ['hover', 'focus', 'active', 'group-hover'],
     },
     'bg-[var(--surface-subtle)]',
-    'text-[var(--text)]',
     'gap-1',
     'gap-1.5',
     'gap-2',

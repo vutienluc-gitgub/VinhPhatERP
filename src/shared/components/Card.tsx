@@ -9,7 +9,7 @@ export const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'rounded-xl bg-white',
+      'rounded-xl bg-surface',
       'shadow-[0_1px_2px_rgba(16,24,40,0.06),0_1px_3px_rgba(16,24,40,0.04)]',
       'ring-1 ring-zinc-200/50',
       'min-w-0',

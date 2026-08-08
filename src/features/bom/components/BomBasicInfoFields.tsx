@@ -20,7 +20,8 @@ export function BomBasicInfoFields({ fabricOptions }: BomBasicInfoFieldsProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="form-field">
           <label>
-            Mã BOM <span className="text-xs text-muted">(tự sinh)</span>
+            Mã BOM{' '}
+            <span className="text-xs text-muted-foreground">(tự sinh)</span>
           </label>
           <input
             type="text"

@@ -192,7 +192,7 @@ export function ContractDetailPage({
               <h3 className="m-0 font-mono text-lg">
                 {contract.contract_number}
               </h3>
-              <span className="text-muted text-sm text-sm">
+              <span className="text-muted-foreground text-sm text-sm">
                 {CONTRACT_TYPE_LABELS[contract.type]}
               </span>
             </div>

@@ -55,7 +55,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
           <span className="logo-text">vinhphat.app</span>
           <h2>{AUTH_MESSAGES.checkEmailTitle}</h2>
         </div>
-        <p className="auth-status-body text-center text-white/70">
+        <p className="auth-status-body text-center text-inverse-foreground/70">
           {AUTH_MESSAGES.checkEmailBody}
         </p>
         <button type="button" className="auth-submit-btn mt-6" onClick={onBack}>
@@ -71,7 +71,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
         <span className="logo-text">vinhphat.app</span>
         <h2>{AUTH_MESSAGES.forgotPasswordTitle}</h2>
       </div>
-      <p className="auth-subtitle text-center mb-6 text-[0.85rem] text-white/60">
+      <p className="auth-subtitle text-center mb-6 text-[0.85rem] text-inverse-foreground/60">
         {AUTH_MESSAGES.forgotPasswordSubtitle}
       </p>
 
@@ -107,7 +107,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
 
       <button
         type="button"
-        className="auth-submit-btn mt-3 bg-transparent border border-white/20 shadow-none"
+        className="auth-submit-btn mt-3 bg-transparent border border-transparent/20 shadow-none"
         onClick={onBack}
       >
         {AUTH_MESSAGES.goBack}

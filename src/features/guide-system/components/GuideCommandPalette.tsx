@@ -190,15 +190,15 @@ export function GuideCommandPalette() {
         />
         <div className="relative w-full max-w-2xl bg-surface border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
           <div className="flex items-center px-4 py-3 border-b border-border">
-            <Icon name="Search" className="text-muted mr-3" />
+            <Icon name="Search" className="text-muted-foreground mr-3" />
             <input
               autoFocus
-              className="flex-1 bg-transparent border-none outline-none text-lg text-foreground placeholder:text-muted/60"
+              className="flex-1 bg-transparent border-none outline-none text-lg text-foreground placeholder:text-muted-foreground/60"
               placeholder="Tìm trang, hướng dẫn... (gõ không dấu)"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border bg-surface-subtle text-[10px] font-medium text-muted uppercase">
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border bg-surface-subtle text-[10px] font-medium text-muted-foreground uppercase">
               ESC
             </kbd>
           </div>
@@ -207,7 +207,7 @@ export function GuideCommandPalette() {
             {/* Module results */}
             {moduleResults.length > 0 && (
               <div className="space-y-1 mb-2">
-                <div className="px-3 py-2 text-xs font-semibold text-muted uppercase tracking-wider">
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {SECTION_LABELS.modules} ({moduleResults.length})
                 </div>
                 {moduleResults.map((r) => {
@@ -227,21 +227,21 @@ export function GuideCommandPalette() {
                         <Icon
                           name={r.item.icon ?? 'Component'}
                           size={16}
-                          className="text-primary"
+                          className="text-foreground"
                         />
                       </span>
                       <div className="flex flex-col min-w-0">
                         <span className="font-semibold text-sm truncate">
                           {r.item.label}
                         </span>
-                        <span className="text-xs text-muted truncate">
+                        <span className="text-xs text-muted-foreground truncate">
                           {r.item.description}
                         </span>
                       </div>
                       <Icon
                         name="ArrowRight"
                         size={14}
-                        className="text-muted ml-auto flex-shrink-0"
+                        className="text-muted-foreground ml-auto flex-shrink-0"
                       />
                     </button>
                   );
@@ -252,7 +252,7 @@ export function GuideCommandPalette() {
             {/* Guide results */}
             {guideResults.length > 0 && (
               <div className="space-y-1">
-                <div className="px-3 py-2 text-xs font-semibold text-muted uppercase tracking-wider">
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {SECTION_LABELS.guides} ({guideResults.length})
                 </div>
                 {guideResults.map((r) => {
@@ -274,16 +274,16 @@ export function GuideCommandPalette() {
                         <Icon
                           name="FileText"
                           size={16}
-                          className="text-primary/70"
+                          className="text-foreground/70"
                         />
                         <span className="font-semibold text-sm">
                           {r.step.title}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-surface-subtle text-muted border border-border/50 ml-auto">
+                        <span className="text-xs px-2 py-0.5 rounded bg-surface-subtle text-muted-foreground border border-border/50 ml-auto">
                           {r.section.title}
                         </span>
                       </div>
-                      <p className="text-xs text-muted line-clamp-1 pl-6">
+                      <p className="text-xs text-muted-foreground line-clamp-1 pl-6">
                         {r.step.content}
                       </p>
                     </button>
@@ -294,7 +294,7 @@ export function GuideCommandPalette() {
 
             {/* No results */}
             {query.length >= 1 && results.length === 0 && (
-              <p className="text-center text-sm text-muted py-6">
+              <p className="text-center text-sm text-muted-foreground py-6">
                 {GUIDE_MESSAGES.SEARCH_NO_RESULTS} &quot;{query}&quot;
               </p>
             )}
@@ -303,12 +303,12 @@ export function GuideCommandPalette() {
             {query.length === 0 && (
               <div className="px-3 py-6 text-center">
                 <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                  <Icon name="Command" className="text-primary" size={24} />
+                  <Icon name="Command" className="text-foreground" size={24} />
                 </div>
                 <p className="text-sm font-medium text-foreground mb-1">
                   Tìm kiếm nhanh
                 </p>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-muted-foreground">
                   Gõ tên trang hoặc hướng dẫn — hỗ trợ tiếng Việt không dấu
                 </p>
               </div>

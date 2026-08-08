@@ -86,7 +86,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-surface rounded-xl shadow-sm overflow-hidden flex flex-col">
       <div className="p-4 bg-surface-secondary">
         <h3 className="text-base font-bold text-foreground flex items-center gap-2">
           {COMP_LABELS.B2B_PLANNER_TITLE}
@@ -94,7 +94,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             v2
           </Badge>
         </h3>
-        <p className="text-xs text-muted mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           {COMP_LABELS.B2B_PLANNER_DESC}
         </p>
       </div>
@@ -105,7 +105,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
           <div className="flex bg-surface-secondary p-1 rounded-lg gap-1">
             <button
               onClick={() => handleModeChange('weight')}
-              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'weight' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}
+              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'weight' ? 'bg-surface shadow-sm text-foreground' : 'text-muted-foreground hover:text-muted-foreground'}`}
             >
               <div className="flex items-center justify-center gap-1.5">
                 <Icon name="Scale" className="w-3.5 h-3.5" />
@@ -114,7 +114,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             </button>
             <button
               onClick={() => handleModeChange('length')}
-              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'length' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}
+              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'length' ? 'bg-surface shadow-sm text-foreground' : 'text-muted-foreground hover:text-muted-foreground'}`}
             >
               <div className="flex items-center justify-center gap-1.5">
                 <Icon name="Ruler" className="w-3.5 h-3.5" />
@@ -123,7 +123,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             </button>
             <button
               onClick={() => handleModeChange('garment')}
-              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'garment' ? 'bg-white shadow-sm text-primary' : 'text-muted hover:text-secondary'}`}
+              className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors ${mode === 'garment' ? 'bg-surface shadow-sm text-foreground' : 'text-muted-foreground hover:text-muted-foreground'}`}
             >
               <div className="flex items-center justify-center gap-1.5">
                 <Icon name="Shirt" className="w-3.5 h-3.5" />
@@ -134,7 +134,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col justify-center">
-              <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-1">
                 {COMP_LABELS.B2B_QUANTITY_INPUT_LABEL}
               </span>
               <div className="flex flex-col gap-2">
@@ -147,7 +147,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                     className="w-full text-base rounded-xl pl-3 pr-10 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/20 bg-surface-secondary font-black transition-all"
                   />
                   <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                    <span className="text-sm font-bold text-muted">
+                    <span className="text-sm font-bold text-muted-foreground">
                       {mode === 'weight'
                         ? 'kg'
                         : mode === 'length'
@@ -174,18 +174,18 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             </div>
 
             <div className="p-3 rounded-xl bg-surface-secondary flex flex-col justify-center">
-              <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-1">
                 {mode === 'length'
                   ? COMP_LABELS.B2B_EQUIVALENT_WEIGHT
                   : COMP_LABELS.B2B_LENGTH_CALC}
               </span>
 
               {mode === 'length' ? (
-                <span className="text-base font-black text-primary truncate">
+                <span className="text-base font-black text-foreground truncate">
                   {weightKg} kg
                 </span>
               ) : lengthMeters !== null ? (
-                <span className="text-base font-black text-primary truncate">
+                <span className="text-base font-black text-foreground truncate">
                   {COMP_LABELS.B2B_EST_LENGTH.replace(
                     '{lengthMeters}',
                     Number(lengthMeters).toFixed(1),
@@ -200,9 +200,9 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
           </div>
 
           {mode === 'garment' && weightKg > 0 && (
-            <div className="text-xs text-muted font-medium bg-surface-secondary px-3 py-2 rounded-lg flex items-center justify-between">
+            <div className="text-xs text-muted-foreground font-medium bg-surface-secondary px-3 py-2 rounded-lg flex items-center justify-between">
               <span>{COMP_LABELS.B2B_EQUIVALENT_WEIGHT}</span>
-              <span className="font-bold text-primary">{weightKg} kg</span>
+              <span className="font-bold text-foreground">{weightKg} kg</span>
             </div>
           )}
         </div>
@@ -211,7 +211,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
         <div className="grid grid-cols-2 gap-3">
           <div className="p-3 rounded-xl bg-surface-secondary flex flex-col justify-between">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[10px] uppercase font-bold text-muted tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
                 {COMP_LABELS.B2B_INVENTORY_LABEL}
               </span>
               <span className="text-[10px] font-medium text-muted-foreground">
@@ -256,11 +256,11 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
           </div>
 
           <div className="p-3 rounded-xl bg-surface-secondary flex flex-col justify-between">
-            <span className="text-[10px] uppercase font-bold text-muted tracking-wider mb-2">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2">
               {COMP_LABELS.B2B_SUPPLY_CAP}
             </span>
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-bold text-primary">
+              <span className="text-sm font-bold text-foreground">
                 {needsProduction
                   ? COMP_LABELS.B2B_EXPECTED_DATE.replace(
                       '{date}',
@@ -272,7 +272,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
               {capacityTons > 0 && needsProduction && (
                 <div className="flex flex-col gap-1 mt-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-muted font-medium">
+                    <span className="text-[10px] text-muted-foreground font-medium">
                       {COMP_LABELS.B2B_CAPACITY_USAGE.replace(
                         '{pct}',
                         capacityUtilizationPct.toFixed(1),
@@ -296,7 +296,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
         {/* Phase 2: Delivery Timeline */}
         {weightKg > 0 && needsProduction && deliveryTimeline && (
           <div className="space-y-2 pt-2">
-            <span className="text-xs font-bold text-secondary block">
+            <span className="text-xs font-bold text-muted-foreground block">
               {COMP_LABELS.B2B_TIMELINE_TITLE}
             </span>
             <div className="flex gap-1 h-2 w-full">
@@ -308,7 +308,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                 />
               ))}
             </div>
-            <div className="flex justify-between text-[10px] text-muted font-medium mt-1">
+            <div className="flex justify-between text-[10px] text-muted-foreground font-medium mt-1">
               {deliveryTimeline.map((step, idx) => (
                 <div key={idx} className="flex flex-col items-center">
                   <span>{step.step}</span>
@@ -325,15 +325,19 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
         {weightKg > 0 && (
           <div className="grid grid-cols-2 gap-3 pt-2">
             <div className="p-3 rounded-xl bg-surface-secondary">
-              <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-1.5">
                 {COMP_LABELS.B2B_WASTE_ANALYSIS}
               </span>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-muted">{COMP_LABELS.B2B_NET_FABRIC}</span>
+                <span className="text-muted-foreground">
+                  {COMP_LABELS.B2B_NET_FABRIC}
+                </span>
                 <span className="font-bold">{netWeightKg.toFixed(1)} kg</span>
               </div>
               <div className="flex justify-between items-center text-xs mt-1">
-                <span className="text-muted">{COMP_LABELS.B2B_EST_WASTE}</span>
+                <span className="text-muted-foreground">
+                  {COMP_LABELS.B2B_EST_WASTE}
+                </span>
                 <span className="font-bold text-danger">
                   {wasteKg.toFixed(1)} kg
                 </span>
@@ -341,7 +345,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             </div>
 
             <div className="p-3 rounded-xl bg-surface-secondary">
-              <span className="text-[10px] uppercase font-bold text-muted tracking-wider block mb-1.5">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-1.5">
                 {COMP_LABELS.B2B_ROLL_CONVERSION}
               </span>
               <div className="flex items-center gap-3">
@@ -349,13 +353,13 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                   <Icon name="Archive" className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold text-primary">
+                  <span className="text-sm font-bold text-foreground">
                     {COMP_LABELS.B2B_EST_ROLLS.replace(
                       '{rolls}',
                       String(estimatedRolls),
                     )}
                   </span>
-                  <span className="text-[10px] text-muted">
+                  <span className="text-[10px] text-muted-foreground">
                     {COMP_LABELS.B2B_KG_PER_ROLL}
                   </span>
                 </div>
@@ -372,7 +376,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
             {/* Garments Production */}
             {estimatedGarments.length > 0 && mode !== 'garment' && (
               <div className="space-y-2">
-                <span className="text-xs font-bold text-secondary block">
+                <span className="text-xs font-bold text-muted-foreground block">
                   {COMP_LABELS.B2B_PROD_ESTIMATOR}
                 </span>
                 <div className="grid grid-cols-2 gap-2">
@@ -381,14 +385,14 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                       key={rule.id}
                       className="p-2.5 rounded-xl bg-surface-secondary flex items-center gap-2"
                     >
-                      <div className="w-7 h-7 rounded-lg bg-white shadow-sm flex items-center justify-center text-muted border border-default shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-surface shadow-sm flex items-center justify-center text-muted-foreground border border-default shrink-0">
                         {getGarmentIcon(rule.name)}
                       </div>
                       <div className="flex flex-col flex-1 overflow-hidden">
-                        <span className="text-[10px] font-medium text-muted truncate">
+                        <span className="text-[10px] font-medium text-muted-foreground truncate">
                           {rule.name}
                         </span>
-                        <span className="text-sm font-bold text-primary">
+                        <span className="text-sm font-bold text-foreground">
                           ≈ {rule.estimatedQty}
                         </span>
                       </div>

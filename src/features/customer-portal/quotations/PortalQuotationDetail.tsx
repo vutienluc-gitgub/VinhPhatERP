@@ -103,13 +103,13 @@ export function PortalQuotationDetail() {
         <div className="lg:col-span-2 space-y-6">
           <div className="portal-card p-6">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Icon name="List" size={20} className="text-primary" />
+              <Icon name="List" size={20} className="text-foreground" />
               Danh mục hàng hóa
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="border-b border-default">
-                  <tr className="text-muted uppercase text-[10px] tracking-wider">
+                  <tr className="text-muted-foreground uppercase text-[10px] tracking-wider">
                     <th className="text-left pb-3 font-medium">Sản phẩm</th>
                     <th className="text-center pb-3 font-medium">SL</th>
                     <th className="text-right pb-3 font-medium">Đơn giá</th>
@@ -123,20 +123,20 @@ export function PortalQuotationDetail() {
                       className="group hover:bg-slate-50/50 transition-colors"
                     >
                       <td className="py-4">
-                        <div className="font-semibold text-primary">
+                        <div className="font-semibold text-foreground">
                           {item.fabric_type}
                         </div>
-                        <div className="text-xs text-muted">
+                        <div className="text-xs text-muted-foreground">
                           {item.color_name || 'Mộc'}
                         </div>
                       </td>
-                      <td className="py-4 text-center text-muted">
+                      <td className="py-4 text-center text-muted-foreground">
                         {item.quantity} {item.unit}
                       </td>
-                      <td className="py-4 text-right text-muted font-medium">
+                      <td className="py-4 text-right text-muted-foreground font-medium">
                         <MoneyText value={item.unit_price} suffix="" />
                       </td>
-                      <td className="py-4 text-right font-bold text-primary">
+                      <td className="py-4 text-right font-bold text-foreground">
                         <MoneyText value={item.amount} suffix=" đ" />
                       </td>
                     </tr>
@@ -164,7 +164,7 @@ export function PortalQuotationDetail() {
           <div className="portal-card p-6 sticky top-4">
             <h2 className="text-lg font-bold mb-4">Tổng cộng</h2>
             <div className="space-y-4">
-              <div className="flex justify-between items-center text-2xl font-black text-primary">
+              <div className="flex justify-between items-center text-2xl font-black text-foreground">
                 <span>
                   <MoneyText value={quotation.total_amount} suffix=" đ" />
                 </span>
@@ -174,13 +174,13 @@ export function PortalQuotationDetail() {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted">Ngày báo giá</span>
+                  <span className="text-muted-foreground">Ngày báo giá</span>
                   <span className="font-medium">
                     {dayjs(quotation.quotation_date).format('DD/MM/YYYY')}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted">Hiệu lực đến</span>
+                  <span className="text-muted-foreground">Hiệu lực đến</span>
                   <span
                     className={`font-medium ${isExpired ? 'text-danger' : ''}`}
                   >
@@ -232,18 +232,18 @@ export function PortalQuotationDetail() {
                     </div>
                     <div className="relative border-l-2 border-success ml-3 space-y-6">
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-success-soft w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="absolute -left-[21px] bg-success-soft w-3 h-3 rounded-full border-4 border-transparent"></div>
                         <div className="pl-4">
                           <h4 className="text-sm font-bold text-foreground">
                             Báo giá được duyệt
                           </h4>
-                          <p className="text-xs text-muted">
+                          <p className="text-xs text-muted-foreground">
                             Chờ kinh doanh lên đơn
                           </p>
                         </div>
                       </div>
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-transparent"></div>
                         <div className="pl-4">
                           <h4 className="text-sm font-bold text-muted-foreground">
                             Lên đơn hàng (SO)
@@ -251,7 +251,7 @@ export function PortalQuotationDetail() {
                         </div>
                       </div>
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-white"></div>
+                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-transparent"></div>
                         <div className="pl-4">
                           <h4 className="text-sm font-bold text-muted-foreground">
                             Chuẩn bị sản xuất
@@ -261,7 +261,7 @@ export function PortalQuotationDetail() {
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 bg-slate-50 rounded-lg text-center font-bold text-muted">
+                  <div className="p-4 bg-slate-50 rounded-lg text-center font-bold text-muted-foreground">
                     Báo giá này{' '}
                     {quotation.status === 'rejected'
                       ? 'đã bị từ chối'
@@ -301,7 +301,7 @@ export function PortalQuotationDetail() {
           </div>
         }
       >
-        <div className="space-y-4 text-secondary py-2">
+        <div className="space-y-4 text-muted-foreground py-2">
           <div className="bg-blue-50 text-info p-4 rounded-lg flex items-start gap-3">
             <Icon name="Info" size={20} className="mt-0.5 shrink-0" />
             <p className="text-sm">
@@ -318,7 +318,7 @@ export function PortalQuotationDetail() {
           <label className="flex items-start gap-3 cursor-pointer p-4 border border-default rounded-lg hover:bg-slate-50 transition-colors mt-6">
             <input
               type="checkbox"
-              className="mt-1 w-4 h-4 text-primary rounded border-muted focus:ring-primary"
+              className="mt-1 w-4 h-4 text-foreground rounded border-muted focus:ring-primary"
               checked={termsAccepted}
               onChange={(e) => setTermsAccepted(e.target.checked)}
             />
@@ -357,7 +357,7 @@ export function PortalQuotationDetail() {
         }
       >
         <div className="space-y-4 py-2">
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             Vui lòng cho chúng tôi biết lý do bạn từ chối báo giá này để Vĩnh
             Phát có thể cải thiện chất lượng dịch vụ:
           </p>

@@ -41,7 +41,7 @@ export function FabricPublicPreview() {
 
       <div className="w-full flex justify-center">
         {/* The Live Product Card (Floating) */}
-        <div className="w-[320px] bg-white rounded-2xl overflow-hidden flex flex-col shadow-sm border border-default">
+        <div className="w-[320px] bg-surface rounded-2xl overflow-hidden flex flex-col shadow-sm border border-default">
           {/* Header Image Area */}
           <div className="aspect-square bg-surface-secondary flex flex-col items-center justify-center relative">
             {imageUrl ? (
@@ -52,7 +52,11 @@ export function FabricPublicPreview() {
               />
             ) : (
               <>
-                <Icon name="Image" size={48} className="text-muted mb-2" />
+                <Icon
+                  name="Image"
+                  size={48}
+                  className="text-muted-foreground mb-2"
+                />
                 <span className="text-sm text-muted-foreground font-medium">
                   {LABELS.PREVIEW_NO_IMAGE}
                 </span>
@@ -61,14 +65,14 @@ export function FabricPublicPreview() {
 
             {/* Overlay indicators on image */}
             <div className="absolute top-4 left-4 flex gap-2">
-              <span className="bg-white/90 backdrop-blur text-primary text-[10px] font-bold px-2 py-1 rounded-full border border-default">
+              <span className="bg-surface/90 backdrop-blur text-foreground text-[10px] font-bold px-2 py-1 rounded-full border border-default">
                 {LABELS.PREVIEW_B2B_PORTAL}
               </span>
             </div>
             <div className="absolute bottom-4 right-4">
               <button
                 type="button"
-                className="w-8 h-8 rounded-full bg-white/90 border border-default flex items-center justify-center text-muted hover:text-primary transition-colors"
+                className="w-8 h-8 rounded-full bg-surface/90 border border-default flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Icon name="Share2" size={14} />
               </button>
@@ -76,13 +80,13 @@ export function FabricPublicPreview() {
           </div>
 
           {/* Product Header Info */}
-          <div className="p-4 bg-white border-b border-default">
+          <div className="p-4 bg-surface border-b border-default">
             <div className="flex justify-between items-start">
               <div>
                 <h4 className="font-bold text-lg text-foreground leading-tight">
                   {name}
                 </h4>
-                <p className="text-sm text-muted mt-1 flex items-center gap-1 font-medium">
+                <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1 font-medium">
                   <Icon name="Tag" size={12} /> {code}
                 </p>
               </div>
@@ -90,7 +94,7 @@ export function FabricPublicPreview() {
           </div>
 
           {/* Pricing & Order Info Card */}
-          <div className="p-4 bg-white space-y-3 border-b border-default">
+          <div className="p-4 bg-surface space-y-3 border-b border-default">
             <div className="flex justify-between items-end">
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">
@@ -111,7 +115,7 @@ export function FabricPublicPreview() {
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5 block">
                   {LABELS.PREVIEW_MOQ_LABEL}
                 </span>
-                <span className="text-sm font-bold text-secondary">
+                <span className="text-sm font-bold text-muted-foreground">
                   {moq || 0} {unit}
                 </span>
               </div>
@@ -121,7 +125,7 @@ export function FabricPublicPreview() {
             {stockDisplay !== 'none' && (
               <div className="bg-slate-50 p-2 rounded-lg flex items-center gap-2 border border-default">
                 <span className="w-2 h-2 rounded-full bg-success-soft" />
-                <span className="text-xs font-semibold text-secondary">
+                <span className="text-xs font-semibold text-muted-foreground">
                   {stockDisplay === 'status' && LABELS.PREVIEW_STOCK_STATUS}
                   {stockDisplay === 'quantity' &&
                     TAB_LABELS.STOCK_QTY_AVAILABLE.replace(
@@ -135,11 +139,11 @@ export function FabricPublicPreview() {
 
           {/* Trust Signals */}
           {(hasSample || fastDelivery || techSupport) && (
-            <div className="p-4 bg-white border-b border-default">
+            <div className="p-4 bg-surface border-b border-default">
               <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                 {LABELS.PREVIEW_SERVICES}
               </p>
-              <ul className="space-y-1.5 text-xs font-medium text-muted">
+              <ul className="space-y-1.5 text-xs font-medium text-muted-foreground">
                 {hasSample && (
                   <li className="flex items-center gap-2">
                     <Icon
@@ -175,10 +179,10 @@ export function FabricPublicPreview() {
           )}
 
           {/* CTA */}
-          <div className="p-4 bg-white">
+          <div className="p-4 bg-surface">
             <button
               type="button"
-              className="w-full py-2.5 bg-surface-strong text-white font-bold rounded-lg text-sm hover:bg-surface-strong transition-colors shadow-sm"
+              className="w-full py-2.5 bg-surface-strong text-inverse-foreground font-bold rounded-lg text-sm hover:bg-surface-strong transition-colors shadow-sm"
             >
               {LABELS.PREVIEW_CONTACT_PRICE}
             </button>

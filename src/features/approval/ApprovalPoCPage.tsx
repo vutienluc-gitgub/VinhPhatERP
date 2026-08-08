@@ -260,12 +260,12 @@ export function ApprovalPoCPage() {
         <h2 className="text-lg font-semibold mb-2">
           Tài liệu giả lập: Đề xuất chi tiêu #{resourceId}
         </h2>
-        <p className="text-muted mb-4">Số tiền: 5,000,000 VNĐ</p>
+        <p className="text-muted-foreground mb-4">Số tiền: 5,000,000 VNĐ</p>
 
         {!request && (
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 font-medium text-white bg-primary hover:bg-primary/90 rounded-md transition-colors"
+            className="px-4 py-2 font-medium text-inverse-foreground bg-primary hover:bg-primary/90 rounded-md transition-colors"
           >
             Trình duyệt ngay
           </button>
@@ -294,7 +294,7 @@ export function ApprovalPoCPage() {
               onReject={handleReject}
               onDelegate={handleDelegate}
             />
-            <p className="text-xs text-muted mt-4">
+            <p className="text-xs text-muted-foreground mt-4">
               *Trong thực tế, nút Duyệt sẽ bị ẩn nếu user không có quyền
               canApprove().
               <br />

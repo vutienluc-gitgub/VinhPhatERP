@@ -174,7 +174,9 @@ export function DebtMobileCard({
       <div className="mobile-card-header">
         <div className="flex flex-col">
           <span className="mobile-card-title">{name}</span>
-          {code && <span className="text-xs text-muted">{code}</span>}
+          {code && (
+            <span className="text-xs text-muted-foreground">{code}</span>
+          )}
         </div>
         <span className="font-bold text-danger text-lg">
           -<MoneyText value={balanceDue} tone="danger" />
@@ -183,19 +185,19 @@ export function DebtMobileCard({
       <div className="mobile-card-body space-y-3">
         <div className="grid grid-cols-3 gap-2 text-sm">
           <div className="flex flex-col">
-            <span className="text-xs text-muted">{totalLabel}</span>
+            <span className="text-xs text-muted-foreground">{totalLabel}</span>
             <span className="font-medium">
               <MoneyText value={totalAmount} />
             </span>
           </div>
           <div className="flex flex-col text-center">
-            <span className="text-xs text-muted">{paidLabel}</span>
+            <span className="text-xs text-muted-foreground">{paidLabel}</span>
             <span className="font-medium text-success">
               <MoneyText value={totalPaid} tone="success" />
             </span>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-xs text-muted">{countLabel}</span>
+            <span className="text-xs text-muted-foreground">{countLabel}</span>
             <span className="font-medium">
               {countValue} {countUnit}
             </span>
@@ -203,7 +205,7 @@ export function DebtMobileCard({
         </div>
         {/* Progress bar */}
         <div>
-          <div className="flex justify-between text-xs text-muted mb-1">
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>{progressLabel}</span>
             <span>{paidPercent}%</span>
           </div>

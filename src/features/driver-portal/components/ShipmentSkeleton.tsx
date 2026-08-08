@@ -5,13 +5,13 @@ export function ShipmentSkeleton() {
   return (
     <div className="flex flex-col gap-4">
       {/* Loading header text (optional) */}
-      <div className="text-center p-4 pb-0 text-[var(--text-tertiary)] flex flex-col items-center gap-2">
+      <div className="text-center p-4 pb-0 text-[var(--muted-foreground)] flex flex-col items-center gap-2">
         <Icon
           name="Loader2"
           size={24}
           className="animate-spin text-[var(--primary)]"
         />
-        <p className="text-sm font-medium text-[var(--muted)]">
+        <p className="text-sm font-medium text-[var(--surface-subtle)]">
           {DRIVER_PORTAL_MESSAGES.PAGE.LOADING_SHIPMENTS}
         </p>
       </div>

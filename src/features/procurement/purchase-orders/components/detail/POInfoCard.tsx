@@ -23,13 +23,15 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
       </h3>
       <div className="grid grid-cols-2 gap-y-4 gap-x-6">
         <div className="flex flex-col">
-          <span className="text-xs text-muted">Ngày đặt</span>
+          <span className="text-xs text-muted-foreground">Ngày đặt</span>
           <span className="font-medium text-sm mt-1">
             {dayjs(po.order_date).format('DD/MM/YYYY')}
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-xs text-muted">Ngày dự kiến giao</span>
+          <span className="text-xs text-muted-foreground">
+            Ngày dự kiến giao
+          </span>
           <span className="font-medium text-sm mt-1">
             {po.expected_date
               ? dayjs(po.expected_date).format('DD/MM/YYYY')
@@ -37,13 +39,13 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-xs text-muted">Trạng thái</span>
+          <span className="text-xs text-muted-foreground">Trạng thái</span>
           <span className="font-medium text-sm mt-1">
             {purchaseOrderStatus[po.status as POStatus]?.label || po.status}
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-xs text-muted">Người tạo</span>
+          <span className="text-xs text-muted-foreground">Người tạo</span>
           <span className="font-medium text-sm mt-1">
             {creatorProfile?.name ||
               creatorProfile?.email ||
@@ -52,13 +54,13 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-xs text-muted">Điều khoản TT</span>
+          <span className="text-xs text-muted-foreground">Điều khoản TT</span>
           <span className="font-medium text-sm mt-1">
             {po.payment_terms || 'Không có'}
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-xs text-muted">NCC Ref</span>
+          <span className="text-xs text-muted-foreground">NCC Ref</span>
           <span className="font-medium text-sm mt-1">
             {po.supplier_ref || 'Không có'}
           </span>
@@ -67,7 +69,7 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
         <div className="col-span-2 mt-4 pt-4 border-t border-border space-y-2">
           {po.subtotal_amount !== undefined && po.subtotal_amount !== null && (
             <div className="flex justify-between items-center text-sm">
-              <span className="text-muted">Tạm tính:</span>
+              <span className="text-muted-foreground">Tạm tính:</span>
               <span className="font-medium">
                 <MoneyText value={po.subtotal_amount} />
               </span>
@@ -77,7 +79,7 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
             po.vat_amount !== null &&
             po.vat_amount > 0 && (
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted">
+                <span className="text-muted-foreground">
                   Thuế VAT{po.vat_rate ? ` (${po.vat_rate}%)` : ''}:
                 </span>
                 <span className="font-medium">
@@ -89,15 +91,17 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
             po.shipping_fee !== null &&
             po.shipping_fee > 0 && (
               <div className="flex justify-between items-center text-sm">
-                <span className="text-muted">Phí vận chuyển:</span>
+                <span className="text-muted-foreground">Phí vận chuyển:</span>
                 <span className="font-medium">
                   <MoneyText value={po.shipping_fee} />
                 </span>
               </div>
             )}
           <div className="flex justify-between items-center pt-2">
-            <span className="text-muted font-medium text-base">Tổng tiền:</span>
-            <span className="font-bold text-primary text-2xl bg-primary/10 px-4 py-1.5 rounded-lg">
+            <span className="text-muted-foreground font-medium text-base">
+              Tổng tiền:
+            </span>
+            <span className="font-bold text-foreground text-2xl bg-primary/10 px-4 py-1.5 rounded-lg">
               <MoneyText value={po.total_amount} />
             </span>
           </div>
@@ -112,7 +116,7 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
 
         {po.status === 'supplier_rejected' && po.supplier_rejection_reason && (
           <div className="col-span-2 mt-2 p-3 bg-red-50 border border-danger text-danger text-sm rounded-lg flex items-start gap-3">
-            <div className="bg-danger text-white rounded-full p-1 shrink-0 mt-0.5">
+            <div className="bg-danger text-inverse-foreground rounded-full p-1 shrink-0 mt-0.5">
               <Icon name="X" size={14} />
             </div>
             <div>
@@ -134,7 +138,7 @@ export function POInfoCard({ po, creatorProfile }: POInfoCardProps) {
 
         {po.confirmed_at && po.status !== 'supplier_rejected' && (
           <div className="col-span-2 mt-2 p-3 bg-success-soft border border-success/30 text-sm rounded-lg flex items-start gap-3">
-            <div className="bg-success text-white rounded-full p-1 shrink-0 mt-0.5">
+            <div className="bg-success text-inverse-foreground rounded-full p-1 shrink-0 mt-0.5">
               <svg
                 width="14"
                 height="14"

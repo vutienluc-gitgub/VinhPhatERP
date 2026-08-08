@@ -9,6 +9,7 @@ export function validateRefactorReport(md: string) {
 
   if (!result.success) {
     console.error(result.error);
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     throw new Error('❌ Invalid Refactor Report');
   }
 

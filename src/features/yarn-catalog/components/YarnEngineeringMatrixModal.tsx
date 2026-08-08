@@ -4,7 +4,8 @@ import { useEffect, useMemo } from 'react';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { Button } from '@/shared/components/Button';
-import { Combobox } from '@/shared/components/Combobox';
+import { VPSelect, VPOption } from '@/shared/components/VPSelect';
+import { VPCombobox } from '@/shared/components/VPCombobox';
 import { ErrorInline } from '@/shared/components/ErrorInline';
 import {
   yarnKnittingEngineeringSchema,
@@ -111,7 +112,7 @@ export function YarnEngineeringMatrixModal({
                 name="fabric_structure_id"
                 control={control}
                 render={({ field }) => (
-                  <Combobox
+                  <VPCombobox
                     options={structureOptions}
                     value={field.value || ''}
                     onChange={field.onChange}
@@ -134,7 +135,7 @@ export function YarnEngineeringMatrixModal({
                 name="machine_spec_id"
                 control={control}
                 render={({ field }) => (
-                  <Combobox
+                  <VPCombobox
                     options={machineOptions}
                     value={field.value || ''}
                     onChange={field.onChange}
@@ -152,16 +153,20 @@ export function YarnEngineeringMatrixModal({
               <label>
                 {MSG.MATRIX_LBL_LEVEL} <span className="field-required">*</span>
               </label>
-              <select
-                className="field-input"
-                {...register('compatibility_level')}
-              >
-                {COMPATIBILITY_LEVELS.map((l) => (
-                  <option key={l.value} value={l.value}>
-                    {l.label}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="compatibility_level"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    options={
+                      COMPATIBILITY_LEVELS as unknown as VPOption<string>[]
+                    }
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    className="field-input"
+                  />
+                )}
+              />
               {errors.compatibility_level && (
                 <ErrorInline>{errors.compatibility_level.message}</ErrorInline>
               )}
@@ -169,12 +174,23 @@ export function YarnEngineeringMatrixModal({
 
             <div className="form-field">
               <label>{MSG.MATRIX_LBL_FEEDING}</label>
-              <select className="field-input" {...register('feeding_type')}>
-                <option value="">{MSG.MATRIX_VAL_UNKNOWN}</option>
-                <option value="positive">{MSG.MATRIX_VAL_POSITIVE}</option>
-                <option value="negative">{MSG.MATRIX_VAL_NEGATIVE}</option>
-                <option value="auto">{MSG.MATRIX_VAL_AUTO}</option>
-              </select>
+              <Controller
+                name="feeding_type"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    options={[
+                      { value: '', label: MSG.MATRIX_VAL_UNKNOWN },
+                      { value: 'positive', label: MSG.MATRIX_VAL_POSITIVE },
+                      { value: 'negative', label: MSG.MATRIX_VAL_NEGATIVE },
+                      { value: 'auto', label: MSG.MATRIX_VAL_AUTO },
+                    ]}
+                    value={field.value || ''}
+                    onValueChange={field.onChange}
+                    className="field-input"
+                  />
+                )}
+              />
             </div>
 
             <Controller

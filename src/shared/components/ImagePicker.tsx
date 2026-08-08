@@ -74,7 +74,9 @@ export function ImagePicker({
     if (isDragging) {
       return (
         <div className="absolute inset-0 bg-primary/10 border-2 border-primary border-dashed flex items-center justify-center rounded-lg z-10">
-          <span className="text-primary font-medium">{LABELS.DROP_HERE}</span>
+          <span className="text-foreground font-medium">
+            {LABELS.DROP_HERE}
+          </span>
         </div>
       );
     }
@@ -83,7 +85,9 @@ export function ImagePicker({
       return (
         <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center rounded-lg z-10">
           <div className="image-picker-spinner mb-2" />
-          <span className="text-xs text-muted">Đang kiểm tra...</span>
+          <span className="text-xs text-muted-foreground">
+            Đang kiểm tra...
+          </span>
         </div>
       );
     }
@@ -92,7 +96,7 @@ export function ImagePicker({
       return (
         <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center rounded-lg z-10">
           <div className="image-picker-spinner mb-2" />
-          <span className="text-xs text-muted">
+          <span className="text-xs text-muted-foreground">
             Đang nén ảnh...{' '}
             {state.progress ? `${Math.round(state.progress)}%` : ''}
           </span>
@@ -104,7 +108,7 @@ export function ImagePicker({
       return (
         <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center rounded-lg z-10">
           <div className="image-picker-spinner mb-2" />
-          <span className="text-xs text-muted">
+          <span className="text-xs text-muted-foreground">
             Đang tải lên...{' '}
             {state.progress ? `${Math.round(state.progress)}%` : ''}
           </span>
@@ -156,7 +160,7 @@ export function ImagePicker({
             loading="lazy"
           />
         ) : (
-          <div className="flex flex-col items-center justify-center text-muted p-4 text-center pointer-events-none">
+          <div className="flex flex-col items-center justify-center text-muted-foreground p-4 text-center pointer-events-none">
             <Icon name="ImagePlus" size={32} className="mb-2 opacity-50" />
             <span className="text-sm font-medium text-foreground">
               {LABELS.SELECT}

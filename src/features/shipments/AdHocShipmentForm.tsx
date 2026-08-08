@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
-import { Controller } from 'react-hook-form';
+import { useMemo } from 'react';
+import { Controller, useWatch } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 import { Button } from '@/shared/components';
-import { MoneyInput } from '@/shared/value';
+import { MoneyInput, MoneyText } from '@/shared/value';
 import { useActiveShippingRates } from '@/shared/hooks/useShippingRateOptions';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { VPCombobox, VPEntityPicker, VPSelect } from '@/shared/components';
@@ -49,7 +49,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
   );
   const createMutation = useCreateAdHocShipment();
 
-  const [shipmentNumber] = useState(SHIPMENT_FORM_MESSAGES.AUTO_NUMBER);
+  const shipmentNumber = SHIPMENT_FORM_MESSAGES.AUTO_NUMBER;
 
   const {
     form,
@@ -89,6 +89,58 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
     [customerOptions],
   );
 
+  const warehouseEmpOptions = useMemo(
+    () =>
+      warehouseEmployees.map((emp) => ({
+        id: emp.id,
+        name: emp.name,
+        code: emp.code,
+      })),
+    [warehouseEmployees],
+  );
+
+  const deliveryStaffOptions = useMemo(
+    () =>
+      deliveryStaff.map((staff) => ({
+        id: staff.id,
+        name: staff.full_name,
+        phone: staff.phone || undefined,
+      })),
+    [deliveryStaff],
+  );
+
+  const purposeOptions = useMemo(
+    () =>
+      AD_HOC_PURPOSE_OPTIONS.map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+        icon: (
+          <Icon
+            name={opt.iconName}
+            className="w-4 h-4 text-[var(--muted-foreground)]"
+          />
+        ),
+      })),
+    [],
+  );
+
+  const watchedCustomerId = useWatch({ control, name: 'customerId' });
+  const watchedPurpose = useWatch({ control, name: 'purpose' });
+  const watchedEmployeeId = useWatch({ control, name: 'employeeId' });
+  const watchedSyncDebt = useWatch({ control, name: 'syncDebt' });
+  const watchedShippingCost = useWatch({ control, name: 'shippingCost' }) || 0;
+  const watchedLoadingFee = useWatch({ control, name: 'loadingFee' }) || 0;
+
+  const totalPayment =
+    itemsSummary.totalAmount + watchedShippingCost + watchedLoadingFee;
+
+  const selectedCustomerName = customerComboOptions.find(
+    (c) => c.id === watchedCustomerId,
+  )?.name;
+  const selectedWarehouseName = warehouseEmpOptions.find(
+    (e) => e.id === watchedEmployeeId,
+  )?.name;
+
   async function onSubmit(values: AdHocShipmentFormValues) {
     try {
       await createMutation.mutateAsync(values);
@@ -108,29 +160,71 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
       title={MESSAGES.TITLE}
       maxWidth="1000px"
       footer={
-        <div className="flex w-full justify-end items-center gap-3 border-t border-[var(--border)] pt-4 px-4 bg-[var(--surface)]">
-          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
-            {MESSAGES.CANCEL}
-          </Button>
-          <Button
-            type="submit"
-            form="adhoc-shipment-form"
-            disabled={
-              isSubmitting ||
-              createMutation.isPending ||
-              fieldArray.fields.length === 0
-            }
-          >
-            {createMutation.isPending
-              ? MESSAGES.SAVING
-              : `${MESSAGES.CREATE} (${itemsSummary.count} ${MESSAGES.SUMMARY_LINES})`}
-          </Button>
+        <div className="flex flex-col w-full border-t border-[var(--border)] bg-[var(--surface)]">
+          {/* Footer Summary */}
+          {itemsSummary.count > 0 && (
+            <div className="px-4 py-2 bg-[var(--surface-secondary)] border-b border-[var(--border)] flex justify-between items-center text-sm">
+              <div className="flex items-center gap-4 text-[var(--muted-foreground)]">
+                <span>
+                  <span className="font-semibold text-foreground">
+                    {itemsSummary.count}
+                  </span>{' '}
+                  dòng
+                </span>
+                <span>
+                  <span className="font-semibold text-foreground">
+                    {itemsSummary.totalQty.toFixed(1)}
+                  </span>{' '}
+                  kg/m
+                </span>
+                <span>
+                  Tiền hàng:{' '}
+                  <span className="font-semibold text-foreground">
+                    <MoneyText value={itemsSummary.totalAmount} />
+                  </span>
+                </span>
+                <span>
+                  Phí VC:{' '}
+                  <span className="font-semibold text-foreground">
+                    <MoneyText
+                      value={watchedShippingCost + watchedLoadingFee}
+                    />
+                  </span>
+                </span>
+              </div>
+              <div className="font-bold text-lg text-[var(--primary)] flex items-center gap-2">
+                Tổng thanh toán: <MoneyText value={totalPayment} />
+              </div>
+            </div>
+          )}
+          <div className="flex w-full justify-end items-center gap-3 py-3 px-4">
+            <Button
+              variant="secondary"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              {MESSAGES.CANCEL}
+            </Button>
+            <Button
+              type="submit"
+              form="adhoc-shipment-form"
+              disabled={
+                isSubmitting ||
+                createMutation.isPending ||
+                fieldArray.fields.length === 0
+              }
+            >
+              {createMutation.isPending
+                ? MESSAGES.SAVING
+                : `${MESSAGES.CREATE} (${itemsSummary.count} ${MESSAGES.SUMMARY_LINES})`}
+            </Button>
+          </div>
         </div>
       }
     >
       <form id="adhoc-shipment-form" onSubmit={handleSubmit(onSubmit)}>
         {/* Subtitle */}
-        <p className="text-sm text-[var(--text-secondary)] mb-4">
+        <p className="text-sm text-[var(--muted-foreground)] mb-4">
           {MESSAGES.SUBTITLE}
         </p>
 
@@ -142,8 +236,8 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
           </p>
         )}
 
-        <div className="space-y-8 pb-8">
-          <div className="mb-6">
+        <div className="space-y-6 pb-6">
+          <div>
             <h3 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-default flex items-center gap-2">
               <Icon name="FileText" className="w-5 h-5 text-info" />
               {LABELS.SEC_GENERAL}
@@ -152,7 +246,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
               <div className="form-field">
                 <label>{LABELS.SHIPMENT_NUMBER}</label>
                 <input
-                  className="field-input italic bg-[var(--surface-disabled)] text-[var(--text-tertiary)]"
+                  className="field-input italic bg-[var(--surface-disabled)] text-[var(--muted-foreground)]"
                   value={shipmentNumber}
                   readOnly
                   disabled
@@ -184,7 +278,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                     control={control}
                     render={({ field }) => (
                       <VPSelect
-                        options={AD_HOC_PURPOSE_OPTIONS}
+                        options={purposeOptions}
                         value={field.value}
                         onValueChange={field.onChange}
                         placeholder={LABELS.PURPOSE}
@@ -217,25 +311,94 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   <p className="field-error">{errors.customerId.message}</p>
                 )}
               </div>
-
-              <div className="form-field flex items-end pb-2">
-                <label className="flex items-center gap-2 cursor-pointer w-fit">
-                  <input
-                    type="checkbox"
-                    className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
-                    {...register('syncDebt')}
-                  />
-                  <span className="text-sm font-medium text-secondary">
-                    {LABELS.CHK_DEBT}
-                  </span>
-                </label>
-              </div>
             </div>
           </div>
 
-          <hr className="border-t border-dashed border-[var(--border)]" />
+          {/* Sticky Summary Bar */}
+          <div className="sticky top-0 z-10 p-3 bg-[var(--surface-secondary)] border border-[var(--border)] rounded-[var(--radius)] flex flex-wrap gap-x-6 gap-y-2 text-sm shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--muted-foreground)]">
+                Khách hàng:
+              </span>
+              <span className="font-medium text-foreground">
+                {selectedCustomerName || '—'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--muted-foreground)]">Công nợ:</span>
+              <span
+                className={`font-medium ${watchedSyncDebt ? 'text-[var(--success)]' : 'text-[var(--muted-foreground)]'}`}
+              >
+                {watchedSyncDebt ? 'Có ghi nhận' : 'Không'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--muted-foreground)]">Loại xuất:</span>
+              <span className="font-medium text-foreground">
+                {watchedPurpose || '—'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[var(--muted-foreground)]">Kho xuất:</span>
+              <span className="font-medium text-foreground">
+                {selectedWarehouseName || '—'}
+              </span>
+            </div>
+          </div>
 
-          <div className="mb-6">
+          <div>
+            <div className="flex justify-between items-center mb-4 pb-2 border-b border-default">
+              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <Icon name="Package" className="w-5 h-5 text-info" />
+                {LABELS.SEC_DETAILS} <span className="field-required">*</span>
+              </h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleAddRow}
+                className="text-[var(--primary)] hover:bg-blue-50"
+              >
+                <Icon name="Plus" className="w-4 h-4 mr-1" />
+                {MESSAGES.ADD_ROW}
+              </Button>
+            </div>
+            <div className="w-full overflow-x-auto">
+              <AdHocShipmentItemsTable
+                form={form}
+                fieldArray={fieldArray}
+                itemsSummary={itemsSummary}
+                isScanning={isScanning}
+                fabricOptions={fabricOptions}
+                onItemFieldChange={handleItemFieldChange}
+                onRemoveRow={(idx) =>
+                  handleRemoveRow(idx, () => toast.error(MESSAGES.AT_LEAST_ONE))
+                }
+                onScanRow={handleScanRow}
+              />
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-default flex items-center gap-2">
+              <Icon name="CreditCard" className="w-5 h-5 text-info" />
+              {LABELS.SEC_PAYMENT}
+            </h3>
+            <div className="form-field flex items-center">
+              <label className="flex items-center gap-2 cursor-pointer w-fit">
+                <input
+                  type="checkbox"
+                  className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                  {...register('syncDebt')}
+                />
+                <span className="text-sm font-medium text-muted-foreground">
+                  {LABELS.CHK_DEBT}
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div>
             <h3 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-default flex items-center gap-2">
               <Icon name="Truck" className="w-5 h-5 text-info" />
               {LABELS.SEC_LOGISTICS}
@@ -246,21 +409,14 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                 <Controller
                   name="employeeId"
                   control={control}
-                  render={({ field }) => {
-                    const empOptions = warehouseEmployees.map((emp) => ({
-                      id: emp.id,
-                      name: emp.name,
-                      code: emp.code,
-                    }));
-                    return (
-                      <VPEntityPicker
-                        options={empOptions}
-                        value={field.value || ''}
-                        onChange={field.onChange}
-                        placeholder={LABELS.PLC_WAREHOUSE}
-                      />
-                    );
-                  }}
+                  render={({ field }) => (
+                    <VPEntityPicker
+                      options={warehouseEmpOptions}
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      placeholder={LABELS.PLC_WAREHOUSE}
+                    />
+                  )}
                 />
               </div>
 
@@ -269,21 +425,14 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                 <Controller
                   name="deliveryStaffId"
                   control={control}
-                  render={({ field }) => {
-                    const staffOptions = deliveryStaff.map((staff) => ({
-                      id: staff.id,
-                      name: staff.full_name,
-                      phone: staff.phone || undefined,
-                    }));
-                    return (
-                      <VPEntityPicker
-                        options={staffOptions}
-                        value={field.value || ''}
-                        onChange={field.onChange}
-                        placeholder={LABELS.PLC_STAFF}
-                      />
-                    );
-                  }}
+                  render={({ field }) => (
+                    <VPEntityPicker
+                      options={deliveryStaffOptions}
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      placeholder={LABELS.PLC_STAFF}
+                    />
+                  )}
                 />
               </div>
 
@@ -301,7 +450,7 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                 <input
                   className="field-input"
                   {...register('vehicleInfo')}
-                  placeholder="VD: 51C-12345"
+                  placeholder={LABELS.PLC_VEHICLE}
                 />
               </div>
 
@@ -364,30 +513,6 @@ export function AdHocShipmentForm({ onClose }: AdHocShipmentFormProps) {
                   placeholder={LABELS.PLC_NOTES}
                 />
               </div>
-            </div>
-          </div>
-
-          <hr className="border-t border-dashed border-[var(--border)]" />
-
-          <div className="mb-6">
-            <h3 className="text-lg font-bold text-foreground mb-4 pb-2 border-b border-default flex items-center gap-2">
-              <Icon name="Package" className="w-5 h-5 text-info" />
-              {LABELS.SEC_DETAILS} <span className="field-required">*</span>
-            </h3>
-            <div className="w-full overflow-x-auto pb-4">
-              <AdHocShipmentItemsTable
-                form={form}
-                fieldArray={fieldArray}
-                itemsSummary={itemsSummary}
-                isScanning={isScanning}
-                fabricOptions={fabricOptions}
-                onItemFieldChange={handleItemFieldChange}
-                onAddRow={handleAddRow}
-                onRemoveRow={(idx) =>
-                  handleRemoveRow(idx, () => toast.error(MESSAGES.AT_LEAST_ONE))
-                }
-                onScanRow={handleScanRow}
-              />
             </div>
           </div>
         </div>

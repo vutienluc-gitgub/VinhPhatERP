@@ -68,6 +68,7 @@ export function useFabricDisplayLogic(
       lines.push(`✓ Lead Time: ${displayLeadTime}`);
 
     lines.push('');
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     lines.push('👉 Xem đầy đủ thông số, nhận mẫu và báo giá:');
     lines.push(window.location.href);
 

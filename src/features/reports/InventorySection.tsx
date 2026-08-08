@@ -121,12 +121,12 @@ function InventoryTable({
           )}
         </span>
       ),
-      className: 'max-sm:hidden text-muted text-sm',
+      className: 'max-sm:hidden text-muted-foreground text-sm',
     },
     {
       header: REPORT_LABELS.COL_QUALITY_GRADE,
       cell: (r) => r.quality_grade ?? '—',
-      className: 'text-muted text-sm max-sm:hidden',
+      className: 'text-muted-foreground text-sm max-sm:hidden',
     },
     {
       header: REPORT_LABELS.COL_ROLL_COUNT,
@@ -144,14 +144,14 @@ function InventoryTable({
       header: REPORT_LABELS.COL_WEIGHT_KG,
       cell: (r) => formatNumber(r.total_weight_kg),
       footer: formatNumber(totalWeight),
-      className: 'text-right max-sm:hidden text-muted text-sm',
+      className: 'text-right max-sm:hidden text-muted-foreground text-sm',
     },
   ];
 
   return (
     <div className="mt-2 text-surface">
       <div className="px-5 py-2 bg-surface-subtle border-y border-border">
-        <p className="text-[10px] font-bold text-muted uppercase tracking-widest">
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
           {eyebrow}
         </p>
         <p className="text-xs font-bold">{title}</p>
@@ -169,15 +169,17 @@ function InventoryTable({
               <span className="font-bold">{r.fabric_type}</span>
               <Badge variant="gray">{r.quality_grade ?? '—'}</Badge>
             </div>
-            <div className="text-xs text-muted mb-2">{r.color_name ?? '—'}</div>
+            <div className="text-xs text-muted-foreground mb-2">
+              {r.color_name ?? '—'}
+            </div>
             <div className="grid grid-cols-2 gap-4 border-t pt-2">
               <div className="flex justify-between">
-                <span className="text-[10px] text-muted">Cuộn:</span>
+                <span className="text-[10px] text-muted-foreground">Cuộn:</span>
                 <span className="font-bold">{r.roll_count}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[10px] text-muted">Mét:</span>
-                <span className="font-bold text-primary">
+                <span className="text-[10px] text-muted-foreground">Mét:</span>
+                <span className="font-bold text-foreground">
                   {formatNumber(r.total_length_m)}
                 </span>
               </div>

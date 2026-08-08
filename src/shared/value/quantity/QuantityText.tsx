@@ -23,8 +23,8 @@ export function QuantityText({
   const text = formatValue(value, { compact, suffix, prefix, decimals });
 
   const variantClass = {
-    primary: 'text-primary font-semibold',
-    secondary: 'text-muted text-sm',
+    primary: 'text-foreground font-semibold',
+    secondary: 'text-muted-foreground text-sm',
     success: 'text-success font-medium',
     danger: 'text-danger font-medium',
     default: '',

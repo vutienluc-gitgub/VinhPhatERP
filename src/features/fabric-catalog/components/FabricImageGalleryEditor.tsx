@@ -22,13 +22,15 @@ export function FabricImageGalleryEditor() {
           <h3 className="text-sm font-semibold text-foreground">
             {LABELS.GALLERY_TITLE}
           </h3>
-          <p className="text-xs text-muted mt-1">{LABELS.GALLERY_DESC}</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {LABELS.GALLERY_DESC}
+          </p>
         </div>
 
         <label
-          className={`relative cursor-pointer bg-white border border-default px-4 py-2 rounded-lg text-sm font-semibold text-secondary transition-colors flex items-center gap-2 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+          className={`relative cursor-pointer bg-surface border border-default px-4 py-2 rounded-lg text-sm font-semibold text-muted-foreground transition-colors flex items-center gap-2 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
         >
-          <Icon name="Upload" className="w-4 h-4 text-primary" />
+          <Icon name="Upload" className="w-4 h-4 text-foreground" />
           <span>{LABELS.GALLERY_UPLOAD}</span>
           <input
             type="file"
@@ -69,8 +71,8 @@ export function FabricImageGalleryEditor() {
 
       {fields.length === 0 && !isUploading && (
         <div className="py-12 flex flex-col items-center justify-center border-2 border-dashed border-default rounded-xl bg-slate-50">
-          <Icon name="Image" className="w-10 h-10 text-muted mb-3" />
-          <p className="text-sm font-medium text-muted">
+          <Icon name="Image" className="w-10 h-10 text-muted-foreground mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">
             {LABELS.GALLERY_EMPTY}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
@@ -97,7 +99,7 @@ export function FabricImageGalleryEditor() {
           {isUploading && uploadingIndex !== null && (
             <div className="bg-slate-50 rounded-xl border-2 border-dashed border-default flex flex-col items-center justify-center p-6 h-32">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3"></div>
-              <span className="text-xs font-semibold text-muted">
+              <span className="text-xs font-semibold text-muted-foreground">
                 {LABELS.GALLERY_UPLOADING}
               </span>
             </div>

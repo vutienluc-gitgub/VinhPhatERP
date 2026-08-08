@@ -34,10 +34,10 @@ export function useWeavingInvoiceColumns({
         header: MSG.COL_INVOICE,
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-bold text-primary">
+            <span className="font-bold text-foreground">
               {row.original.invoice_number}
             </span>
-            <span className="text-xs text-muted mt-0.5">
+            <span className="text-xs text-muted-foreground mt-0.5">
               {row.original.invoice_date}
             </span>
           </div>
@@ -49,11 +49,11 @@ export function useWeavingInvoiceColumns({
         header: MSG.COL_SUPPLIER,
         cell: ({ row }) => (
           <div className="flex flex-col">
-            <span className="font-bold text-primary">
+            <span className="font-bold text-foreground">
               {row.original.suppliers?.name ?? '—'}
             </span>
             {row.original.suppliers?.code && (
-              <span className="text-xs font-semibold text-primary/80 mt-0.5">
+              <span className="text-xs font-semibold text-foreground/80 mt-0.5">
                 {row.original.suppliers.code}
               </span>
             )}
@@ -97,7 +97,7 @@ export function useWeavingInvoiceColumns({
         meta: { align: 'right' },
         cell: ({ row }) => (
           <span
-            className={`font-medium ${row.original.paid_amount > 0 ? 'text-success' : 'text-muted'}`}
+            className={`font-medium ${row.original.paid_amount > 0 ? 'text-success' : 'text-muted-foreground'}`}
           >
             <MoneyText value={row.original.paid_amount} />
           </span>

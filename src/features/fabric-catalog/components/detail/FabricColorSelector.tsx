@@ -21,19 +21,19 @@ export function FabricColorSelector({
   const activeVariant = variants.find((v) => v.color_name === activeColorName);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <div className="bg-surface rounded-xl shadow-sm p-4">
       <div className="flex flex-col gap-1 mb-3">
         <h3 className="text-base font-bold text-foreground">
           {LABELS.colorSectionTitle}
         </h3>
         {activeColorName && (
-          <div className="flex items-center gap-2 text-xs text-muted mt-0.5">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
             <span>{LABELS.colorViewing}</span>
-            <span className="font-semibold text-primary">
+            <span className="font-semibold text-foreground">
               {activeColorName}
             </span>
             {activeVariant?.color_code && (
-              <span className="bg-surface-secondary text-secondary px-1.5 py-0.5 rounded text-[10px] font-mono">
+              <span className="bg-surface-secondary text-muted-foreground px-1.5 py-0.5 rounded text-[10px] font-mono">
                 {activeVariant.color_standard}: {activeVariant.color_code}
               </span>
             )}
@@ -60,7 +60,7 @@ export function FabricColorSelector({
             title={v.color_name}
           >
             {!v.color_hex && (
-              <span className="text-[10px] text-muted font-medium">
+              <span className="text-[10px] text-muted-foreground font-medium">
                 {LABELS.na}
               </span>
             )}

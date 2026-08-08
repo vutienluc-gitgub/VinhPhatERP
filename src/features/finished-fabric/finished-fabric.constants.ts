@@ -129,13 +129,17 @@ export const FINISHED_FABRIC_BULK_CONFIG_LABELS = {
 } as const;
 
 export const FINISHED_FABRIC_TRACE_LABELS = {
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   TITLE: '🔗 Truy vết nguồn gốc',
   BTN_CLOSE: 'Đóng',
   NODE_FINISHED: 'Cuộn thành phẩm',
   NODE_RAW: 'Cuộn vải mộc',
   NODE_YARN: 'Phiếu nhập sợi',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   LBL_LOT: '📦 Lô:',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   LBL_WEAVER: '🏠 Nhà dệt:',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   LBL_SUPPLIER: '🏢 NCC sợi:',
   LBL_STATUS: 'Trạng thái:',
   LBL_DATE: 'Ngày:',

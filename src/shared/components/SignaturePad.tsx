@@ -24,15 +24,15 @@ export function SignaturePad({ onConfirm, onCancel }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-foreground/60 backdrop-blur-sm">
       <div className="w-full sm:max-w-sm bg-[var(--surface)] rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <div>
-            <p className="font-bold text-[var(--text-primary)]">
+            <p className="font-bold text-[var(--foreground)]">
               Chữ ký khách hàng
             </p>
-            <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
               Mời khách ký tên xác nhận nhận hàng
             </p>
           </div>
@@ -41,7 +41,7 @@ export function SignaturePad({ onConfirm, onCancel }: Props) {
 
         {/* Canvas area */}
         <div className="mx-5 mb-4">
-          <div className="relative border-2 border-dashed border-[var(--border)] rounded-xl overflow-hidden bg-white">
+          <div className="relative border-2 border-dashed border-[var(--border)] rounded-xl overflow-hidden bg-surface">
             <ReactSignatureCanvas
               ref={padRef}
               penColor="#0f3460"

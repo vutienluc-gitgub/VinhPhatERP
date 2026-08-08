@@ -14,7 +14,7 @@ export function ActivityFeed({
         <li key={a.id} className="flex items-start gap-3">
           <span
             className={cn(
-              'h-8 w-8 shrink-0 rounded-full text-white text-xs font-semibold flex items-center justify-center',
+              'h-8 w-8 shrink-0 rounded-full text-inverse-foreground text-xs font-semibold flex items-center justify-center',
               a.avatarColor ?? 'bg-info-soft',
             )}
           >

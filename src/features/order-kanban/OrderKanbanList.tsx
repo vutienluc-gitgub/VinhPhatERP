@@ -33,7 +33,7 @@ export function KanbanColumn({
 
       <div className="kanban-column-body">
         {items.length === 0 ? (
-          <div className="text-center py-8 text-muted text-xs font-medium">
+          <div className="text-center py-8 text-muted-foreground text-xs font-medium">
             <p>{KANBAN_LABELS.EMPTY_COLUMN}</p>
           </div>
         ) : (

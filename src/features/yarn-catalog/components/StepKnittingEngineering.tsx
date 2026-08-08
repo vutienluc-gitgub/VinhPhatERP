@@ -59,7 +59,7 @@ export function StepKnittingEngineering({
   const getLevelColor = (level: string) => {
     return (
       COMPATIBILITY_LEVELS.find((l) => l.value === level)?.color ||
-      'bg-surface-secondary text-primary'
+      'bg-surface-secondary text-foreground'
     );
   };
 
@@ -105,7 +105,7 @@ export function StepKnittingEngineering({
                 emptyStateTitle={MSG.EMPTY_MATRIX_TITLE}
                 emptyStateDescription={MSG.EMPTY_MATRIX_DESC}
                 renderMobileCard={(item) => (
-                  <div className="p-4 bg-white rounded-lg border border-default">
+                  <div className="p-4 bg-surface rounded-lg border border-default">
                     <div className="flex justify-between items-start mb-2">
                       <div className="font-semibold">
                         {item.fabric_structure?.name || MSG.VAL_UNKNOWN}
@@ -125,7 +125,7 @@ export function StepKnittingEngineering({
                     </div>
                     <div className="mt-3 flex justify-end gap-2">
                       <button
-                        className="text-primary p-2"
+                        className="text-foreground p-2"
                         onClick={() => handleEdit(item)}
                       >
                         <Icon name="edit" className="w-4 h-4" />
@@ -193,7 +193,7 @@ export function StepKnittingEngineering({
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
-                          className="text-primary hover:text-primary/80 p-1"
+                          className="text-foreground hover:text-foreground/80 p-1"
                           onClick={() => handleEdit(item)}
                         >
                           <Icon name="edit" className="w-4 h-4" />

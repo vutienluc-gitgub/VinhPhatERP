@@ -72,20 +72,20 @@ function RequirementGroup({
       {/* Group Header */}
       <div className="bg-surface-subtle px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
-          <Icon name="Package" size={18} className="text-primary" />
+          <Icon name="Package" size={18} className="text-foreground" />
           <div>
             <p className="font-bold text-sm">
               {requirement.yarn_catalog?.name ?? 'N/A'}
             </p>
             {requirement.yarn_catalog?.color_name && (
-              <p className="text-xs text-muted">
+              <p className="text-xs text-muted-foreground">
                 {requirement.yarn_catalog.color_name}
               </p>
             )}
           </div>
         </div>
         <div className="flex items-center gap-3 text-sm">
-          <span className="text-muted">
+          <span className="text-muted-foreground">
             {formatQuantity(totalAllocated)} /{' '}
             {formatQuantity(requirement.required_kg)} kg
           </span>
@@ -99,7 +99,7 @@ function RequirementGroup({
 
       {/* Lot Table */}
       {lots.length === 0 ? (
-        <div className="p-4 text-center text-sm text-muted">
+        <div className="p-4 text-center text-sm text-muted-foreground">
           <Icon
             name="AlertTriangle"
             size={20}
@@ -129,20 +129,20 @@ function RequirementGroup({
                   <tr key={lot.yarn_receipt_item_id}>
                     <td>
                       <div>
-                        <span className="font-bold text-primary">
+                        <span className="font-bold text-foreground">
                           {lot.receipt_number}
                         </span>
-                        <p className="text-[10px] text-muted">
+                        <p className="text-[10px] text-muted-foreground">
                           {new Date(lot.receipt_date).toLocaleDateString(
                             'vi-VN',
                           )}
                         </p>
                       </div>
                     </td>
-                    <td className="max-sm:hidden text-muted text-sm">
+                    <td className="max-sm:hidden text-muted-foreground text-sm">
                       {lot.supplier_name}
                     </td>
-                    <td className="max-sm:hidden text-muted text-sm">
+                    <td className="max-sm:hidden text-muted-foreground text-sm">
                       {lot.lot_number ?? '—'}
                     </td>
                     <td className="text-right font-medium tabular-nums">
@@ -288,7 +288,7 @@ export function YarnIssueModal({
         {/* Header */}
         <div className="modal-header">
           <div className="flex items-center gap-2">
-            <Icon name="PackageOpen" size={22} className="text-primary" />
+            <Icon name="PackageOpen" size={22} className="text-foreground" />
             <h2 className="text-lg font-bold">Xuat kho soi cho lenh det</h2>
           </div>
           <button type="button" className="btn-icon" onClick={onClose}>
@@ -304,10 +304,12 @@ export function YarnIssueModal({
           {isLoading ? (
             <div className="p-12 flex flex-col items-center gap-3">
               <div className="spinner" />
-              <p className="text-muted text-sm">Dang tai du lieu ton kho...</p>
+              <p className="text-muted-foreground text-sm">
+                Dang tai du lieu ton kho...
+              </p>
             </div>
           ) : !requirements?.length ? (
-            <div className="p-8 text-center text-muted">
+            <div className="p-8 text-center text-muted-foreground">
               Lenh det nay chua co yeu cau soi.
             </div>
           ) : (
@@ -344,7 +346,7 @@ export function YarnIssueModal({
 
         {/* Footer */}
         <div className="modal-footer">
-          <div className="flex items-center gap-2 text-sm text-muted mr-auto">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mr-auto">
             <Icon name="Scale" size={16} />
             <span>
               Tong xuat:{' '}

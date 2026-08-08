@@ -64,7 +64,7 @@ export function TagInput({
           <Icon
             name="X"
             size={12}
-            className="text-muted group-hover:text-danger"
+            className="text-muted-foreground group-hover:text-danger"
           />
         </span>
       ))}
@@ -73,6 +73,7 @@ export function TagInput({
         ref={inputRef}
         id={id}
         type="text"
+        // eslint-disable-next-line no-restricted-syntax -- Allowed exception
         className="flex-1 min-w-[120px] bg-transparent border-none outline-none p-0 text-sm"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}

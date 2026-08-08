@@ -124,7 +124,7 @@ export function OrderRequestModal({
             <Icon name="CheckCircle2" size={32} />
           </div>
           <h3 className="text-xl font-bold">Yêu cầu đã được gửi</h3>
-          <p className="text-muted text-sm max-w-xs">
+          <p className="text-muted-foreground text-sm max-w-xs">
             Chúng tôi đã nhận được yêu cầu đặt hàng của bạn. Nhân viên kinh
             doanh sẽ liên hệ lại trong thời gian sớm nhất để xác nhận và làm báo
             giá chi tiết.
@@ -211,7 +211,7 @@ export function OrderRequestModal({
                     <button
                       type="button"
                       onClick={() => remove(index)}
-                      className="absolute top-2 right-2 p-1 text-muted hover:text-danger rounded-lg bg-background"
+                      className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-danger rounded-lg bg-background"
                     >
                       <Icon name="X" size={14} />
                     </button>

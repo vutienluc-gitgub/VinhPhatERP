@@ -8,46 +8,62 @@
   /* Redefine base RGB for dark mode text */
   --base-rgb: 238, 247, 255;
 
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(var(--brand-rgb), 0.15),
-      transparent 28%
-    ),
-    linear-gradient(180deg, #091524 0%, #060e18 100%);
+  background: var(--background);
 
   /* Adjusted Surface colors for better contrast */
-  --surface: rgba(255, 255, 255, 0.04);
-  --surface-strong: #12233a;
+  --background: #101e34; /* Lighter base for gradient fallback */
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-secondary: rgba(255, 255, 255, 0.02);
+  --surface-strong: #1a2942;
+  --card: #16243a;
   --surface-hover: rgba(255, 255, 255, 0.08);
-  --surface-selected: rgba(var(--brand-rgb), 0.15);
-  --surface-subtle: rgba(255, 255, 255, 0.02);
-  --surface-disabled: rgba(255, 255, 255, 0.04);
+  --surface-selected: rgba(255, 255, 255, 0.12);
+  --surface-subtle: rgba(255, 255, 255, 0.03);
+  --surface-disabled: rgba(255, 255, 255, 0.01);
   --border: rgba(255, 255, 255, 0.12);
+  --border-default: rgba(255, 255, 255, 0.15);
+  --border-muted: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(var(--brand-rgb), 0.4);
+  --border-danger: rgba(var(--danger-rgb), 0.4);
 
-  --text: #eef7ff;
   --foreground: #eef7ff;
-  --text-primary: #eef7ff;
-  --text-secondary: #94a3b8;
-  --text-muted: #94a3b8;
-  --text-muted-foreground: #94a3b8;
-  --text-disabled: #64748b;
-  --text-tertiary: #64748b;
-  --muted: #94a3b8;
+  --muted-foreground: #94a3b8;
+  --disabled-foreground: #64748b;
+  --inverse-foreground: #091524;
 
   --primary: #4a8fd4;
   --primary-strong: #7ab3e8;
+  --primary-hover: #7ab3e8;
   --accent: #f04d5f;
+  --accent-rgb: 240, 77, 95;
+  --secondary: #94a3b8;
+  --link: #7ab3e8;
 
   --warning: #f59e0b;
   --warning-strong: #d97706;
+  --warning-soft: rgba(245, 158, 11, 0.15);
   --danger: #f87171;
+  --danger-strong: #b91c1c;
+  --danger-soft: rgba(248, 113, 113, 0.15);
   --danger-rgb: 248, 113, 113;
   --success: #34d399;
+  --success-strong: #047857;
+  --success-soft: rgba(52, 211, 153, 0.15);
   --success-rgb: 52, 211, 153;
   --info: #7ab3e8;
+  --info-strong: #4a8fd4;
+  --info-soft: rgba(122, 179, 232, 0.15);
 
   --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+
+  /* ── Computed Backgrounds ───────────────────────────────────── */
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(var(--brand-rgb), 0.18),
+      transparent 35%
+    ),
+    linear-gradient(180deg, #101e34 0%, #091222 100%);
 
   /* ── Input & Form ───────────────────────────────────────────── */
   --input: #1b314b;

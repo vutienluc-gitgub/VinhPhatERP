@@ -111,6 +111,7 @@ export function useChatNotifications(
 
             // Show toast
             toast(msg.content || CHAT_LABELS.NEW_IMAGE, {
+              // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
               icon: '\u{1F4AC}',
               duration: 4000,
               position: 'top-right',

@@ -28,7 +28,7 @@ export function QRCodeDisplay({
         style={{ borderRadius: 'var(--radius-sm)' }}
       />
       {label && (
-        <span className="text-xs text-muted text-center max-w-[200px] truncate">
+        <span className="text-xs text-muted-foreground text-center max-w-[200px] truncate">
           {label}
         </span>
       )}

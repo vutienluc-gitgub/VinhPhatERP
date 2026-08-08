@@ -39,7 +39,7 @@ export function PublicInvoiceRollsTable({
       <div className="overflow-x-auto print:overflow-visible">
         <table className="w-full border-collapse text-left text-xs md:text-sm">
           <thead>
-            <tr className="border-b border-default text-[10px] uppercase font-bold text-muted bg-slate-50 print:bg-surface-secondary">
+            <tr className="border-b border-default text-[10px] uppercase font-bold text-muted-foreground bg-slate-50 print:bg-surface-secondary">
               <th className="p-3 w-12 text-center">STT</th>
               <th className="p-3">Mã cuộn</th>
               <th className="p-3 text-right">Trọng lượng (KG)</th>
@@ -49,7 +49,7 @@ export function PublicInvoiceRollsTable({
               <th className="p-3">Ghi chú</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-secondary">
+          <tbody className="divide-y divide-slate-100 text-muted-foreground">
             {items.map((item, idx) => (
               <tr
                 key={item.roll_number}
@@ -58,7 +58,7 @@ export function PublicInvoiceRollsTable({
                 <td className="p-3 text-center text-muted-foreground">
                   {idx + 1}
                 </td>
-                <td className="p-3 font-bold text-primary tracking-wide">
+                <td className="p-3 font-bold text-foreground tracking-wide">
                   {item.roll_number}
                 </td>
                 <td className="p-3 text-right font-bold">
@@ -92,14 +92,14 @@ export function PublicInvoiceRollsTable({
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-default font-bold bg-slate-50/70 text-primary">
+            <tr className="border-t-2 border-default font-bold bg-slate-50/70 text-foreground">
               <td
                 colSpan={2}
                 className="p-3 text-right uppercase tracking-wider text-[10px] font-bold"
               >
                 Tổng cộng:
               </td>
-              <td className="p-3 text-right text-primary font-extrabold text-sm">
+              <td className="p-3 text-right text-foreground font-extrabold text-sm">
                 {formatQty(totalWeightKg)} kg
               </td>
               <td className="p-3 text-right font-bold">

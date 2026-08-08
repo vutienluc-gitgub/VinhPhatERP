@@ -21,7 +21,7 @@ export function getEntityGradeStyles(grade: OpsGrade) {
     case 'GHOST':
     default:
       return clsx(
-        'bg-[var(--surface-subtle)] border-dashed border-muted text-muted',
+        'bg-[var(--surface-subtle)] border-dashed border-muted text-muted-foreground',
       );
   }
 }

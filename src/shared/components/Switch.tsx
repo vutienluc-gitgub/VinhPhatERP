@@ -39,7 +39,7 @@ const thumbVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-white shadow',
+        default: 'bg-surface shadow',
         premium: 'switch-premium-thumb',
       },
       size: {
@@ -158,7 +158,10 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
               </span>
             )}
             {description && (
-              <span id={descId} className="block text-sm text-muted mt-0.5">
+              <span
+                id={descId}
+                className="block text-sm text-muted-foreground mt-0.5"
+              >
                 {description}
               </span>
             )}
@@ -197,13 +200,13 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
               <>
                 <span
                   aria-hidden="true"
-                  className="switch-premium-label switch-premium-label-on left-2.5 text-white"
+                  className="switch-premium-label switch-premium-label-on left-2.5 text-inverse-foreground"
                 >
                   {labelOn}
                 </span>
                 <span
                   aria-hidden="true"
-                  className="switch-premium-label switch-premium-label-off right-2.5 text-white/80"
+                  className="switch-premium-label switch-premium-label-off right-2.5 text-inverse-foreground/80"
                 >
                   {labelOff}
                 </span>

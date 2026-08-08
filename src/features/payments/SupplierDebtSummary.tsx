@@ -46,7 +46,9 @@ export function SupplierDebtSummary({
             <div className="flex flex-col">
               <span className="font-bold">{d.supplier_name}</span>
               {d.supplier_code && (
-                <span className="text-xs text-muted">{d.supplier_code}</span>
+                <span className="text-xs text-muted-foreground">
+                  {d.supplier_code}
+                </span>
               )}
               <DebtRiskBadge balanceDue={d.balance_due} />
             </div>

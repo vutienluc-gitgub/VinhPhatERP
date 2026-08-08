@@ -47,10 +47,10 @@ export function BasicInfoSection({
                 type="radio"
                 value="knitted"
                 {...register('fabric_type')}
-                className="w-4 h-4 text-primary focus:ring-primary border-muted"
+                className="w-4 h-4 text-foreground focus:ring-primary border-muted"
                 disabled={!isEditing}
               />
-              <span className="text-sm font-medium text-secondary">
+              <span className="text-sm font-medium text-muted-foreground">
                 {LABELS.KNITTED}
               </span>
             </label>
@@ -59,10 +59,10 @@ export function BasicInfoSection({
                 type="radio"
                 value="woven"
                 {...register('fabric_type')}
-                className="w-4 h-4 text-primary focus:ring-primary border-muted"
+                className="w-4 h-4 text-foreground focus:ring-primary border-muted"
                 disabled={!isEditing}
               />
-              <span className="text-sm font-medium text-secondary">
+              <span className="text-sm font-medium text-muted-foreground">
                 {LABELS.WOVEN}
               </span>
             </label>
@@ -170,7 +170,7 @@ export function BasicInfoSection({
               Thêm thành phần sợi
             </Button>
             {catalog?.composition && fields.length === 0 && (
-              <p className="text-xs text-muted mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {LABELS.OLD_DATA_HINT}
                 {catalog.composition}
               </p>

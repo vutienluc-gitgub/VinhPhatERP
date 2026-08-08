@@ -26,7 +26,7 @@ export function UnifiedFeedPage() {
 
   if (status === 'pending') {
     return (
-      <div className="p-6 text-center text-[var(--text-muted)]">
+      <div className="p-6 text-center text-[var(--muted-foreground)]">
         {CHAT_LABELS.LOADING}
       </div>
     );
@@ -45,10 +45,10 @@ export function UnifiedFeedPage() {
   return (
     <div className="max-w-3xl mx-auto p-4 pb-20">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[var(--text)]">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">
           Luồng Sự Kiện (Feed)
         </h1>
-        <p className="text-sm text-[var(--text-muted)]">
+        <p className="text-sm text-[var(--muted-foreground)]">
           Theo dõi các tin nhắn và cập nhật mới nhất từ các chứng từ bạn đang
           tham gia.
         </p>
@@ -57,7 +57,7 @@ export function UnifiedFeedPage() {
       <div className="space-y-4">
         {items.length === 0 ? (
           <div className="text-center p-8 bg-[var(--surface)] rounded-xl border border-[var(--border)]">
-            <span className="text-[var(--text-muted)]">
+            <span className="text-[var(--muted-foreground)]">
               {CHAT_LABELS.NO_MESSAGES}
             </span>
           </div>
@@ -69,7 +69,7 @@ export function UnifiedFeedPage() {
             >
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
-                  <div className="font-semibold text-[var(--text)]">
+                  <div className="font-semibold text-[var(--foreground)]">
                     {item.sender_name || CHAT_LABELS.UNKNOWN_USER}
                   </div>
                   {item.sender_role && (
@@ -78,7 +78,7 @@ export function UnifiedFeedPage() {
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-[var(--text-muted)]">
+                <div className="text-xs text-[var(--muted-foreground)]">
                   {new Intl.DateTimeFormat('vi-VN', {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -88,12 +88,12 @@ export function UnifiedFeedPage() {
                 </div>
               </div>
 
-              <div className="text-sm text-[var(--text)] mb-3">
+              <div className="text-sm text-[var(--foreground)] mb-3">
                 {item.content}
               </div>
 
               <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center gap-2">
-                <span className="text-xs font-medium px-2 py-1 bg-[var(--surface-hover)] rounded text-[var(--text-muted)]">
+                <span className="text-xs font-medium px-2 py-1 bg-[var(--surface-hover)] rounded text-[var(--muted-foreground)]">
                   {item.entity_type === 'shipment'
                     ? 'Lô hàng'
                     : item.entity_type === 'order'
@@ -111,7 +111,7 @@ export function UnifiedFeedPage() {
         <div ref={loadMoreRef} className="h-4 w-full" />
 
         {isFetchingNextPage && (
-          <div className="text-center text-sm text-[var(--text-muted)] py-4">
+          <div className="text-center text-sm text-[var(--muted-foreground)] py-4">
             {CHAT_LABELS.LOADING}
           </div>
         )}

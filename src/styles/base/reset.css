@@ -16,7 +16,8 @@ body {
   width: 100%;
   min-width: 320px;
   min-height: 100vh;
-  color: var(--text);
+  color: var(--foreground);
+
   /* background-attachment: fixed gây floating/parallax trên iOS Safari khi overscroll */
   overflow-x: hidden;
 }

@@ -30,7 +30,7 @@ export class ModuleErrorBoundary extends Component<Props, State> {
         <div className="p-4 border border-danger bg-red-50 text-danger rounded-md">
           <p className="font-semibold mb-2">Không thể tải module.</p>
           <button
-            className="px-3 py-1 bg-danger-soft text-white rounded text-sm hover:bg-danger-soft"
+            className="px-3 py-1 bg-danger-soft text-inverse-foreground rounded text-sm hover:bg-danger-soft"
             onClick={() => this.setState({ hasError: false })}
           >
             Thử lại

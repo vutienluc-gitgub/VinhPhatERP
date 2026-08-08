@@ -34,7 +34,7 @@ export function SearchInput({
       <input
         ref={inputRef}
         type="text"
-        className={`field-input pl-9 pr-12 w-full ${className}`}
+        className={`field-input !pl-9 !pr-12 w-full ${className}`}
         {...props}
       />
       <div className="absolute right-1.5 text-[0.65rem] text-[var(--fg-muted)] bg-[var(--surface-strong)] px-1.5 py-0.5 rounded border border-[var(--border)] pointer-events-none font-semibold font-mono">

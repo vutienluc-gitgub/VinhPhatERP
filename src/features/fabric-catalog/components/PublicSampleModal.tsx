@@ -78,16 +78,16 @@ export function PublicSampleModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 bg-foreground/50 z-50 flex items-center justify-center p-3 animate-fade-in">
+      <div className="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b border-default flex justify-between items-center bg-slate-50">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <Icon name="Package" className="w-5 h-5 text-primary" />
+            <Icon name="Package" className="w-5 h-5 text-foreground" />
             {LABELS.requestSampleTitle}
           </h3>
           <button
             onClick={closeSample}
-            className="p-1 rounded-full hover:bg-surface-secondary text-muted"
+            className="p-1 rounded-full hover:bg-surface-secondary text-muted-foreground"
           >
             <Icon name="X" className="w-5 h-5" />
           </button>
@@ -97,13 +97,13 @@ export function PublicSampleModal({
           onSubmit={handleSubmitSampleRequest}
           className="flex-1 overflow-y-auto p-4 space-y-4"
         >
-          <p className="text-xs text-muted leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             {LABELS.requestSampleDesc}
           </p>
 
           {/* Mẫu vải đang chọn */}
           <div className="bg-slate-50 p-3 rounded-xl border border-default">
-            <span className="text-[10px] text-muted font-bold block mb-1">
+            <span className="text-[10px] text-muted-foreground font-bold block mb-1">
               {LABELS.rfqFabricRequested}
             </span>
             {sampleIsBatch ? (
@@ -111,7 +111,7 @@ export function PublicSampleModal({
                 {Object.values(inquiryCart).map((item: InquiryCartItem) => (
                   <div
                     key={item.id}
-                    className="text-xs font-semibold text-primary"
+                    className="text-xs font-semibold text-foreground"
                   >
                     • {item.code} - {item.name}{' '}
                     {item.color_name && `(${item.color_name})`}
@@ -119,7 +119,7 @@ export function PublicSampleModal({
                 ))}
               </div>
             ) : (
-              <div className="text-xs font-bold text-primary">
+              <div className="text-xs font-bold text-foreground">
                 {fabric.code} - {fabric.name}{' '}
                 {activeColorName && `(Màu: ${activeColorName})`}
               </div>
@@ -128,7 +128,7 @@ export function PublicSampleModal({
 
           {/* Name */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-secondary block">
+            <label className="text-xs font-bold text-muted-foreground block">
               {LABELS.contactNameLabel} <span className="text-danger">*</span>
             </label>
             <input
@@ -143,7 +143,7 @@ export function PublicSampleModal({
 
           {/* Phone */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-secondary block">
+            <label className="text-xs font-bold text-muted-foreground block">
               {LABELS.contactPhoneLabel} <span className="text-danger">*</span>
             </label>
             <input
@@ -158,7 +158,7 @@ export function PublicSampleModal({
 
           {/* Address */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-secondary block">
+            <label className="text-xs font-bold text-muted-foreground block">
               {LABELS.contactAddressLabel}{' '}
               <span className="text-danger">*</span>
             </label>
@@ -174,7 +174,7 @@ export function PublicSampleModal({
 
           {/* Company */}
           <div className="space-y-1">
-            <label className="text-xs font-bold text-secondary block">
+            <label className="text-xs font-bold text-muted-foreground block">
               {LABELS.companyNameLabel}
             </label>
             <input

@@ -17,6 +17,7 @@ export interface SearchFilterField extends FilterFieldBase {
 
 export interface ComboboxFilterField extends FilterFieldBase {
   type: 'combobox';
+  placeholder?: string;
   options: { value: string; label: string; icon?: string }[];
 }
 

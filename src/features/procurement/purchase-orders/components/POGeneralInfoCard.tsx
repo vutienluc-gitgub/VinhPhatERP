@@ -68,7 +68,7 @@ export function POGeneralInfoCard({
 
       {/* Nhóm 1: Nhà cung cấp & Giao dịch */}
       <div className="space-y-4">
-        <h4 className="text-xs font-bold text-primary/80 uppercase tracking-wider border-l-2 border-primary pl-2">
+        <h4 className="text-xs font-bold text-foreground/80 uppercase tracking-wider border-l-2 border-primary pl-2">
           {PO_CONSTANTS.SECTION_TRADE_SUPPLIER}
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -109,8 +109,8 @@ export function POGeneralInfoCard({
                 type="button"
                 className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all h-7 ${
                   tradeType === 'domestic'
-                    ? 'bg-white text-primary shadow-sm border border-black/5'
-                    : 'text-muted hover:text-primary'
+                    ? 'bg-surface text-foreground shadow-sm border border-black/5'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => handleTradeTypeChange('domestic')}
               >
@@ -120,8 +120,8 @@ export function POGeneralInfoCard({
                 type="button"
                 className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all h-7 ${
                   tradeType === 'import'
-                    ? 'bg-white text-primary shadow-sm border border-black/5'
-                    : 'text-muted hover:text-primary'
+                    ? 'bg-surface text-foreground shadow-sm border border-black/5'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => handleTradeTypeChange('import')}
               >
@@ -178,7 +178,7 @@ export function POGeneralInfoCard({
 
       {/* Nhóm 2: Logistics & Vận chuyển */}
       <div className="space-y-4 pt-4 border-t border-border/60">
-        <h4 className="text-xs font-bold text-primary/80 uppercase tracking-wider border-l-2 border-primary pl-2">
+        <h4 className="text-xs font-bold text-foreground/80 uppercase tracking-wider border-l-2 border-primary pl-2">
           {PO_CONSTANTS.SECTION_LOGISTICS}
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -227,7 +227,7 @@ export function POGeneralInfoCard({
 
       {/* Nhóm 3: Điều khoản thanh toán */}
       <div className="space-y-4 pt-4 border-t border-border/60">
-        <h4 className="text-xs font-bold text-primary/80 uppercase tracking-wider border-l-2 border-primary pl-2">
+        <h4 className="text-xs font-bold text-foreground/80 uppercase tracking-wider border-l-2 border-primary pl-2">
           {PO_CONSTANTS.SECTION_PAYMENT_TERMS}
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

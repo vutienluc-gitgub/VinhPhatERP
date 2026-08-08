@@ -14,9 +14,9 @@ const badgeVariants = cva(
         warning: 'bg-warning-soft text-warning',
         danger: 'bg-danger-soft text-danger',
         info: 'bg-info-soft text-info',
-        gray: 'bg-surface-secondary text-muted',
+        gray: 'bg-surface-secondary text-muted-foreground',
         purple: 'bg-[rgba(155,89,182,0.12)] text-[#7d3c98]', // Có thể thay bằng token nếu đã định nghĩa
-        primary: 'bg-brand-soft text-primary',
+        primary: 'bg-brand-soft text-foreground',
         default: 'bg-surface-secondary text-text',
       },
     },

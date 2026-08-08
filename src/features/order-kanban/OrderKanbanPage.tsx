@@ -76,7 +76,7 @@ export function OrderKanbanPage() {
         {/* Header Area */}
         <div className="card-header-area">
           <div className="flex items-center gap-4 flex-wrap">
-            <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-muted mr-2">
+            <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-muted-foreground mr-2">
               <span className="bg-surface px-2.5 py-1.5 rounded border border-border">
                 {totalOrders} {KANBAN_LABELS.ORDER_COUNT_SUFFIX}
               </span>
@@ -85,7 +85,7 @@ export function OrderKanbanPage() {
                   type="button"
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-xs font-bold transition-colors ${
                     showOverdueOnly
-                      ? 'bg-danger text-white border-danger'
+                      ? 'bg-danger text-inverse-foreground border-danger'
                       : 'text-danger bg-danger/10 border-danger/20 hover:bg-danger/20'
                   }`}
                   onClick={() => setShowOverdueOnly((v) => !v)}

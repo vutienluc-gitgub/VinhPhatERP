@@ -12,6 +12,7 @@ export async function executeAiWithRefactorValidation(
       return validateRefactorReport(aiResponse);
     } catch (_error) {
       console.warn(
+        // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
         `⚠️ Lần thử ${i + 1} thất bại do không đúng format Refactor Report. AI đang gọi lại...`,
       );
       // Truyền thêm context lỗi vào prompt để ép AI phải tuân thủ format
@@ -21,6 +22,7 @@ export async function executeAiWithRefactorValidation(
   }
 
   throw new Error(
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     '❌ AI failed after 3 retries: Không thể trả về Refactor Report đúng format.',
   );
 }

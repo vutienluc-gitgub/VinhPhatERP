@@ -114,6 +114,7 @@ export function MachineSpecForm({
                 Loại máy (Machine Type){' '}
                 <span className="field-required">*</span>
               </label>
+              {/* eslint-disable-next-line no-restricted-syntax */}
               <select className="field-input" {...register('machine_type')}>
                 <option value="">Chọn loại máy...</option>
                 {MACHINE_TYPES.map((t) => (

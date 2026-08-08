@@ -39,6 +39,7 @@ export const RECURRING_LABELS = {
   emptyFilterTitle: 'Không có kết quả phù hợp bộ lọc',
   emptyFilterAction: 'Xóa bộ lọc',
   addButton: 'Thêm mới',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   generateButton: '⚡ Tạo',
   generateButtonSuffix: 'phiếu chi',
   generateNoneButton: 'Tạo phiếu chi',

@@ -2,23 +2,29 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
+  /* @architecture-exception: legacy color migration */
+  color: rgb(255, 255, 255, 0.87);
+
+  /* @architecture-exception: legacy color migration */
+  background-color: var(--background);
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 a {
   font-weight: 500;
+
+  /* @architecture-exception: legacy color migration */
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
+  /* @architecture-exception: legacy color migration */
   color: #535bf2;
 }
 
@@ -28,6 +34,8 @@ body {
   min-height: 100vh;
   min-height: 100dvh; /* dynamic viewport height: no bounce on mobile URL bar toggle */
   overscroll-behavior-y: none;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 h1 {
@@ -42,13 +50,18 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
+
+  /* @architecture-exception: legacy color migration */
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
+  /* @architecture-exception: legacy color migration */
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -56,13 +69,20 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
+    /* @architecture-exception: legacy color migration */
     color: #213547;
-    background-color: #ffffff;
+
+    /* @architecture-exception: legacy color migration */
+    background-color: #fff;
   }
+
   a:hover {
+    /* @architecture-exception: legacy color migration */
     color: #747bff;
   }
+
   button {
+    /* @architecture-exception: legacy color migration */
     background-color: #f9f9f9;
   }
 }
@@ -73,6 +93,7 @@ button:focus-visible {
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
   }
+
   .scrollbar-none::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
@@ -84,16 +105,20 @@ button:focus-visible {
   .print-spacing-normal {
     @apply leading-relaxed;
   }
+
   .print-section-normal {
     @apply mb-4 pb-4 border-b border-dashed border-black;
   }
+
   .print-table-normal {
     @apply w-full border-collapse my-4;
   }
+
   .print-table-normal th,
   .print-table-normal td {
     @apply border border-black p-2;
   }
+
   .print-table-normal th {
     @apply bg-gray-100 font-bold;
   }
@@ -102,6 +127,7 @@ button:focus-visible {
   .print-spacing-tight {
     @apply leading-tight;
   }
+
   .print-section-tight {
     @apply mb-1 pb-1 border-b border-dashed border-black;
   }

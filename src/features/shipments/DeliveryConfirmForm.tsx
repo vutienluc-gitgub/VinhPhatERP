@@ -133,7 +133,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
         {/* Driver commission section */}
         {hasDriver && (
           <div className="p-4 rounded-[var(--radius)] bg-[var(--surface-accent)] border border-border mb-3">
-            <p className="text-[0.8rem] font-bold text-[var(--text-tertiary)] uppercase tracking-[0.06em] mb-3">
+            <p className="text-[0.8rem] font-bold text-[var(--muted-foreground)] uppercase tracking-[0.06em] mb-3">
               {MSG.LBL_DRIVER_FEE}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -171,7 +171,7 @@ export function DeliveryConfirmForm({ shipment, onClose }: Props) {
               </div>
             </div>
             {commission > 0 && (
-              <p className="text-xs text-[var(--text-secondary)] mt-2">
+              <p className="text-xs text-[var(--muted-foreground)] mt-2">
                 {MSG.HELP_FEE_EXPENSE}
               </p>
             )}

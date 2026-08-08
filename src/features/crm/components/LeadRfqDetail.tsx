@@ -47,12 +47,12 @@ export function LeadRfqDetail({ lead, onClose }: LeadRfqDetailProps) {
                 <span className="text-sm font-semibold text-foreground">
                   {item.code} {item.color_name && `- ${item.color_name}`}
                 </span>
-                <span className="text-sm font-bold text-primary">
+                <span className="text-sm font-bold text-foreground">
                   {item.quantity} {item.unit}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-muted">
+                <span className="text-xs text-muted-foreground">
                   {LEAD_DETAIL_MESSAGES.EXPECTED_PRICE}
                 </span>
                 <span className="text-xs font-medium text-warning">

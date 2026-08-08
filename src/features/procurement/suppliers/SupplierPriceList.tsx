@@ -73,7 +73,9 @@ export function SupplierPriceList({ supplierId }: Props) {
 
   if (isLoading)
     return (
-      <div className="p-4 text-center text-muted">{L.LOADING_PRICE_LIST}</div>
+      <div className="p-4 text-center text-muted-foreground">
+        {L.LOADING_PRICE_LIST}
+      </div>
     );
 
   return (
@@ -191,7 +193,7 @@ export function SupplierPriceList({ supplierId }: Props) {
       )}
 
       {prices.length === 0 && !isAdding && (
-        <div className="text-center py-8 text-muted border border-dashed rounded-lg">
+        <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
           {L.EMPTY_PRICE_LIST}
         </div>
       )}
@@ -227,7 +229,7 @@ export function SupplierPriceList({ supplierId }: Props) {
                   <td className="px-4 py-3 font-medium text-sm">
                     {p.material_id}
                   </td>
-                  <td className="px-4 py-3 text-sm text-right text-primary font-semibold">
+                  <td className="px-4 py-3 text-sm text-right text-foreground font-semibold">
                     <MoneyText value={p.unit_price} />
                   </td>
                   <td className="px-4 py-3 text-sm">{p.uom}</td>

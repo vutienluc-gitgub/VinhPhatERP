@@ -140,10 +140,12 @@ export function compareRpc(
 // ──────────────────────────────────────────────
 export function formatIssues(issues: SyncIssue[], calls: RpcCall[]): string {
   const lines: string[] = [];
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   lines.push(`❌ Found ${issues.length} issue(s):\n`);
 
   for (const issue of issues) {
     const call = calls.find((c) => c.fnName === issue.fnName);
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     const location = call ? `  📄 ${call.sourceFile}:${call.line}` : '';
 
     switch (issue.kind) {

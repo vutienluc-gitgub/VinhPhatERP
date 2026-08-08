@@ -47,7 +47,7 @@ export function useFabricCatalogColumns({
         cell: ({ row }) => (
           <Link
             to={`${ROUTE_FABRIC_CATALOG}/${row.original.id}`}
-            className="font-bold text-primary hover:underline"
+            className="font-bold text-foreground hover:underline"
             onClick={(e) => e.stopPropagation()}
           >
             {row.original.code}

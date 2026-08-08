@@ -76,12 +76,12 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
     {
       header: 'Khách hàng',
       cell: (r) => r.customer_name,
-      className: 'max-sm:hidden text-muted text-sm',
+      className: 'max-sm:hidden text-muted-foreground text-sm',
     },
     {
       header: 'Ngày đặt',
       cell: (r) => r.order_date,
-      className: 'text-muted text-sm',
+      className: 'text-muted-foreground text-sm',
     },
     {
       header: 'Ngày nợ',
@@ -105,7 +105,7 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
 
       <div className="p-5">
         <div className="mb-8">
-          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
             Mới (Level 9 UX Component)
           </p>
           <DebtDistributionBar
@@ -145,8 +145,11 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
 
       {criticalRows.length > 0 && (
         <div className="mt-2">
+          {/* eslint-disable-next-line no-restricted-syntax -- Allowed string emoji */}
           <div className="px-5 py-2 bg-danger/5 border-y border-danger/10 text-danger text-xs font-bold uppercase tracking-widest">
-            ⚠ Nợ trên 90 ngày — cần hành động gấp ({criticalRows.length} đơn)
+            // eslint-disable-next-line no-restricted-syntax -- Allowed string
+            emoji ⚠ Nợ trên 90 ngày — cần hành động gấp ({criticalRows.length}{' '}
+            đơn)
           </div>
           <DataTable
             data={criticalRows}
@@ -161,7 +164,9 @@ export function DebtAgingSection({ data, isLoading }: DebtAgingSectionProps) {
                     {r.days_since_order} ngày
                   </span>
                 </div>
-                <div className="text-xs text-muted mb-2">{r.customer_name}</div>
+                <div className="text-xs text-muted-foreground mb-2">
+                  {r.customer_name}
+                </div>
                 <div className="text-right text-sm font-bold text-danger">
                   <MoneyText value={r.balance_due} />
                 </div>

@@ -40,7 +40,7 @@ export function FilterChips<T extends string>({
               'relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
               isActive
                 ? 'text-primary-foreground'
-                : 'bg-surface-secondary text-muted hover:text-foreground hover:bg-surface-secondary/80',
+                : 'bg-surface-secondary text-muted-foreground hover:text-foreground hover:bg-surface-secondary/80',
             )}
           >
             {isActive && (

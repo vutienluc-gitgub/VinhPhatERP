@@ -34,7 +34,12 @@ export function ApprovalTimeline({
           <Icon name="XCircle" className="w-5 h-5 text-danger bg-background" />
         );
       case APPROVAL_STATUS.CANCELLED:
-        return <Icon name="Ban" className="w-5 h-5 text-muted bg-background" />;
+        return (
+          <Icon
+            name="Ban"
+            className="w-5 h-5 text-muted-foreground bg-background"
+          />
+        );
       default:
         return (
           <Icon name="Clock" className="w-5 h-5 text-warning bg-background" />
@@ -62,13 +67,13 @@ export function ApprovalTimeline({
                   <span className="text-sm font-medium text-foreground">
                     Bước {step.step_order}: {step.role_name || step.role}
                   </span>
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted-foreground">
                     {APPROVAL_STATUS_VI[step.status]}
                   </span>
                 </div>
 
                 {step.approver_snapshot && (
-                  <span className="text-sm text-muted">
+                  <span className="text-sm text-muted-foreground">
                     Bởi: {step.approver_snapshot.name}
                   </span>
                 )}
@@ -80,7 +85,7 @@ export function ApprovalTimeline({
                 )}
 
                 {step.approved_at && (
-                  <span className="text-xs text-muted mt-1">
+                  <span className="text-xs text-muted-foreground mt-1">
                     Vào lúc:{' '}
                     {format(new Date(step.approved_at), 'HH:mm dd/MM/yyyy', {
                       locale: vi,
@@ -92,7 +97,7 @@ export function ApprovalTimeline({
                   <span
                     className={clsx(
                       'text-xs mt-1 font-medium',
-                      step.is_overdue ? 'text-danger' : 'text-muted',
+                      step.is_overdue ? 'text-danger' : 'text-muted-foreground',
                     )}
                   >
                     <Icon name="Timer" className="w-3 h-3 inline mr-1" />

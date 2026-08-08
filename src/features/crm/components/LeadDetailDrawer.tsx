@@ -34,7 +34,7 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
 
   if (!lead) {
     return (
-      <div className="p-6 text-center text-muted">
+      <div className="p-6 text-center text-muted-foreground">
         {LEAD_DETAIL_MESSAGES.NOT_FOUND}
       </div>
     );
@@ -65,7 +65,7 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
               )}
             </div>
             {lead.company_name && (
-              <div className="flex items-center gap-1.5 text-sm text-muted">
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <Icon name="Building2" size={14} />
                 <span>{lead.company_name}</span>
               </div>
@@ -74,7 +74,7 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
 
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 bg-surface-subtle p-1 rounded-lg border border-border">
-              <span className="text-xs font-medium text-muted pl-2">
+              <span className="text-xs font-medium text-muted-foreground pl-2">
                 {LEAD_DETAIL_MESSAGES.STATUS_LABEL}
               </span>
               <select

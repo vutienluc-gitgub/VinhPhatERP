@@ -11,7 +11,7 @@
   padding: 0.7rem 1.25rem;
   border-bottom: 1px solid var(--border);
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--foreground);
   text-decoration: none;
   transition: background 120ms ease;
   border-radius: var(--radius-sm);
@@ -22,7 +22,7 @@
 }
 
 .taskItem:hover {
-  background: rgba(var(--brand-rgb), 0.04);
+  background: rgb(var(--brand-rgb), 0.04);
 }
 
 .taskItemIcon {
@@ -39,7 +39,7 @@
 .taskItemCount {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--muted);
+  color: var(--surface-subtle);
   font-size: 0.85rem;
 }
 
@@ -50,6 +50,6 @@
 .taskEmpty {
   padding: 1.5rem 0.5rem;
   text-align: center;
-  color: var(--muted);
+  color: var(--surface-subtle);
   font-size: 0.9rem;
 }

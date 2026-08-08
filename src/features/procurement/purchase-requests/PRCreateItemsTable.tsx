@@ -95,7 +95,7 @@ export function PRCreateItemsTable({
                   key={field.id}
                   className="border-b border-border/50 hover:bg-surface-subtle/30 transition-colors"
                 >
-                  <td className="px-3 py-2 text-muted font-mono text-xs">
+                  <td className="px-3 py-2 text-muted-foreground font-mono text-xs">
                     {index + 1}
                   </td>
                   <td className="px-3 py-2">

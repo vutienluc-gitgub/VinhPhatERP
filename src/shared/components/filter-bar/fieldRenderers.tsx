@@ -6,7 +6,7 @@
  * you simply register it here without touching the main component logic.
  */
 
-import { Combobox } from '@/shared/components/Combobox';
+import { VPCombobox } from '@/shared/components/VPCombobox';
 import { UI_LABELS } from '@/shared/constants/ui.constants';
 
 import { DebouncedSearchInput } from './DebouncedSearchInput';
@@ -50,7 +50,7 @@ export const FieldRenderers: FieldRenderersRegistry = {
     return (
       <div className="filter-field">
         <label id={labelId}>{field.label}</label>
-        <Combobox
+        <VPCombobox
           aria-labelledby={labelId}
           options={[
             {
@@ -59,8 +59,12 @@ export const FieldRenderers: FieldRenderersRegistry = {
             },
             ...field.options,
           ]}
-          value={(value[field.key] as string) ?? ''}
-          onChange={(val) => onChange(field.key, val || undefined)}
+          value={(value[field.key] as string) || ''}
+          onChange={(val) => onChange(val, field.key)}
+          placeholder={
+            field.placeholder ||
+            `${UI_LABELS.SELECT_PLACEHOLDER.replace('...', '')} ${field.label.toLowerCase()}...`
+          }
         />
       </div>
     );
@@ -89,7 +93,9 @@ export const FieldRenderers: FieldRenderersRegistry = {
             value={(value[field.keyFrom] as string) ?? ''}
             onChange={(val) => onChange(field.keyFrom, val)}
           />
-          <span className="text-muted mb-[10px] flex-shrink-0">→</span>
+          <span className="text-muted-foreground mb-[10px] flex-shrink-0">
+            →
+          </span>
           <FilterDateInput
             id={`${idPrefix}${field.keyTo}`}
             label={field.labelTo ?? UI_LABELS.TO_DATE}

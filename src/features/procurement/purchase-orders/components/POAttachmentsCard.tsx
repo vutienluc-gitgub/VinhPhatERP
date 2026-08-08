@@ -71,7 +71,7 @@ export function POAttachmentsCard({ form }: POAttachmentsCardProps) {
                 alt={`Attachment ${index + 1}`}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <Button
                   variant="danger"
                   size="sm"
@@ -87,7 +87,7 @@ export function POAttachmentsCard({ form }: POAttachmentsCardProps) {
       )}
 
       <div
-        className="border-2 border-dashed border-muted rounded-xl p-8 flex flex-col items-center justify-center text-center text-muted hover:bg-gray-50 hover:border-primary cursor-pointer transition-colors"
+        className="border-2 border-dashed border-muted rounded-xl p-8 flex flex-col items-center justify-center text-center text-muted-foreground hover:bg-gray-50 hover:border-primary cursor-pointer transition-colors"
         onClick={handleUploadClick}
       >
         <Icon

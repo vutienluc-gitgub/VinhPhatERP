@@ -28,12 +28,16 @@ function ComboboxOptionItem({
     >
       <div className="flex flex-row items-center gap-2">
         {opt.icon && (
-          <Icon name={opt.icon as IconName} size={16} className="text-muted" />
+          <Icon
+            name={opt.icon as IconName}
+            size={16}
+            className="text-muted-foreground"
+          />
         )}
         <div className="flex flex-col text-left">
           <span>{opt.label}</span>
           {(opt.code || opt.phone || opt.desc) && (
-            <span className="text-xs text-muted mt-0.5">
+            <span className="text-xs text-muted-foreground mt-0.5">
               {opt.code && `${UI_LABELS.CODE_PREFIX} ${opt.code} `}
               {opt.phone &&
                 `${UI_LABELS.PHONE_PREFIX} ${formatPhoneNumber(opt.phone)} `}
@@ -251,7 +255,7 @@ export const Combobox = memo(function Combobox({
             }}
           />
           <ChevronDown
-            className="w-4 h-4 text-[var(--text-secondary)] mr-3 shrink-0 cursor-pointer"
+            className="w-4 h-4 text-[var(--muted-foreground)] mr-3 shrink-0 cursor-pointer"
             onClick={() => {
               setIsOpen(!isOpen);
               inputRef.current?.focus();
@@ -309,7 +313,7 @@ export const Combobox = memo(function Combobox({
                 <Icon
                   name={selectedOption.icon as IconName}
                   size={16}
-                  className="text-primary flex-shrink-0"
+                  className="text-foreground flex-shrink-0"
                 />
               )}
               <span className="truncate">{selectedOption.label}</span>
@@ -320,7 +324,7 @@ export const Combobox = memo(function Combobox({
             </span>
           )}
         </span>
-        <ChevronDown className="w-4 h-4 text-[var(--text-secondary)] shrink-0 ml-2" />
+        <ChevronDown className="w-4 h-4 text-[var(--muted-foreground)] shrink-0 ml-2" />
       </button>
 
       {isOpen &&
@@ -331,9 +335,10 @@ export const Combobox = memo(function Combobox({
             className="border border-[var(--border)] rounded-lg shadow-xl max-h-[240px] overflow-y-auto bg-surface"
           >
             <div className="sticky top-0 p-2 border-b border-[var(--border-light)] flex flex-row items-center gap-2 z-10 bg-surface">
-              <Search className="w-4 h-4 text-[var(--text-secondary)]" />
+              <Search className="w-4 h-4 text-[var(--muted-foreground)]" />
               <input
                 type="text"
+                // eslint-disable-next-line no-restricted-syntax -- Allowed exception
                 className="w-full text-sm outline-none bg-transparent border-none min-h-[32px]"
                 placeholder={UI_LABELS.SEARCH_PLACEHOLDER}
                 value={search}
@@ -348,7 +353,7 @@ export const Combobox = memo(function Combobox({
             </div>
             <div className="p-1">
               {filteredOptions.length === 0 ? (
-                <div className="p-2 text-sm text-center text-[var(--text-secondary)]">
+                <div className="p-2 text-sm text-center text-[var(--muted-foreground)]">
                   {UI_LABELS.NO_RESULTS}
                 </div>
               ) : (

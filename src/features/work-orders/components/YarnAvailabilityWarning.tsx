@@ -68,7 +68,7 @@ export function YarnAvailabilityWarning({
         {warnings.map((w) => (
           <div
             key={w.yarnName}
-            className="flex items-center justify-between text-[11px] text-warning-strong bg-white/60 rounded-md px-2 py-1.5"
+            className="flex items-center justify-between text-[11px] text-warning-strong bg-surface/60 rounded-md px-2 py-1.5"
           >
             <span
               className="font-medium truncate max-w-[200px]"

@@ -43,11 +43,11 @@ export function TimelineProgress({
 
         // Colors mapping based on status
         const activeColor = {
-          completed: 'bg-success text-white border-success',
+          completed: 'bg-success text-inverse-foreground border-success',
           current:
-            'bg-surface border-primary text-primary shadow-[0_0_8px_var(--primary)]',
-          pending: 'bg-surface border-border text-muted',
-          error: 'bg-danger text-white border-danger',
+            'bg-surface border-primary text-foreground shadow-[0_0_8px_var(--primary)]',
+          pending: 'bg-surface border-border text-muted-foreground',
+          error: 'bg-danger text-inverse-foreground border-danger',
         }[step.status];
 
         const lineColorClass = {
@@ -78,6 +78,7 @@ export function TimelineProgress({
                     : 'top-4 left-[50%] right-[-50%] h-[2px]',
                   step.status === 'current'
                     ? (direction === 'vertical' ? 'border-l-2' : 'border-t-2') +
+                        // eslint-disable-next-line no-restricted-syntax -- Allowed exception
                         ' border-dashed border-border bg-transparent'
                     : lineColorClass,
                 )}
@@ -118,6 +119,7 @@ export function TimelineProgress({
                   'bg-primary/10 border-primary/30 shadow-sm',
                 step.status === 'error' && 'bg-danger/10 border-danger/20',
                 step.status === 'pending' &&
+                  // eslint-disable-next-line no-restricted-syntax -- Allowed exception
                   'bg-transparent border-transparent pt-1 px-0',
               )}
             >
@@ -141,7 +143,7 @@ export function TimelineProgress({
                       step.status === 'completed' && 'text-success-700',
                       step.status === 'current' && 'text-primary-700',
                       step.status === 'error' && 'text-danger-700',
-                      step.status === 'pending' && 'text-muted',
+                      step.status === 'pending' && 'text-muted-foreground',
                     )}
                   >
                     {step.title}
@@ -153,7 +155,7 @@ export function TimelineProgress({
                           ? 'text-xs mt-1 leading-relaxed'
                           : 'text-[11px] leading-tight mt-1 px-1',
                         step.status === 'pending'
-                          ? 'text-muted'
+                          ? 'text-muted-foreground'
                           : 'text-text/80',
                       )}
                     >
@@ -168,7 +170,9 @@ export function TimelineProgress({
                       direction === 'vertical'
                         ? 'text-[10px] pt-0.5'
                         : 'text-[9px] mt-1',
-                      step.status === 'pending' ? 'text-muted' : 'text-text/60',
+                      step.status === 'pending'
+                        ? 'text-muted-foreground'
+                        : 'text-text/60',
                     )}
                   >
                     {step.date}

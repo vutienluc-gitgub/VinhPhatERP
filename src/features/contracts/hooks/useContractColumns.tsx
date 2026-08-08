@@ -23,7 +23,7 @@ export function useContractColumns({
         accessorKey: 'contract_number',
         header: MSG.COL_CONTRACT_NUMBER,
         cell: ({ row }) => (
-          <span className="font-bold text-primary font-mono text-sm">
+          <span className="font-bold text-foreground font-mono text-sm">
             {row.original.contract_number}
           </span>
         ),
@@ -46,7 +46,7 @@ export function useContractColumns({
             <div className="flex flex-col">
               <span className="font-medium">{contract.party_a_name}</span>
               {contract.party_a_tax_code && (
-                <span className="text-xs text-muted">
+                <span className="text-xs text-muted-foreground">
                   {MSG.TAX_CODE_LABEL}
                   {contract.party_a_tax_code}
                 </span>
@@ -65,7 +65,7 @@ export function useContractColumns({
       {
         accessorKey: 'created_at',
         header: MSG.COL_CREATED_AT,
-        meta: { className: 'text-muted text-sm' },
+        meta: { className: 'text-muted-foreground text-sm' },
         cell: ({ row }) => formatContractDate(row.original.created_at),
       },
       {

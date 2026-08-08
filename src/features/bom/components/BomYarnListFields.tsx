@@ -40,7 +40,7 @@ export function BomYarnListFields({ yarnOptions }: BomYarnListFieldsProps) {
           <span className="font-bold text-lg block mb-0.5">
             Thành phần nguyên liệu
           </span>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-muted-foreground">
             Tổng tỉ lệ:{' '}
             <strong
               className={
@@ -131,7 +131,7 @@ export function BomYarnListFields({ yarnOptions }: BomYarnListFieldsProps) {
                 <label>
                   Tiêu hao (kg/m)
                   {watchWidthCm && watchGsm && (
-                    <span className="text-[10px] text-muted ml-1 font-normal">
+                    <span className="text-[10px] text-muted-foreground ml-1 font-normal">
                       (Tự động)
                     </span>
                   )}
@@ -153,7 +153,7 @@ export function BomYarnListFields({ yarnOptions }: BomYarnListFieldsProps) {
                 {watchWidthCm && watchGsm && (
                   <span className="field-hint text-[11px] mt-1 block h-[18px]">
                     Thực cấp mộc (gồm {watchLoss}% hao hụt):{' '}
-                    <strong className="text-secondary">
+                    <strong className="text-muted-foreground">
                       {watchLoss < 100
                         ? (
                             Number(
@@ -189,7 +189,7 @@ export function BomYarnListFields({ yarnOptions }: BomYarnListFieldsProps) {
         ))}
 
         {fields.length === 0 && (
-          <div className="border-2 border-dashed border-border rounded-lg p-6 text-center text-sm text-muted">
+          <div className="border-2 border-dashed border-border rounded-lg p-6 text-center text-sm text-muted-foreground">
             Chưa có loại sợi nào. Nhấn "Thêm sợi" để bắt đầu.
           </div>
         )}

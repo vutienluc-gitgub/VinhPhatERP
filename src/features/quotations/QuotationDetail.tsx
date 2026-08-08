@@ -134,12 +134,12 @@ export function QuotationDetail({
             <span className="font-bold text-lg flex items-center gap-2">
               {quotation.quotation_number}
               {quotation.revision > 1 && (
-                <span className="text-xs text-muted font-normal">
+                <span className="text-xs text-muted-foreground font-normal">
                   (v{quotation.revision})
                 </span>
               )}
             </span>
-            <p className="text-muted mt-0.5 font-medium">
+            <p className="text-muted-foreground mt-0.5 font-medium">
               {quotation.customers?.name ?? '—'}
             </p>
           </div>
@@ -152,7 +152,7 @@ export function QuotationDetail({
       {/* Info grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-6 mt-4 p-5 bg-surface/50 rounded-lg mx-5">
         <div>
-          <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
+          <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-1">
             {QUOTATION_LABELS.QUOTATION_DATE}
           </div>
           <div className="font-medium">
@@ -160,21 +160,21 @@ export function QuotationDetail({
           </div>
         </div>
         <div>
-          <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
+          <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-1">
             {QUOTATION_LABELS.VALID_UNTIL}
           </div>
           <div className="font-medium">{formatDate(quotation.valid_until)}</div>
         </div>
         <div>
-          <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
+          <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-1">
             {QUOTATION_LABELS.SUBTOTAL}
           </div>
-          <div className="font-medium text-primary">
+          <div className="font-medium text-foreground">
             <MoneyText value={quotation.subtotal} />
           </div>
         </div>
         <div>
-          <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
+          <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-1">
             {QUOTATION_LABELS.DISCOUNT}
           </div>
           <div
@@ -187,7 +187,7 @@ export function QuotationDetail({
             {quotation.discount_amount > 0 ? (
               <>
                 -<MoneyText value={quotation.discount_amount} />
-                <span className="text-xs text-muted ml-1 font-normal italic">
+                <span className="text-xs text-muted-foreground ml-1 font-normal italic">
                   (
                   {quotation.discount_type === 'percent'
                     ? `${quotation.discount_value}%`
@@ -201,7 +201,7 @@ export function QuotationDetail({
           </div>
         </div>
         <div>
-          <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
+          <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-1">
             {QUOTATION_LABELS.VAT_RATE} ({quotation.vat_rate}%)
           </div>
           <div className="font-medium">
@@ -209,10 +209,10 @@ export function QuotationDetail({
           </div>
         </div>
         <div>
-          <div className="text-xs text-muted font-bold uppercase tracking-wider mb-1">
+          <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-1">
             {QUOTATION_LABELS.TOTAL}
           </div>
-          <div className="font-extrabold text-lg text-primary">
+          <div className="font-extrabold text-lg text-foreground">
             <MoneyText value={quotation.total_amount} />
           </div>
         </div>
@@ -223,7 +223,7 @@ export function QuotationDetail({
         <div className="grid sm:grid-cols-2 gap-3 mb-4 px-5">
           {quotation.delivery_terms && (
             <div className="p-3 bg-surface border border-border rounded-lg text-sm">
-              <span className="font-bold text-muted uppercase text-[0.7rem] block mb-1">
+              <span className="font-bold text-muted-foreground uppercase text-[0.7rem] block mb-1">
                 {QUOTATION_LABELS.DELIVERY_TERMS}
               </span>
               {quotation.delivery_terms}
@@ -231,7 +231,7 @@ export function QuotationDetail({
           )}
           {quotation.payment_terms && (
             <div className="p-3 bg-surface border border-border rounded-lg text-sm">
-              <span className="font-bold text-muted uppercase text-[0.7rem] block mb-1">
+              <span className="font-bold text-muted-foreground uppercase text-[0.7rem] block mb-1">
                 {QUOTATION_LABELS.PAYMENT_TERMS}
               </span>
               {quotation.payment_terms}
@@ -243,7 +243,7 @@ export function QuotationDetail({
       {/* Notes */}
       {quotation.notes && (
         <div className="p-3 bg-surface border border-border rounded-lg text-sm mb-4 mx-5">
-          <span className="font-bold text-muted uppercase text-[0.7rem] block mb-1">
+          <span className="font-bold text-muted-foreground uppercase text-[0.7rem] block mb-1">
             {QUOTATION_LABELS.NOTES}
           </span>
           {quotation.notes}

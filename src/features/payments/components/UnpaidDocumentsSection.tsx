@@ -94,7 +94,7 @@ export function UnpaidDocumentsSection({
               />
               <div className="flex-1 text-sm">
                 <div className="font-medium">{group.title}</div>
-                <div className="text-xs text-[var(--text-tertiary)]">
+                <div className="text-xs text-[var(--muted-foreground)]">
                   {group.subtitle}
                   {' - '} {MSG.LBL_DATE}{' '}
                   {new Date(group.date).toLocaleDateString('vi-VN')}
@@ -105,7 +105,7 @@ export function UnpaidDocumentsSection({
                   <MoneyText value={group.remaining} />
                 </div>
                 {group.paid_amount > 0 && (
-                  <div className="text-xs text-[var(--text-tertiary)]">
+                  <div className="text-xs text-[var(--muted-foreground)]">
                     {MSG.LBL_PAID} <MoneyText value={group.paid_amount} />
                   </div>
                 )}

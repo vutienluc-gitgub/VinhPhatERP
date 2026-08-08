@@ -57,7 +57,7 @@ export function CashFlowDashboard() {
       {
         accessorKey: 'period',
         header: MSG.COL_DATE,
-        meta: { className: 'text-muted text-sm' },
+        meta: { className: 'text-muted-foreground text-sm' },
         cell: ({ getValue }) => getValue<string>(),
       },
       {
@@ -69,7 +69,7 @@ export function CashFlowDashboard() {
           return v > 0 ? (
             <MoneyCell value={v} tone="success" bold />
           ) : (
-            <span className="text-muted text-sm">—</span>
+            <span className="text-muted-foreground text-sm">—</span>
           );
         },
       },
@@ -82,7 +82,7 @@ export function CashFlowDashboard() {
           return v > 0 ? (
             <MoneyCell value={v} tone="danger" bold />
           ) : (
-            <span className="text-muted text-sm">—</span>
+            <span className="text-muted-foreground text-sm">—</span>
           );
         },
       },
@@ -255,7 +255,7 @@ export function CashFlowDashboard() {
                   <span className="font-semibold text-sm">
                     {EXPENSE_CATEGORY_LABELS[row.category]}
                   </span>
-                  <span className="text-muted text-sm tabular-nums ml-2">
+                  <span className="text-muted-foreground text-sm tabular-nums ml-2">
                     {MSG.LBL_VOUCHER_COUNT(row.expense_count)}
                   </span>
                 </div>
@@ -284,7 +284,9 @@ export function CashFlowDashboard() {
             emptyStateIcon="LineChart"
             renderMobileCard={(row) => (
               <div className="flex items-center justify-between py-1">
-                <span className="text-muted text-sm text-sm">{row.period}</span>
+                <span className="text-muted-foreground text-sm text-sm">
+                  {row.period}
+                </span>
                 <div className="flex flex-col items-end gap-0.5">
                   {row.total_inflow > 0 && (
                     <span className="numeric-paid text-xs">

@@ -104,7 +104,9 @@ const PortalFabricCatalogPage = lazy(() =>
   ),
 );
 
-const portalFallback = <div className="p-4 text-sm text-muted">Đang tải…</div>;
+const portalFallback = (
+  <div className="p-4 text-sm text-muted-foreground">Đang tải…</div>
+);
 
 export const portalRoutes: RouteObject[] = [
   {

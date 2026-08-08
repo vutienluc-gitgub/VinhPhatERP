@@ -47,7 +47,7 @@ function Tooltip({
         className={cn(
           'pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-50',
           'whitespace-nowrap rounded px-2 py-1 text-[10px] font-semibold',
-          'bg-surface-strong text-white shadow-lg',
+          'bg-surface-strong text-inverse-foreground shadow-lg',
           'opacity-0 group-hover/tip:opacity-100 transition-opacity duration-150',
         )}
       >
@@ -82,7 +82,7 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
     const anomalyStyles = {
       normal: {
         bg: 'var(--surface-strong)',
-        text: 'var(--text)',
+        text: 'var(--foreground)',
         border: 'var(--border)',
         shadow: '0 2px 8px rgba(0,0,0,0.04)',
       },
@@ -100,7 +100,7 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
       },
       empty: {
         bg: 'rgba(16, 35, 61, 0.02)',
-        text: 'var(--muted)',
+        text: 'var(--surface-subtle)',
         border: 'var(--border)',
         shadow: 'none',
       },
@@ -126,22 +126,26 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
 
     const renderIcon = () => {
       if (mode === 'select' && isSelected) {
+        // eslint-disable-next-line no-restricted-syntax -- Allowed exception
         return (
-          <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-success-soft rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-in zoom-in-50 duration-200">
-            <Icon name="Check" size={14} className="text-white" />
+          <span
+            className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-success-soft rounded-full flex items-center justify-center shadow-lg border-2 animate-in zoom-in-50 duration-200"
+            style={{ borderColor: 'transparent' }}
+          >
+            <Icon name="Check" size={14} className="text-inverse-foreground" />
           </span>
         );
       }
 
       if (statusIcon === 'locked')
         return (
-          <div className="absolute top-1 right-1 p-0.5 rounded-[var(--radius-sm)] text-[var(--text-muted)] bg-[var(--surface-subtle)] opacity-80">
+          <div className="absolute top-1 right-1 p-0.5 rounded-[var(--radius-sm)] text-[var(--muted-foreground)] bg-[var(--surface-subtle)] opacity-80">
             <Icon name="Lock" size={10} />
           </div>
         );
       if (statusIcon === 'cut')
         return (
-          <div className="absolute top-1 right-1 p-0.5 rounded-[var(--radius-sm)] text-[var(--text-muted)] bg-[var(--surface-subtle)] opacity-80">
+          <div className="absolute top-1 right-1 p-0.5 rounded-[var(--radius-sm)] text-[var(--muted-foreground)] bg-[var(--surface-subtle)] opacity-80">
             <Icon name="Scissors" size={10} />
           </div>
         );
@@ -313,8 +317,8 @@ export const RollGridItem = forwardRef<HTMLInputElement, RollGridItemProps>(
               ref={ref}
               type="number"
               step="0.1"
-              className="w-full text-center bg-transparent border-none outline-none font-black text-base focus:ring-0 p-0 m-0"
-              style={{ color: 'inherit' }}
+              className="w-full text-center border-none outline-none font-black text-base focus:ring-0 p-0 m-0"
+              style={{ color: 'inherit', backgroundColor: 'transparent' }}
               value={value ?? ''}
               onChange={handleInputChange}
               onBlur={handleBlur}

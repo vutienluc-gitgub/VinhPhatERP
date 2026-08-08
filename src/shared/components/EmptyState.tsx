@@ -31,7 +31,7 @@ export const EmptyState = memo(function EmptyState({
       </div>
       <h3 className="m-0 mb-2 font-bold text-foreground text-lg">{title}</h3>
       {description && (
-        <p className="text-muted text-sm mb-6 max-w-[400px] text-center">
+        <p className="text-muted-foreground text-sm mb-6 max-w-[400px] text-center">
           {description}
         </p>
       )}

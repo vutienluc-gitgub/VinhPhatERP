@@ -31,7 +31,7 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
     {
       header: REPORT_LABELS.COL_CUSTOMER_CODE,
       cell: (r) => r.customer_code || '—',
-      className: 'max-sm:hidden text-muted text-sm',
+      className: 'max-sm:hidden text-muted-foreground text-sm',
     },
     {
       header: REPORT_LABELS.COL_TOTAL_ORDERS,
@@ -97,7 +97,7 @@ export function DebtSection({ data, isLoading }: DebtSectionProps) {
                 <MoneyText value={r.balance_due} />
               </Badge>
             </div>
-            <div className="text-sm text-muted mb-2">
+            <div className="text-sm text-muted-foreground mb-2">
               {r.customer_code || '—'}
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs border-t pt-2">

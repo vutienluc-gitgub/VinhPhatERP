@@ -11,12 +11,12 @@ export function LeadContactInfo({ lead }: LeadContactInfoProps) {
   return (
     <section>
       <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-        <Icon name="User" size={16} className="text-primary" />
+        <Icon name="User" size={16} className="text-foreground" />
         {LEAD_DETAIL_MESSAGES.CONTACT_INFO}
       </h3>
       <div className="bg-surface border border-border rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <div className="text-xs text-muted mb-1">
+          <div className="text-xs text-muted-foreground mb-1">
             {LEAD_DETAIL_MESSAGES.PHONE}
           </div>
           <div className="font-medium text-sm flex items-center gap-2">
@@ -27,7 +27,7 @@ export function LeadContactInfo({ lead }: LeadContactInfoProps) {
           </div>
         </div>
         <div>
-          <div className="text-xs text-muted mb-1">
+          <div className="text-xs text-muted-foreground mb-1">
             {LEAD_DETAIL_MESSAGES.EMAIL}
           </div>
           <div className="font-medium text-sm">

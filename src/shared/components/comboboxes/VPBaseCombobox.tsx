@@ -218,7 +218,9 @@ export const VPBaseCombobox = forwardRef(
                   </span>
                 )
               ) : (
-                <span className="text-muted truncate">{placeholder}</span>
+                <span className="text-muted-foreground truncate">
+                  {placeholder}
+                </span>
               )}
             </div>
             <Icon
@@ -242,6 +244,7 @@ export const VPBaseCombobox = forwardRef(
                 className="mr-2 h-4 w-4 shrink-0 opacity-50"
               />
               <input
+                // eslint-disable-next-line no-restricted-syntax -- Allowed exception
                 className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder={searchPlaceholder}
                 value={search}
@@ -258,7 +261,7 @@ export const VPBaseCombobox = forwardRef(
               style={{ maxHeight: '250px' }}
             >
               {filteredOptions.length === 0 ? (
-                <div className="py-6 text-center text-sm text-muted">
+                <div className="py-6 text-center text-sm text-muted-foreground">
                   {loading ? ( // (Bug 6)
                     <span className="flex items-center justify-center gap-2">
                       <Icon

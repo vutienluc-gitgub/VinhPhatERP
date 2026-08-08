@@ -30,13 +30,13 @@ export function POGoodsReceiptsList({
       </div>
       {receipts.length === 0 ? (
         <div className="p-16 flex flex-col items-center justify-center text-center bg-gray-50/50 border-2 border-dashed border-default rounded-xl m-4">
-          <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center mb-5 text-muted-foreground">
+          <div className="w-20 h-20 rounded-full bg-surface shadow-sm flex items-center justify-center mb-5 text-muted-foreground">
             <Icon name="PackageOpen" size={40} />
           </div>
           <h4 className="text-xl font-bold text-foreground mb-2">
             {PO_CONSTANTS.GR_EMPTY_TITLE}
           </h4>
-          <p className="text-base text-muted max-w-md mb-8">
+          <p className="text-base text-muted-foreground max-w-md mb-8">
             {PO_CONSTANTS.GR_EMPTY_DESC}
           </p>
           {(po.status === 'approved' || po.status === 'partial_received') && (
@@ -59,11 +59,11 @@ export function POGoodsReceiptsList({
             ) => (
               <div key={gr.id} className="border border-border rounded-lg p-4">
                 <div className="flex justify-between items-center mb-3">
-                  <span className="font-semibold text-primary flex items-center gap-2">
+                  <span className="font-semibold text-foreground flex items-center gap-2">
                     <Link
                       to={`/goods-receipts/${gr.id}`}
                       target="_blank"
-                      className="hover:underline text-primary"
+                      className="hover:underline text-foreground"
                     >
                       {gr.receipt_code}
                     </Link>
@@ -80,7 +80,7 @@ export function POGoodsReceiptsList({
                     )}
                   </span>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm text-muted">
+                    <span className="text-sm text-muted-foreground">
                       {PO_CONSTANTS.GR_DATE_PREFIX}{' '}
                       {dayjs(gr.received_date).format('DD/MM/YYYY')}
                     </span>

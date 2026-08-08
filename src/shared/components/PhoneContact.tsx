@@ -29,7 +29,7 @@ export function PhoneContact({
   className,
   fallback = '—',
 }: PhoneContactProps) {
-  if (!phone) return <span className="text-muted">{fallback}</span>;
+  if (!phone) return <span className="text-muted-foreground">{fallback}</span>;
 
   const normalized = normalizePhone(phone);
   const isVN = isVietnamPhone(normalized);
@@ -41,7 +41,7 @@ export function PhoneContact({
         (clickable ? (
           <a
             href={toTelHref(normalized)}
-            className="hover:text-primary hover:underline transition-colors font-semibold truncate"
+            className="hover:text-foreground hover:underline transition-colors font-semibold truncate"
             title="Gọi điện thoại"
             aria-label={`Gọi ${normalized}`}
           >

@@ -22,7 +22,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--muted);
+  color: var(--surface-subtle);
 }
 
 .filter-bar .field-input,
@@ -47,7 +47,7 @@
 .form-field label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--foreground);
 }
 
 .form-field .field-required {
@@ -63,10 +63,9 @@
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--surface-strong);
-  color: var(--text);
+  color: var(--foreground);
   font-size: 0.95rem;
   transition: border-color 160ms ease;
-  -webkit-appearance: none;
   appearance: none;
 }
 
@@ -75,7 +74,7 @@
 .field-textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.12);
+  box-shadow: 0 0 0 3px rgb(var(--brand-rgb), 0.12);
 }
 
 .field-error {
@@ -85,7 +84,7 @@
 
 .field-input--readonly {
   background: var(--surface-disabled);
-  color: var(--text-tertiary);
+  color: var(--muted-foreground);
   font-style: italic;
 }
 
@@ -114,7 +113,7 @@
   border: none;
   outline: none;
   cursor: pointer;
-  color: var(--text);
+  color: var(--foreground);
   background: transparent;
   border-radius: var(--radius-sm);
   transition: background 100ms ease;
@@ -155,41 +154,44 @@
 .filter-compact-premium label {
   font-size: 0.75rem;
   margin-bottom: 0.35rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
   font-weight: 700;
   display: block;
 }
 
 .roll-status.in_progress {
-  background: rgba(155, 89, 182, 0.12);
+  /* @architecture-exception: legacy color migration */
+  background: rgb(155, 89, 182, 0.12);
+
+  /* @architecture-exception: legacy color migration */
   color: #7d3c98;
 }
 
 .roll-status.completed {
-  background: rgba(var(--success-rgb), 0.12);
+  background: rgb(var(--success-rgb), 0.12);
   color: var(--success);
 }
 
 .roll-status.cancelled {
-  background: rgba(var(--danger-rgb), 0.12);
+  background: rgb(var(--danger-rgb), 0.12);
   color: var(--danger);
 }
 
 /* BOM statuses */
 .roll-status.approved {
-  background: rgba(var(--success-rgb), 0.12);
+  background: rgb(var(--success-rgb), 0.12);
   color: var(--success);
 }
 
 .roll-status.deprecated {
-  background: rgba(var(--danger-rgb), 0.12);
+  background: rgb(var(--danger-rgb), 0.12);
   color: var(--danger);
 }
 
 /* ---- Step-based Form (AdaptiveSheet) ---- */
 .sheet-step-indicator {
   font-size: 0.78rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
   font-weight: 500;
 }
 
@@ -207,7 +209,7 @@
 }
 
 /* ---- Responsive 2-column form on wider screens ---- */
-@media (min-width: 480px) {
+@media (width >= 480px) {
   .form-grid-2 {
     grid-template-columns: 1fr 1fr;
   }
@@ -227,7 +229,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--muted);
+  color: var(--surface-subtle);
   padding: 0 0.4rem;
   display: flex;
   align-items: center;
@@ -246,7 +248,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--muted);
+  color: var(--surface-subtle);
   margin: 0;
 }
 
@@ -296,12 +298,12 @@ fieldset.form-section > legend.form-section-title {
 .search-input-icon {
   position: absolute;
   right: 0.85rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
   pointer-events: none;
 }
 
 .field-hint {
   font-size: 0.76rem;
-  color: var(--muted);
+  color: var(--surface-subtle);
   line-height: 1.35;
 }

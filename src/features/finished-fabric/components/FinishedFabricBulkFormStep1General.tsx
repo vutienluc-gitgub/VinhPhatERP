@@ -128,7 +128,7 @@ export function FinishedFabricBulkFormStep1General({
           </div>
 
           {importFromPo && (
-            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] p-3 bg-white border border-border rounded-md">
+            <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] p-3 bg-surface border border-border rounded-md">
               <div className="form-field">
                 <label>{MSG.LBL_DYEING_PO}</label>
                 <Controller
@@ -228,6 +228,7 @@ export function FinishedFabricBulkFormStep1General({
                     />
                   )}
                 />
+                {/* eslint-disable-next-line no-restricted-syntax */}
                 <select
                   className="field-input rounded-l-none bg-muted/50 w-[110px]"
                   {...register('purchase_price_unit')}

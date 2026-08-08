@@ -29,7 +29,7 @@ export function LoomFormStep2Capacity({
 
   return (
     <section>
-      <h3 className="text-sm font-semibold text-foreground dark:text-muted mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+      <h3 className="text-sm font-semibold text-foreground dark:text-muted-foreground mb-4 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
         <Icon name="Activity" size={16} className="text-success" />
         Nhà dệt & Năng lực sản xuất
       </h3>

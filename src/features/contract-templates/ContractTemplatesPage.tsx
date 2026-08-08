@@ -141,7 +141,7 @@ export function ContractTemplatesPage() {
           <h1 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
             {CONTRACT_TEMPLATE_LABELS.TITLE}
           </h1>
-          <p className="text-muted text-xs md:text-sm mt-1">
+          <p className="text-muted-foreground text-xs md:text-sm mt-1">
             {CONTRACT_TEMPLATE_LABELS.DESCRIPTION}
           </p>
         </div>
@@ -218,12 +218,16 @@ export function ContractTemplatesPage() {
               {templates.length > 0 && filteredTemplates.length === 0 && (
                 <div className="col-span-full py-12 flex flex-col items-center text-center">
                   <div className="p-4 bg-surface-subtle rounded-xl mb-4">
-                    <Icon name="Search" size={32} className="text-muted/50" />
+                    <Icon
+                      name="Search"
+                      size={32}
+                      className="text-muted-foreground/50"
+                    />
                   </div>
                   <p className="text-lg font-bold text-foreground">
                     {CONTRACT_TEMPLATE_LABELS.NO_RESULTS}
                   </p>
-                  <p className="text-muted mt-2 text-sm">
+                  <p className="text-muted-foreground mt-2 text-sm">
                     {CONTRACT_TEMPLATE_LABELS.NO_RESULTS_DESC} &quot;
                     {filter.search}&quot;
                   </p>
@@ -252,7 +256,7 @@ export function ContractTemplatesPage() {
 
 function TemplatesLoadingSkeleton() {
   return (
-    <div className="py-12 flex flex-col items-center justify-center text-muted">
+    <div className="py-12 flex flex-col items-center justify-center text-muted-foreground">
       <Icon name="Loader2" size={32} className="animate-spin mb-4" />
       <span className="text-sm">{CONTRACT_TEMPLATE_LABELS.LOADING}</span>
     </div>
@@ -265,12 +269,12 @@ function TemplatesEmptyState({ onSeed }: { onSeed: () => void }) {
   return (
     <div className="col-span-full py-12 flex flex-col items-center text-center">
       <div className="p-4 bg-surface-subtle rounded-full mb-4">
-        <Icon name="FileStack" size={32} className="text-primary/70" />
+        <Icon name="FileStack" size={32} className="text-foreground/70" />
       </div>
       <h3 className="text-lg font-bold text-foreground mb-2">
         {CONTRACT_TEMPLATE_LABELS.EMPTY_TITLE}
       </h3>
-      <p className="text-muted text-sm mb-6 max-w-md">
+      <p className="text-muted-foreground text-sm mb-6 max-w-md">
         {CONTRACT_TEMPLATE_LABELS.EMPTY_DESC}
       </p>
       <Button variant="primary" size="lg" leftIcon="Zap" onClick={onSeed}>

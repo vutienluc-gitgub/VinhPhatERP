@@ -135,16 +135,16 @@ export function InvoiceSearchPage() {
 
       {/* Main Container */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-[#dce6f0] overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <div className="max-w-md w-full bg-surface rounded-3xl shadow-xl border border-[#dce6f0] overflow-hidden transition-all duration-300 hover:shadow-2xl">
           {/* Header Card Brand */}
           <div className="bg-[#0f3460] px-8 py-8 text-center relative overflow-hidden">
             <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#1a6bb5]/10 rounded-full blur-2xl" />
             <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-[#3da5e0]/10 rounded-full blur-2xl" />
 
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl backdrop-blur-md mb-4 text-white text-3xl">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-surface/10 rounded-2xl backdrop-blur-md mb-4 text-inverse-foreground text-3xl">
               📄
             </div>
-            <h1 className="text-xl font-bold text-white tracking-wide uppercase">
+            <h1 className="text-xl font-bold text-inverse-foreground tracking-wide uppercase">
               VinhPhat ERP
             </h1>
             <p className="text-[#8eb8e5] text-xs font-semibold tracking-widest uppercase mt-1">
@@ -158,7 +158,7 @@ export function InvoiceSearchPage() {
             className="px-8 py-8 flex flex-col gap-6"
           >
             <div className="text-center mb-2">
-              <p className="text-sm text-[var(--text-secondary)]">
+              <p className="text-sm text-[var(--muted-foreground)]">
                 Nhập mã tra cứu nhận được trên hóa đơn hoặc phiếu giao hàng để
                 xem thông tin chi tiết.
               </p>
@@ -192,7 +192,7 @@ export function InvoiceSearchPage() {
                   disabled={configError}
                   aria-label="Mã tra cứu hóa đơn dệt gia công"
                   aria-required="true"
-                  className={`w-full px-4 py-3 rounded-xl border bg-slate-50 text-[var(--text-primary)] font-semibold text-lg uppercase tracking-wider placeholder:lowercase placeholder:text-sm placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-[#1a6bb5] focus:bg-white transition-all ${
+                  className={`w-full px-4 py-3 rounded-xl border bg-slate-50 text-[var(--foreground)] font-semibold text-lg uppercase tracking-wider placeholder:lowercase placeholder:text-sm placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-[#1a6bb5] focus:bg-white transition-all ${
                     errors.lookupCode
                       ? 'border-danger ring-1 ring-red-500'
                       : 'border-[#dce6f0]'
@@ -251,7 +251,7 @@ export function InvoiceSearchPage() {
                     placeholder="?"
                     aria-label={`Kết quả phép tính ${captcha.num1} cộng ${captcha.num2}`}
                     aria-required="true"
-                    className="flex-1 px-4 py-3 rounded-xl border border-[#dce6f0] bg-slate-50 text-[var(--text-primary)] font-bold text-lg text-center focus:outline-none focus:ring-2 focus:ring-[#1a6bb5] focus:bg-white transition-all"
+                    className="flex-1 px-4 py-3 rounded-xl border border-[#dce6f0] bg-slate-50 text-[var(--foreground)] font-bold text-lg text-center focus:outline-none focus:ring-2 focus:ring-[#1a6bb5] focus:bg-white transition-all"
                     value={mathAnswer}
                     onChange={(e) => setMathAnswer(e.target.value)}
                   />
@@ -274,11 +274,11 @@ export function InvoiceSearchPage() {
                 isSubmitting || configError || (useTurnstile && !turnstileToken)
               }
               aria-label="Thực hiện tra cứu hóa đơn"
-              className="w-full bg-[#0f3460] hover:bg-[#15467e] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
+              className="w-full bg-[#0f3460] hover:bg-[#15467e] text-inverse-foreground font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-transparent border-t-transparent rounded-full animate-spin" />
                   <span>Đang tìm kiếm...</span>
                 </>
               ) : (
@@ -292,7 +292,7 @@ export function InvoiceSearchPage() {
       </div>
 
       {/* Footer Branding */}
-      <footer className="text-center py-6 text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider font-semibold">
+      <footer className="text-center py-6 text-[10px] text-[var(--muted-foreground)] uppercase tracking-wider font-semibold">
         Hệ Thống Dệt May Vĩnh Phát — VinhPhat ERP © {new Date().getFullYear()}
       </footer>
     </div>

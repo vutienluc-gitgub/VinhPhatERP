@@ -65,16 +65,16 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 animate-fade-in">
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-foreground/50 z-50 flex items-center justify-center p-3 animate-fade-in">
+      <div className="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
         <div className="p-4 border-b border-default flex justify-between items-center bg-slate-50">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <Icon name="Lock" className="w-5 h-5 text-primary" />
+            <Icon name="Lock" className="w-5 h-5 text-foreground" />
             {LABELS.loginBtn}
           </h3>
           <button
             onClick={onClose}
-            className="p-1 rounded-full hover:bg-surface-secondary text-muted"
+            className="p-1 rounded-full hover:bg-surface-secondary text-muted-foreground"
           >
             <Icon name="X" className="w-5 h-5" />
           </button>
@@ -85,7 +85,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
             <h2 className="text-xl font-bold text-foreground mb-1">
               {LABELS.loginTitle}
             </h2>
-            <p className="text-muted text-sm">
+            <p className="text-muted-foreground text-sm">
               Nhập email và mật khẩu của bạn để xem bảng giá sỉ và trạng thái
               kho.
             </p>
@@ -94,7 +94,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
           <div className="flex flex-col gap-2">
             <label
               htmlFor="email"
-              className="text-sm font-medium text-secondary"
+              className="text-sm font-medium text-muted-foreground"
             >
               {LABELS.emailLabel}
             </label>
@@ -105,14 +105,14 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
               placeholder={LABELS.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <label
               htmlFor="password"
-              className="text-sm font-medium text-secondary"
+              className="text-sm font-medium text-muted-foreground"
             >
               {LABELS.passwordLabel}
             </label>
@@ -123,7 +123,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
               placeholder={LABELS.passwordPlaceholder}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 

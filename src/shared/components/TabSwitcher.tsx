@@ -46,7 +46,7 @@ export function TabSwitcher<T extends string>({
           className={clsx(
             'tab-item-underline',
             smItemClass,
-            active === tab.key && 'text-primary bg-primary/10',
+            active === tab.key && 'text-foreground bg-primary/10',
           )}
           onClick={() => onChange(tab.key)}
         >

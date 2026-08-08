@@ -54,7 +54,7 @@ export function PortalDebtPage() {
                     <Link to={`/portal/orders/${o.id}`} className="portal-link">
                       {o.order_number}
                     </Link>
-                    <div className="text-xs text-muted">
+                    <div className="text-xs text-muted-foreground">
                       Giao: {o.due_date ?? '—'}
                     </div>
                   </td>
@@ -65,7 +65,7 @@ export function PortalDebtPage() {
                         suffix=" ₫"
                       />
                     </div>
-                    <div className="text-xs text-muted">còn nợ</div>
+                    <div className="text-xs text-muted-foreground">còn nợ</div>
                   </td>
                 </tr>
               ))}

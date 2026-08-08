@@ -15,7 +15,7 @@ export function ApprovalStatusBadge({ status, className }: Props) {
   const getBadgeStyle = () => {
     switch (status) {
       case APPROVAL_STATUS.DRAFT:
-        return 'bg-surface-secondary text-muted border-default';
+        return 'bg-surface-secondary text-muted-foreground border-default';
       case APPROVAL_STATUS.PENDING:
         return 'bg-warning-soft text-warning border-warning/20';
       case APPROVAL_STATUS.APPROVED:
@@ -23,9 +23,9 @@ export function ApprovalStatusBadge({ status, className }: Props) {
       case APPROVAL_STATUS.REJECTED:
         return 'bg-danger-soft text-danger border-danger/20';
       case APPROVAL_STATUS.CANCELLED:
-        return 'bg-surface-secondary text-muted border-default line-through';
+        return 'bg-surface-secondary text-muted-foreground border-default line-through';
       default:
-        return 'bg-surface-secondary text-muted border-default';
+        return 'bg-surface-secondary text-muted-foreground border-default';
     }
   };
 

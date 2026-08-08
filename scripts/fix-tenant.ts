@@ -22,6 +22,7 @@ async function fixTenant() {
       .from('weaving_invoices')
       .update({ tenant_id: tenantId })
       .is('tenant_id', null);
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     console.log('✅ Đã cập nhật thành công.');
   } else {
     // If even 001 doesn't have it, let's grab a random valid tenant
@@ -36,6 +37,7 @@ async function fixTenant() {
         .from('weaving_invoices')
         .update({ tenant_id: rand.tenant_id })
         .is('tenant_id', null);
+      // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
       console.log('✅ Đã cập nhật thành công.');
     }
   }

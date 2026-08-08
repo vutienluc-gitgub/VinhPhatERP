@@ -7,10 +7,14 @@
 
 /* ── Track ────────────────────────────────────────────────────── */
 .switch-premium-track {
-  background: linear-gradient(135deg, var(--text-muted), var(--secondary));
+  background: linear-gradient(
+    135deg,
+    var(--muted-foreground),
+    var(--secondary)
+  );
   box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.15),
-    inset 0 2px 6px rgba(255, 255, 255, 0.1);
+    0 10px 25px rgb(0, 0, 0, 0.15),
+    inset 0 2px 6px rgb(255, 255, 255, 0.1);
   transition:
     background 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -23,29 +27,31 @@
     rgb(var(--brand-strong-rgb))
   );
   box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.15),
-    inset 0 2px 6px rgba(255, 255, 255, 0.15);
+    0 10px 25px rgb(0, 0, 0, 0.15),
+    inset 0 2px 6px rgb(255, 255, 255, 0.15);
 }
 
 /* Glow aura — only when glow prop is enabled */
 .peer:checked ~ .switch-premium-track[data-glow='true'] {
   box-shadow:
-    0 0 20px rgba(var(--brand-rgb), 0.35),
-    0 10px 25px rgba(0, 0, 0, 0.15),
-    inset 0 2px 6px rgba(255, 255, 255, 0.15);
+    0 0 20px rgb(var(--brand-rgb), 0.35),
+    0 10px 25px rgb(0, 0, 0, 0.15),
+    inset 0 2px 6px rgb(255, 255, 255, 0.15);
 }
 
 /* ── Thumb ─────────────────────────────────────────────────────── */
 .switch-premium-thumb {
   background: radial-gradient(
     circle at 35% 30%,
-    #ffffff,
+    #fff,
     var(--surface-secondary)
   );
-  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  /* @architecture-exception: legacy color migration */
+  border: 1px solid rgb(0, 0, 0, 0.08);
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.18),
-    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+    0 4px 8px rgb(0, 0, 0, 0.18),
+    inset 0 1px 2px rgb(255, 255, 255, 0.8);
   transition:
     transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
     scale 0.15s ease;
@@ -75,6 +81,7 @@ label:active .switch-premium-thumb {
 .switch-premium-label-on {
   opacity: 0;
 }
+
 .switch-premium-label-off {
   opacity: 1;
 }
@@ -83,6 +90,7 @@ label:active .switch-premium-thumb {
 .peer:checked ~ .switch-premium-track .switch-premium-label-on {
   opacity: 1;
 }
+
 .peer:checked ~ .switch-premium-track .switch-premium-label-off {
   opacity: 0;
 }
@@ -95,8 +103,8 @@ label:active .switch-premium-thumb {
     var(--border-muted)
   );
   box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.35),
-    inset 0 2px 6px rgba(255, 255, 255, 0.06);
+    0 10px 25px rgb(0, 0, 0, 0.35),
+    inset 0 2px 6px rgb(255, 255, 255, 0.06);
 }
 
 [data-theme='dark'] .peer:checked ~ .switch-premium-track {
@@ -106,23 +114,26 @@ label:active .switch-premium-thumb {
     rgb(var(--brand-strong-rgb))
   );
   box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.35),
-    inset 0 2px 6px rgba(255, 255, 255, 0.1);
+    0 10px 25px rgb(0, 0, 0, 0.35),
+    inset 0 2px 6px rgb(255, 255, 255, 0.1);
 }
 
 [data-theme='dark'] .peer:checked ~ .switch-premium-track[data-glow='true'] {
   box-shadow:
-    0 0 24px rgba(var(--brand-rgb), 0.45),
-    0 10px 25px rgba(0, 0, 0, 0.35),
-    inset 0 2px 6px rgba(255, 255, 255, 0.1);
+    0 0 24px rgb(var(--brand-rgb), 0.45),
+    0 10px 25px rgb(0, 0, 0, 0.35),
+    inset 0 2px 6px rgb(255, 255, 255, 0.1);
 }
 
 [data-theme='dark'] .switch-premium-thumb {
+  /* @architecture-exception: legacy color migration */
   background: radial-gradient(circle at 35% 30%, #f1f5f9, #cbd5e1);
-  border-color: rgba(255, 255, 255, 0.1);
+
+  /* @architecture-exception: legacy color migration */
+  border-color: rgb(255, 255, 255, 0.1);
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.35),
-    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    0 4px 8px rgb(0, 0, 0, 0.35),
+    inset 0 1px 2px rgb(255, 255, 255, 0.5);
 }
 
 /* ── Reduced Motion ────────────────────────────────────────────── */

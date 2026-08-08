@@ -36,7 +36,7 @@ export function POViewer({
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       {/* Header */}
-      <div className="bg-[#0f3460] text-white py-6 px-4 md:px-8">
+      <div className="bg-[#0f3460] text-inverse-foreground py-6 px-4 md:px-8">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-xl md:text-2xl font-bold mb-1">
@@ -57,7 +57,7 @@ export function POViewer({
             )}
             <button
               onClick={() => window.print()}
-              className="p-2 bg-white/10 hover:bg-white/20 text-white rounded transition-colors print:hidden flex items-center gap-2"
+              className="p-2 bg-surface/10 hover:bg-white/20 text-inverse-foreground rounded transition-colors print:hidden flex items-center gap-2"
               title={TEXT.PRINT_BTN}
             >
               <Icon name="Printer" size={20} />
@@ -107,7 +107,7 @@ export function POViewer({
         {/* Confirmed banner */}
         {isConfirmedBySupplier && po.confirmed_at && (
           <div className="bg-success-soft border border-success/30 rounded-xl p-4 text-center">
-            <div className="w-12 h-12 bg-success text-white rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 bg-success text-inverse-foreground rounded-full flex items-center justify-center mx-auto mb-3">
               <Icon name="Check" size={24} />
             </div>
             <h3 className="text-success-strong font-bold text-lg mb-1">
@@ -122,7 +122,7 @@ export function POViewer({
         {/* Rejected by supplier banner */}
         {isRejectedBySupplier && (
           <div className="bg-danger-soft border border-danger/30 rounded-xl p-5 text-center">
-            <div className="w-12 h-12 bg-danger text-white rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 bg-danger text-inverse-foreground rounded-full flex items-center justify-center mx-auto mb-3">
               <Icon name="X" size={24} />
             </div>
             <h3 className="text-danger font-bold text-lg mb-2">
@@ -146,13 +146,13 @@ export function POViewer({
         )}
 
         {/* PO Info */}
-        <div className="bg-white rounded-xl shadow-sm border border-border p-5 md:p-6 relative z-10">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-muted mb-4 border-b border-border pb-2">
+        <div className="bg-surface rounded-xl shadow-sm border border-border p-5 md:p-6 relative z-10">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4 border-b border-border pb-2">
             {TEXT.PO_SECTION_INFO}
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-muted mb-1">
+              <p className="text-xs text-muted-foreground mb-1">
                 {TEXT.PO_LABEL_SUPPLIER}
               </p>
               <p className="font-semibold text-foreground">
@@ -160,7 +160,7 @@ export function POViewer({
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted mb-1">
+              <p className="text-xs text-muted-foreground mb-1">
                 {TEXT.PO_LABEL_ORDER_DATE}
               </p>
               <p className="font-semibold">
@@ -168,8 +168,10 @@ export function POViewer({
               </p>
             </div>
             <div className="col-span-2">
-              <p className="text-xs text-muted mb-1">{TEXT.PO_LABEL_TOTAL}</p>
-              <p className="font-bold text-lg text-primary">
+              <p className="text-xs text-muted-foreground mb-1">
+                {TEXT.PO_LABEL_TOTAL}
+              </p>
+              <p className="font-bold text-lg text-foreground">
                 <MoneyText value={po.total_amount} />
               </p>
             </div>
@@ -178,8 +180,8 @@ export function POViewer({
 
         {/* Notes */}
         {po.notes && (
-          <div className="bg-white rounded-xl shadow-sm border border-border p-5 md:p-6">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted mb-4 border-b border-border pb-2">
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-5 md:p-6">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4 border-b border-border pb-2">
               {TEXT.PO_SECTION_NOTES}
             </h2>
             <p className="whitespace-pre-wrap text-sm">{po.notes}</p>
@@ -187,9 +189,9 @@ export function POViewer({
         )}
 
         {/* Items */}
-        <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
+        <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
           <div className="p-5 md:p-6 border-b border-border">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
               {TEXT.PO_SECTION_ITEMS}
             </h2>
           </div>
@@ -209,7 +211,7 @@ export function POViewer({
                     </p>
                   </div>
                 </div>
-                <div className="flex justify-between text-sm text-muted">
+                <div className="flex justify-between text-sm text-muted-foreground">
                   <span>
                     {TEXT.PO_ITEM_QTY}{' '}
                     <span className="font-medium text-foreground">
@@ -224,7 +226,7 @@ export function POViewer({
                   </span>
                 </div>
                 {item.notes && (
-                  <p className="text-xs text-muted italic mt-2 bg-slate-50 p-2 rounded">
+                  <p className="text-xs text-muted-foreground italic mt-2 bg-slate-50 p-2 rounded">
                     {item.notes}
                   </p>
                 )}
@@ -245,9 +247,13 @@ export function POViewer({
                       href={file?.url || '#'}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2 px-3 py-2 bg-white border border-border rounded-lg hover:border-primary transition-colors text-sm"
+                      className="flex items-center gap-2 px-3 py-2 bg-surface border border-border rounded-lg hover:border-primary transition-colors text-sm"
                     >
-                      <Icon name="Paperclip" size={16} className="text-muted" />
+                      <Icon
+                        name="Paperclip"
+                        size={16}
+                        className="text-muted-foreground"
+                      />
                       <span>
                         {file?.name ||
                           `${TEXT.PO_ATTACHMENT_FALLBACK} ${i + 1}`}
@@ -262,11 +268,11 @@ export function POViewer({
 
         {/* CTA: Confirm + Reject */}
         {isActionable && (
-          <div className="bg-white rounded-xl shadow-sm border border-border p-5 md:p-6">
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-5 md:p-6">
             <h3 className="font-semibold mb-2 text-center">
               {TEXT.PO_RESPONSE_TITLE}
             </h3>
-            <p className="text-sm text-muted mb-5 text-center">
+            <p className="text-sm text-muted-foreground mb-5 text-center">
               {TEXT.PO_RESPONSE_DESC}
             </p>
 

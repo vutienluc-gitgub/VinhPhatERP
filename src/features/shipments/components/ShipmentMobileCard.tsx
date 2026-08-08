@@ -29,7 +29,7 @@ export function ShipmentSaaSBadge({ status }: { status: ShipmentStatus }) {
 
   const currentStyle =
     styles[status] ||
-    'bg-surface-strong/10 text-secondary dark:text-muted-foreground ring-slate-500/20';
+    'bg-surface-strong/10 text-muted-foreground dark:text-muted-foreground ring-slate-500/20';
   const currentDot = dotColors[status] || 'bg-surface-strong';
 
   return (
@@ -106,7 +106,7 @@ export function ShipmentMobileCard({
         )}
         <div className="mobile-card-row border-t border-border mt-2 pt-2">
           <span className="label font-bold">{MSG.LBL_COST}:</span>
-          <span className="value font-bold text-primary">
+          <span className="value font-bold text-foreground">
             {totalCost ? (
               <>
                 <MoneyText value={totalCost} />

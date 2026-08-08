@@ -119,7 +119,7 @@ export function RoleManagementModal({
     >
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center">
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             Thêm mới và quản lý các chức danh tùy chỉnh cho nhân viên.
           </p>
           {!isAdding && (
@@ -224,7 +224,7 @@ export function RoleManagementModal({
                   <span className="font-medium">
                     {r.name}{' '}
                     {r.is_system && (
-                      <span className="text-xs text-muted font-normal ml-1">
+                      <span className="text-xs text-muted-foreground font-normal ml-1">
                         (Hệ thống)
                       </span>
                     )}
@@ -241,7 +241,7 @@ export function RoleManagementModal({
                     <Icon
                       name="Lock"
                       size={14}
-                      className="text-muted inline-block mr-2"
+                      className="text-muted-foreground inline-block mr-2"
                     />
                   );
                 }

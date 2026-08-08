@@ -33,7 +33,7 @@ export function SupplierQuotePage() {
         <h2 className="text-lg font-bold text-foreground text-center">
           {TEXT.ERROR_NOT_FOUND}
         </h2>
-        <p className="text-muted text-center mt-2 text-sm max-w-md">
+        <p className="text-muted-foreground text-center mt-2 text-sm max-w-md">
           {TEXT.LINK_INVALID_DESC}
         </p>
       </div>

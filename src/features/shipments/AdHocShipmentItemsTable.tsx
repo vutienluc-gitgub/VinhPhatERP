@@ -25,7 +25,6 @@ type AdHocShipmentItemsTableProps = {
     changedField?: 'quantity' | 'pricePerKg',
     newValue?: number | null,
   ) => void;
-  onAddRow: () => void;
   onRemoveRow: (index: number) => void;
   onScanRow: (index: number, barcode: string) => void;
   isScanning: boolean;
@@ -37,7 +36,6 @@ export function AdHocShipmentItemsTable({
   fieldArray: { fields },
   itemsSummary,
   onItemFieldChange,
-  onAddRow,
   onRemoveRow,
   onScanRow,
   isScanning,
@@ -49,24 +47,9 @@ export function AdHocShipmentItemsTable({
   } = form;
   return (
     <div className="form-field">
-      <div className="flex items-center justify-between mb-2">
-        <label className="m-0">
-          {AD_HOC_SHIPMENT_MESSAGES.LBL_TRADING_ITEMS}{' '}
-          <span className="field-required">*</span>
-        </label>
-        <button
-          type="button"
-          className="btn-secondary text-xs flex items-center gap-1 px-3 py-1.5"
-          onClick={onAddRow}
-        >
-          <Icon name="Plus" size={14} />
-          {AD_HOC_SHIPMENT_MESSAGES.ADD_ROW}
-        </button>
-      </div>
-
       <div className="rounded-xl border border-[var(--border)] overflow-hidden">
         {/* Table header */}
-        <div className="grid grid-cols-[30px_1fr_100px_70px_120px_130px_40px] gap-0 bg-[var(--surface-secondary)] border-b border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
+        <div className="grid grid-cols-[30px_1fr_100px_70px_120px_130px_40px] gap-0 bg-[var(--surface-secondary)] border-b border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
           <span className="text-center">#</span>
           <span>{AD_HOC_SHIPMENT_MESSAGES.COL_FABRIC}</span>
           <span className="text-right">{AD_HOC_SHIPMENT_MESSAGES.COL_QTY}</span>
@@ -112,16 +95,35 @@ export function AdHocShipmentItemsTable({
                 control={control}
                 name={`items.${index}.fabricType`}
                 render={({ field: { value, onChange, onBlur } }) => (
-                  <VPCombobox
-                    options={fabricOptions}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    placeholder="VD: Kaki Thun"
-                    allowCreatable={true}
-                    hasError={!!errors.items?.[index]?.fabricType}
-                    className="border-none rounded-none focus:ring-0 shadow-none h-9 bg-transparent"
-                  />
+                  <div className="flex flex-col">
+                    <VPCombobox
+                      options={fabricOptions}
+                      value={value}
+                      onChange={onChange}
+                      onBlur={onBlur}
+                      placeholder="VD: Kaki Thun"
+                      allowCreatable={true}
+                      hasError={!!errors.items?.[index]?.fabricType}
+                      className="border-none rounded-none focus:ring-0 shadow-none h-9 bg-transparent"
+                    />
+                    {value && (
+                      <div className="text-[10.5px] text-[var(--muted-foreground)] px-2 pb-1 flex gap-2">
+                        <span>
+                          Tồn:{' '}
+                          <span className="font-semibold text-foreground">
+                            245 kg
+                          </span>
+                        </span>
+                        <span className="text-[var(--border)]">|</span>
+                        <span>
+                          Lô:{' '}
+                          <span className="font-semibold text-foreground">
+                            L240801
+                          </span>
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 )}
               />
               {errors.items?.[index]?.fabricType && (
@@ -135,19 +137,36 @@ export function AdHocShipmentItemsTable({
             <Controller
               name={`items.${index}.quantity`}
               control={control}
-              render={({ field }) => (
-                <QuantityInput
-                  className={`field-input text-sm text-right ${errors.items?.[index]?.quantity ? 'border-danger' : ''}`}
-                  step="0.1"
-                  placeholder="0"
-                  value={field.value}
-                  onChange={(val) => {
-                    field.onChange(val);
-                    onItemFieldChange(index, 'quantity', val);
-                  }}
-                  onBlur={field.onBlur}
-                />
-              )}
+              render={({ field }) => {
+                const qty = field.value || 0;
+                const fabricType = form.getValues(`items.${index}.fabricType`);
+                const isOverStock = qty > 245;
+
+                return (
+                  <div className="flex flex-col">
+                    <QuantityInput
+                      className={`field-input text-sm text-right ${errors.items?.[index]?.quantity ? 'border-danger' : ''} ${fabricType && isOverStock ? 'text-danger' : ''}`}
+                      step="0.1"
+                      placeholder="0"
+                      value={field.value}
+                      onChange={(val) => {
+                        field.onChange(val);
+                        onItemFieldChange(index, 'quantity', val);
+                      }}
+                      onBlur={field.onBlur}
+                    />
+                    {fabricType && qty > 0 && (
+                      <div
+                        className={`text-[10px] font-medium px-2 pb-1 text-right ${isOverStock ? 'text-danger' : 'text-success'}`}
+                      >
+                        {isOverStock
+                          ? `⚠ Thiếu ${(qty - 245).toFixed(1)} kg`
+                          : '✓ Đủ tồn'}
+                      </div>
+                    )}
+                  </div>
+                );
+              }}
             />
 
             {/* Unit */}
@@ -209,7 +228,7 @@ export function AdHocShipmentItemsTable({
             <div className="flex justify-center">
               <button
                 type="button"
-                className="btn-icon text-[var(--text-tertiary)] hover:text-[var(--danger)]"
+                className="btn-icon text-[var(--muted-foreground)] hover:text-[var(--danger)]"
                 onClick={() => onRemoveRow(index)}
                 title={AD_HOC_SHIPMENT_MESSAGES.TITLE_DELETE}
               >
@@ -220,7 +239,7 @@ export function AdHocShipmentItemsTable({
         ))}
 
         {fields.length === 0 && (
-          <div className="text-center py-8 text-[var(--text-tertiary)] text-sm">
+          <div className="text-center py-8 text-[var(--muted-foreground)] text-sm">
             {AD_HOC_SHIPMENT_MESSAGES.EMPTY_ITEMS} &quot;
             {AD_HOC_SHIPMENT_MESSAGES.ADD_ROW}
             &quot; {AD_HOC_SHIPMENT_MESSAGES.EMPTY_ITEMS_ACTION}

@@ -26,7 +26,10 @@ export function SupplierPortalLayout() {
   if (isLoading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
-        <Icon name="loader-2" className="h-8 w-8 animate-spin text-muted" />
+        <Icon
+          name="loader-2"
+          className="h-8 w-8 animate-spin text-muted-foreground"
+        />
       </div>
     );
   }

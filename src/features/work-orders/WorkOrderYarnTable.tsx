@@ -129,7 +129,7 @@ export function WorkOrderYarnTable({
                     render={({ field }) => (
                       <WeightInput
                         step="0.01"
-                        className="field-input text-right font-bold text-primary"
+                        className="field-input text-right font-bold text-foreground"
                         placeholder="kg"
                         min={allocatedKg > 0 ? allocatedKg : 0}
                         value={field.value}
@@ -142,7 +142,7 @@ export function WorkOrderYarnTable({
                     {isLocked ? (
                       <button
                         type="button"
-                        className="btn-icon text-muted cursor-not-allowed opacity-50 block mx-auto"
+                        className="btn-icon text-muted-foreground cursor-not-allowed opacity-50 block mx-auto"
                         title={MSG.LOCKED_YARN_TOOLTIP}
                         disabled
                       >
@@ -169,7 +169,7 @@ export function WorkOrderYarnTable({
                 {calcTotalBomRatio(watch('yarn_requirements') || []).toFixed(1)}
                 %
               </td>
-              <td className="text-right text-primary">
+              <td className="text-right text-foreground">
                 {calcTotalRequiredKg(watch('yarn_requirements') || []).toFixed(
                   2,
                 )}{' '}
@@ -181,7 +181,7 @@ export function WorkOrderYarnTable({
         </table>
       </div>
 
-      <div className="px-4 py-2 text-xs text-muted border-t border-border">
+      <div className="px-4 py-2 text-xs text-muted-foreground border-t border-border">
         {MSG.YARN_TABLE_HINT}
       </div>
     </div>

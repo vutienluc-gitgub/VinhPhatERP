@@ -71,7 +71,7 @@ export function NotificationCenter({ supplierId }: NotificationCenterProps) {
       >
         <Icon name="Bell" className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-danger text-white rounded-full text-[0.65rem] font-bold min-w-[16px] h-[16px] flex items-center justify-center px-[3px] leading-none">
+          <span className="absolute -top-1 -right-1 bg-danger text-inverse-foreground rounded-full text-[0.65rem] font-bold min-w-[16px] h-[16px] flex items-center justify-center px-[3px] leading-none">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -85,7 +85,7 @@ export function NotificationCenter({ supplierId }: NotificationCenterProps) {
                 Thông báo
               </span>
               {unreadCount > 0 && (
-                <span className="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded-full font-medium">
+                <span className="bg-primary/10 text-foreground text-[10px] px-1.5 py-0.5 rounded-full font-medium">
                   {unreadCount} mới
                 </span>
               )}
@@ -124,8 +124,11 @@ export function NotificationCenter({ supplierId }: NotificationCenterProps) {
           <div className="flex-1 overflow-y-auto overscroll-contain">
             {!hasNotifications ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <Icon name="Bell" className="w-10 h-10 text-muted/30 mb-3" />
-                <p className="text-sm text-muted">
+                <Icon
+                  name="Bell"
+                  className="w-10 h-10 text-muted-foreground/30 mb-3"
+                />
+                <p className="text-sm text-muted-foreground">
                   Bạn không có thông báo nào.
                 </p>
               </div>
@@ -150,7 +153,7 @@ export function NotificationCenter({ supplierId }: NotificationCenterProps) {
                       >
                         {item.title}
                       </p>
-                      <p className="m-0 text-xs text-muted leading-relaxed line-clamp-2">
+                      <p className="m-0 text-xs text-muted-foreground leading-relaxed line-clamp-2">
                         {item.body}
                       </p>
                       <p className="m-0 mt-2 text-[10px] text-muted-foreground">

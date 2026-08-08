@@ -4,41 +4,49 @@ export const LEAD_STATUS_MAP: Record<
 > = {
   NEW: {
     label: 'Mới tạo',
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '🔵',
     colorClass: 'bg-blue-50 text-info border-info',
   },
   CONTACTED: {
     label: 'Đã liên hệ',
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '🟡',
     colorClass: 'bg-amber-50 text-warning-strong border-warning',
   },
   SAMPLE_SENT: {
     label: 'Đã gửi mẫu',
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '🟣',
     colorClass: 'bg-purple-50 text-purple-700 border-purple-100',
   },
   QUOTED: {
     label: 'Đã báo giá',
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '🟠',
     colorClass: 'bg-orange-50 text-warning-strong border-warning',
   },
   NEGOTIATING: {
     label: 'Đang thương lượng',
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '🟤',
     colorClass: 'bg-stone-50 text-stone-700 border-stone-100',
   },
   WON: {
     label: 'Thành công',
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '🟢',
     colorClass: 'bg-emerald-50 text-success border-success',
   },
   LOST: {
     label: 'Thất bại',
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '🔴',
     colorClass: 'bg-red-50 text-danger border-danger',
   },
   CONVERTED: {
     label: 'Đã chuyển đổi',
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '✅',
     colorClass: 'bg-teal-50 text-success border-success',
   },
@@ -55,7 +63,7 @@ export const LEAD_TYPE_MAP: Record<
   },
   CONTACT: {
     label: 'Liên hệ',
-    colorClass: 'bg-surface-secondary text-primary',
+    colorClass: 'bg-surface-secondary text-foreground',
   },
 };
 
@@ -96,7 +104,7 @@ export const ACTIVITY_TYPE_MAP: Record<
   SYSTEM: {
     label: 'Hệ thống',
     icon: 'Settings',
-    colorClass: 'text-muted bg-slate-50',
+    colorClass: 'text-muted-foreground bg-slate-50',
   },
 };
 

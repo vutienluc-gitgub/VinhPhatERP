@@ -170,7 +170,7 @@ export function CreateLeadModal({
               {isChecking && (
                 <Icon
                   name="Loader2"
-                  className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-muted"
+                  className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-muted-foreground"
                 />
               )}
             </div>
@@ -191,7 +191,7 @@ export function CreateLeadModal({
               {isChecking && (
                 <Icon
                   name="Loader2"
-                  className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-muted"
+                  className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-muted-foreground"
                 />
               )}
             </div>
@@ -222,7 +222,7 @@ export function CreateLeadModal({
                   {duplicates.customers.map((c) => (
                     <div
                       key={c.id}
-                      className="flex items-center justify-between bg-white p-3 rounded-lg border border-warning shadow-sm"
+                      className="flex items-center justify-between bg-surface p-3 rounded-lg border border-warning shadow-sm"
                     >
                       <div className="flex items-center gap-2">
                         <Icon
@@ -230,10 +230,10 @@ export function CreateLeadModal({
                           className="h-4 w-4 text-warning"
                         />
                         <div>
-                          <p className="text-sm font-bold text-primary">
+                          <p className="text-sm font-bold text-foreground">
                             {c.name}
                           </p>
-                          <p className="text-xs text-muted">
+                          <p className="text-xs text-muted-foreground">
                             Khách hàng chính thức
                           </p>
                         </div>
@@ -254,17 +254,17 @@ export function CreateLeadModal({
                   {duplicates.leads.map((l) => (
                     <div
                       key={l.id}
-                      className="flex items-center gap-2 bg-white/60 p-3 rounded-lg border border-warning"
+                      className="flex items-center gap-2 bg-surface/60 p-3 rounded-lg border border-warning"
                     >
                       <Icon
                         name="UserCircle2"
                         className="h-4 w-4 text-warning"
                       />
                       <div>
-                        <p className="text-sm font-medium text-secondary">
+                        <p className="text-sm font-medium text-muted-foreground">
                           {l.customer_name}
                         </p>
-                        <p className="text-xs text-muted">
+                        <p className="text-xs text-muted-foreground">
                           Lead tiềm năng (chưa chuyển đổi)
                         </p>
                       </div>

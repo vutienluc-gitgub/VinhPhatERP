@@ -131,8 +131,8 @@ export function KanbanColumn({
         <div
           className={`text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm flex items-center gap-1 ${
             wipLimit && count > wipLimit
-              ? 'bg-danger text-white border-danger'
-              : 'text-zinc-400 bg-white border-zinc-100'
+              ? 'bg-danger text-inverse-foreground border-danger'
+              : 'text-zinc-400 bg-surface border-zinc-100'
           }`}
         >
           {wipLimit && count > wipLimit && (
@@ -170,7 +170,7 @@ export function KanbanColumn({
         {hasMore && onShowMore && (
           <button
             onClick={onShowMore}
-            className="w-full py-2 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors mt-2"
+            className="w-full py-2 text-xs font-semibold text-foreground bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors mt-2"
           >
             Show more...
           </button>

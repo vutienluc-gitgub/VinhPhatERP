@@ -26,15 +26,19 @@ export function PaymentMobileCard({
       <div className="mobile-card-body space-y-2">
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="flex flex-col">
-            <span className="text-xs text-muted">{MSG.COL_CUSTOMER}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_CUSTOMER}
+            </span>
             <span className="font-bold">{p.customers?.name ?? '—'}</span>
           </div>
           <div className="flex flex-col text-right">
-            <span className="text-xs text-muted">{MSG.COL_ORDER}</span>
+            <span className="text-xs text-muted-foreground">
+              {MSG.COL_ORDER}
+            </span>
             <span className="font-medium">{p.orders?.order_number ?? '—'}</span>
           </div>
         </div>
-        <div className="flex items-center justify-between text-xs text-muted">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
             {MSG.LBL_DATE_PREFIX}
             {p.payment_date}

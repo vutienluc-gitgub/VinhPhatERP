@@ -14,7 +14,7 @@ export const WORK_ORDER_STATUSES: Record<
 > = {
   draft: {
     label: 'Bản nháp',
-    color: 'bg-surface-secondary text-secondary',
+    color: 'bg-surface-secondary text-muted-foreground',
   },
   yarn_issued: {
     label: 'Đã xuất sợi',

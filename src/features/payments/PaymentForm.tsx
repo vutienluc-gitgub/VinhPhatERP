@@ -132,7 +132,7 @@ export function PaymentForm({
             <div className="form-field">
               <label>{PAYMENT_FORM_LABELS.paymentNumber}</label>
               <input
-                className="field-input bg-[var(--surface-disabled)] text-[var(--text-tertiary)] italic"
+                className="field-input bg-[var(--surface-disabled)] text-[var(--muted-foreground)] italic"
                 value={PAYMENT_FORM_LABELS.paymentNumberAuto}
                 readOnly
                 disabled

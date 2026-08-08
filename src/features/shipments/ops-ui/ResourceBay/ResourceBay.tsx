@@ -47,7 +47,7 @@ export function ResourceBay({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {icon && (
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface-strong text-white shadow-inner">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface-strong text-inverse-foreground shadow-inner">
               {icon}
             </div>
           )}
@@ -56,7 +56,7 @@ export function ResourceBay({
               {title}
             </h3>
             {subtitle && (
-              <p className="text-sm font-medium text-muted line-clamp-1">
+              <p className="text-sm font-medium text-muted-foreground line-clamp-1">
                 {subtitle}
               </p>
             )}
@@ -77,7 +77,7 @@ export function ResourceBay({
             <span
               className={clsx(
                 'text-sm font-black',
-                isFull ? 'text-danger' : 'text-secondary',
+                isFull ? 'text-danger' : 'text-muted-foreground',
               )}
             >
               {usedSlots} / {maxSlots}

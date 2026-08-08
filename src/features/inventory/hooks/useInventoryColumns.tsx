@@ -10,7 +10,7 @@ export const useAgingColumns = (): DataTableColumn<AgingRoll>[] => [
   {
     header: MSG.COL_ROLL_CODE,
     cell: (r) => (
-      <span className="font-bold text-primary">{r.roll_number}</span>
+      <span className="font-bold text-foreground">{r.roll_number}</span>
     ),
   },
   {
@@ -28,12 +28,12 @@ export const useAgingColumns = (): DataTableColumn<AgingRoll>[] => [
   {
     header: MSG.COL_COLOR,
     cell: (r) => r.color_name ?? '—',
-    className: 'max-sm:hidden text-muted text-sm',
+    className: 'max-sm:hidden text-muted-foreground text-sm',
   },
   {
     header: MSG.COL_LOCATION,
     cell: (r) => r.warehouse_location ?? '—',
-    className: 'max-sm:hidden text-muted text-sm',
+    className: 'max-sm:hidden text-muted-foreground text-sm',
   },
   {
     header: MSG.COL_AGE_DAYS,
@@ -71,7 +71,7 @@ export const useBreakdownColumns = (): ColumnDef<
     id: 'color_name',
     accessorKey: 'color_name',
     cell: ({ row }) => row.original.color_name ?? '—',
-    meta: { className: 'max-sm:hidden text-muted text-sm' },
+    meta: { className: 'max-sm:hidden text-muted-foreground text-sm' },
   },
   {
     header: MSG.COL_QUALITY,
@@ -83,7 +83,7 @@ export const useBreakdownColumns = (): ColumnDef<
           {row.original.quality_grade}
         </span>
       ) : (
-        <span className="text-muted">—</span>
+        <span className="text-muted-foreground">—</span>
       ),
   },
   {

@@ -144,18 +144,20 @@ export function SupplierDashboardPage() {
   return (
     <div className="portal-section">
       {/* ── Welcome Banner (Premium gradient - same as Customer Portal) ── */}
-      <div className="bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-white flex items-center justify-between gap-4 flex-wrap">
+      <div className="bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-inverse-foreground flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <p className="m-0 text-[0.78rem] text-white/55 uppercase tracking-[0.06em] font-semibold">
+          <p className="m-0 text-[0.78rem] text-inverse-foreground/55 uppercase tracking-[0.06em] font-semibold">
             {getGreeting()}
           </p>
           <p className="mt-1 mb-0 text-[1.15rem] font-bold tracking-[-0.01em]">
             {profile?.full_name ?? 'Nhà cung cấp'}
           </p>
         </div>
-        <div className="text-[0.78rem] text-white/50 text-right">
+        <div className="text-[0.78rem] text-inverse-foreground/50 text-right">
           <p className="m-0">{TEXT.DASHBOARD_PORTAL_LABEL}</p>
-          <p className="mt-1 mb-0 text-white/30">{TEXT.DASHBOARD_BRAND}</p>
+          <p className="mt-1 mb-0 text-inverse-foreground/30">
+            {TEXT.DASHBOARD_BRAND}
+          </p>
         </div>
       </div>
 

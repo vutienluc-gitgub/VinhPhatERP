@@ -82,7 +82,7 @@ export function RFQList() {
         accessorKey: 'rfq_code',
         header: RFQ_LABELS.COL_RFQ_CODE,
         cell: ({ row }) => (
-          <span className="font-bold text-primary">
+          <span className="font-bold text-foreground">
             {row.original.rfq_code}
           </span>
         ),
@@ -99,9 +99,9 @@ export function RFQList() {
         header: RFQ_LABELS.COL_DEADLINE,
         cell: ({ row }) => {
           const date = row.original.deadline_date;
-          if (!date) return <span className="text-muted">N/A</span>;
+          if (!date) return <span className="text-muted-foreground">N/A</span>;
           return (
-            <span className="text-sm font-mono text-muted">
+            <span className="text-sm font-mono text-muted-foreground">
               {dayjs(date).format('DD/MM/YYYY HH:mm')}
             </span>
           );
@@ -124,9 +124,9 @@ export function RFQList() {
         header: RFQ_LABELS.COL_CREATED_AT,
         cell: ({ row }) => {
           const date = row.original.created_at;
-          if (!date) return <span className="text-muted">N/A</span>;
+          if (!date) return <span className="text-muted-foreground">N/A</span>;
           return (
-            <span className="text-sm text-muted">
+            <span className="text-sm text-muted-foreground">
               {dayjs(date).format('DD/MM/YYYY')}
             </span>
           );
@@ -254,7 +254,7 @@ export function RFQList() {
             </div>
             <div className="mobile-card-body space-y-2">
               <p className="font-medium text-sm line-clamp-1">{rfq.title}</p>
-              <div className="flex items-center justify-between text-xs text-muted">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>
                   {RFQ_LABELS.LBL_DEADLINE_SHORT}
                   {rfq.deadline_date

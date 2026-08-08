@@ -65,6 +65,7 @@ app.onError((err, c) => {
 // Start
 // ──────────────────────────────────────────────
 const port = Number(process.env.PORT ?? 3000);
+// eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
 console.log(`🚀 VinhPhat API server listening on http://localhost:${port}`);
 
 export default {

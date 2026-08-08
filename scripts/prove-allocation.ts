@@ -45,6 +45,7 @@ async function proveIt() {
       console.error('Lỗi khi móc nối:', allocErr);
     } else {
       console.log(
+        // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
         '✅ Đã chèn dữ liệu móc nối thành công! Đợi Database Trigger phản ứng...',
       );
 
@@ -65,6 +66,7 @@ async function proveIt() {
         invAfter.payment_status === 'paid'
       ) {
         console.log(
+          // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
           '\n🎉 HOÀN HẢO! Database Trigger (trg_update_document_paid_amount) đã tự động bơm tiền và chốt sổ (Paid) thành công!',
         );
       }

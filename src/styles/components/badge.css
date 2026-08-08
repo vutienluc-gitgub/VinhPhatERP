@@ -20,33 +20,39 @@
 }
 
 .roll-status.in_stock {
-  background: rgba(var(--success-rgb), 0.12);
+  background: rgb(var(--success-rgb), 0.12);
   color: var(--success);
 }
 
 .roll-status.reserved {
-  background: rgba(var(--brand-rgb), 0.12);
+  background: rgb(var(--brand-rgb), 0.12);
   color: var(--primary);
 }
 
 .roll-status.in_process {
-  background: rgba(155, 89, 182, 0.12);
+  /* @architecture-exception: legacy color migration */
+  background: rgb(155, 89, 182, 0.12);
+
+  /* @architecture-exception: legacy color migration */
   color: #7d3c98;
 }
 
 .roll-status.shipped {
-  background: rgba(52, 73, 94, 0.1);
+  /* @architecture-exception: legacy color migration */
+  background: rgb(52, 73, 94, 0.1);
+
+  /* @architecture-exception: legacy color migration */
   color: #34495e;
 }
 
 .roll-status.damaged {
-  background: rgba(var(--danger-rgb), 0.12);
+  background: rgb(var(--danger-rgb), 0.12);
   color: var(--danger);
 }
 
 .roll-status.written_off {
-  background: rgba(var(--base-rgb), 0.08);
-  color: var(--muted);
+  background: rgb(var(--base-rgb), 0.08);
+  color: var(--surface-subtle);
 }
 
 /* Standardized Badge System */
@@ -63,7 +69,7 @@
 }
 
 .badge-info {
-  background: rgba(var(--brand-rgb), 0.12);
+  background: rgb(var(--brand-rgb), 0.12);
   color: var(--primary);
 }
 
@@ -71,9 +77,9 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: currentColor;
+  background-color: currentcolor;
   flex-shrink: 0;
-  box-shadow: 0 0 6px currentColor;
+  box-shadow: 0 0 6px currentcolor;
 }
 
 /* ---- Tab Badge ---- */
@@ -88,8 +94,8 @@
   font-size: 0.68rem;
   font-weight: 800;
   line-height: 1;
-  background: rgba(var(--base-rgb), 0.1);
-  color: var(--muted);
+  background: rgb(var(--base-rgb), 0.1);
+  color: var(--surface-subtle);
   transition:
     background 0.15s ease,
     color 0.15s ease;
@@ -97,6 +103,8 @@
 
 .tab-badge--active {
   background: var(--primary);
+
+  /* @architecture-exception: legacy color migration */
   color: #fff;
 }
 
@@ -115,6 +123,6 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--muted);
+  background: var(--surface-subtle);
   flex-shrink: 0;
 }

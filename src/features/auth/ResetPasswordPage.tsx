@@ -46,7 +46,7 @@ export function ResetPasswordPage() {
             <span className="logo-text">vinhphat.app</span>
             <h2>Mật khẩu đã đổi!</h2>
           </div>
-          <p className="auth-status-body text-center text-white/70">
+          <p className="auth-status-body text-center text-inverse-foreground/70">
             Mật khẩu của bạn đã được cập nhật thành công. Bạn có thể đăng nhập
             bằng mật khẩu mới ngay bây giờ.
           </p>
@@ -74,7 +74,7 @@ export function ResetPasswordPage() {
             <span className="logo-text">vinhphat.app</span>
             <h2>Đặt lại mật khẩu</h2>
           </div>
-          <p className="auth-subtitle text-center mb-6 text-[0.85rem] text-white/60">
+          <p className="auth-subtitle text-center mb-6 text-[0.85rem] text-inverse-foreground/60">
             Vui lòng nhập mật khẩu mới cho tài khoản của bạn.
           </p>
 

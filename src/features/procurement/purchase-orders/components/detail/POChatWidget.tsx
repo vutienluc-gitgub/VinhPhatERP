@@ -80,7 +80,7 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
     <div className="bg-surface border border-border rounded-xl flex flex-col h-[600px] overflow-hidden lg:col-span-1 shadow-sm">
       <div className="bg-surface-secondary px-4 py-2 border-b border-border flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <Icon name="MessageCircle" className="w-5 h-5 text-primary" />
+          <Icon name="MessageCircle" className="w-5 h-5 text-foreground" />
           <h3 className="font-semibold m-0">Trao đổi Đơn hàng</h3>
         </div>
         <TabSwitcher<'internal' | 'external'>
@@ -105,14 +105,17 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
         {isLoading ? (
           <div className="flex justify-center py-4">
-            <Icon name="Loader2" className="w-6 h-6 animate-spin text-muted" />
+            <Icon
+              name="Loader2"
+              className="w-6 h-6 animate-spin text-muted-foreground"
+            />
           </div>
         ) : comments.filter(
             (c) =>
               c.visibility === activeTab ||
               (!c.visibility && activeTab === 'external'),
           ).length === 0 ? (
-          <div className="text-center py-8 text-muted">
+          <div className="text-center py-8 text-muted-foreground">
             <Icon
               name="MessageSquare"
               className="w-12 h-12 mx-auto mb-2 opacity-20"
@@ -139,14 +142,14 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
                     className={`px-4 py-2.5 rounded-2xl shadow-sm text-sm ${
                       isMine
                         ? 'bg-primary text-primary-foreground rounded-tr-sm'
-                        : 'bg-white border border-border text-foreground rounded-tl-sm'
+                        : 'bg-surface border border-border text-foreground rounded-tl-sm'
                     }`}
                   >
                     <p className="whitespace-pre-wrap break-words">
                       {comment.content}
                     </p>
                   </div>
-                  <div className="flex items-center gap-1.5 mt-1 text-[11px] text-muted">
+                  <div className="flex items-center gap-1.5 mt-1 text-[11px] text-muted-foreground">
                     <span className="font-medium">
                       {isMine
                         ? 'Bạn (ERP)'
@@ -166,7 +169,7 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
 
       <form
         onSubmit={handleSubmit}
-        className="p-3 border-t border-border bg-white flex gap-2"
+        className="p-3 border-t border-border bg-surface flex gap-2"
       >
         <input
           type="text"

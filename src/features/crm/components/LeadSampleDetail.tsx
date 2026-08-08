@@ -30,7 +30,7 @@ export function LeadSampleDetail({ lead }: LeadSampleDetailProps) {
       <div className="bg-surface border border-border rounded-lg p-4 space-y-3">
         {items.length > 0 && (
           <div className="space-y-3 border-b border-border border-dashed pb-2">
-            <span className="text-sm text-muted block">
+            <span className="text-sm text-muted-foreground block">
               {LEAD_DETAIL_MESSAGES.BULK_SAMPLE_REQ}
             </span>
             {items.map((item, idx) => (
@@ -47,7 +47,7 @@ export function LeadSampleDetail({ lead }: LeadSampleDetailProps) {
           </div>
         )}
         <div className="flex flex-col pb-2">
-          <span className="text-sm text-muted mb-1">
+          <span className="text-sm text-muted-foreground mb-1">
             {LEAD_DETAIL_MESSAGES.DELIVERY_ADDRESS}
           </span>
           <span className="text-sm font-medium leading-relaxed">

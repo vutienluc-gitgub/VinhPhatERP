@@ -70,7 +70,7 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
 
   return (
     <div
-      className={`kanban-card-premium ${isOverdue ? 'is-overdue' : ''} ${isInProgress ? 'text-primary bg-primary/10' : ''}`}
+      className={`kanban-card-premium ${isOverdue ? 'is-overdue' : ''} ${isInProgress ? 'text-foreground bg-primary/10' : ''}`}
       onClick={() => navigate(`/orders/${item.id}`)}
       role="button"
       tabIndex={0}
@@ -84,12 +84,12 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
             <Icon
               name="Loader2"
               size={16}
-              className="animate-spin text-primary"
+              className="animate-spin text-foreground"
             />
           ) : isInProgress ? (
-            <Icon name="CircleDot" size={16} className="text-primary" />
+            <Icon name="CircleDot" size={16} className="text-foreground" />
           ) : (
-            <Icon name="Package" size={16} className="text-muted" />
+            <Icon name="Package" size={16} className="text-muted-foreground" />
           )}
         </div>
         {isOverdue && (
@@ -109,7 +109,7 @@ export function KanbanCard({ item, onMove, isMoving }: KanbanCardProps) {
         <div className="kanban-card-amount">
           <MoneyText value={item.total_amount} />
         </div>
-        <div className="text-[0.7rem] text-muted font-medium flex items-center gap-1">
+        <div className="text-[0.7rem] text-muted-foreground font-medium flex items-center gap-1">
           <Icon name="Calendar" size={16} /> {deliveryLabel}
         </div>
       </div>

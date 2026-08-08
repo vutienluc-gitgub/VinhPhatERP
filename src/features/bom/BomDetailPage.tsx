@@ -165,7 +165,7 @@ export function BomDetailPage() {
           <div className="flex flex-col gap-4">
             {actionSheet.type === 'approve' && (
               <>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-muted-foreground">
                   Bạn có chắc chắn muốn phê duyệt BOM này? Sau khi duyệt, BOM sẽ
                   được áp dụng cho sản xuất.
                 </p>

@@ -370,6 +370,7 @@ export const PUBLIC_PAGE_LABELS = {
   na: 'N/A',
   unitCm: 'cm',
   unitGsm: 'gsm',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   noImageIcon: '📸',
   origin: 'Xuất xứ',
   sampleStatusLabel: 'Tình trạng mẫu',
@@ -415,6 +416,7 @@ export const PUBLIC_PAGE_LABELS = {
   calculatorEstPrice: 'Đơn giá dự toán:',
   calculatorEstTotal: 'Tổng chi phí ước tính:',
   calculatorMoqWarning:
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     '⚠️ Số lượng dưới mức MOQ ({moq} kg) cho biến thể màu này!',
   rfqBtn: 'Yêu cầu báo giá',
   rfqRequestLabel: 'Yêu cầu báo giá',
@@ -584,6 +586,7 @@ export const PUBLIC_COMPONENT_LABELS = {
   QR_MODAL_PRINT_PREFIX: 'Tem Mẫu - ',
   QR_MODAL_DOWNLOAD_ERR: 'Lỗi khi tải ảnh tem mẫu.',
   QR_MODAL_NOT_PUBLIC:
+    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     '⚠️ Mẫu vải này <b>chưa được bật Công khai</b>. Khách hàng quét mã QR sẽ không xem được.',
   CURRENCY_VND: 'đ',
   B2B_INPUT_MODE_WEIGHT: 'Kg',
@@ -597,6 +600,7 @@ export const PUBLIC_COMPONENT_LABELS = {
   B2B_INVENTORY_AVAILABLE: 'Có sẵn: {qty}kg',
   B2B_ENOUGH_STOCK: 'Đủ hàng giao ngay',
   B2B_NEED_PROD: 'Cần dệt {qty}kg',
+  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   B2B_MOQ_WARNING: '⚠️ Chưa đạt MOQ dệt ({moq}kg)',
   B2B_DELIVERY_NOW: 'Giao ngay (24h)',
   B2B_CAPACITY_USAGE: 'Chiếm {pct}% năng lực',

@@ -1,0 +1,9 @@
+dist
+build
+node_modules
+.next
+.vite
+coverage
+public
+server
+src/styles/theme

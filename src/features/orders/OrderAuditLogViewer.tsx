@@ -47,7 +47,7 @@ const EVENT_MAP: Record<string, EventConfig> = {
   ORDER_REQUEST_CREATED: {
     label: ORDERS_AUDIT_LABELS.AUDIT_EVENT_REQ_CREATED,
     icon: 'FilePlus',
-    color: 'text-primary',
+    color: 'text-foreground',
     detail: ORDERS_AUDIT_LABELS.AUDIT_EVENT_REQ_CREATED_DETAIL,
   },
   ORDER_STATUS_CHANGED: {
@@ -60,7 +60,7 @@ const EVENT_MAP: Record<string, EventConfig> = {
 const DEFAULT_EVENT_CONFIG: EventConfig = {
   label: '',
   icon: 'Zap',
-  color: 'text-muted',
+  color: 'text-muted-foreground',
 };
 
 const DATE_LOCALE = 'vi-VN';
@@ -119,7 +119,7 @@ function AuditLogSkeleton() {
 function SectionHeader() {
   return (
     <h3 className="m-0 mb-4 flex items-center gap-2 relative z-10">
-      <Icon name="Activity" size={18} className="text-muted" />{' '}
+      <Icon name="Activity" size={18} className="text-muted-foreground" />{' '}
       {LABELS.SECTION_TITLE}
     </h3>
   );
@@ -154,12 +154,12 @@ function AuditLogEntry({
       <div className="flex flex-col md:flex-row md:items-baseline md:justify-between mb-1 gap-1">
         <div className="font-semibold text-sm flex items-center gap-2">
           {config.label}
-          <span className="text-xs font-normal text-muted bg-hover px-2 py-0.5 rounded-full">
+          <span className="text-xs font-normal text-muted-foreground bg-hover px-2 py-0.5 rounded-full">
             {actorName}
             {actorRole ? ` (${actorRole})` : ''}
           </span>
         </div>
-        <div className="text-[11px] text-muted flex items-center gap-1 font-mono">
+        <div className="text-[11px] text-muted-foreground flex items-center gap-1 font-mono">
           <Icon name="Clock" size={12} />
           {/* eslint-disable-next-line no-restricted-syntax */}
           {new Date(createdAt).toLocaleString(DATE_LOCALE)}
@@ -200,7 +200,7 @@ export function OrderAuditLogViewer({ orderId }: OrderAuditLogViewerProps) {
       <SectionHeader />
 
       {!logs || logs.length === 0 ? (
-        <div className="text-sm text-muted italic relative z-10">
+        <div className="text-sm text-muted-foreground italic relative z-10">
           {LABELS.EMPTY}
         </div>
       ) : (
