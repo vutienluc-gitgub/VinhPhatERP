@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 
-import { CUSTOMER_STATUS_LABELS } from '@/schema/customer.schema';
+import {
+  CUSTOMER_STATUS_LABELS,
+  CUSTOMER_SOURCES,
+  CUSTOMER_SOURCE_LABELS,
+} from '@/schema/customer.schema';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
@@ -61,6 +65,7 @@ export function CustomerList({
       'salesperson_id',
       'created_from',
       'created_to',
+      'source',
     ]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
@@ -106,6 +111,7 @@ export function CustomerList({
     isSale,
     onDeposit,
     onChat,
+    onFilterSource: (source) => handleFilterChange('source', source),
   });
 
   const filterSchema: FilterFieldConfig[] = [
@@ -144,6 +150,15 @@ export function CustomerList({
           },
         ]
       : []),
+    {
+      key: 'source',
+      type: 'combobox',
+      label: 'Nguồn',
+      options: CUSTOMER_SOURCES.map((source) => ({
+        value: source,
+        label: CUSTOMER_SOURCE_LABELS[source],
+      })),
+    },
   ];
 
   function handleFilterChange(key: string, value: string | undefined) {
@@ -159,6 +174,7 @@ export function CustomerList({
       'salesperson_id',
       'created_from',
       'created_to',
+      'source',
     ];
     filterKeys.forEach((k) => next.delete(k));
 

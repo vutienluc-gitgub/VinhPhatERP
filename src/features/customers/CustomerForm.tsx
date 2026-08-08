@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Button } from '@/shared/components';
+import { Button, Icon } from '@/shared/components';
 import {
   customersDefaultValues,
   CUSTOMER_SOURCES,
@@ -40,35 +40,80 @@ import { CUSTOMER_FORM_LABELS } from './customers.constants';
 const SOURCE_OPTIONS = CUSTOMER_SOURCES.map((s) => ({
   value: s,
   label: CUSTOMER_SOURCE_LABELS[s],
-  icon: CUSTOMER_SOURCE_ICONS[s],
+  icon: (
+    <Icon
+      name={
+        CUSTOMER_SOURCE_ICONS[s] as React.ComponentProps<typeof Icon>['name']
+      }
+      className="h-4 w-4 text-muted-foreground"
+    />
+  ),
 }));
 
 const STATUS_OPTIONS = [
   {
     value: 'active',
     label: CUSTOMER_FORM_LABELS.statusActive,
-    icon: 'CheckCircle2' as const,
+    icon: <Icon name="check-circle-2" className="h-4 w-4 text-success" />,
   },
   {
     value: 'inactive',
     label: CUSTOMER_FORM_LABELS.statusInactive,
-    icon: 'XCircle' as const,
+    icon: <Icon name="x-circle" className="h-4 w-4 text-muted-foreground" />,
   },
 ];
 
 const LEAD_STATUS_OPTIONS = [
-  { value: 'lead', label: CRM_STATUS_LABELS.lead, icon: CRM_STATUS_ICONS.lead },
+  {
+    value: 'lead',
+    label: CRM_STATUS_LABELS.lead,
+    icon: (
+      <Icon
+        name={
+          CRM_STATUS_ICONS.lead as React.ComponentProps<typeof Icon>['name']
+        }
+        className="h-4 w-4 text-muted-foreground"
+      />
+    ),
+  },
   {
     value: 'opportunity',
     label: CRM_STATUS_LABELS.opportunity,
-    icon: CRM_STATUS_ICONS.opportunity,
+    icon: (
+      <Icon
+        name={
+          CRM_STATUS_ICONS.opportunity as React.ComponentProps<
+            typeof Icon
+          >['name']
+        }
+        className="h-4 w-4 text-muted-foreground"
+      />
+    ),
   },
   {
     value: 'customer',
     label: CRM_STATUS_LABELS.customer,
-    icon: CRM_STATUS_ICONS.customer,
+    icon: (
+      <Icon
+        name={
+          CRM_STATUS_ICONS.customer as React.ComponentProps<typeof Icon>['name']
+        }
+        className="h-4 w-4 text-success"
+      />
+    ),
   },
-  { value: 'lost', label: CRM_STATUS_LABELS.lost, icon: CRM_STATUS_ICONS.lost },
+  {
+    value: 'lost',
+    label: CRM_STATUS_LABELS.lost,
+    icon: (
+      <Icon
+        name={
+          CRM_STATUS_ICONS.lost as React.ComponentProps<typeof Icon>['name']
+        }
+        className="h-4 w-4 text-danger"
+      />
+    ),
+  },
 ];
 
 type CustomerFormProps = {
