@@ -172,7 +172,7 @@ graph TD
     - Test error recovery scenarios
     - _Requirements: 1.1, 1.2, 2.1, 2.4_
 
-- [~] 8. Final checkpoint - Ensure all tests pass
+- [ ] 8. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

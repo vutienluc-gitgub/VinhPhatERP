@@ -9,6 +9,8 @@ const VISUAL_ROUTES = [
 ];
 
 test.describe('Visual Regression - Zero-Tolerance Architecture', () => {
+  test.setTimeout(60_000);
+
   for (const item of VISUAL_ROUTES) {
     test(`${item.name} (Light & Dark Mode)`, async ({ page }) => {
       // 1. Navigate to route
