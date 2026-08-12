@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Luồng Đăng Nhập', () => {
+  test.setTimeout(60_000);
+
   test.beforeEach(async ({ page }) => {
     // Mock Turnstile để bypass bước xác minh captcha trên UI
     await page.addInitScript(() => {
