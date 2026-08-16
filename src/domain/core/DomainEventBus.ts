@@ -1,17 +1,41 @@
 export interface DomainEvent {
+  eventId?: string;
   eventName: string;
-  timestamp: string;
+  timestamp?: string;
+  producer?: string;
   payload: unknown;
 }
 
+export type SafeDomainEvent<T extends DomainEvent = DomainEvent> = T & {
+  eventId: string;
+  timestamp: string;
+};
+
 export type EventHandler<T extends DomainEvent> = (
-  event: T,
+  event: SafeDomainEvent<T>,
 ) => void | Promise<void>;
+
+/**
+ * Factory helper để tạo một Domain Event với eventId và timestamp chuẩn.
+ */
+export function createDomainEvent<T extends DomainEvent>(
+  eventName: T['eventName'],
+  payload: T['payload'],
+  producer?: string,
+): SafeDomainEvent<T> {
+  return {
+    eventId: crypto.randomUUID(),
+    eventName,
+    timestamp: new Date().toISOString(),
+    producer,
+    payload,
+  } as SafeDomainEvent<T>;
+}
 
 class DomainEventBusClass {
   private handlers: Map<
     string,
-    Array<(event: DomainEvent) => void | Promise<void>>
+    Array<(event: SafeDomainEvent) => void | Promise<void>>
   > = new Map();
 
   /**
@@ -24,7 +48,7 @@ class DomainEventBusClass {
   ): () => void {
     const currentHandlers = this.handlers.get(eventName) ?? [];
     const safeHandler = handler as unknown as (
-      event: DomainEvent,
+      event: SafeDomainEvent,
     ) => void | Promise<void>;
     this.handlers.set(eventName, [...currentHandlers, safeHandler]);
 
@@ -51,14 +75,21 @@ class DomainEventBusClass {
 
   /**
    * Publish (Bắn) một Domain Event đi toàn hệ thống.
+   * Tự động chuẩn hóa eventId và timestamp nếu chưa có.
    */
   publish<T extends DomainEvent>(event: T) {
+    const safeEvent: SafeDomainEvent<T> = {
+      ...event,
+      eventId: event.eventId || crypto.randomUUID(),
+      timestamp: event.timestamp || new Date().toISOString(),
+    };
+
     const handlers = this.handlers.get(event.eventName) ?? [];
     // Chạy bất đồng bộ để không block UI/Luồng chính
     setTimeout(() => {
       handlers.forEach((handler) => {
         try {
-          const result = handler(event);
+          const result = handler(safeEvent as SafeDomainEvent);
           if (result instanceof Promise) {
             result.catch((err) => {
               console.error(

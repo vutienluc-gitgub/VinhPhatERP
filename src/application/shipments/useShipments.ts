@@ -24,6 +24,7 @@ import {
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCompanySettings } from '@/shared/hooks/useCompanySettings';
 import { exportShipmentToPdf } from '@/features/shipments/shipment-document';
+import { DomainEventBus } from '@/domain/core/DomainEventBus';
 import type {
   ShipmentsFormValues,
   DeliveryConfirmFormValues,
@@ -110,13 +111,31 @@ export function useConfirmShipment() {
       shipmentId: string;
       expectedUpdatedAt?: string;
     }) => confirmShipmentFull(shipmentId, expectedUpdatedAt),
-    onSuccess: () => {
+    onSuccess: (shipmentDoc) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ['orders'] });
       void queryClient.invalidateQueries({
         queryKey: ['finished-fabric-rolls'],
       });
       void queryClient.invalidateQueries({ queryKey: ['reserve-rolls'] });
+
+      const rollIds = (shipmentDoc?.shipment_items || [])
+        .map((item) => item.finished_roll_id)
+        .filter((id): id is string => Boolean(id));
+
+      DomainEventBus.publish({
+        eventName: 'ShipmentShippedEvent',
+        timestamp: new Date().toISOString(),
+        producer: 'useConfirmShipment',
+        payload: {
+          shipmentId: shipmentDoc.id,
+          shipmentNumber: shipmentDoc.shipment_number,
+          orderId: shipmentDoc.order_id,
+          rollIds,
+          shippedAt: shipmentDoc.shipment_date || new Date().toISOString(),
+          driverId: shipmentDoc.delivery_staff_id || null,
+        },
+      });
     },
   });
 }

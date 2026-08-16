@@ -1,23 +1,33 @@
 /**
- * Integration Layer — Tầng tích hợp giữa các Bounded Contexts.
+ * Integration Layer v2 — Event-Driven Workflow Foundation.
  *
  * File này là "nhạc trưởng" (Orchestrator) duy nhất trong hệ thống.
  * Nó lắng nghe Domain Events từ EventBus và điều phối hành động
- * giữa các Context mà KHÔNG để chúng biết về nhau.
+ * giữa các Bounded Contexts mà KHÔNG để chúng phụ thuộc chéo vào nhau.
  *
- * Quy tắc:
- * 1. KHÔNG chứa business logic — chỉ điều phối (orchestrate).
- * 2. KHÔNG import trực tiếp từ @/features — chỉ dùng @/api và @/domain.
- * 3. Mỗi handler là một "Saga" hoặc "Policy" nhỏ gọn.
- * 4. Luôn có try/catch — lỗi ở Saga KHÔNG được crash app.
+ * Nguyên tắc kiến trúc:
+ * 1. Single Source of Truth: Mỗi business fact chỉ có một nơi chịu trách nhiệm chính.
+ * 2. Decoupled Handlers: Không import chéo giữa các features.
+ * 3. Idempotency & Failure Handling: Tích hợp qua integration.service.
+ * 4. Không chứa domain calculation logic (chỉ orchestrate).
  */
 
-import { DomainEventBus } from '@/domain/core/DomainEventBus';
+import {
+  DomainEventBus,
+  type DomainEvent,
+  type SafeDomainEvent,
+} from '@/domain/core/DomainEventBus';
 import type {
   OrderConfirmedEvent,
-  OrderCompletedEvent,
+  ShipmentShippedEvent,
   FabricReceivedEvent,
 } from '@/domain/events/app.events';
+
+import {
+  handleOrderConfirmedIntegration,
+  handleShipmentShippedIntegration,
+  handleFabricReceivedIntegration,
+} from './integration.service';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -36,14 +46,12 @@ interface RegisteredHandler {
 const registeredHandlers: RegisteredHandler[] = [];
 let integrationsInitialized = false;
 
-function registerHandler<
-  T extends { eventName: string; timestamp: string; payload: unknown },
->(
+function registerHandler<T extends DomainEvent>(
   eventName: T['eventName'],
   description: string,
-  handler: (event: T) => void | Promise<void>,
+  handler: (event: SafeDomainEvent<T>) => void | Promise<void>,
 ) {
-  const unsubscribe = DomainEventBus.subscribe<T>(eventName, handler);
+  const unsubscribe = DomainEventBus.subscribe<T>(eventName, handler as never);
   registeredHandlers.push({
     eventName,
     description,
@@ -56,64 +64,72 @@ export function initIntegration() {
     return;
   }
 
-  // ─── Saga: Order → Inventory ────────────────────────────────────────────────
+  // ─── Workflow 1: Order → Inventory Allocation Required ──────────────────────
 
   /**
    * Khi đơn hàng được xác nhận (OrderConfirmedEvent):
-   * - Tạo 7 công đoạn tiến độ tự động (đã có DB Trigger).
-   * - Thông báo Inventory Context chuẩn bị giữ cuộn vải.
-   * - Log sự kiện vào Audit trail.
-   *
-   * Hiện tại: Log và chuẩn bị hook point cho tương lai.
-   * Khi hệ thống scale, thay console.log bằng API call thực tế.
+   * - Ghi nhận Audit trail ORDER_CONFIRMED
+   * - Đặt trạng thái phân bổ kho: inventory_allocation_status = 'pending'
+   * - Chuẩn bị để người dùng chọn cuộn vải thủ công (không tự động gán roll mù quáng).
    */
   registerHandler<OrderConfirmedEvent>(
     'OrderConfirmedEvent',
-    'Order → Inventory: Chuẩn bị giữ kho khi đơn hàng xác nhận',
-    (event) => {
-      console.info(
-        `[Integration] OrderConfirmed → Preparing inventory reservation for order ${event.payload.orderNumber}`,
-      );
-      // TODO: Gọi API giữ cuộn vải khi sẵn sàng
-      // await reserveRollsForOrder(event.payload.orderId);
+    'Order → Inventory: Khởi tạo yêu cầu phân bổ kho khi đơn hàng xác nhận',
+    async (event) => {
+      try {
+        console.info(
+          `[Integration] OrderConfirmed → Setting allocation pending for order ${event.payload.orderNumber}`,
+        );
+        await handleOrderConfirmedIntegration(event);
+      } catch (err) {
+        console.error('[Integration] Error in OrderConfirmed handler:', err);
+      }
     },
   );
 
-  // ─── Saga: Order → Shipments ────────────────────────────────────────────────
+  // ─── Workflow 2: Shipment → Mark Allocated Rolls as Shipped ─────────────────
 
   /**
-   * Khi đơn hàng hoàn thành (OrderCompletedEvent):
-   * - Đánh dấu tất cả cuộn vải liên quan đã xuất kho (shipped).
-   * - Cập nhật công nợ khách hàng.
+   * Khi lô hàng thực tế được xuất kho (ShipmentShippedEvent):
+   * - Chuyển trạng thái các cuộn vải liên kết từ 'reserved' sang 'shipped'.
+   * - Ghi nhận Audit trail xuất kho.
+   * - Lưu ý: Công nợ được đồng bộ tự động qua DB Trigger của shipments (không duplicate tại đây).
    */
-  registerHandler<OrderCompletedEvent>(
-    'OrderCompletedEvent',
-    'Order → Payments: Cập nhật công nợ khi đơn hàng hoàn thành',
-    (event) => {
-      console.info(
-        `[Integration] OrderCompleted → Finalizing payments for order ${event.payload.orderId}`,
-      );
-      // TODO: Gọi API cập nhật trạng thái thanh toán
-      // await finalizeOrderPayments(event.payload.orderId);
+  registerHandler<ShipmentShippedEvent>(
+    'ShipmentShippedEvent',
+    'Shipment → Inventory: Chuyển trạng thái cuộn vải sang shipped khi lô hàng xuất kho',
+    async (event) => {
+      try {
+        console.info(
+          `[Integration] ShipmentShipped → Marking rolls as shipped for shipment ${event.payload.shipmentNumber}`,
+        );
+        await handleShipmentShippedIntegration(event);
+      } catch (err) {
+        console.error('[Integration] Error in ShipmentShipped handler:', err);
+      }
     },
   );
 
-  // ─── Saga: Inventory → Production ───────────────────────────────────────────
+  // ─── Workflow 3: Inventory → MES Material Availability Evaluation ───────────
 
   /**
-   * Khi nhận vải mộc mới (FabricReceivedEvent):
-   * - Cập nhật tồn kho tổng.
-   * - Kiểm tra xem có Work Order nào đang chờ nguyên liệu không.
+   * Khi nhận vải mộc mới vào kho (FabricReceivedEvent):
+   * - Đánh giá nhu cầu nguyên liệu của các Work Orders đang chờ (MaterialMatchingEngine).
+   * - Phân loại trạng thái khả dụng: READY_TO_START / PARTIALLY_AVAILABLE / WAITING_MATERIAL.
+   * - Phát sinh MaterialAvailableEvent cho các Work Orders sẵn sàng.
    */
   registerHandler<FabricReceivedEvent>(
     'FabricReceivedEvent',
-    'Inventory → Production: Kiểm tra Work Order chờ nguyên liệu',
-    (event) => {
-      console.info(
-        `[Integration] FabricReceived → ${event.payload.rollsCount} rolls (${event.payload.totalWeight}kg) received. Checking pending work orders...`,
-      );
-      // TODO: Gọi API kiểm tra Work Orders đang thiếu nguyên liệu
-      // await checkPendingWorkOrders(event.payload.receiptId);
+    'Inventory → MES: Đánh giá khả năng đáp ứng nguyên liệu cho các Work Orders đang chờ',
+    async (event) => {
+      try {
+        console.info(
+          `[Integration] FabricReceived → Evaluating material demand for ${event.payload.rollsCount} rolls (${event.payload.totalWeight}kg)`,
+        );
+        await handleFabricReceivedIntegration(event);
+      } catch (err) {
+        console.error('[Integration] Error in FabricReceived handler:', err);
+      }
     },
   );
 
