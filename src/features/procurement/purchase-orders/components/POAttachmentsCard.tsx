@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import {
   Icon,
@@ -9,7 +11,9 @@ import {
 } from '@/shared/components';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
 // eslint-disable-next-line boundaries/dependencies
-import { fetchAssets } from '@/features/media/media.service';
+import { fetchAssets, uploadFile } from '@/features/media/media.service';
+import { MEDIA_LIMITS } from '@/features/media/media.constants';
+import { useAuth } from '@/shared/hooks/useAuth';
 import { useTenant } from '@/shared/hooks/useTenant';
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
 
@@ -23,18 +27,69 @@ export function POAttachmentsCard({ form }: POAttachmentsCardProps) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const { data: tenant } = useTenant();
+  const { user } = useAuth();
 
   const handleUploadClick = () => {
-    fileInputRef.current?.click();
+    if (!isUploading) fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      // TODO: Handle actual local file upload to storage
-    }
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
     e.target.value = '';
+
+    if (files.length === 0) return;
+
+    const acceptedMimes = PO_CONSTANTS.UPLOAD_ACCEPTED_MIMES as readonly string[];
+    const invalidType = files.find((file) => !acceptedMimes.includes(file.type));
+    if (invalidType) {
+      toast.error(PO_CONSTANTS.UPLOAD_INVALID_TYPE);
+      return;
+    }
+
+    const oversized = files.find(
+      (file) => file.size > PO_CONSTANTS.UPLOAD_MAX_SIZE_BYTES,
+    );
+    if (oversized) {
+      toast.error(PO_CONSTANTS.UPLOAD_FILE_TOO_LARGE);
+      return;
+    }
+
+    if (!tenant?.id || !user?.id) {
+      toast.error(PO_CONSTANTS.UPLOAD_ERROR);
+      return;
+    }
+
+    setIsUploading(true);
+    let successCount = 0;
+
+    try {
+      for (const file of files) {
+        const result = await uploadFile(file, tenant.id, user.id, null, true);
+        if (result.publicUrl && !attachments.includes(result.publicUrl)) {
+          setValue(
+            'attachments',
+            [...(form.getValues('attachments') || []), result.publicUrl],
+            { shouldDirty: true },
+          );
+        }
+        successCount++;
+      }
+
+      if (successCount > 0) {
+        toast.success(
+          files.length === 1
+            ? PO_CONSTANTS.UPLOAD_SUCCESS
+            : `${PO_CONSTANTS.UPLOAD_SUCCESS} (${successCount}/${files.length})`,
+        );
+      }
+    } catch (error) {
+      console.error('PO attachment upload failed:', error);
+      toast.error(PO_CONSTANTS.UPLOAD_ERROR);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSelectFromLibrary = (item: MediaItem) => {
@@ -87,22 +142,41 @@ export function POAttachmentsCard({ form }: POAttachmentsCardProps) {
       )}
 
       <div
-        className="border-2 border-dashed border-muted rounded-xl p-8 flex flex-col items-center justify-center text-center text-muted-foreground hover:bg-gray-50 hover:border-primary cursor-pointer transition-colors"
+        className={`border-2 border-dashed border-muted rounded-xl p-8 flex flex-col items-center justify-center text-center text-muted-foreground transition-colors ${
+          isUploading
+            ? 'cursor-wait bg-surface-secondary'
+            : 'hover:bg-surface-secondary hover:border-primary cursor-pointer'
+        }`}
         onClick={handleUploadClick}
+        aria-busy={isUploading}
       >
-        <Icon
-          name="UploadCloud"
-          size={32}
-          className="mb-2 text-muted-foreground"
-        />
-        <p className="text-sm font-medium">{PO_CONSTANTS.UPLOAD_HINT_MAIN}</p>
+        {isUploading ? (
+          <Icon
+            name="Loader2"
+            size={32}
+            className="mb-2 text-muted-foreground animate-spin"
+          />
+        ) : (
+          <Icon
+            name="UploadCloud"
+            size={32}
+            className="mb-2 text-muted-foreground"
+          />
+        )}
+        <p className="text-sm font-medium">
+          {isUploading
+            ? PO_CONSTANTS.UPLOAD_UPLOADING
+            : PO_CONSTANTS.UPLOAD_HINT_MAIN}
+        </p>
         <p className="text-xs mt-1">{PO_CONSTANTS.UPLOAD_HINT_SUB}</p>
         <input
           type="file"
           multiple
           ref={fileInputRef}
           className="hidden"
+          accept={PO_CONSTANTS.UPLOAD_ACCEPTED_TYPES}
           onChange={handleFileChange}
+          disabled={isUploading}
         />
       </div>
 
@@ -112,6 +186,7 @@ export function POAttachmentsCard({ form }: POAttachmentsCardProps) {
           variant="outline"
           leftIcon="Image"
           onClick={() => setIsMediaModalOpen(true)}
+          disabled={isUploading}
         >
           Chọn ảnh từ Thư viện Media
         </Button>
