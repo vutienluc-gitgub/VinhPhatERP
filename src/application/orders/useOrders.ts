@@ -18,6 +18,7 @@ import {
   mapOrderFormToDb,
   mapOrderItemsToDb,
 } from '@/domain/orders/OrderDomain';
+import { DomainEventBus } from '@/domain/core/DomainEventBus';
 import type { OrdersFormValues } from '@/features/orders/orders.module';
 import type { OrdersFilter } from '@/domain/orders/types';
 
@@ -104,9 +105,20 @@ export function useConfirmOrder() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: confirmOrder,
-    onSuccess: () => {
+    onSuccess: (_, orderId) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ['order-progress'] });
+      DomainEventBus.publish({
+        eventName: 'OrderConfirmedEvent',
+        timestamp: new Date().toISOString(),
+        producer: 'useConfirmOrder',
+        payload: {
+          orderId,
+          orderNumber: orderId,
+          customerId: '',
+          confirmedAt: new Date().toISOString(),
+        },
+      });
     },
   });
 }
@@ -131,8 +143,17 @@ export function useCompleteOrder() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: completeOrder,
-    onSuccess: () => {
+    onSuccess: (_, orderId) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      DomainEventBus.publish({
+        eventName: 'OrderCompletedEvent',
+        timestamp: new Date().toISOString(),
+        producer: 'useCompleteOrder',
+        payload: {
+          orderId,
+          completedAt: new Date().toISOString(),
+        },
+      });
     },
   });
 }

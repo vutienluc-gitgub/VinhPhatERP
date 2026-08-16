@@ -24,6 +24,7 @@ import {
   mapRawFabricBulkToDb,
   findDuplicateRollNumbers,
 } from '@/domain/inventory/InventoryDomain';
+import { DomainEventBus } from '@/domain/core/DomainEventBus';
 import type { BulkInputFormValues } from '@/features/raw-fabric/raw-fabric.module';
 import type { RawFabricFormValues } from '@/features/raw-fabric/raw-fabric.module';
 import type { RawFabricFilter } from '@/domain/inventory/raw-fabric.types';
@@ -64,9 +65,23 @@ export function useCreateRawFabric() {
       const reqPayload = { id: clientId, ...mapRawFabricFormToDb(values) };
       return createRawFabric(reqPayload);
     },
-    onSuccess: () => {
+    onSuccess: (data, values) => {
       setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+
+      DomainEventBus.publish({
+        eventName: 'FabricReceivedEvent',
+        timestamp: new Date().toISOString(),
+        producer: 'useCreateRawFabric',
+        payload: {
+          receiptId: data?.id || crypto.randomUUID(),
+          fabricType: values.fabric_type,
+          color: values.color_name || undefined,
+          totalWeight: values.weight_kg || 0,
+          rollsCount: 1,
+          receivedAt: new Date().toISOString(),
+        },
+      });
     },
   });
 }
@@ -107,8 +122,30 @@ export function useCreateRawFabricBulk() {
       const rows = mapRawFabricBulkToDb(values, values.rolls);
       return createRawFabricBulk(rows);
     },
-    onSuccess: () => {
+    onSuccess: (data, values) => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+
+      const totalWeight = values.rolls.reduce(
+        (sum, r) => sum + (Number(r.weight_kg) || 0),
+        0,
+      );
+
+      DomainEventBus.publish({
+        eventName: 'FabricReceivedEvent',
+        timestamp: new Date().toISOString(),
+        producer: 'useCreateRawFabricBulk',
+        payload: {
+          receiptId:
+            Array.isArray(data) && data[0]?.id
+              ? data[0].id
+              : crypto.randomUUID(),
+          fabricType: values.fabric_type,
+          color: values.color_name || undefined,
+          totalWeight,
+          rollsCount: values.rolls.length,
+          receivedAt: new Date().toISOString(),
+        },
+      });
     },
   });
 }
