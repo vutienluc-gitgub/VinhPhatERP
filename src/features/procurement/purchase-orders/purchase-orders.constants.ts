@@ -185,6 +185,21 @@ export const PO_CONSTANTS = {
   // Attachments
   UPLOAD_HINT_MAIN: 'Kéo thả file hợp đồng, báo giá vào đây',
   UPLOAD_HINT_SUB: 'Hỗ trợ PDF, JPG, PNG (Tối đa 10MB)',
+  UPLOAD_UPLOADING: 'Đang tải lên...',
+  UPLOAD_SUCCESS: 'Tải file thành công',
+  UPLOAD_ERROR: 'Lỗi khi tải file',
+  UPLOAD_FILE_TOO_LARGE: 'File vượt quá 10MB',
+  UPLOAD_INVALID_TYPE: 'Chỉ hỗ trợ PDF, JPG, PNG',
+  UPLOAD_ACCEPTED_TYPES: '.pdf,.jpg,.jpeg,.png',
+  UPLOAD_ACCEPTED_MIMES: [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+  ] as readonly string[],
+  UPLOAD_MAX_SIZE_BYTES: 10 * 1024 * 1024,
+  BTN_DELETE_ATTACHMENT: 'Xóa',
+  BTN_SELECT_FROM_LIBRARY: 'Chọn ảnh từ Thư viện Media',
+  LABEL_FILE_SIZE: 'Kích thước',
 
   // Success / Info Messages
   MSG_CREATE_SUCCESS: 'thành công',
