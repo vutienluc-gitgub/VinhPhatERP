@@ -10,6 +10,7 @@ import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 
 const TABLE = 'finished_fabric_rolls';
 
@@ -83,24 +84,49 @@ export async function createFinishedFabric(
   });
   return inserted as unknown as FinishedFabricRoll;
 }
-
 export async function updateFinishedFabric(
   id: string,
   row: FinishedFabricRollUpdate,
+  expectedUpdatedAt?: string,
 ): Promise<FinishedFabricRoll> {
-  const { data, error } = await supabase
+  let query = supabase
     .from(TABLE)
     .update(row as Record<string, unknown>)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
-  return data as FinishedFabricRoll;
+    .eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  return assertSingleMutation(data, error, {
+    entityName: 'Cuộn vải thành phẩm',
+    expectedUpdatedAt,
+    transitionName: 'cập nhật cuộn vải thành phẩm',
+  }) as FinishedFabricRoll;
 }
 
-export async function deleteFinishedFabric(id: string): Promise<void> {
-  const { error } = await supabase.from(TABLE).delete().eq('id', id);
-  if (error) throw error;
+export async function deleteFinishedFabric(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
+    .from(TABLE)
+    .delete()
+    .eq('id', id)
+    .eq('status', 'in_stock');
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Cuộn vải thành phẩm',
+    expectedStatus: 'in_stock',
+    expectedUpdatedAt,
+    transitionName: 'xóa cuộn vải thành phẩm',
+  });
 }
 
 export async function fetchRawRollOptions(): Promise<RawRollOption[]> {

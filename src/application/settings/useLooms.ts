@@ -84,8 +84,15 @@ export function useCreateLoom() {
 export function useUpdateLoom() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: LoomFormValues }) =>
-      updateLoom(id, toDbRow(values)),
+    mutationFn: ({
+      id,
+      values,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      values: LoomFormValues;
+      expectedUpdatedAt?: string;
+    }) => updateLoom(id, toDbRow(values), expectedUpdatedAt),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -95,7 +102,14 @@ export function useUpdateLoom() {
 export function useDeleteLoom() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteLoom,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return deleteLoom(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

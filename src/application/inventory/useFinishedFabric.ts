@@ -81,7 +81,14 @@ export function useUpdateFinishedFabric() {
 export function useDeleteFinishedFabric() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteFinishedFabric,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return deleteFinishedFabric(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

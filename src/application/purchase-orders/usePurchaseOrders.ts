@@ -92,8 +92,19 @@ export function useSubmitPurchaseOrder() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: (id: string) => submitPurchaseOrder(id, user!.id),
-    onSuccess: (_, id) => {
+    mutationFn: ({
+      id,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      expectedUpdatedAt?: string;
+    }) =>
+      submitPurchaseOrder({
+        poId: id,
+        userId: user!.id,
+        expectedUpdatedAt,
+      }),
+    onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'detail', id],
       });
@@ -110,11 +121,20 @@ export function useApprovePurchaseOrder() {
       id,
       comment,
       sendImmediately,
+      expectedUpdatedAt,
     }: {
       id: string;
       comment?: string;
       sendImmediately?: boolean;
-    }) => approvePurchaseOrder(id, user!.id, comment, sendImmediately),
+      expectedUpdatedAt?: string;
+    }) =>
+      approvePurchaseOrder({
+        poId: id,
+        userId: user!.id,
+        comment,
+        sendImmediately,
+        expectedUpdatedAt,
+      }),
     onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'detail', id],
@@ -131,8 +151,19 @@ export function useSendPurchaseOrder() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: (id: string) => sendPurchaseOrder(id, user!.id),
-    onSuccess: (_, id) => {
+    mutationFn: ({
+      id,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      expectedUpdatedAt?: string;
+    }) =>
+      sendPurchaseOrder({
+        poId: id,
+        userId: user!.id,
+        expectedUpdatedAt,
+      }),
+    onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'detail', id],
       });
@@ -148,8 +179,19 @@ export function useConfirmPurchaseOrder() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: (id: string) => confirmPurchaseOrder(id, user!.id),
-    onSuccess: (_, id) => {
+    mutationFn: ({
+      id,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      expectedUpdatedAt?: string;
+    }) =>
+      confirmPurchaseOrder({
+        poId: id,
+        userId: user!.id,
+        expectedUpdatedAt,
+      }),
+    onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'detail', id],
       });
@@ -165,8 +207,21 @@ export function useRequestChangesPurchaseOrder() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      requestChangesPurchaseOrder(id, reason, user!.id),
+    mutationFn: ({
+      id,
+      reason,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      reason: string;
+      expectedUpdatedAt?: string;
+    }) =>
+      requestChangesPurchaseOrder({
+        poId: id,
+        reason,
+        userId: user!.id,
+        expectedUpdatedAt,
+      }),
     onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'detail', id],
@@ -180,8 +235,21 @@ export function useRejectPurchaseOrder() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      rejectPurchaseOrder(id, reason, user!.id),
+    mutationFn: ({
+      id,
+      reason,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      reason: string;
+      expectedUpdatedAt?: string;
+    }) =>
+      rejectPurchaseOrder({
+        poId: id,
+        reason,
+        userId: user!.id,
+        expectedUpdatedAt,
+      }),
     onSuccess: (_, { id }) => {
       void queryClient.invalidateQueries({
         queryKey: [...QUERY_KEY, 'detail', id],

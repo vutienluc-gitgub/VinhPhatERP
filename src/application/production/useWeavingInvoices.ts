@@ -123,7 +123,14 @@ export function useMarkWeavingInvoicePaid() {
 export function useDeleteWeavingInvoice() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: deleteWeavingInvoice,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return deleteWeavingInvoice(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: QK });
     },
