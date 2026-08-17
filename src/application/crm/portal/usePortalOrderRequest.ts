@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
-// eslint-disable-next-line boundaries/dependencies
-import { useAuth } from '@/features/auth/AuthProvider';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 export type PortalOrderRequestItem = {
   fabric_type: string;

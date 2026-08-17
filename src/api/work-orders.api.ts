@@ -10,7 +10,7 @@ import type {
   IssueYarnLotItem,
   WorkOrderYarnIssueWithRelations,
 } from '@/domain/production/work-orders.types';
-import type { CreateWorkOrderInput } from '@/features/work-orders/work-orders.module';
+import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
 import {
   assertSingleMutation,
   assertVoidMutation,

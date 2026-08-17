@@ -15,7 +15,7 @@ import {
   fetchSupplierStats,
   fetchSupplierById,
 } from '@/api/suppliers.api';
-import type { SupplierFormValues } from '@/features/procurement/suppliers/suppliers.module';
+import type { SupplierFormValues } from '@/schema/supplier.schema';
 import type {
   Supplier,
   SupplierFilter,

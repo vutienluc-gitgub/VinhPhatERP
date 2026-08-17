@@ -19,7 +19,7 @@ import {
   mapOrderItemsToDb,
 } from '@/domain/orders/OrderDomain';
 import { DomainEventBus } from '@/domain/core/DomainEventBus';
-import type { OrdersFormValues } from '@/features/orders/orders.module';
+import type { OrdersFormValues } from '@/schema/order.schema';
 import type { OrdersFilter } from '@/domain/orders/types';
 
 const QUERY_KEY = ['orders'] as const;

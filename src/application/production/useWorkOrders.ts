@@ -27,7 +27,7 @@ import type {
 import type {
   CreateWorkOrderInput,
   CompleteWorkOrderInput,
-} from '@/features/work-orders/work-orders.module';
+} from '@/schema/work-order.schema';
 
 export function useWorkOrders(
   filter?: WorkOrderFilter,

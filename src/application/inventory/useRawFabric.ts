@@ -25,8 +25,10 @@ import {
   findDuplicateRollNumbers,
 } from '@/domain/inventory/InventoryDomain';
 import { DomainEventBus } from '@/domain/core/DomainEventBus';
-import type { BulkInputFormValues } from '@/features/raw-fabric/raw-fabric.module';
-import type { RawFabricFormValues } from '@/features/raw-fabric/raw-fabric.module';
+import type {
+  BulkInputFormValues,
+  RawFabricFormValues,
+} from '@/schema/raw-fabric.schema';
 import type { RawFabricFilter } from '@/domain/inventory/raw-fabric.types';
 
 export type { SupplierOption, YarnReceiptOption, WorkOrderOption };

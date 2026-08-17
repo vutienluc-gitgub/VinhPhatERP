@@ -12,7 +12,7 @@ import {
   recalculateRequirementKg,
 } from '@/domain/production/ProductionDomain';
 import type { BomYarnItem } from '@/domain/production/ProductionDomain';
-import type { CreateWorkOrderInput } from '@/features/work-orders/work-orders.module';
+import type { CreateWorkOrderInput } from '@/schema/work-order.schema';
 
 interface UseWorkOrderLogicParams {
   watch: UseFormWatch<CreateWorkOrderInput>;

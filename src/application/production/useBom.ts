@@ -12,7 +12,7 @@ import {
   deprecateBom,
   reviseBom,
 } from '@/api/bom.api';
-import type { BomTemplateFormData } from '@/features/bom/bom.module';
+import type { BomTemplateFormData } from '@/schema/bom.schema';
 import type {
   BomTemplate,
   BomVersion,

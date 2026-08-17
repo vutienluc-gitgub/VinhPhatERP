@@ -3,10 +3,7 @@ import { useCallback } from 'react';
 import { fetchFinishedFabricAll } from '@/api/finished-fabric.api';
 import { exportToExcel, exportToPdf } from '@/shared/utils/export';
 import type { ExportColumn } from '@/shared/utils/export';
-import {
-  QUALITY_GRADE_LABELS,
-  ROLL_STATUS_LABELS,
-} from '@/features/finished-fabric/finished-fabric.module';
+import { QUALITY_GRADE_LABELS, ROLL_STATUS_LABELS } from '@/schema/roll.schema';
 import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 import type { FinishedFabricFilter } from '@/domain/inventory/finished-fabric.types';
 

@@ -20,7 +20,7 @@ import {
 import type {
   FinishedFabricFormValues,
   BulkFinishedInputFormValues,
-} from '@/features/finished-fabric/finished-fabric.module';
+} from '@/schema/finished-fabric.schema';
 import type {
   FinishedFabricFilter,
   RawRollOption,

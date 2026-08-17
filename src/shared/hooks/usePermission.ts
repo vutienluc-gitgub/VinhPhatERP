@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 
-import { useAuth } from '@/features/auth/AuthProvider';
 import { useUserPermissions } from '@/api/permissions.api';
+
+import { useAuth } from './useAuth';
 
 /**
  * Hook kiểm tra quyền của user hiện tại.

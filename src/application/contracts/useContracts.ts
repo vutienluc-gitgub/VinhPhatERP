@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { getContracts } from '@/features/contracts/contracts.service';
-import type { ContractsFilter } from '@/features/contracts/contracts.module';
+import type { ContractsFilter } from '@/schema/contracts.schema';
 
 const QUERY_KEY = ['contracts'] as const;
 

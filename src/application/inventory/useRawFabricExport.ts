@@ -3,10 +3,7 @@ import { useCallback } from 'react';
 
 import { exportToExcel, exportToPdf } from '@/shared/utils/export';
 import type { ExportColumn } from '@/shared/utils/export';
-import {
-  QUALITY_GRADE_LABELS,
-  ROLL_STATUS_LABELS,
-} from '@/features/raw-fabric/raw-fabric.module';
+import { QUALITY_GRADE_LABELS, ROLL_STATUS_LABELS } from '@/schema/roll.schema';
 import type { RawFabricRoll } from '@/domain/inventory/raw-fabric.types';
 
 const EXPORT_COLUMNS: ExportColumn[] = [

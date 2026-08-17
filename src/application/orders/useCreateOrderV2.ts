@@ -29,7 +29,7 @@ import {
   isStockError,
 } from '@/domain/orders/OrderDomain';
 import type { OrderErrorCode } from '@/domain/orders/OrderDomain';
-import type { OrdersFormValues } from '@/features/orders/orders.module';
+import type { OrdersFormValues } from '@/schema/order.schema';
 
 // ---------------------------------------------------------------------------
 // Error types từ Edge Function

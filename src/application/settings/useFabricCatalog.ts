@@ -23,7 +23,7 @@ import {
   updateFabricPricingTiers,
   syncFabricImages,
 } from '@/api/fabric-catalog.api';
-import type { FabricCatalogFormValues } from '@/features/fabric-catalog/fabric-catalog.module';
+import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import type {
   FabricCatalog,
   FabricCatalogFilter,
