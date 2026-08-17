@@ -21,6 +21,7 @@ import type { PaginatedResult } from '@/shared/types/pagination';
 import { paymentResponseSchema } from '@/schema/payment.schema';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { safeUpsertOne } from '@/lib/db-guard';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 import {
   apiPaymentRecord,
   apiExpenseRecord,
@@ -118,8 +119,15 @@ export async function createPaymentRecord(
 }
 
 export async function deletePaymentRecord(id: string): Promise<void> {
-  const { error } = await supabase.from(PAYMENTS_TABLE).delete().eq('id', id);
-  if (error) throw error;
+  const { data, error } = await supabase
+    .from(PAYMENTS_TABLE)
+    .delete()
+    .eq('id', id)
+    .select()
+    .single();
+  assertSingleMutation(data, error, {
+    entityName: 'Phiếu thanh toán',
+  });
 }
 
 export async function fetchDebtSummary(): Promise<DebtSummaryRow[]> {
@@ -342,8 +350,15 @@ export async function updateExpense(
 }
 
 export async function deleteExpense(id: string): Promise<void> {
-  const { error } = await supabase.from(EXPENSES_TABLE).delete().eq('id', id);
-  if (error) throw error;
+  const { data, error } = await supabase
+    .from(EXPENSES_TABLE)
+    .delete()
+    .eq('id', id)
+    .select()
+    .single();
+  assertSingleMutation(data, error, {
+    entityName: 'Phiếu chi',
+  });
 }
 
 /* ─── Cash flow (RPC) ───────────────────────────── */

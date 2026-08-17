@@ -1,4 +1,6 @@
+import { InvalidStateTransitionError } from '@/domain/core/errors/ConcurrencyErrors';
 import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 import { supabase } from '@/services/supabase/client';
 
 const TABLE = 'finished_fabric_rolls';
@@ -66,7 +68,9 @@ export async function reserveRoll(
 
   if (error) {
     if (error.message?.includes('ROLL_ALREADY_RESERVED_OR_UNAVAILABLE')) {
-      throw new Error(
+      throw new InvalidStateTransitionError(
+        'in_stock',
+        'reserve',
         'Cuộn vải này đã bị người khác đặt trước hoặc không còn trong kho. Vui lòng chọn cuộn khác.',
       );
     }
@@ -78,15 +82,21 @@ export async function reserveRoll(
 }
 
 export async function unreserveRoll(rollId: string): Promise<void> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from(TABLE)
     .update({
       status: 'in_stock',
       reserved_for_order_id: null,
     })
     .eq('id', rollId)
-    .eq('status', 'reserved');
-  if (error) throw error;
+    .eq('status', 'reserved')
+    .select()
+    .single();
+  assertSingleMutation(data, error, {
+    entityName: 'Cuộn vải thành phẩm',
+    expectedStatus: 'reserved',
+    transitionName: 'hủy giữ chỗ',
+  });
 }
 
 export async function releaseAllReserved(orderId: string): Promise<void> {
