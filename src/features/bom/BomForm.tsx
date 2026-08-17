@@ -12,8 +12,8 @@ import {
   useUpdateDraftBom,
 } from '@/application/production';
 import { bomTemplateSchema, BomTemplateFormData } from '@/schema/bom.schema';
+import type { BomTemplate } from '@/domain/production/bom.types';
 
-import { BomTemplate } from './types';
 import { BomBasicInfoFields } from './components/BomBasicInfoFields';
 import { BomYarnListFields } from './components/BomYarnListFields';
 import { BomSummaryBar } from './components/BomSummaryBar';

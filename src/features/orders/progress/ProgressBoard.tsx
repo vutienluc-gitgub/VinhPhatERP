@@ -9,15 +9,15 @@ import {
   ORDERS_FORM_LABELS,
   ORDERS_PROG_LABELS,
 } from '@/features/orders/orders.constants';
-
-import { OpsLevelPath } from './OpsLevelPath';
-import { ProgressExpBar } from './ProgressExpBar';
-import { calculateOrderProgress } from './utils';
 import type {
   OrderProgressWithOrder,
   ProductionStage,
   StageStatus,
-} from './types';
+} from '@/domain/orders/progress.types';
+
+import { OpsLevelPath } from './OpsLevelPath';
+import { ProgressExpBar } from './ProgressExpBar';
+import { calculateOrderProgress } from './utils';
 
 type GroupedByOrder = {
   orderId: string;

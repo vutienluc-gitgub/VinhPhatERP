@@ -10,8 +10,8 @@ import {
 } from '@/shared/components';
 import { useDeletePayment, usePaymentList } from '@/application/payments';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import type { PaymentsFilter } from '@/domain/payments/types';
 
-import type { PaymentsFilter } from './types';
 import { usePaymentColumns } from './hooks/usePaymentColumns';
 import { PaymentMobileCard } from './components/PaymentMobileCard';
 import { PAYMENT_LIST_MESSAGES as MSG } from './payments.constants';

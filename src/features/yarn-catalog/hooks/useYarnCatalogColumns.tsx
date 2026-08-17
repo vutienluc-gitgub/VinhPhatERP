@@ -4,7 +4,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Badge, ActionBar } from '@/shared/components';
 import { getYarnCategoryLabel } from '@/shared/constants/yarn-classification';
 import { LABEL_ORIGIN } from '@/shared/constants/origin.constants';
-import type { YarnCatalog } from '@/features/yarn-catalog/types';
+import type { YarnCatalog } from '@/domain/settings/yarn-catalog.types';
 import { formatYarnTechnicalSpecs } from '@/features/yarn-catalog/utils/yarn-format';
 import { YarnColorBadge } from '@/features/yarn-catalog/components/YarnColorBadge';
 import { StatusBadge } from '@/shared/components';

@@ -1,7 +1,7 @@
 import { Icon } from '@/shared/components';
 import { EntityLink } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
-import type { Shipment, ShipmentStatus } from '@/features/shipments/types';
+import type { Shipment, ShipmentStatus } from '@/domain/shipments/types';
 import { calcShipmentCost } from '@/features/shipments/shipments.constants';
 import { SHIPMENT_LIST_MESSAGES as MSG } from '@/features/shipments/shipments.constants';
 import { SHIPMENT_STATUS_LABELS } from '@/schema/shipment.schema';

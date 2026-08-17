@@ -1,6 +1,6 @@
 import { UseMutationResult } from '@tanstack/react-query';
 
-import type { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 import {
   ImageSection,

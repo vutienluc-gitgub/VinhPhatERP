@@ -9,7 +9,7 @@ import {
   ORDER_STATUS_LABELS,
   ORDER_STATUS_BADGE_VARIANTS,
 } from '@/schema/order.schema';
-import type { Order } from '@/features/orders/types';
+import type { Order } from '@/domain/orders/types';
 import {
   daysUntilDelivery,
   calculateBalanceDue,

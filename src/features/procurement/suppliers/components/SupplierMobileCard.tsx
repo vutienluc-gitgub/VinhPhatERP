@@ -1,6 +1,6 @@
 import { Icon, Badge, PhoneContact } from '@/shared/components';
 import { SUPPLIER_STATUS_LABELS } from '@/schema/supplier.schema';
-import type { Supplier } from '@/features/procurement/suppliers/types';
+import type { Supplier } from '@/domain/crm/suppliers.types';
 
 type SupplierMobileCardProps = {
   supplier: Supplier;

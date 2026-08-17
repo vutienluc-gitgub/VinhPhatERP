@@ -12,7 +12,7 @@ import type {
   TaskPriority,
   TaskStatus,
   TaskType,
-} from '@/features/operations/types';
+} from '@/domain/operations/types';
 
 const taskStatusSchema = z.enum([
   'todo',

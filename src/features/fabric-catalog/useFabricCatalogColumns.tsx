@@ -4,6 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 
 import { Badge, Button, Icon, ActionBar } from '@/shared/components';
 import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 import {
   LABELS,
@@ -14,7 +15,6 @@ import {
   getStatusVariant,
   formatCompositionParts,
 } from './fabric-catalog.helpers';
-import type { FabricCatalog } from './types';
 import { FabricCategoryBadge } from './components/FabricCategoryBadge';
 import { ThumbnailCell } from './components/ThumbnailCell';
 

@@ -1,4 +1,4 @@
-import type { OrderProgressWithOrder } from './types';
+import type { OrderProgressWithOrder } from '@/domain/orders/progress.types';
 
 export function calculateOrderProgress(
   stages: OrderProgressWithOrder[],

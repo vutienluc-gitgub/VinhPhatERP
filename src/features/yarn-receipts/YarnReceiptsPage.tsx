@@ -3,8 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { useYarnReceipt, useYarnReceiptList } from '@/application/inventory';
 import { sumBy } from '@/shared/utils/array.util';
+import type { YarnReceipt } from '@/domain/inventory/yarn-receipts.types';
 
-import type { YarnReceipt } from './types';
 import { YarnReceiptForm } from './YarnReceiptForm';
 import { YarnReceiptList } from './YarnReceiptList';
 

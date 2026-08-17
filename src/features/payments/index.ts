@@ -1,16 +1,5 @@
 export * from '@/features/payments/payments.module';
 export * from '@/features/payments/payments.plugin';
-export type {
-  PaymentMethod,
-  AccountType,
-  ExpenseCategory,
-  PaymentsFilter,
-  ExpensesFilter,
-  DebtSummaryRow,
-  SupplierDebtRow,
-  CashFlowRow,
-  ExpenseByCategoryRow,
-} from '@/features/payments/types';
 export {
   usePaymentList,
   useOrderPayments,

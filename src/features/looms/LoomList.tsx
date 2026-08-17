@@ -21,8 +21,11 @@ import {
   LOOM_TYPES,
 } from '@/schema/loom.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import type {
+  LoomWithSupplier,
+  LoomFilter,
+} from '@/domain/settings/looms.types';
 
-import type { LoomWithSupplier, LoomFilter } from './types';
 import { LoomCompactCard } from './components/LoomCompactCard';
 import { LOOM_MESSAGES as MSG } from './loom.constants';
 

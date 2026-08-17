@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import { useWeavingInvoice } from '@/application/production';
 import { PageLayout } from '@/shared/components';
+import type { WeavingInvoice } from '@/domain/production/weaving-invoices.types';
 
-import type { WeavingInvoice } from './types';
 import { WeavingInvoiceForm } from './WeavingInvoiceForm';
 import { WeavingInvoiceList } from './WeavingInvoiceList';
 import { WEAVING_INVOICE_MESSAGES as MSG } from './weaving-invoices.constants';

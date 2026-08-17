@@ -27,11 +27,11 @@ import {
   SUPPLIER_STATUS_LABELS,
 } from '@/schema/supplier.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import type { Supplier, SupplierFilter } from '@/domain/crm/suppliers.types';
 
 import { useSupplierColumns } from './hooks/useSupplierColumns';
 import { SupplierMobileCard } from './components/SupplierMobileCard';
 import { SUPPLIER_LIST_LABELS } from './suppliers.constants';
-import type { Supplier, SupplierFilter } from './types';
 
 type SuppliersListProps = {
   onEdit: (supplier: Supplier) => void;

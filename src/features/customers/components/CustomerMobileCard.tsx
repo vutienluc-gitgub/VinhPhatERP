@@ -1,6 +1,6 @@
 import { CUSTOMER_STATUS_LABELS } from '@/schema/customer.schema';
 import { Badge, PhoneContact } from '@/shared/components';
-import type { Customer } from '@/features/customers/types';
+import type { Customer } from '@/domain/crm/customers.types';
 
 type CustomerMobileCardProps = {
   customer: Customer;

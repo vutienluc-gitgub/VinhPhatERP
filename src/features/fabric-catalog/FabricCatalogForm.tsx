@@ -14,11 +14,11 @@ import {
   HtmlRenderer,
 } from '@/shared/lib/label-engine';
 import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 import { FabricAdminTab } from './components/FabricAdminTab';
 import { FabricPublicTab } from './components/FabricPublicTab';
 import { FabricInfoTab } from './components/FabricInfoTab';
-import type { FabricCatalog } from './types';
 import { LABELS } from './fabric-catalog.constants';
 import { FabricImageGalleryEditor } from './components/FabricImageGalleryEditor';
 import { useFabricCatalogForm } from './hooks/useFabricCatalogForm';

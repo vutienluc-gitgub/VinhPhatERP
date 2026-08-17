@@ -5,7 +5,7 @@ import {
   ACCOUNT_STATUS_LABELS,
   ACCOUNT_MESSAGES as MSG,
 } from '@/features/payments/payments.constants';
-import type { PaymentAccount } from '@/features/payments/types';
+import type { PaymentAccount } from '@/domain/payments/types';
 import { getAccountStatusVariant } from '@/features/payments/hooks/useAccountColumns';
 
 type AccountMobileCardProps = {

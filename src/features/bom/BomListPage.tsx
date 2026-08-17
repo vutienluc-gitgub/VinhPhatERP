@@ -23,9 +23,9 @@ import {
   useReviseBom,
 } from '@/application/production';
 import { BOM_STATUSES, BOM_STATUS_LABELS } from '@/schema/bom.schema';
+import type { BomFilter, BomTemplate } from '@/domain/production/bom.types';
 
 import { BomList } from './BomList';
-import type { BomFilter, BomTemplate } from './types';
 import { BOM_MESSAGES } from './bom.constants';
 
 type ActionSheetState =

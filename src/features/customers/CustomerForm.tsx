@@ -31,8 +31,8 @@ import {
   useCustomerGroupMembers,
 } from '@/application/crm/useCustomerGroups';
 import { saveCustomerGroupsForCustomer } from '@/api/customer-groups.api';
+import type { Customer } from '@/domain/crm/customers.types';
 
-import type { Customer } from './types';
 import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
 import { CustomerTimeline } from './CustomerTimeline';
 import { CUSTOMER_FORM_LABELS } from './customers.constants';

@@ -1,4 +1,4 @@
-import type { RollStatus } from './types';
+import type { RollStatus } from '@/domain/inventory/raw-fabric.types';
 
 // Re-export for convenience
 export type { AnomalyStatus } from '@/shared/components/roll-grid/useRollMatrixLogic';

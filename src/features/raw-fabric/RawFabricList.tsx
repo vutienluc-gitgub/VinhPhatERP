@@ -18,15 +18,15 @@ import {
 import { formatQuantity } from '@/shared/value/core/formatter';
 import { useRawFabricExport } from '@/application/inventory';
 import { StatWidget } from '@/shared/components/StatWidget';
-
-import { ActionMenu } from './ActionMenu';
-import { FilterBar } from './FilterBar';
 import type {
   QualityGrade,
   RawFabricFilter,
   RawFabricRoll,
   RollStatus,
-} from './types';
+} from '@/domain/inventory/raw-fabric.types';
+
+import { ActionMenu } from './ActionMenu';
+import { FilterBar } from './FilterBar';
 import { DEFAULT_FILTER_STATE, type FilterState } from './helpers';
 import { RAW_FABRIC_MESSAGES as MSG } from './raw-fabric.constants';
 import { RawFabricMobileCard } from './components/RawFabricMobileCard';

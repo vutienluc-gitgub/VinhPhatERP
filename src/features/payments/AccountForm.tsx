@@ -8,6 +8,7 @@ import { Combobox } from '@/shared/components/Combobox';
 import { MoneyInput } from '@/shared/value';
 import { useCreateAccount, useUpdateAccount } from '@/application/payments';
 import { getErrorMessage } from '@/shared/utils/error';
+import type { PaymentAccount } from '@/domain/payments/types';
 
 import {
   ACCOUNT_TYPES,
@@ -20,7 +21,6 @@ import {
   ACCOUNT_STATUS_OPTIONS,
   ACCOUNT_FORM_LABELS,
 } from './payments.constants';
-import type { PaymentAccount } from './types';
 
 const TYPE_OPTIONS = ACCOUNT_TYPES.map((t) => ({
   value: t,

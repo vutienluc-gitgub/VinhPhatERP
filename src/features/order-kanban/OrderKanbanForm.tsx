@@ -2,9 +2,12 @@ import { useNavigate } from 'react-router-dom';
 
 import { Icon, type IconName } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
+import type {
+  OrderKanbanItem,
+  OrderKanbanStatus,
+} from '@/domain/orders/kanban.types';
 
 import { KANBAN_LABELS, isOrderOverdue } from './constants';
-import type { OrderKanbanItem, OrderKanbanStatus } from './types';
 
 const NEXT_STATUS: Partial<
   Record<

@@ -38,8 +38,8 @@ import {
   FORM_MESSAGES,
 } from '@/features/yarn-receipts/yarn-receipts.constants';
 import { receiptToFormValues } from '@/features/yarn-receipts/utils';
+import type { YarnReceipt } from '@/domain/inventory/yarn-receipts.types';
 
-import type { YarnReceipt } from './types';
 import { YarnReceiptItemRow } from './components/YarnReceiptItemRow';
 import { StepGeneralInfo } from './components/StepGeneralInfo';
 import { StepLogisticsInfo } from './components/StepLogisticsInfo';

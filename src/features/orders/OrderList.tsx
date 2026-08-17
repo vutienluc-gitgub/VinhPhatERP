@@ -17,8 +17,8 @@ import { useDeleteOrder, useOrderList } from '@/application/orders';
 import { ORDER_STATUS_LABELS, ORDER_TYPE_OPTIONS } from '@/schema/order.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useAuth } from '@/shared/hooks/useAuth';
+import type { Order, OrdersFilter } from '@/domain/orders/types';
 
-import type { Order, OrdersFilter } from './types';
 import { calculateOrderKPIs } from './utils';
 import { useOrderColumns } from './hooks/useOrderColumns';
 import { OrderMobileCard } from './components/OrderMobileCard';

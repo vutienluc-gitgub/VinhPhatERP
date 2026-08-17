@@ -7,7 +7,7 @@ import { buildBarcodeValue } from '@/shared/lib/identifier.service';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { LOT_TAG_CSS } from '@/shared/lib/print-template.css';
 import { formatPackaging } from '@/shared/utils/packaging.util';
-import type { YarnReceipt } from '@/features/yarn-receipts/types';
+import type { YarnReceipt } from '@/domain/inventory/yarn-receipts.types';
 import { MODAL_LABELS as LABELS } from '@/features/yarn-receipts/yarn-receipts.constants';
 
 /* ── Constants ── */

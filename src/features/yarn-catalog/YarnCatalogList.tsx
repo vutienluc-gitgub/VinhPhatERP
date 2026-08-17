@@ -8,8 +8,8 @@ import {
   KpiCard,
 } from '@/shared/components';
 import { DataTableAdvanced } from '@/shared/components/DataTableAdvanced';
+import type { YarnCatalog } from '@/domain/settings/yarn-catalog.types';
 
-import type { YarnCatalog } from './types';
 import { useYarnCatalogColumns } from './hooks/useYarnCatalogColumns';
 import { YarnCatalogMobileCard } from './components/YarnCatalogMobileCard';
 import { useYarnCatalogListPresenter } from './hooks/useYarnCatalogListPresenter';

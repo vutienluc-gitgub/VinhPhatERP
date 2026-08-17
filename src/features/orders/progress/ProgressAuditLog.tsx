@@ -7,8 +7,10 @@ import {
   ORDERS_FORM_LABELS,
   ORDERS_PROG_LABELS,
 } from '@/features/orders/orders.constants';
-
-import type { ProgressAuditLog, ProgressAuditLogWithOrder } from './types';
+import type {
+  ProgressAuditLog,
+  ProgressAuditLogWithOrder,
+} from '@/domain/orders/progress.types';
 
 type AuditLogProps = {
   orderId?: string;

@@ -22,14 +22,14 @@ import {
   FABRIC_CATALOG_STATUSES,
 } from '@/schema/fabric-catalog.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-
-import { LABELS, MESSAGES } from './fabric-catalog.constants';
-import { useFabricCatalogColumns } from './useFabricCatalogColumns';
 import type {
   FabricCatalog,
   FabricCatalogFilter,
   FabricCatalogStatus,
-} from './types';
+} from '@/domain/settings/fabric-catalog.types';
+
+import { LABELS, MESSAGES } from './fabric-catalog.constants';
+import { useFabricCatalogColumns } from './useFabricCatalogColumns';
 import { FabricCatalogMobileCard } from './components/FabricCatalogMobileCard';
 import { FabricSampleQRModal } from './components/FabricSampleQRModal';
 

@@ -7,12 +7,12 @@ import { ContractForm } from '@/features/contracts/ContractForm';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 import { PageLayout } from '@/shared/components';
+import type { Order } from '@/domain/orders/types';
 
 import { OrderDetail } from './OrderDetail';
 import { OrderForm } from './OrderForm';
 import { OrderList } from './OrderList';
 import { ReserveRollsPanel } from './ReserveRollsPanel';
-import type { Order } from './types';
 import { ORDERS_LIST_LABELS } from './orders.constants';
 
 type View = { mode: 'list' } | { mode: 'detail'; orderId: string };

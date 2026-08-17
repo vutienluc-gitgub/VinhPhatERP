@@ -3,8 +3,7 @@ import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
 import { useBomVersions } from '@/application/production';
 import { BOM_STATUS_LABELS } from '@/schema/bom.schema';
-
-import { BomTemplate, BomStatus } from './types';
+import type { BomTemplate, BomStatus } from '@/domain/production/bom.types';
 
 interface BomDetailProps {
   bomId: string;

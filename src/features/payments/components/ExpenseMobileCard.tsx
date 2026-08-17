@@ -1,7 +1,7 @@
 import { Icon, Badge } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import { EXPENSE_CATEGORY_LABELS } from '@/features/payments/payments.module';
-import type { Expense } from '@/features/payments/types';
+import type { Expense } from '@/domain/payments/types';
 import { EXPENSE_MESSAGES as MSG } from '@/features/payments/payments.constants';
 import { getCategoryVariant } from '@/features/payments/hooks/useExpenseColumns';
 

@@ -1,6 +1,6 @@
 import { Badge } from '@/shared/components';
 import { ROLL_STATUS_LABELS } from '@/schema/raw-fabric.schema';
-import type { RawFabricRoll } from '@/features/raw-fabric/types';
+import type { RawFabricRoll } from '@/domain/inventory/raw-fabric.types';
 import { RAW_FABRIC_MESSAGES as MSG } from '@/features/raw-fabric/raw-fabric.constants';
 import { getRollStatusVariant } from '@/shared/utils/status-variant';
 

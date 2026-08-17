@@ -5,7 +5,7 @@ import { Button } from '@/shared/components';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { PUBLIC_COMPONENT_LABELS as COMP_LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
-import type { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { mapCatalogToFabricLabel } from '@/features/fabric-catalog/label/mapper';
 import {
   LabelRegistry,

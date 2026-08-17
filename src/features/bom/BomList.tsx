@@ -4,9 +4,9 @@ import { Icon, Badge, type BadgeVariant, ActionBar } from '@/shared/components';
 import { DataTableAdvanced } from '@/shared/components/DataTableAdvanced';
 import type { ActionConfig } from '@/shared/components';
 import { BOM_STATUS_LABELS } from '@/schema/bom.schema';
+import type { BomTemplate, BomStatus } from '@/domain/production/bom.types';
 
 import { BOM_MESSAGES } from './bom.constants';
-import { BomTemplate, BomStatus } from './types';
 
 interface BomListProps {
   boms: BomTemplate[];

@@ -11,8 +11,8 @@ import {
   useDeleteDyeingOrder,
 } from '@/application/production';
 import { sumBy } from '@/shared/utils/array.util';
+import type { DyeingOrder } from '@/domain/production/dyeing-orders.types';
 
-import type { DyeingOrder } from './types';
 import {
   DYEING_ORDER_MESSAGES as MSG,
   getStatusVariant,

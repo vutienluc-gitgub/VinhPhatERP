@@ -11,6 +11,7 @@ import { useAccountList, useNextExpenseNumber } from '@/application/payments';
 import { useEmployees, useActiveSuppliers } from '@/application/crm';
 import { useCreateExpense, useUpdateExpense } from '@/application/payments';
 import { getErrorMessage } from '@/shared/utils/error';
+import type { Expense } from '@/domain/payments/types';
 
 import { EXPENSE_FORM_MESSAGES as MSG } from './payments.constants';
 import {
@@ -20,7 +21,6 @@ import {
   expenseSchema,
 } from './payments.module';
 import type { ExpenseFormValues } from './payments.module';
-import type { Expense } from './types';
 import { EXPENSE_FORM_LABELS } from './payments.constants';
 import { UnpaidDocumentsSection } from './components/UnpaidDocumentsSection';
 

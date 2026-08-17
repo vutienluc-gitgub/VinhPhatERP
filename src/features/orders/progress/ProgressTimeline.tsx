@@ -9,8 +9,10 @@ import {
   STAGE_STATUS_LABELS,
 } from '@/schema/order-progress.schema';
 import { ORDERS_PROG_LABELS } from '@/features/orders/orders.constants';
-
-import type { OrderProgress, StageStatus } from './types';
+import type {
+  OrderProgress,
+  StageStatus,
+} from '@/domain/orders/progress.types';
 
 type ProgressTimelineProps = {
   stages: OrderProgress[];

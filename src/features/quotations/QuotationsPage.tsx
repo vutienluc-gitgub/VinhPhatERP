@@ -4,11 +4,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 import type { QuotationsFormValues } from '@/schema/quotation.schema';
+import type { Quotation } from '@/domain/crm/quotations.types';
 
 import { QuotationDetail } from './QuotationDetail';
 import { QuotationForm } from './QuotationForm';
 import { QuotationList } from './QuotationList';
-import type { Quotation } from './types';
 
 type View = { mode: 'list' } | { mode: 'detail'; quotationId: string };
 

@@ -1,11 +1,11 @@
 import type { FeatureDefinition } from '@/shared/types/feature';
 import { createModule } from '@/core/registry/moduleRegistry';
 import type {
-  Expense,
   Payment,
-  PaymentAccount,
   PaymentInsert,
-} from '@/features/payments/types';
+  Expense,
+  PaymentAccount,
+} from '@/domain/payments/types';
 import {
   ACCOUNT_TYPES,
   ACCOUNT_TYPE_LABELS,

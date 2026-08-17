@@ -1,4 +1,4 @@
-import type { FinishedFabricRoll } from './types';
+import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 
 export function calculateMedian(values: number[]): number | undefined {
   if (values.length === 0) return undefined;

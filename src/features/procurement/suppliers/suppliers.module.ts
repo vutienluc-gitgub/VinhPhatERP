@@ -5,7 +5,7 @@ import type {
   Supplier,
   SupplierInsert,
   SupplierUpdate,
-} from '@/features/procurement/suppliers/types';
+} from '@/domain/crm/suppliers.types';
 import {
   SUPPLIER_STATUSES,
   SUPPLIER_STATUS_LABELS,

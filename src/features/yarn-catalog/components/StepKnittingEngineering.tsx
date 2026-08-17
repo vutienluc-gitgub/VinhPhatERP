@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components/Badge';
-import type { YarnCatalog } from '@/features/yarn-catalog/types';
+import type { YarnCatalog } from '@/domain/settings/yarn-catalog.types';
 import { useConfirm } from '@/shared/hooks/useConfirm';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { DataTable } from '@/shared/components/DataTable';

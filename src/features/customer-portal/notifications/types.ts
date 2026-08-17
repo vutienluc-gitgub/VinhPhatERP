@@ -5,7 +5,7 @@ import type {
   PortalShipment,
   PortalQuotation,
   QuotationStatus,
-} from '@/features/customer-portal/types';
+} from '@/domain/portal/types';
 
 export type { OrderStatus, ProductionStage, StageStatus, QuotationStatus };
 

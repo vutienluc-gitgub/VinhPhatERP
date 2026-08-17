@@ -16,7 +16,7 @@ import {
 } from '@/schema/fabric-catalog.schema';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import { useFormAutoSave } from '@/shared/hooks';
-import type { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { openPrintWindow } from '@/shared/lib/print-template.engine';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 

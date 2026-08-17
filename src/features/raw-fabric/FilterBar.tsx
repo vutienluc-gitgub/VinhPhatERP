@@ -9,13 +9,16 @@ import {
   ROLL_STATUS_LABELS,
   ROLL_STATUSES,
 } from '@/schema/raw-fabric.schema';
+import type {
+  RollStatus,
+  QualityGrade,
+} from '@/domain/inventory/raw-fabric.types';
 
 import {
   DEFAULT_FILTER_STATE,
   FilterState,
   isAnyFilterActive,
 } from './helpers';
-import type { RollStatus, QualityGrade } from './types';
 
 export interface FilterBarProps {
   value: FilterState;

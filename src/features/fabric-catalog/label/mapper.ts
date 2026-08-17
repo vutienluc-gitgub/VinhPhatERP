@@ -1,4 +1,4 @@
-import { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { buildQRPayload } from '@/shared/lib/identifier.service';
 
 import { Fabric80x40Model } from './model';

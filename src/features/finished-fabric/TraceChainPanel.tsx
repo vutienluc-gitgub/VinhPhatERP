@@ -2,9 +2,9 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { useTraceChain } from '@/application/inventory';
 import { QUALITY_GRADE_LABELS } from '@/schema/finished-fabric.schema';
 import { formatQuantity, formatCurrency } from '@/shared/value/core/formatter';
+import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 
 import { FINISHED_FABRIC_TRACE_LABELS as MSG } from './finished-fabric.constants';
-import type { FinishedFabricRoll } from './types';
 
 type TraceChainPanelProps = {
   roll: FinishedFabricRoll;

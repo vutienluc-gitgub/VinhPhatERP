@@ -13,8 +13,8 @@ import {
   calculateReservedWeightKg,
 } from '@/domain/orders';
 import { LengthText, WeightText, QuantityText } from '@/shared/value';
+import type { Order, OrderItem } from '@/domain/orders/types';
 
-import type { Order, OrderItem } from './types';
 import {
   ORDERS_FORM_LABELS,
   ORDERS_PROG_LABELS,

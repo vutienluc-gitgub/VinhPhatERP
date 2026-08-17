@@ -32,8 +32,8 @@ import {
 } from '@/schema/raw-fabric.schema';
 import type { RawFabricFormValues } from '@/schema/raw-fabric.schema';
 import { getErrorMessage } from '@/shared/utils/error';
+import type { RawFabricRoll } from '@/domain/inventory/raw-fabric.types';
 
-import type { RawFabricRoll } from './types';
 import { RAW_FABRIC_MESSAGES as MSG } from './raw-fabric.constants';
 import { RawFabricFormStep1General } from './components/RawFabricFormStep1General';
 import { RawFabricFormStep2Storage } from './components/RawFabricFormStep2Storage';

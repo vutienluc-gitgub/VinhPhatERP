@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { Badge, Icon, ActionBar, type ActionConfig } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import { DYEING_ORDER_STATUSES } from '@/schema/dyeing-order.schema';
-import type { DyeingOrder } from '@/features/dyeing-orders/types';
+import type { DyeingOrder } from '@/domain/production/dyeing-orders.types';
 import { DYEING_ORDER_MESSAGES as MSG } from '@/features/dyeing-orders/dyeing-orders.constants';
 import { getStatusVariant } from '@/features/dyeing-orders/dyeing-orders.constants';
 

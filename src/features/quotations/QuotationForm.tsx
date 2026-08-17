@@ -27,8 +27,8 @@ import {
 } from '@/schema/quotation.schema';
 import type { QuotationsFormValues } from '@/schema/quotation.schema';
 import { getErrorMessage } from '@/shared/utils/error';
+import type { Quotation } from '@/domain/crm/quotations.types';
 
-import type { Quotation } from './types';
 import {
   QUOTATION_LABELS,
   QUOTATION_PLACEHOLDERS,

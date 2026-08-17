@@ -1,4 +1,5 @@
-import type { ShipmentDocument } from './types';
+import type { ShipmentDocument } from '@/domain/shipments/types';
+
 import { buildShipmentPrintHtml } from './shipment-document.template';
 import {
   SHIPMENT_DOCUMENT_ERRORS,

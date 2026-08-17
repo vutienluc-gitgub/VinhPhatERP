@@ -1,5 +1,5 @@
 import type { StatusConfig } from '@/shared/components/status/status.tokens';
-import type { WorkOrderStatus } from '@/features/work-orders/types';
+import type { WorkOrderStatus } from '@/domain/production/work-orders.types';
 
 export const workOrderStatus = {
   draft: {

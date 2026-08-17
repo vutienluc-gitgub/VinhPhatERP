@@ -1,5 +1,0 @@
-/**
- * Re-export from domain layer.
- * @deprecated Import from '@/domain/inventory/finished-fabric.types' instead.
- */
-export * from '@/domain/inventory/finished-fabric.types';

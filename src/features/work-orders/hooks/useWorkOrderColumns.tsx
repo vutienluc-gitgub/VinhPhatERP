@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { ActionBar, type ActionConfig, StatusBadge } from '@/shared/components';
 import { formatQuantity } from '@/shared/utils/format';
 import { MoneyText } from '@/shared/value';
-import type { WorkOrderWithRelations } from '@/features/work-orders/types';
+import type { WorkOrderWithRelations } from '@/domain/production/work-orders.types';
 import { WORK_ORDER_MESSAGES as MSG } from '@/features/work-orders/work-orders.constants';
 
 type UseWorkOrderColumnsProps = {

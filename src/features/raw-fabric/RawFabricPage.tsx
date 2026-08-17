@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
 import { PageLayout } from '@/shared/components';
+import type { RawFabricRoll } from '@/domain/inventory/raw-fabric.types';
 
 import { RawFabricBulkForm } from './RawFabricBulkForm';
 import { RawFabricForm } from './RawFabricForm';
 import { RawFabricList } from './RawFabricList';
-import type { RawFabricRoll } from './types';
 
 export function RawFabricPage() {
   const [editRoll, setEditRoll] = useState<RawFabricRoll | null>(null);

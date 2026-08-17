@@ -8,6 +8,7 @@ import { CancelButton, Button } from '@/shared/components';
 import { createPaymentsSchema } from '@/schema/payment.schema';
 import { MoneyText, MoneyInput } from '@/shared/value';
 import { useCreatePayment } from '@/application/payments';
+import type { PaymentMethod } from '@/domain/payments/types';
 
 import { PAYMENT_FORM_MESSAGES as MSG } from './payments.constants';
 import {
@@ -15,7 +16,6 @@ import {
   paymentsDefaultValues,
 } from './payments.module';
 import type { PaymentsFormValues } from './payments.module';
-import type { PaymentMethod } from './types';
 import { PAYMENT_FORM_LABELS } from './payments.constants';
 
 type PaymentFormProps = {

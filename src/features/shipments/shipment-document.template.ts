@@ -1,6 +1,7 @@
 import QRCode from 'qrcode';
 
-import type { ShipmentDocument } from './types';
+import type { ShipmentDocument } from '@/domain/shipments/types';
+
 import {
   SHIPMENT_DOCUMENT_LABELS,
   SHIPMENT_DOCUMENT_CSS,

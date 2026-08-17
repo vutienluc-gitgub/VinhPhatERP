@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { WorkOrder } from '@/features/work-orders/types';
+import type { WorkOrder } from '@/domain/production/work-orders.types';
 import { Button } from '@/shared/components/Button';
 import { Icon } from '@/shared/components/Icon';
 

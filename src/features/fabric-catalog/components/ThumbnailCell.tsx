@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { Icon } from '@/shared/components';
-import type { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 /**
  * Safe Thumbnail Component

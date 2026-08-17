@@ -3,7 +3,7 @@ import type { UseFormReturn } from 'react-hook-form';
 
 import { yarnCatalogDefaultValues } from '@/schema/yarn-catalog.schema';
 import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
-import type { YarnCatalog } from '@/features/yarn-catalog/types';
+import type { YarnCatalog } from '@/domain/settings/yarn-catalog.types';
 
 function catalogToFormValues(catalog: YarnCatalog): YarnCatalogFormValues {
   return {

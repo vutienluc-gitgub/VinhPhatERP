@@ -1,8 +1,11 @@
 import { Icon, type IconName } from '@/shared/components';
+import type {
+  OrderKanbanItem,
+  OrderKanbanStatus,
+} from '@/domain/orders/kanban.types';
 
 import { KanbanCard } from './OrderKanbanForm';
 import { KANBAN_LABELS } from './constants';
-import type { OrderKanbanItem, OrderKanbanStatus } from './types';
 
 type KanbanColumnProps = {
   status: OrderKanbanStatus;

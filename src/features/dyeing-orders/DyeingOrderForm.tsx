@@ -26,10 +26,10 @@ import {
 import { useAvailableRawRolls } from '@/application/inventory';
 import { useColors } from '@/application/color-catalog';
 import { sumBy } from '@/shared/utils/array.util';
+import type { DyeingOrder } from '@/domain/production/dyeing-orders.types';
 
 import { useRollSelection } from './hooks/useRollSelection';
 import { DYEING_ORDER_MESSAGES as MSG } from './dyeing-orders.constants';
-import type { DyeingOrder } from './types';
 import { RollSelectionDropdown } from './components/RollSelectionDropdown';
 
 type DyeingOrderFormProps = {

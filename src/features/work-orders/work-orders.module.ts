@@ -7,9 +7,9 @@ import {
 } from '@/schema/work-order.schema';
 import type {
   WorkOrder,
-  WorkOrderStatus,
   WorkOrderWithRelations,
-} from '@/features/work-orders/types';
+  WorkOrderStatus,
+} from '@/domain/production/work-orders.types';
 
 export type { WorkOrder, WorkOrderStatus, WorkOrderWithRelations };
 

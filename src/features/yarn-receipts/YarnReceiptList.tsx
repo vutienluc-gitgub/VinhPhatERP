@@ -24,8 +24,11 @@ import {
   useActiveSuppliers,
 } from '@/application/inventory';
 import { LIST_LABELS as MSG } from '@/features/yarn-receipts/yarn-receipts.constants';
+import type {
+  YarnReceipt,
+  YarnReceiptsFilter,
+} from '@/domain/inventory/yarn-receipts.types';
 
-import type { YarnReceipt, YarnReceiptsFilter } from './types';
 import { getReceiptUnitPriceDisplay, getReceiptAvgUnitPrice } from './utils';
 import { LotQRModal } from './components/LotQRModal';
 import { LotBarcodeModal } from './components/LotBarcodeModal';

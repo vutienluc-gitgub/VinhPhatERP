@@ -17,6 +17,7 @@ import {
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
 import { generateWeavingRollPrefix } from '@/domain/production';
 import { getErrorMessage } from '@/shared/utils/error';
+import type { WeavingInvoice } from '@/domain/production/weaving-invoices.types';
 
 import { WEAVING_INVOICE_MESSAGES as MSG } from './weaving-invoices.constants';
 import { WeavingInvoiceFormStep1General } from './components/WeavingInvoiceFormStep1General';
@@ -24,7 +25,6 @@ import { WeavingInvoiceFormStep2Rolls } from './components/WeavingInvoiceFormSte
 import { AutoSaveSubscriber } from './components/AutoSaveSubscriber';
 import { useWeavingInvoiceCalculator } from './hooks/useWeavingInvoiceCalculator';
 import { useWeavingInvoiceDraft } from './hooks/useWeavingInvoiceDraft';
-import type { WeavingInvoice } from './types';
 
 type Props = {
   invoice?: WeavingInvoice | null;

@@ -18,8 +18,11 @@ import {
   useConfirmWeavingInvoice,
   useDeleteWeavingInvoice,
 } from '@/application/production';
+import type {
+  WeavingInvoice,
+  WeavingInvoiceFilter,
+} from '@/domain/production/weaving-invoices.types';
 
-import type { WeavingInvoice, WeavingInvoiceFilter } from './types';
 import { WEAVING_INVOICE_MESSAGES as MSG } from './weaving-invoices.constants';
 import { WeavingInvoiceMobileCard } from './components/WeavingInvoiceMobileCard';
 import { useWeavingInvoiceColumns } from './hooks/useWeavingInvoiceColumns';

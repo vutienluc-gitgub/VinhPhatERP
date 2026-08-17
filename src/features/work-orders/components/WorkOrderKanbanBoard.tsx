@@ -22,7 +22,7 @@ import { Badge, Button } from '@/shared/components';
 import type {
   WorkOrderWithRelations,
   WorkOrderStatus,
-} from '@/features/work-orders/types';
+} from '@/domain/production/work-orders.types';
 import { formatQuantity } from '@/shared/utils/format';
 
 interface ColumnDef {

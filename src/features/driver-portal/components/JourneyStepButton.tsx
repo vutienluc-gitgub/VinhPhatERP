@@ -1,5 +1,5 @@
 import { Icon } from '@/shared/components';
-import type { JourneyStatus } from '@/features/driver-portal/types';
+import type { JourneyStatus } from '@/domain/logistics/driver-portal.types';
 import { DRIVER_PORTAL_MESSAGES } from '@/features/driver-portal/constants';
 
 export function JourneyStepButton({

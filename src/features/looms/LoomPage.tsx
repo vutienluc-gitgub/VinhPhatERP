@@ -2,10 +2,10 @@ import { useState, type ReactNode } from 'react';
 
 import { TabSwitcher } from '@/shared/components/TabSwitcher';
 import { PageLayout } from '@/shared/components';
+import type { LoomWithSupplier } from '@/domain/settings/looms.types';
 
 import { LoomForm } from './LoomForm';
 import { LoomList } from './LoomList';
-import type { LoomWithSupplier } from './types';
 import { MachineSpecList } from './components/MachineSpecList';
 import { LOOM_MESSAGES as MSG } from './loom.constants';
 
