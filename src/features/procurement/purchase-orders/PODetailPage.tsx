@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { Button, StatusBadge } from '@/shared/components';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { useConcurrencyConflictHandler } from '@/shared/hooks/useConcurrencyConflictHandler';
 import { supabase } from '@/services/supabase/client';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
 import {
@@ -36,6 +37,7 @@ export function PODetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { handleConflict } = useConcurrencyConflictHandler();
   const [showGrForm, setShowGrForm] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -130,10 +132,16 @@ export function PODetailPage() {
       });
       toast.success(PO_CONSTANTS.MSG_SUBMIT_SUCCESS);
     } catch (err) {
-      toast.error(
-        PO_CONSTANTS.MSG_SUBMIT_FAIL +
-          (err instanceof Error ? err.message : String(err)),
-      );
+      if (
+        !handleConflict(err, {
+          queryKeys: [['purchase-order', po.id], ['purchase-orders']],
+        })
+      ) {
+        toast.error(
+          PO_CONSTANTS.MSG_SUBMIT_FAIL +
+            (err instanceof Error ? err.message : String(err)),
+        );
+      }
     }
   };
 
@@ -154,10 +162,16 @@ export function PODetailPage() {
       setShowApproveModal(false);
       setApproveComment('');
     } catch (err) {
-      toast.error(
-        PO_CONSTANTS.MSG_APPROVE_FAIL +
-          (err instanceof Error ? err.message : String(err)),
-      );
+      if (
+        !handleConflict(err, {
+          queryKeys: [['purchase-order', po.id], ['purchase-orders']],
+        })
+      ) {
+        toast.error(
+          PO_CONSTANTS.MSG_APPROVE_FAIL +
+            (err instanceof Error ? err.message : String(err)),
+        );
+      }
     }
   };
 
@@ -170,10 +184,16 @@ export function PODetailPage() {
       });
       toast.success(PO_CONSTANTS.MSG_SEND_SUCCESS);
     } catch (err) {
-      toast.error(
-        PO_CONSTANTS.MSG_SEND_FAIL +
-          (err instanceof Error ? err.message : String(err)),
-      );
+      if (
+        !handleConflict(err, {
+          queryKeys: [['purchase-order', po.id], ['purchase-orders']],
+        })
+      ) {
+        toast.error(
+          PO_CONSTANTS.MSG_SEND_FAIL +
+            (err instanceof Error ? err.message : String(err)),
+        );
+      }
     }
   };
 
@@ -186,10 +206,16 @@ export function PODetailPage() {
       });
       toast.success(PO_CONSTANTS.MSG_CONFIRM_SUCCESS);
     } catch (err) {
-      toast.error(
-        PO_CONSTANTS.MSG_CONFIRM_FAIL +
-          (err instanceof Error ? err.message : String(err)),
-      );
+      if (
+        !handleConflict(err, {
+          queryKeys: [['purchase-order', po.id], ['purchase-orders']],
+        })
+      ) {
+        toast.error(
+          PO_CONSTANTS.MSG_CONFIRM_FAIL +
+            (err instanceof Error ? err.message : String(err)),
+        );
+      }
     }
   };
 
@@ -214,10 +240,16 @@ export function PODetailPage() {
       setShowRejectModal(false);
       setRejectReason('');
     } catch (err) {
-      toast.error(
-        PO_CONSTANTS.MSG_ACTION_FAIL +
-          (err instanceof Error ? err.message : String(err)),
-      );
+      if (
+        !handleConflict(err, {
+          queryKeys: [['purchase-order', po.id], ['purchase-orders']],
+        })
+      ) {
+        toast.error(
+          PO_CONSTANTS.MSG_ACTION_FAIL +
+            (err instanceof Error ? err.message : String(err)),
+        );
+      }
     }
   };
 
