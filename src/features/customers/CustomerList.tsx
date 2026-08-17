@@ -37,10 +37,10 @@ import {
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useCustomerVisibilityScope } from '@/shared/hooks';
 import { useAuth } from '@/shared/hooks/useAuth';
+import type { Customer, CustomersFilter } from '@/domain/crm/customers.types';
 
 import { useCustomerColumns } from './hooks/useCustomerColumns';
 import { CustomerMobileCard } from './components/CustomerMobileCard';
-import type { Customer, CustomersFilter } from './types';
 import { CUSTOMER_LIST_LABELS } from './customers.constants';
 
 type CustomerListProps = {

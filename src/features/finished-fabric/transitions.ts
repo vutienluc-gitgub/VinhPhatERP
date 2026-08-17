@@ -1,4 +1,5 @@
-import type { RollStatus } from './types';
+import type { RollStatus } from '@/domain/inventory/finished-fabric.types';
+
 import { FINISHED_FABRIC_TRANSITIONS_LABELS as MSG } from './finished-fabric.constants';
 
 /**

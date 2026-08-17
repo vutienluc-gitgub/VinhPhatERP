@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import { PageLayout } from '@/shared/components';
+import type { YarnCatalog } from '@/domain/settings/yarn-catalog.types';
 
-import type { YarnCatalog } from './types';
 import { YarnCatalogForm } from './YarnCatalogForm';
 import { YarnCatalogList } from './YarnCatalogList';
 

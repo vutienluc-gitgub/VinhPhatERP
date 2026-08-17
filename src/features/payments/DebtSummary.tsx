@@ -1,5 +1,6 @@
 import { MoneyCell } from '@/shared/value';
 import { useDebtSummary } from '@/application/payments';
+import type { DebtSummaryRow } from '@/domain/payments/types';
 
 import {
   DEBT_LABELS,
@@ -10,7 +11,6 @@ import {
   DebtMobileCard,
   DebtRiskBadge,
 } from './components/DebtTablePanel';
-import type { DebtSummaryRow } from './types';
 
 const L = DEBT_LABELS.customer;
 

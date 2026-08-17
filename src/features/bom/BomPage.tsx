@@ -19,11 +19,11 @@ import {
   useReviseBom,
 } from '@/application/production';
 import { BOM_STATUSES, BOM_STATUS_LABELS } from '@/schema/bom.schema';
+import type { BomFilter } from '@/domain/production/bom.types';
 
 import { BomDetail } from './BomDetail';
 import { BomForm } from './BomForm';
 import { BomList } from './BomList';
-import type { BomFilter } from './types';
 
 type ViewState = 'list' | 'create' | 'edit' | 'detail';
 

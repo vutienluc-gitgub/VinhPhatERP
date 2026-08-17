@@ -11,8 +11,11 @@ import {
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useDyeingOrderList } from '@/application/production';
+import type {
+  DyeingOrder,
+  DyeingOrderFilter,
+} from '@/domain/production/dyeing-orders.types';
 
-import type { DyeingOrder, DyeingOrderFilter } from './types';
 import { DYEING_ORDER_MESSAGES as MSG } from './dyeing-orders.constants';
 import { useDyeingOrderColumns } from './hooks/useDyeingOrderColumns';
 import { DyeingOrderMobileCard } from './components/DyeingOrderMobileCard';

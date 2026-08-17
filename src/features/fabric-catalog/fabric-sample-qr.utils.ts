@@ -1,4 +1,4 @@
-import type { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 export const LABELS_PRINT = {
   composition: 'Thành phần',

@@ -2,7 +2,7 @@ import { Icon } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import { PAYMENT_METHOD_LABELS } from '@/features/payments/payments.module';
 import { PAYMENT_LIST_MESSAGES as MSG } from '@/features/payments/payments.constants';
-import type { Payment } from '@/features/payments/types';
+import type { Payment } from '@/domain/payments/types';
 
 type PaymentMobileCardProps = {
   payment: Payment;

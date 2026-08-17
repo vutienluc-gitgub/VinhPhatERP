@@ -25,8 +25,8 @@ import {
   useRejectWorkOrder,
   useYarnIssuesForWorkOrder,
 } from '@/application/production';
+import type { WorkOrder } from '@/domain/production/work-orders.types';
 
-import type { WorkOrder } from './types';
 import { YarnIssueModal } from './components/YarnIssueModal';
 import { WorkOrderQCModal } from './components/WorkOrderQCModal';
 import { WORK_ORDER_MESSAGES as MSG } from './work-orders.constants';

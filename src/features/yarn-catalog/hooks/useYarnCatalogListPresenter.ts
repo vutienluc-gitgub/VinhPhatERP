@@ -9,7 +9,7 @@ import {
 import type {
   YarnCatalog,
   YarnCatalogFilter,
-} from '@/features/yarn-catalog/types';
+} from '@/domain/settings/yarn-catalog.types';
 import { YARN_CATALOG_MESSAGES } from '@/features/yarn-catalog/yarn-catalog.constants';
 
 export function useYarnCatalogListPresenter() {

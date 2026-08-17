@@ -30,13 +30,16 @@ import {
   ROLL_STATUS_LABELS,
   ROLL_STATUSES,
 } from '@/schema/finished-fabric.schema';
+import type {
+  FinishedFabricFilter,
+  FinishedFabricRoll,
+} from '@/domain/inventory/finished-fabric.types';
 
 import { canDeleteRoll, canEditRoll } from './transitions';
 import {
   getFinishedFabricColumns,
   renderFinishedFabricMobileCard,
 } from './FinishedFabricColumns';
-import type { FinishedFabricFilter, FinishedFabricRoll } from './types';
 import { groupRollsByLot } from './finished-fabric.utils';
 import {
   FINISHED_FABRIC_PAGE_LABELS as MSG,

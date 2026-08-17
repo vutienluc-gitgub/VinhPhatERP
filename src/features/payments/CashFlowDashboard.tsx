@@ -9,10 +9,13 @@ import {
   useExpenseByCategory,
 } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
+import type {
+  CashFlowRow,
+  ExpenseByCategoryRow,
+} from '@/domain/payments/types';
 
 import { CASH_FLOW_MESSAGES as MSG } from './payments.constants';
 import { EXPENSE_CATEGORY_LABELS } from './payments.module';
-import type { CashFlowRow, ExpenseByCategoryRow } from './types';
 
 function getDefaultDates(): { from: string; to: string } {
   const now = new Date();

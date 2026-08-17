@@ -8,8 +8,8 @@ import {
   useMyDriverEmployee,
   useDriverShipments,
 } from '@/application/shipments';
+import type { DriverShipment } from '@/domain/logistics/driver-portal.types';
 
-import type { DriverShipment } from './types';
 import { DRIVER_PORTAL_MESSAGES } from './constants';
 import { ShipmentCard } from './components/ShipmentCard';
 import { ShipmentSkeleton } from './components/ShipmentSkeleton';

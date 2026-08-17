@@ -16,8 +16,11 @@ import {
   useDeleteShippingRate,
   useShippingRateList,
 } from '@/application/shipments';
+import type {
+  ShippingRate,
+  ShippingRateFilter,
+} from '@/domain/logistics/shipping-rates.types';
 
-import type { ShippingRate, ShippingRateFilter } from './types';
 import { SHIPPING_RATE_LABELS as MSG } from './shipping-rates.constants';
 
 type Props = {

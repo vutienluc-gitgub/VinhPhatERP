@@ -1,5 +1,5 @@
 import { LABEL_ORIGIN } from '@/shared/constants/origin.constants';
-import type { YarnCatalog } from '@/features/yarn-catalog/types';
+import type { YarnCatalog } from '@/domain/settings/yarn-catalog.types';
 import { YARN_CATALOG_MESSAGES as MSG } from '@/features/yarn-catalog/yarn-catalog.constants';
 import {
   ActionMenu,

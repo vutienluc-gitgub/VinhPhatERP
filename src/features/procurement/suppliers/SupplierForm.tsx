@@ -21,9 +21,9 @@ import {
 import type { SupplierFormValues } from '@/schema/supplier.schema';
 import { getErrorMessage } from '@/shared/utils/error';
 import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
+import type { Supplier } from '@/domain/crm/suppliers.types';
 
 import { SupplierPriceList } from './SupplierPriceList';
-import type { Supplier } from './types';
 
 const STATUS_OPTIONS = SUPPLIER_STATUSES.map((st) => ({
   value: st,

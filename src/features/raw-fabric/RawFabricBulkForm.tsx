@@ -36,8 +36,8 @@ import {
 } from '@/schema/raw-fabric.schema';
 import { useBulkRollPrefix } from '@/shared/hooks/useBulkRollPrefix';
 import type { BulkInputFormValues } from '@/schema/raw-fabric.schema';
+import type { RawFabricRoll } from '@/domain/inventory/raw-fabric.types';
 
-import type { RawFabricRoll } from './types';
 import { RawFabricBulkFormStep1General } from './components/RawFabricBulkFormStep1General';
 import { RawFabricBulkFormStep1Config } from './components/RawFabricBulkFormStep1Config';
 import { RAW_FABRIC_MESSAGES as MSG } from './raw-fabric.constants';

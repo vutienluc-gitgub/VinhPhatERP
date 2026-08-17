@@ -21,8 +21,11 @@ import {
 } from '@/application/quotations';
 import { QUOTATION_STATUS_LABELS } from '@/schema/quotation.schema';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-
-import type { Quotation, QuotationsFilter, QuotationStatus } from './types';
+import type {
+  Quotation,
+  QuotationsFilter,
+  QuotationStatus,
+} from '@/domain/crm/quotations.types';
 
 type QuotationListProps = {
   onEdit: (quotation: Quotation) => void;

@@ -1,7 +1,7 @@
 import { Icon } from '@/shared/components/Icon';
 import { Badge } from '@/shared/components';
 import { FABRIC_CATALOG_STATUS_LABELS } from '@/schema/fabric-catalog.schema';
-import type { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
 import {
   getStatusVariant,

@@ -9,8 +9,8 @@ import {
   useSendQuotation,
 } from '@/application/quotations';
 import { QUOTATION_STATUS_LABELS } from '@/schema/quotation.schema';
+import type { Quotation, QuotationStatus } from '@/domain/crm/quotations.types';
 
-import type { Quotation, QuotationStatus } from './types';
 import { QUOTATION_LABELS, QUOTATION_MESSAGES } from './quotations.constants';
 import { QuotationDetailItems } from './components/QuotationDetailItems';
 

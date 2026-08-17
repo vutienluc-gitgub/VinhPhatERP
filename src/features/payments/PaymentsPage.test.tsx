@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
+import type { Expense, PaymentAccount } from '@/domain/payments/types';
+
 import { PaymentsPage } from './PaymentsPage';
-import type { Expense, PaymentAccount } from './types';
 
 // Mock subcomponents to isolate testing to PaymentsPage's tab switching & state management
 vi.mock('./CashFlowDashboard', () => ({

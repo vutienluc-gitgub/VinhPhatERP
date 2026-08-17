@@ -4,7 +4,7 @@ import { MoneyText } from '@/shared/value';
 import { Badge, ActionMenu, PhoneContact } from '@/shared/components';
 import { SUPPLIER_STATUS_LABELS } from '@/schema/supplier.schema';
 import { SUPPLIER_LIST_LABELS } from '@/features/procurement/suppliers/suppliers.constants';
-import type { Supplier } from '@/features/procurement/suppliers/types';
+import type { Supplier } from '@/domain/crm/suppliers.types';
 
 type UseSupplierColumnsProps = {
   onEdit: (supplier: Supplier) => void;

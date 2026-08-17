@@ -20,13 +20,13 @@ import {
   useCompleteWorkOrder,
 } from '@/application/production';
 import { WORK_ORDER_STATUSES } from '@/schema/work-order.schema';
-
-import { WorkOrderKanbanBoard } from './components/WorkOrderKanbanBoard';
 import type {
   WorkOrderFilter,
   WorkOrderStatus,
   WorkOrderWithRelations,
-} from './types';
+} from '@/domain/production/work-orders.types';
+
+import { WorkOrderKanbanBoard } from './components/WorkOrderKanbanBoard';
 import { WORK_ORDER_MESSAGES as MSG } from './work-orders.constants';
 import { useWorkOrderColumns } from './hooks/useWorkOrderColumns';
 import { WorkOrderMobileCard } from './components/WorkOrderMobileCard';

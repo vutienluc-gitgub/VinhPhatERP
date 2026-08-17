@@ -5,7 +5,7 @@ import { ActionBar, Badge, type ActionConfig } from '@/shared/components';
 import { formatQuantity } from '@/shared/utils/format';
 import { MoneyText } from '@/shared/value';
 import { WEAVING_STATUS_LABELS } from '@/schema/weaving-invoice.schema';
-import type { WeavingInvoice } from '@/features/weaving-invoices/types';
+import type { WeavingInvoice } from '@/domain/production/weaving-invoices.types';
 import {
   getStatusVariant,
   WEAVING_INVOICE_MESSAGES as MSG,

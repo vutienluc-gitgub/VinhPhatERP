@@ -3,11 +3,11 @@ import {
   useUpdateStageStatus,
 } from '@/application/orders';
 import { ORDERS_PROG_LABELS } from '@/features/orders/orders.constants';
+import type { OrderProgressWithOrder } from '@/domain/orders/progress.types';
 
 import { OpsLevelPath } from './OpsLevelPath';
 import { ProgressExpBar } from './ProgressExpBar';
 import { calculateOrderProgress } from './utils';
-import type { OrderProgressWithOrder } from './types';
 
 type DashboardOrder = {
   orderId: string;

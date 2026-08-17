@@ -5,7 +5,7 @@ import { Badge, type BadgeVariant, ActionBar } from '@/shared/components';
 import { MoneyCell } from '@/shared/value';
 import { EXPENSE_CATEGORY_LABELS } from '@/features/payments/payments.module';
 import { EXPENSE_MESSAGES as MSG } from '@/features/payments/payments.constants';
-import type { Expense, ExpenseCategory } from '@/features/payments/types';
+import type { Expense, ExpenseCategory } from '@/domain/payments/types';
 
 export function getCategoryVariant(category: ExpenseCategory): BadgeVariant {
   switch (category) {

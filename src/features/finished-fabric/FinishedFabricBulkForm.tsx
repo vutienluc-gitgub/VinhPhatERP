@@ -45,8 +45,8 @@ import {
   parseExcelFile,
 } from '@/domain/inventory/finished-fabric-import.util';
 import type { ParsedRow } from '@/domain/inventory/finished-fabric-import.util';
+import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 
-import type { FinishedFabricRoll } from './types';
 import { FinishedFabricBulkFormStep1General } from './components/FinishedFabricBulkFormStep1General';
 import { FinishedFabricBulkFormStep1Config } from './components/FinishedFabricBulkFormStep1Config';
 import {

@@ -5,6 +5,7 @@ import { Badge, Icon, ActionBar } from '@/shared/components';
 import { formatQuantity } from '@/shared/value/core/formatter';
 import { getRollStatusVariant } from '@/shared/utils/status-variant';
 import { ROLL_STATUS_LABELS } from '@/schema/finished-fabric.schema';
+import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 
 import { FINISHED_FABRIC_LIST_LABELS as LIST_MSG } from './finished-fabric.constants';
 import {
@@ -13,7 +14,6 @@ import {
   deleteBlockReason,
   editBlockReason,
 } from './transitions';
-import type { FinishedFabricRoll } from './types';
 
 interface ColumnActions {
   onTrace: (roll: FinishedFabricRoll) => void;

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import { PageLayout } from '@/shared/components';
+import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 
 import { FinishedFabricBulkForm } from './FinishedFabricBulkForm';
 import { FinishedFabricForm } from './FinishedFabricForm';
 import { FinishedFabricList } from './FinishedFabricList';
 import { TraceChainPanel } from './TraceChainPanel';
-import type { FinishedFabricRoll } from './types';
 
 export function FinishedFabricPage() {
   const [editRoll, setEditRoll] = useState<FinishedFabricRoll | null>(null);

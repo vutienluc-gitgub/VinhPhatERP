@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 import { PageLayout } from '@/shared/components';
+import type { DyeingOrder } from '@/domain/production/dyeing-orders.types';
 
 import { DyeingOrderList } from './DyeingOrderList';
 import { DyeingOrderForm } from './DyeingOrderForm';
 import { DyeingOrderDetail } from './DyeingOrderDetail';
-import type { DyeingOrder } from './types';
 
 export function DyeingOrdersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);

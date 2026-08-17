@@ -5,10 +5,10 @@ import { PageLayout } from '@/shared/components';
 import { ContractForm } from '@/features/contracts/ContractForm';
 import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
 import { SUPPLIER_LABELS as L } from '@/features/procurement/procurement.constants';
+import type { Supplier } from '@/domain/crm/suppliers.types';
 
 import { SupplierForm } from './SupplierForm';
 import { SuppliersList } from './SuppliersList';
-import type { Supplier } from './types';
 
 export function SuppliersPage() {
   const [editSupplier, setEditSupplier] = useState<Supplier | null>(null);

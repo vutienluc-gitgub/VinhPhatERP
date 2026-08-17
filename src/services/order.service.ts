@@ -1,5 +1,5 @@
-import type { Order } from '@/features/orders/types';
-import type { Payment } from '@/features/payments/types';
+import type { Order } from '@/domain/orders/types';
+import type { Payment } from '@/domain/payments/types';
 
 /**
  * Tính tổng công nợ cho một đơn hàng.

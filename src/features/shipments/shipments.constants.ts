@@ -66,7 +66,7 @@ export const SHIPMENT_LIST_MESSAGES = {
   ERR_PDF_CREATE: (num: string, err: string) =>
     `Không thể tạo phiếu PDF cho ${num}. ${err}`,
 };
-import type { Shipment } from './types';
+import type { Shipment } from '@/domain/shipments/types';
 
 export const SHIPMENT_FORM_MESSAGES = {
   TITLE: (orderNumber: string) => `Tạo phiếu xuất — ${orderNumber}`,

@@ -1,6 +1,5 @@
 import { sumBy } from '@/shared/utils/array.util';
-
-import type { Order } from './types';
+import type { Order } from '@/domain/orders/types';
 
 export function daysUntilDelivery(
   deliveryDate: string | null,

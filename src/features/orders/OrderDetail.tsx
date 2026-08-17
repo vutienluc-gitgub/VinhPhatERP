@@ -28,9 +28,9 @@ import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Badge } from '@/shared/components/Badge';
 import { ChatWidget } from '@/features/chat';
+import type { Order } from '@/domain/orders/types';
 
 import { OrderAuditLogViewer } from './OrderAuditLogViewer';
-import type { Order } from './types';
 import {
   ORDERS_FORM_LABELS,
   ORDERS_PROG_LABELS,

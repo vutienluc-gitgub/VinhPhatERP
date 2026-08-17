@@ -2,7 +2,7 @@ import { Icon } from '@/shared/components/Icon';
 import { formatQuantity } from '@/shared/value/core/formatter';
 import type { LoomStatus } from '@/schema/loom.schema';
 import { LOOM_STATUS_LABELS, LOOM_TYPE_LABELS } from '@/schema/loom.schema';
-import type { LoomWithSupplier } from '@/features/looms/types';
+import type { LoomWithSupplier } from '@/domain/settings/looms.types';
 
 interface LoomMobileCardProps {
   loom: LoomWithSupplier;

@@ -29,8 +29,8 @@ import {
   generateWorkOrderNumber,
   type CreateWorkOrderInput,
 } from '@/schema/work-order.schema';
+import type { WorkOrder } from '@/domain/production/work-orders.types';
 
-import type { WorkOrder } from './types';
 import { WorkOrderYarnTable } from './WorkOrderYarnTable';
 import { YarnAvailabilityWarning } from './components/YarnAvailabilityWarning';
 import { WORK_ORDER_MESSAGES as MSG } from './work-orders.constants';

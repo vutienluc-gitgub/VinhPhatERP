@@ -1,5 +1,8 @@
-import type { RawFabricRoll, RollStatus } from '@/features/raw-fabric/types';
-import type { FinishedFabricRoll } from '@/features/finished-fabric/types';
+import type {
+  RawFabricRoll,
+  RollStatus,
+} from '@/domain/inventory/raw-fabric.types';
+import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
 
 /**
  * Tính trọng lượng ước tính (kg) dựa trên chiều dài, chiều rộng, GSM.

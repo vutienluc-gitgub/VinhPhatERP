@@ -6,7 +6,7 @@ import {
   calculateQuotationTotals,
   type QuotationsFormValues,
 } from '@/schema/quotation.schema';
-import type { DiscountType } from '@/features/quotations/types';
+import type { DiscountType } from '@/domain/crm/quotations.types';
 import { QUOTATION_LABELS } from '@/features/quotations/quotations.constants';
 
 type TotalsSummaryProps = {

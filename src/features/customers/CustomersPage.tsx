@@ -9,13 +9,13 @@ import { usePreviewIdFromUrl } from '@/shared/hooks/usePreviewIdFromUrl';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { PageLayout } from '@/shared/components';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
+import type { Customer } from '@/domain/crm/customers.types';
 
 import { CUSTOMERS_PAGE_LABELS } from './customers.constants';
 import { CustomerForm } from './CustomerForm';
 import { CustomerList } from './CustomerList';
 import { DepositForm } from './DepositForm';
 import { CustomerGroupList } from './components/CustomerGroupList';
-import type { Customer } from './types';
 
 export function CustomersPage() {
   const [activeTab, setActiveTab] = useState<'customers' | 'customer_groups'>(

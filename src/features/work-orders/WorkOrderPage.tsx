@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { PageLayout } from '@/shared/components';
+import type { WorkOrderWithRelations } from '@/domain/production/work-orders.types';
 
-import type { WorkOrderWithRelations } from './types';
 import { WorkOrderDetail } from './WorkOrderDetail';
 import { WorkOrderForm } from './WorkOrderForm';
 import { WorkOrderList } from './WorkOrderList';

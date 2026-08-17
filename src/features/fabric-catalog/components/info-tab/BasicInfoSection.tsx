@@ -4,7 +4,7 @@ import { Combobox, Button, Icon } from '@/shared/components';
 import { PercentageField } from '@/shared/value/percentage/PercentageField';
 import type { FabricCatalogFormValues } from '@/schema/fabric-catalog.schema';
 import { LABELS } from '@/features/fabric-catalog/fabric-catalog.constants';
-import type { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 type BasicInfoSectionProps = {
   catalog: FabricCatalog | null;

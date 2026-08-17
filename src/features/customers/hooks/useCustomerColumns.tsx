@@ -21,7 +21,7 @@ import {
   DEPOSIT_FORM_LABELS,
   CUSTOMER_COLUMNS_LABELS,
 } from '@/features/customers/customers.constants';
-import type { Customer } from '@/features/customers/types';
+import type { Customer } from '@/domain/crm/customers.types';
 
 export const SOURCE_BADGE_VARIANT: Record<string, BadgeVariant> = {
   referral: 'success',

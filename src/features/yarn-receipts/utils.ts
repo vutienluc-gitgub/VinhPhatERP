@@ -1,7 +1,6 @@
 import { formatCurrency } from '@/shared/utils/format';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
-
-import type { YarnReceipt } from './types';
+import type { YarnReceipt } from '@/domain/inventory/yarn-receipts.types';
 
 /**
  * Extracts valid (non-NaN, positive) unit prices from a receipt's items.

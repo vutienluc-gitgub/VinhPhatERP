@@ -8,7 +8,7 @@ import {
 } from '@/application/settings';
 import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 import { logError } from '@/shared/utils/logger';
-import type { YarnCatalog } from '@/features/yarn-catalog/types';
+import type { YarnCatalog } from '@/domain/settings/yarn-catalog.types';
 const SUBMISSION_MESSAGES = {
   createSuccess: 'Thêm mới thành công',
   updateSuccess: 'Cập nhật thành công',

@@ -1,4 +1,4 @@
-import type { PortalProgressStage } from '@/features/customer-portal/types';
+import type { PortalProgressStage } from '@/domain/portal/types';
 import {
   PRODUCTION_STAGE_LABELS,
   STAGE_STATUS_LABELS,

@@ -6,7 +6,7 @@ import {
   LABELS,
   TECHNIQUE_OPTIONS,
 } from '@/features/fabric-catalog/fabric-catalog.constants';
-import type { FabricCatalog } from '@/features/fabric-catalog/types';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
 
 type AttributeSectionProps = {
   catalog: FabricCatalog | null;

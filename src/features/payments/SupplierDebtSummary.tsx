@@ -1,6 +1,7 @@
 import { MoneyCell } from '@/shared/value';
 import { useSupplierDebt } from '@/application/payments';
 import { Button } from '@/shared/components';
+import type { SupplierDebtRow } from '@/domain/payments/types';
 
 import {
   DEBT_LABELS,
@@ -11,7 +12,6 @@ import {
   DebtMobileCard,
   DebtRiskBadge,
 } from './components/DebtTablePanel';
-import type { SupplierDebtRow } from './types';
 
 const L = DEBT_LABELS.supplier;
 

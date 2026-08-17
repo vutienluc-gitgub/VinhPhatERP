@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
+import type { ShipmentDocument } from '@/domain/shipments/types';
+
 import {
   buildShipmentPrintHtml,
   makeShipmentDocumentFileName,
   toShipmentDocumentRows,
 } from './shipment-document';
-import type { ShipmentDocument } from './types';
 
 const shipmentFixture: ShipmentDocument = {
   id: 'shipment-1',

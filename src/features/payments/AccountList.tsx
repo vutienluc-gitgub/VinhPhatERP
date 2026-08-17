@@ -11,8 +11,8 @@ import {
 } from '@/shared/components';
 import { useAllAccounts, useDeleteAccount } from '@/application/payments';
 import { sumBy } from '@/shared/utils/array.util';
+import type { PaymentAccount } from '@/domain/payments/types';
 
-import type { PaymentAccount } from './types';
 import { useAccountColumns } from './hooks/useAccountColumns';
 import { AccountMobileCard } from './components/AccountMobileCard';
 import { ACCOUNT_MESSAGES as MSG } from './payments.constants';

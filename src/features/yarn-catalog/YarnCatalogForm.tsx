@@ -23,9 +23,9 @@ import {
 import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 import { getErrorMessage } from '@/shared/utils/error';
 import { extractFormErrorMessage } from '@/shared/utils/form';
+import type { YarnCatalog } from '@/domain/settings/yarn-catalog.types';
 
 import { YARN_CATALOG_MESSAGES as MSG } from './yarn-catalog.constants';
-import type { YarnCatalog } from './types';
 import { StepGeneralInfo } from './components/StepGeneralInfo';
 import { StepTechnicalSpecs } from './components/StepTechnicalSpecs';
 import { StepAdditionalInfo } from './components/StepAdditionalInfo';

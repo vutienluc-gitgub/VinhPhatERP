@@ -10,9 +10,9 @@ import {
   useEmployees,
 } from '@/application/crm';
 import { useAuth } from '@/shared/hooks/useAuth';
+import type { Customer } from '@/domain/crm/customers.types';
 
 import { CustomerForm } from './CustomerForm';
-import type { Customer } from './types';
 
 const createTestQueryClient = () =>
   new QueryClient({

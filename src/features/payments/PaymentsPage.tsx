@@ -4,6 +4,7 @@ import { useDebtSummary, useSupplierDebt } from '@/application/payments';
 import { countOverdueDebts } from '@/domain/payments';
 import { TabSwitcher, Icon, PageLayout } from '@/shared/components';
 import type { TabItem } from '@/shared/components';
+import type { Expense, PaymentAccount } from '@/domain/payments/types';
 
 import { AccountForm } from './AccountForm';
 import {
@@ -17,7 +18,6 @@ import { ExpenseForm } from './ExpenseForm';
 import { ExpenseList } from './ExpenseList';
 import { PaymentList } from './PaymentList';
 import { SupplierDebtSummary } from './SupplierDebtSummary';
-import type { Expense, PaymentAccount } from './types';
 
 type Tab =
   | 'cashflow'

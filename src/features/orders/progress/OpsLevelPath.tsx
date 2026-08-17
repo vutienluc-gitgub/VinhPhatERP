@@ -4,8 +4,7 @@ import {
   STAGE_LABELS,
   STAGE_STATUS_LABELS,
 } from '@/schema/order-progress.schema';
-
-import type { OrderProgressWithOrder } from './types';
+import type { OrderProgressWithOrder } from '@/domain/orders/progress.types';
 
 interface OpsLevelPathProps {
   stages: OrderProgressWithOrder[];

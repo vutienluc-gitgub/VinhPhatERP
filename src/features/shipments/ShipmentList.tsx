@@ -31,10 +31,10 @@ import {
   useDeliveryStaffList,
 } from '@/application/shipments';
 import { sumBy } from '@/shared/utils/array.util';
+import type { Shipment, ShipmentsFilter } from '@/domain/shipments/types';
 
 import { DeliveryConfirmForm } from './DeliveryConfirmForm';
 import { exportShipmentToPdf } from './shipment-document';
-import type { Shipment, ShipmentsFilter } from './types';
 import { SHIPMENT_LIST_MESSAGES as MSG } from './shipments.constants';
 import { ShipmentMobileCard } from './components/ShipmentMobileCard';
 import { calcShipmentCost } from './shipments.constants';

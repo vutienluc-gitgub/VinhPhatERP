@@ -9,7 +9,7 @@ import {
   type ActionConfig,
 } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
-import type { Shipment } from '@/features/shipments/types';
+import type { Shipment } from '@/domain/shipments/types';
 import { SHIPMENT_LIST_MESSAGES as MSG } from '@/features/shipments/shipments.constants';
 import { ShipmentSaaSBadge } from '@/features/shipments/components/ShipmentMobileCard';
 import { calcShipmentCost } from '@/features/shipments/shipments.constants';

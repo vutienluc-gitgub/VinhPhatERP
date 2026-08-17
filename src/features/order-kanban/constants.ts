@@ -1,4 +1,4 @@
-import type { OrderKanbanItem } from './types';
+import type { OrderKanbanItem } from '@/domain/orders/kanban.types';
 
 /* ── Vietnamese labels ── */
 export const KANBAN_LABELS = {

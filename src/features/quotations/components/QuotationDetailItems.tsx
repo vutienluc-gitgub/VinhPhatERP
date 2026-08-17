@@ -1,7 +1,7 @@
 import { Icon } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import { formatQuantity } from '@/shared/value/core/formatter';
-import type { Quotation } from '@/features/quotations/types';
+import type { Quotation } from '@/domain/crm/quotations.types';
 import {
   QUOTATION_LABELS,
   QUOTATION_MESSAGES,

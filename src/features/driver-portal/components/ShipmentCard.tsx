@@ -15,11 +15,9 @@ import {
 import {
   JOURNEY_STATUS_LABELS,
   JOURNEY_STATUS_ORDER,
-} from '@/features/driver-portal/types';
-import type {
-  DriverShipment,
-  JourneyStatus,
-} from '@/features/driver-portal/types';
+  type DriverShipment,
+  type JourneyStatus,
+} from '@/domain/logistics/driver-portal.types';
 import { DRIVER_PORTAL_MESSAGES } from '@/features/driver-portal/constants';
 
 import { JourneyStepButton } from './JourneyStepButton';

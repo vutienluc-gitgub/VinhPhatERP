@@ -34,6 +34,7 @@ import {
 } from '@/schema/order.schema';
 import type { OrdersFormValues } from '@/schema/order.schema';
 import { getErrorMessage } from '@/shared/utils/error';
+import type { Order } from '@/domain/orders/types';
 
 import { CreditOverrideDialog } from './CreditOverrideDialog';
 import { TradingItemRow } from './components/TradingItemRow';
@@ -43,7 +44,6 @@ import {
   LineTotals,
   DRAFT_KEY,
 } from './components/OrderFormHelpers';
-import type { Order } from './types';
 import { ORDERS_FORM_LABELS } from './orders.constants';
 
 const UNIT_COMBO_OPTIONS = UNIT_OPTIONS.map((opt) => ({

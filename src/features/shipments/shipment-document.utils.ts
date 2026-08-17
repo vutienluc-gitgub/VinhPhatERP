@@ -1,4 +1,5 @@
-import type { ShipmentDocument } from './types';
+import type { ShipmentDocument } from '@/domain/shipments/types';
+
 import { SHIPMENT_DOCUMENT_LABELS } from './shipment-document.constants';
 
 export type ShipmentDocumentRow = {

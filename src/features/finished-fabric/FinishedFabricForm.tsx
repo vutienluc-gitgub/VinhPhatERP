@@ -30,13 +30,16 @@ import {
 } from '@/schema/finished-fabric.schema';
 import type { FinishedFabricFormValues } from '@/schema/finished-fabric.schema';
 import { getErrorMessage } from '@/shared/utils/error';
+import type {
+  FinishedFabricRoll,
+  RollStatus,
+} from '@/domain/inventory/finished-fabric.types';
 
 import { FinishedFabricFormStep3Storage } from './components/FinishedFabricFormStep3Storage';
 import { FinishedFabricFormStep2Specs } from './components/FinishedFabricFormStep2Specs';
 import { FinishedFabricFormStep1General } from './components/FinishedFabricFormStep1General';
 import { FINISHED_FABRIC_FORM_LABELS as MSG } from './finished-fabric.constants';
 import { editBlockReason, getAllowedStatusTransitions } from './transitions';
-import type { FinishedFabricRoll, RollStatus } from './types';
 
 type FinishedFabricFormProps = {
   roll: FinishedFabricRoll | null;

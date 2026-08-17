@@ -11,9 +11,9 @@ import {
 } from '@/shared/components';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
 import { useDeleteExpense, useExpenseList } from '@/application/payments';
+import type { Expense, ExpensesFilter } from '@/domain/payments/types';
 
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS } from './payments.module';
-import type { Expense, ExpensesFilter } from './types';
 import { useExpenseColumns } from './hooks/useExpenseColumns';
 import { ExpenseMobileCard } from './components/ExpenseMobileCard';
 import { EXPENSE_MESSAGES as MSG } from './payments.constants';

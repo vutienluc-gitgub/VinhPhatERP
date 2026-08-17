@@ -16,13 +16,13 @@ import { loomDefaultValues, loomSchema } from '@/schema/loom.schema';
 import type { LoomFormValues } from '@/schema/loom.schema';
 import { getErrorMessage } from '@/shared/utils/error';
 import { buildLoomCodePrefix } from '@/api/looms.api';
+import type { LoomWithSupplier } from '@/domain/settings/looms.types';
 
 import { LoomFormStep1General } from './components/LoomFormStep1General';
 import { LoomFormStep2Capacity } from './components/LoomFormStep2Capacity';
 import { LoomFormStep3Specs } from './components/LoomFormStep3Specs';
 import { LoomFormStep4Other } from './components/LoomFormStep4Other';
 import { LOOM_MESSAGES as MSG } from './loom.constants';
-import type { LoomWithSupplier } from './types';
 
 type LoomFormProps = {
   loom: LoomWithSupplier | null;

@@ -12,12 +12,12 @@ import {
   type DeliveryConfirmFormValues,
 } from '@/schema/shipment.schema';
 import { NumericInput } from '@/shared/value';
+import type { Shipment } from '@/domain/shipments/types';
 
 import {
   SHIPMENT_FORM_MESSAGES,
   DELIVERY_CONFIRM_MESSAGES as MSG,
 } from './shipments.constants';
-import type { Shipment } from './types';
 
 type Props = {
   shipment: Shipment;

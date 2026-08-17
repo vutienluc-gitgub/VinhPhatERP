@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import type { ShippingRate } from '@/domain/logistics/shipping-rates.types';
 
 import { ShippingRateForm } from './ShippingRateForm';
 import { SHIPPING_RATE_LABELS as MSG } from './shipping-rates.constants';
 import { ShippingRateList } from './ShippingRateList';
-import type { ShippingRate } from './types';
 
 export function ShippingRatesPage() {
   const [editItem, setEditItem] = useState<ShippingRate | null>(null);
