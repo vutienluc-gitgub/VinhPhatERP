@@ -11,7 +11,7 @@ import {
 } from '@/api/payments.api';
 import { mapPaymentFormToDb } from '@/domain/payments';
 import { DomainEventBus } from '@/domain/core/DomainEventBus';
-import type { PaymentsFormValues } from '@/features/payments/payments.module';
+import type { PaymentsFormValues } from '@/schema/payment.schema';
 import type {
   DebtSummaryRow,
   Payment,

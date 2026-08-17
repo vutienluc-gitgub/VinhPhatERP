@@ -20,7 +20,7 @@ import type {
   YarnReceipt,
   YarnReceiptsFilter,
 } from '@/domain/inventory/yarn-receipts.types';
-import type { YarnReceiptsFormValues } from '@/features/yarn-receipts/yarn-receipts.module';
+import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 export type { YarnSupplierOption, YarnCatalogOption };
 

@@ -8,7 +8,7 @@ import {
   updateShippingRate,
   deleteShippingRate,
 } from '@/api/shipping-rates.api';
-import type { ShippingRateFormValues } from '@/features/shipping-rates/shipping-rates.module';
+import type { ShippingRateFormValues } from '@/schema/shipping-rate.schema';
 import type { ShippingRateFilter } from '@/domain/logistics/shipping-rates.types';
 
 const QUERY_KEY = ['shipping-rates'] as const;

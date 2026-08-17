@@ -13,7 +13,7 @@ import type {
   YarnCatalog,
   YarnCatalogFilter,
 } from '@/domain/settings/yarn-catalog.types';
-import type { YarnCatalogFormValues } from '@/features/yarn-catalog/yarn-catalog.module';
+import type { YarnCatalogFormValues } from '@/schema/yarn-catalog.schema';
 
 const QUERY_KEY = ['yarn-catalog'] as const;
 

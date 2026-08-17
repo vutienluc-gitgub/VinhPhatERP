@@ -13,8 +13,8 @@ import {
   fetchExpiringQuotationsCount,
 } from '@/api/quotations.api';
 import type { PaginatedResult } from '@/shared/types/pagination';
-import type { QuotationsFormValues } from '@/features/quotations/quotations.module';
-import { calculateQuotationTotals } from '@/features/quotations/quotations.module';
+import type { QuotationsFormValues } from '@/schema/quotation.schema';
+import { calculateQuotationTotals } from '@/schema/quotation.schema';
 import type {
   DiscountType,
   Quotation,

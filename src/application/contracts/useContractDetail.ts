@@ -15,7 +15,7 @@ import {
 import type {
   ContractStatus,
   UpdateContractInput,
-} from '@/features/contracts/contracts.module';
+} from '@/schema/contracts.schema';
 
 const CONTRACTS_KEY = ['contracts'] as const;
 

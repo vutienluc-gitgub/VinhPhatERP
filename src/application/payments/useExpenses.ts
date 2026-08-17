@@ -11,7 +11,7 @@ import {
 } from '@/api/payments.api';
 import { mapExpenseFormToDb } from '@/domain/payments';
 import { DomainEventBus } from '@/domain/core/DomainEventBus';
-import type { ExpenseFormValues } from '@/features/payments/payments.module';
+import type { ExpenseFormValues } from '@/schema/payment.schema';
 import type {
   Expense,
   ExpensesFilter,

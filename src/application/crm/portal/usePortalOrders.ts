@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
-import { computeStageOverdue } from '@/features/customer-portal/utils';
+import { computeStageOverdue } from '@/domain/portal/portal.utils';
 import type {
   OrderStatus,
   PortalOrder,

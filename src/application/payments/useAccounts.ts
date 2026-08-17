@@ -7,7 +7,7 @@ import {
   updatePaymentAccount,
   deletePaymentAccount,
 } from '@/api/payments.api';
-import type { AccountFormValues } from '@/features/payments/payments.module';
+import type { AccountFormValues } from '@/schema/payment.schema';
 import type { PaymentAccount } from '@/domain/payments/types';
 
 export type { PaymentAccount };
