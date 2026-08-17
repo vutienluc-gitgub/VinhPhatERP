@@ -100,3 +100,8 @@ export * from '@/shared/value';
 
 export * from '@/shared/value';
 export { FilterChips } from './FilterChips';
+export {
+  ConcurrencyConflictModal,
+  type ConcurrencyConflictModalProps,
+  type ConcurrencyErrorType,
+} from './ConcurrencyConflictModal';
