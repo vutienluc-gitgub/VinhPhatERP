@@ -11,10 +11,14 @@ import type {
   WorkOrderYarnIssueWithRelations,
 } from '@/domain/production/work-orders.types';
 import type { CreateWorkOrderInput } from '@/features/work-orders/work-orders.module';
-import { supabase } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
+import {
+  assertSingleMutation,
+  assertVoidMutation,
+} from '@/lib/db-mutation-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiWorkOrderInsert } from '@/schema/api-validation.schema';
+import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 
 const TABLE = 'work_orders';
 
@@ -413,7 +417,7 @@ export async function updateWorkOrder(
 
 export async function issueYarn(id: string): Promise<WorkOrder> {
   // yarn_issued is an app-level status not in the generated DB enum — use untypedDb
-  const { error } = await untypedDb
+  const { data, error } = await untypedDb
     .from(TABLE)
     .update({ status: 'yarn_issued' })
     .eq('id', id)
@@ -421,14 +425,11 @@ export async function issueYarn(id: string): Promise<WorkOrder> {
     .select()
     .single();
 
-  if (error) {
-    if (error.code === 'PGRST116') {
-      throw new Error(
-        'Lệnh dệt không ở trạng thái Bản nháp hoặc đã được cấp phát bởi người khác.',
-      );
-    }
-    throw error;
-  }
+  assertSingleMutation(data, error, {
+    entityName: 'Lệnh dệt',
+    expectedStatus: 'draft',
+    transitionName: 'cấp phát sợi',
+  });
   return fetchWorkOrderById(id);
 }
 
@@ -437,11 +438,11 @@ export async function startWorkOrder(id: string): Promise<void> {
     p_wo_id: id,
     p_today: dayjs().format('YYYY-MM-DD'),
   });
-
-  if (error) {
-    console.error('Failed to change status', error);
-    throw error;
-  }
+  assertVoidMutation(error, {
+    entityName: 'Lệnh dệt',
+    expectedStatus: 'yarn_issued',
+    transitionName: 'bắt đầu sản xuất',
+  });
 }
 
 /* ── Work order completion ── */
@@ -454,11 +455,11 @@ export async function completeWorkOrder(
     p_yield_m: actualYieldM,
     p_today: dayjs().format('YYYY-MM-DD'),
   });
-
-  if (error) {
-    console.error('Failed to change status', error);
-    throw error;
-  }
+  assertVoidMutation(error, {
+    entityName: 'Lệnh dệt',
+    expectedStatus: 'in_progress',
+    transitionName: 'hoàn thành lệnh dệt',
+  });
 }
 
 export async function cancelWorkOrder(id: string): Promise<WorkOrder> {
@@ -466,9 +467,14 @@ export async function cancelWorkOrder(id: string): Promise<WorkOrder> {
     .from(TABLE)
     .update({ status: 'cancelled' })
     .eq('id', id)
+    .in('status', ['draft', 'yarn_issued', 'in_progress'] as never[])
     .select()
     .single();
-  if (error) throw error;
+  assertSingleMutation(data, error, {
+    entityName: 'Lệnh dệt',
+    expectedStatus: 'draft / yarn_issued / in_progress',
+    transitionName: 'hủy lệnh dệt',
+  });
   return data as WorkOrder;
 }
 
@@ -477,41 +483,43 @@ export async function verifyWorkOrder(
   actualYieldM: number,
   qcNotes: string,
 ): Promise<void> {
-  // Since 'pending_verification' is new, we use untypedDb if types are mismatched,
-  // but we updated types so supabase is fine.
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from(TABLE)
     .update({
       status: 'completed' as never,
       actual_yield_m: actualYieldM,
-      notes: qcNotes, // append notes or overwrite. For now overwrite.
+      notes: qcNotes,
     })
     .eq('id', id)
-    .eq('status', 'pending_verification' as never); // Only allow verification from pending status
-
-  if (error) {
-    console.error('Failed to verify work order', error);
-    throw error;
-  }
+    .eq('status', 'pending_verification' as never)
+    .select()
+    .single();
+  assertSingleMutation(data, error, {
+    entityName: 'Lệnh dệt',
+    expectedStatus: 'pending_verification',
+    transitionName: 'xác nhận nghiệm thu',
+  });
 }
 
 export async function rejectWorkOrder(
   id: string,
   reason: string,
 ): Promise<void> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from(TABLE)
     .update({
       status: 'in_progress' as never,
       notes: reason,
     })
     .eq('id', id)
-    .eq('status', 'pending_verification' as never);
-
-  if (error) {
-    console.error('Failed to reject work order', error);
-    throw error;
-  }
+    .eq('status', 'pending_verification' as never)
+    .select()
+    .single();
+  assertSingleMutation(data, error, {
+    entityName: 'Lệnh dệt',
+    expectedStatus: 'pending_verification',
+    transitionName: 'từ chối nghiệm thu',
+  });
 }
 
 export async function fetchUnitOptions(): Promise<string[]> {

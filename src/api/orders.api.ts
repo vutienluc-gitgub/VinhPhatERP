@@ -386,7 +386,11 @@ export async function confirmTradingOrder(orderId: string): Promise<void> {
   const { error } = await untypedDb.rpc('rpc_confirm_trading_order', {
     p_order_id: orderId,
   });
-  if (error) throw error;
+  assertVoidMutation(error, {
+    entityName: 'Đơn hàng thương mại',
+    expectedStatus: 'draft',
+    transitionName: 'xác nhận đơn hàng thương mại',
+  });
 }
 
 /* ── Cancel trading order (reverse stock deductions) ── */
@@ -396,7 +400,11 @@ export async function cancelTradingOrder(orderId: string): Promise<void> {
   const { error } = await untypedDb.rpc('rpc_cancel_trading_order', {
     p_order_id: orderId,
   });
-  if (error) throw error;
+  assertVoidMutation(error, {
+    entityName: 'Đơn hàng thương mại',
+    expectedStatus: 'confirmed',
+    transitionName: 'hủy đơn hàng thương mại',
+  });
 }
 
 /* ── Edge Function: get session token ── */
