@@ -9,6 +9,7 @@ import type { PaginatedResult } from '@/shared/types/pagination';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiLoomInsert } from '@/schema/api-validation.schema';
 import { safeUpsertOne } from '@/lib/db-guard';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 
 const TABLE = 'looms';
 
@@ -182,28 +183,48 @@ export async function createLoom(
   if (error) throw error;
   return data as unknown as LoomWithSupplier;
 }
-
 /* ── Update ── */
 
 export async function updateLoom(
   id: string,
   row: Omit<LoomInsertRow, 'tenant_id'>,
+  expectedUpdatedAt?: string,
 ): Promise<LoomWithSupplier> {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update(row)
-    .eq('id', id)
+  let query = supabase.from(TABLE).update(row).eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query
     .select(
       '*, supplier:suppliers(id, code, name), production_state:loom_production_states(efficiency_pct, current_work_order:work_orders(work_order_number, order:orders(order_number)))',
     )
     .single();
-  if (error) throw error;
-  return data as unknown as LoomWithSupplier;
+
+  return assertSingleMutation(data, error, {
+    entityName: 'Máy dệt',
+    expectedUpdatedAt,
+    transitionName: 'cập nhật máy dệt',
+  }) as unknown as LoomWithSupplier;
 }
 
 /* ── Delete ── */
 
-export async function deleteLoom(id: string): Promise<void> {
-  const { error } = await supabase.from(TABLE).delete().eq('id', id);
-  if (error) throw error;
+export async function deleteLoom(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase.from(TABLE).delete().eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Máy dệt',
+    expectedUpdatedAt,
+    transitionName: 'xóa máy dệt',
+  });
 }

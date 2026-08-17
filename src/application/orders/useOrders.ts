@@ -142,8 +142,16 @@ export function useCancelOrder() {
 export function useCompleteOrder() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: completeOrder,
-    onSuccess: (_, orderId) => {
+    mutationFn: (
+      params: { orderId: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const orderId = typeof params === 'string' ? params : params.orderId;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return completeOrder(orderId, expectedUpdatedAt);
+    },
+    onSuccess: (_, params) => {
+      const orderId = typeof params === 'string' ? params : params.orderId;
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       DomainEventBus.publish({
         eventName: 'OrderCompletedEvent',
@@ -163,7 +171,14 @@ export function useCompleteOrder() {
 export function useDeleteOrder() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteOrder,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return deleteOrder(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -174,7 +189,19 @@ export function useDeleteOrder() {
 export function useApproveOrderRequest() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => updateOrderStatus(id, 'draft'),
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return updateOrderStatus({
+        id,
+        status: 'draft',
+        expectedCurrentStatus: 'pending_review',
+        expectedUpdatedAt,
+      });
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -184,7 +211,19 @@ export function useApproveOrderRequest() {
 export function useRejectOrderRequest() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => updateOrderStatus(id, 'cancelled'),
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return updateOrderStatus({
+        id,
+        status: 'cancelled',
+        expectedCurrentStatus: 'pending_review',
+        expectedUpdatedAt,
+      });
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

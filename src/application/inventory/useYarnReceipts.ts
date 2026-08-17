@@ -164,7 +164,14 @@ export function useUpdateYarnReceipt() {
 export function useDeleteYarnReceipt() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteYarnReceiptRecord,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return deleteYarnReceiptRecord(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -174,7 +181,14 @@ export function useDeleteYarnReceipt() {
 export function useConfirmYarnReceipt() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: confirmYarnReceipt,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return confirmYarnReceipt(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

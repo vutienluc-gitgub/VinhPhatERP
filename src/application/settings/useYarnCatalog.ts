@@ -90,10 +90,12 @@ export function useUpdateYarnCatalog() {
     mutationFn: ({
       id,
       values,
+      expectedUpdatedAt,
     }: {
       id: string;
       values: YarnCatalogFormValues;
-    }) => updateYarnCatalog(id, toDbRow(values)),
+      expectedUpdatedAt?: string;
+    }) => updateYarnCatalog(id, toDbRow(values), expectedUpdatedAt),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -103,7 +105,14 @@ export function useUpdateYarnCatalog() {
 export function useDeleteYarnCatalog() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteYarnCatalog,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return deleteYarnCatalog(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

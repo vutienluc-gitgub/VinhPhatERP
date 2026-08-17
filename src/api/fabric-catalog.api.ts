@@ -11,6 +11,7 @@ import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { safeUpsertOne } from '@/lib/db-guard';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 
 const TABLE = 'fabric_catalogs';
 
@@ -142,6 +143,7 @@ export async function createFabricCatalog(
 export async function updateFabricCatalog(
   id: string,
   row: FabricCatalogRow,
+  expectedUpdatedAt?: string,
 ): Promise<FabricCatalog> {
   const { composition_parts: compositionParts, ...restRow } = row as Record<
     string,
@@ -152,14 +154,19 @@ export async function updateFabricCatalog(
     composition_tags: compositionParts as string[],
   };
 
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update(dbRow)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
-  return transformCategoryRow(data as Record<string, unknown>);
+  let query = supabase.from(TABLE).update(dbRow).eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  const validData = assertSingleMutation(data, error, {
+    entityName: 'Danh mục vải',
+    expectedUpdatedAt,
+    transitionName: 'cập nhật danh mục vải',
+  });
+  return transformCategoryRow(validData as Record<string, unknown>);
 }
 
 export async function updateFabricCommercial(

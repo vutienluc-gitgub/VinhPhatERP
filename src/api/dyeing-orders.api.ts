@@ -2,10 +2,14 @@ import type { DyeingOrderFormValues } from '@/schema/dyeing-order.schema';
 import { supabase } from '@/services/supabase/client';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
-import type {
+import {
   DyeingOrder,
   DyeingOrderFilter,
 } from '@/domain/production/dyeing-orders.types';
+import {
+  assertSingleMutation,
+  assertVoidMutation,
+} from '@/lib/db-mutation-guard';
 
 const TABLE = 'dyeing_orders';
 
@@ -169,16 +173,29 @@ export async function updateDyeingOrder(
     throw error;
   }
 }
-
 /* ── Send to dyeing (draft → sent) ── */
 
-export async function sendDyeingOrder(id: string): Promise<void> {
-  const { error } = await supabase
+export async function sendDyeingOrder(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
     .from(TABLE)
     .update({ status: 'sent' as never })
     .eq('id', id)
     .eq('status', 'draft' as never);
-  if (error) throw error;
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Lệnh nhuộm',
+    expectedStatus: 'draft',
+    expectedUpdatedAt,
+    transitionName: 'gửi nhuộm',
+  });
 }
 
 /* ── Complete (receive finished fabric) — calls atomic RPC ── */
@@ -191,17 +208,11 @@ export async function completeDyeingOrder(
     p_dyeing_order_id: id,
     p_actual_return_date: actualReturnDate,
   });
-  if (error) {
-    if (error.message?.includes('DYEING_ORDER_NOT_FOUND'))
-      throw new Error('Không tìm thấy lệnh nhuộm.');
-    if (error.message?.includes('DYEING_ORDER_ALREADY_COMPLETED'))
-      throw new Error('Lệnh nhuộm này đã hoàn thành rồi.');
-    if (error.message?.includes('DYEING_ORDER_INVALID_STATUS'))
-      throw new Error(
-        'Lệnh nhuộm phải ở trạng thái "Đã gửi" hoặc "Đang nhuộm" mới có thể hoàn thành.',
-      );
-    throw error;
-  }
+  assertVoidMutation(error, {
+    entityName: 'Lệnh nhuộm',
+    expectedStatus: 'sent / in_progress',
+    transitionName: 'hoàn thành lệnh nhuộm',
+  });
 }
 
 /* ── Mark as paid ── */
@@ -219,7 +230,25 @@ export async function markDyeingOrderPaid(
 
 /* ── Delete (draft only) ── */
 
-export async function deleteDyeingOrder(id: string): Promise<void> {
-  const { error } = await supabase.from(TABLE).delete().eq('id', id);
-  if (error) throw error;
+export async function deleteDyeingOrder(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
+    .from(TABLE)
+    .delete()
+    .eq('id', id)
+    .eq('status', 'draft' as never);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Lệnh nhuộm',
+    expectedStatus: 'draft',
+    expectedUpdatedAt,
+    transitionName: 'xóa lệnh nhuộm',
+  });
 }

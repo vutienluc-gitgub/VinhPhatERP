@@ -8,6 +8,10 @@ import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { validateApiInput } from '@/lib/validate-api-input';
+import {
+  assertSingleMutation,
+  assertVoidMutation,
+} from '@/lib/db-mutation-guard';
 import { apiWeavingInvoiceHeader } from '@/schema/api-validation.schema';
 
 const TABLE = 'weaving_invoices';
@@ -298,10 +302,6 @@ export async function confirmWeavingInvoice(id: string): Promise<void> {
     p_invoice_id: id,
   });
   if (error) {
-    if (error.message?.includes('INVOICE_NOT_DRAFT'))
-      throw new Error('Phiếu này đã được xác nhận rồi.');
-    if (error.message?.includes('INVOICE_NOT_FOUND'))
-      throw new Error('Không tìm thấy phiếu gia công.');
     if (
       error.code === '23505' ||
       error.message?.includes('duplicate key value')
@@ -310,7 +310,11 @@ export async function confirmWeavingInvoice(id: string): Promise<void> {
         'Lỗi dữ liệu kho mộc: Có ít nhất 1 mã cuộn trong phiếu này đã tồn tại trong kho. Vui lòng Huỷ xác nhận hoặc sửa lại mã cuộn trước khi nhập kho.',
       );
     }
-    throw error;
+    assertVoidMutation(error, {
+      entityName: 'Phiếu dệt gia công',
+      expectedStatus: 'draft',
+      transitionName: 'xác nhận phiếu gia công',
+    });
   }
 }
 
@@ -329,9 +333,27 @@ export async function markWeavingInvoicePaid(
 
 /* ── Delete (draft only) ── */
 
-export async function deleteWeavingInvoice(id: string): Promise<void> {
-  const { error } = await supabase.from(TABLE).delete().eq('id', id);
-  if (error) throw error;
+export async function deleteWeavingInvoice(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
+    .from(TABLE)
+    .delete()
+    .eq('id', id)
+    .eq('status', 'draft' as never);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Phiếu dệt gia công',
+    expectedStatus: 'draft',
+    expectedUpdatedAt,
+    transitionName: 'xóa phiếu gia công',
+  });
 }
 
 /* ── Supplier debt view ── */

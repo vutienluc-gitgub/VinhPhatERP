@@ -9,6 +9,7 @@ import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { safeUpsert, safeUpsertOne } from '@/lib/db-guard';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 
 const TABLE = 'raw_fabric_rolls';
 
@@ -106,24 +107,46 @@ export async function createRawFabric(
   });
   return inserted as unknown as RawFabricRoll;
 }
-
 export async function updateRawFabric(
   id: string,
   row: RawFabricRollUpdate,
+  expectedUpdatedAt?: string,
 ): Promise<RawFabricRoll> {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update(row)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
-  return data as RawFabricRoll;
+  let query = supabase.from(TABLE).update(row).eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  return assertSingleMutation(data, error, {
+    entityName: 'Cuộn vải mộc',
+    expectedUpdatedAt,
+    transitionName: 'cập nhật cuộn vải mộc',
+  }) as RawFabricRoll;
 }
 
-export async function deleteRawFabric(id: string): Promise<void> {
-  const { error } = await supabase.from(TABLE).delete().eq('id', id);
-  if (error) throw error;
+export async function deleteRawFabric(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
+    .from(TABLE)
+    .delete()
+    .eq('id', id)
+    .eq('status', 'in_stock');
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Cuộn vải mộc',
+    expectedStatus: 'in_stock',
+    expectedUpdatedAt,
+    transitionName: 'xóa cuộn vải mộc',
+  });
 }
 
 export async function createRawFabricBulk(

@@ -124,7 +124,10 @@ export function PODetailPage() {
   const handleSubmit = async () => {
     if (!po) return;
     try {
-      await submitMutation.mutateAsync(po.id);
+      await submitMutation.mutateAsync({
+        id: po.id,
+        expectedUpdatedAt: po.updated_at,
+      });
       toast.success(PO_CONSTANTS.MSG_SUBMIT_SUCCESS);
     } catch (err) {
       toast.error(
@@ -141,6 +144,7 @@ export function PODetailPage() {
         id: po.id,
         comment: approveComment,
         sendImmediately,
+        expectedUpdatedAt: po.updated_at,
       });
       toast.success(
         sendImmediately
@@ -160,7 +164,10 @@ export function PODetailPage() {
   const handleSend = async () => {
     if (!po) return;
     try {
-      await sendMutation.mutateAsync(po.id);
+      await sendMutation.mutateAsync({
+        id: po.id,
+        expectedUpdatedAt: po.updated_at,
+      });
       toast.success(PO_CONSTANTS.MSG_SEND_SUCCESS);
     } catch (err) {
       toast.error(
@@ -173,7 +180,10 @@ export function PODetailPage() {
   const handleConfirm = async () => {
     if (!po) return;
     try {
-      await confirmMutation.mutateAsync(po.id);
+      await confirmMutation.mutateAsync({
+        id: po.id,
+        expectedUpdatedAt: po.updated_at,
+      });
       toast.success(PO_CONSTANTS.MSG_CONFIRM_SUCCESS);
     } catch (err) {
       toast.error(
@@ -190,10 +200,15 @@ export function PODetailPage() {
         await requestChangesMutation.mutateAsync({
           id: po.id,
           reason: rejectReason,
+          expectedUpdatedAt: po.updated_at,
         });
         toast.success(PO_CONSTANTS.MSG_REQUEST_CHANGES_SUCCESS);
       } else {
-        await rejectMutation.mutateAsync({ id: po.id, reason: rejectReason });
+        await rejectMutation.mutateAsync({
+          id: po.id,
+          reason: rejectReason,
+          expectedUpdatedAt: po.updated_at,
+        });
         toast.success(PO_CONSTANTS.MSG_REJECT_SUCCESS);
       }
       setShowRejectModal(false);

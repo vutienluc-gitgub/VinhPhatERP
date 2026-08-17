@@ -5,6 +5,7 @@ import type {
   PurchaseOrderComment,
 } from '@/domain/purchase-orders';
 import { safeUpsert } from '@/lib/db-guard';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 
 export async function fetchPurchaseOrders(filters: {
   status?: string;
@@ -114,208 +115,380 @@ export async function fetchApprovalPolicies() {
   if (error) throw error;
   return data;
 }
+export interface SubmitPurchaseOrderParams {
+  poId: string;
+  userId: string;
+  expectedUpdatedAt?: string;
+}
 
-export async function submitPurchaseOrder(poId: string, userId: string) {
-  const { data, error } = await untypedDb
+export async function submitPurchaseOrder(
+  poIdOrParams: string | SubmitPurchaseOrderParams,
+  maybeUserId?: string,
+  maybeExpectedUpdatedAt?: string,
+) {
+  const params: SubmitPurchaseOrderParams =
+    typeof poIdOrParams === 'string'
+      ? {
+          poId: poIdOrParams,
+          userId: maybeUserId!,
+          expectedUpdatedAt: maybeExpectedUpdatedAt,
+        }
+      : poIdOrParams;
+
+  let query = untypedDb
     .from('purchase_orders')
     .update({ status: 'pending_approval' })
-    .eq('id', poId)
-    .select()
-    .single();
+    .eq('id', params.poId)
+    .in('status', ['draft', 'request_changes']);
 
-  if (error) throw error;
+  if (params.expectedUpdatedAt) {
+    query = query.eq('updated_at', params.expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+
+  const validatedData = assertSingleMutation(data, error, {
+    entityName: 'Đơn mua hàng',
+    expectedStatus: 'draft / request_changes',
+    expectedUpdatedAt: params.expectedUpdatedAt,
+    transitionName: 'gửi duyệt',
+  });
 
   await safeUpsert({
     table: 'po_audit_logs',
     data: {
       entity_type: 'purchase_order',
-      entity_id: poId,
+      entity_id: params.poId,
       action: 'submitted',
-      actor_id: userId,
-      snapshot: data,
+      actor_id: params.userId,
+      snapshot: validatedData,
     },
     conflictKey: 'id',
   });
 
-  return data;
+  return validatedData;
+}
+
+export interface ApprovePurchaseOrderParams {
+  poId: string;
+  userId: string;
+  comment?: string;
+  sendImmediately?: boolean;
+  expectedUpdatedAt?: string;
 }
 
 export async function approvePurchaseOrder(
-  poId: string,
-  userId: string,
-  comment?: string,
-  sendImmediately?: boolean,
+  poIdOrParams: string | ApprovePurchaseOrderParams,
+  maybeUserId?: string,
+  maybeComment?: string,
+  maybeSendImmediately?: boolean,
+  maybeExpectedUpdatedAt?: string,
 ) {
-  const targetStatus = sendImmediately ? 'sent' : 'approved';
+  const params: ApprovePurchaseOrderParams =
+    typeof poIdOrParams === 'string'
+      ? {
+          poId: poIdOrParams,
+          userId: maybeUserId!,
+          comment: maybeComment,
+          sendImmediately: maybeSendImmediately,
+          expectedUpdatedAt: maybeExpectedUpdatedAt,
+        }
+      : poIdOrParams;
 
-  const { data, error } = await untypedDb
+  const targetStatus = params.sendImmediately ? 'sent' : 'approved';
+
+  let query = untypedDb
     .from('purchase_orders')
     .update({
       status: targetStatus,
-      approved_by: userId,
+      approved_by: params.userId,
       approved_at: new Date().toISOString(),
     })
-    .eq('id', poId)
-    .select()
-    .single();
+    .eq('id', params.poId)
+    .eq('status', 'pending_approval');
 
-  if (error) throw error;
+  if (params.expectedUpdatedAt) {
+    query = query.eq('updated_at', params.expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+
+  const validatedData = assertSingleMutation(data, error, {
+    entityName: 'Đơn mua hàng',
+    expectedStatus: 'pending_approval',
+    expectedUpdatedAt: params.expectedUpdatedAt,
+    transitionName: 'phê duyệt',
+  });
 
   // Insert PO audit log for approval
   await safeUpsert({
     table: 'po_audit_logs',
     data: {
       entity_type: 'purchase_order',
-      entity_id: poId,
+      entity_id: params.poId,
       action: 'approved',
-      actor_id: userId,
-      snapshot: data,
-      comment,
+      actor_id: params.userId,
+      snapshot: validatedData,
+      comment: params.comment,
     },
     conflictKey: 'id',
   });
 
   // If send immediately is enabled, insert another audit log for sending
-  if (sendImmediately) {
+  if (params.sendImmediately) {
     await safeUpsert({
       table: 'po_audit_logs',
       data: {
         entity_type: 'purchase_order',
-        entity_id: poId,
+        entity_id: params.poId,
         action: 'sent',
-        actor_id: userId,
-        snapshot: data,
+        actor_id: params.userId,
+        snapshot: validatedData,
         comment: 'Tự động gửi khi duyệt (Approved & Sent)',
       },
       conflictKey: 'id',
     });
   }
 
-  return data;
+  return validatedData;
 }
 
-export async function sendPurchaseOrder(poId: string, userId: string) {
-  const { data, error } = await untypedDb
+export interface SendPurchaseOrderParams {
+  poId: string;
+  userId: string;
+  expectedUpdatedAt?: string;
+}
+
+export async function sendPurchaseOrder(
+  poIdOrParams: string | SendPurchaseOrderParams,
+  maybeUserId?: string,
+  maybeExpectedUpdatedAt?: string,
+) {
+  const params: SendPurchaseOrderParams =
+    typeof poIdOrParams === 'string'
+      ? {
+          poId: poIdOrParams,
+          userId: maybeUserId!,
+          expectedUpdatedAt: maybeExpectedUpdatedAt,
+        }
+      : poIdOrParams;
+
+  let query = untypedDb
     .from('purchase_orders')
     .update({
       status: 'sent',
     })
-    .eq('id', poId)
-    .select()
-    .single();
+    .eq('id', params.poId)
+    .eq('status', 'approved');
 
-  if (error) throw error;
+  if (params.expectedUpdatedAt) {
+    query = query.eq('updated_at', params.expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+
+  const validatedData = assertSingleMutation(data, error, {
+    entityName: 'Đơn mua hàng',
+    expectedStatus: 'approved',
+    expectedUpdatedAt: params.expectedUpdatedAt,
+    transitionName: 'gửi nhà cung cấp',
+  });
 
   await safeUpsert({
     table: 'po_audit_logs',
     data: {
       entity_type: 'purchase_order',
-      entity_id: poId,
+      entity_id: params.poId,
       action: 'sent',
-      actor_id: userId,
-      snapshot: data,
+      actor_id: params.userId,
+      snapshot: validatedData,
       comment: 'Đã gửi nhà cung cấp (Sent to Supplier)',
     },
     conflictKey: 'id',
   });
 
-  return data;
+  return validatedData;
 }
 
-export async function confirmPurchaseOrder(poId: string, userId: string) {
-  const { data, error } = await untypedDb
+export interface ConfirmPurchaseOrderParams {
+  poId: string;
+  userId: string;
+  expectedUpdatedAt?: string;
+}
+
+export async function confirmPurchaseOrder(
+  poIdOrParams: string | ConfirmPurchaseOrderParams,
+  maybeUserId?: string,
+  maybeExpectedUpdatedAt?: string,
+) {
+  const params: ConfirmPurchaseOrderParams =
+    typeof poIdOrParams === 'string'
+      ? {
+          poId: poIdOrParams,
+          userId: maybeUserId!,
+          expectedUpdatedAt: maybeExpectedUpdatedAt,
+        }
+      : poIdOrParams;
+
+  let query = untypedDb
     .from('purchase_orders')
     .update({
       status: 'supplier_confirmed',
       confirmation_method: 'manual',
       confirmed_at: new Date().toISOString(),
     })
-    .eq('id', poId)
-    .select()
-    .single();
+    .eq('id', params.poId)
+    .eq('status', 'sent');
 
-  if (error) throw error;
+  if (params.expectedUpdatedAt) {
+    query = query.eq('updated_at', params.expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+
+  const validatedData = assertSingleMutation(data, error, {
+    entityName: 'Đơn mua hàng',
+    expectedStatus: 'sent',
+    expectedUpdatedAt: params.expectedUpdatedAt,
+    transitionName: 'xác nhận NCC',
+  });
 
   await safeUpsert({
     table: 'po_audit_logs',
     data: {
       entity_type: 'purchase_order',
-      entity_id: poId,
+      entity_id: params.poId,
       action: 'supplier_confirmed',
-      actor_id: userId,
-      snapshot: data,
+      actor_id: params.userId,
+      snapshot: validatedData,
       comment: 'Xác nhận thủ công bởi nhân viên ERP (Manual Confirm)',
     },
     conflictKey: 'id',
   });
 
-  return data;
+  return validatedData;
+}
+
+export interface RequestChangesPurchaseOrderParams {
+  poId: string;
+  reason: string;
+  userId: string;
+  expectedUpdatedAt?: string;
 }
 
 export async function requestChangesPurchaseOrder(
-  poId: string,
-  reason: string,
-  userId: string,
+  poIdOrParams: string | RequestChangesPurchaseOrderParams,
+  maybeReason?: string,
+  maybeUserId?: string,
+  maybeExpectedUpdatedAt?: string,
 ) {
-  const { data, error } = await untypedDb
+  const params: RequestChangesPurchaseOrderParams =
+    typeof poIdOrParams === 'string'
+      ? {
+          poId: poIdOrParams,
+          reason: maybeReason!,
+          userId: maybeUserId!,
+          expectedUpdatedAt: maybeExpectedUpdatedAt,
+        }
+      : poIdOrParams;
+
+  let query = untypedDb
     .from('purchase_orders')
     .update({
       status: 'request_changes',
-      rejection_reason: reason,
+      rejection_reason: params.reason,
     })
-    .eq('id', poId)
-    .select()
-    .single();
+    .eq('id', params.poId)
+    .eq('status', 'pending_approval');
 
-  if (error) throw error;
+  if (params.expectedUpdatedAt) {
+    query = query.eq('updated_at', params.expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+
+  const validatedData = assertSingleMutation(data, error, {
+    entityName: 'Đơn mua hàng',
+    expectedStatus: 'pending_approval',
+    expectedUpdatedAt: params.expectedUpdatedAt,
+    transitionName: 'yêu cầu chỉnh sửa',
+  });
 
   await safeUpsert({
     table: 'po_audit_logs',
     data: {
       entity_type: 'purchase_order',
-      entity_id: poId,
+      entity_id: params.poId,
       action: 'request_changes',
-      actor_id: userId,
-      snapshot: data,
-      comment: reason,
+      actor_id: params.userId,
+      snapshot: validatedData,
+      comment: params.reason,
     },
     conflictKey: 'id',
   });
 
-  return data;
+  return validatedData;
+}
+
+export interface RejectPurchaseOrderParams {
+  poId: string;
+  reason: string;
+  userId: string;
+  expectedUpdatedAt?: string;
 }
 
 export async function rejectPurchaseOrder(
-  poId: string,
-  reason: string,
-  userId: string,
+  poIdOrParams: string | RejectPurchaseOrderParams,
+  maybeReason?: string,
+  maybeUserId?: string,
+  maybeExpectedUpdatedAt?: string,
 ) {
-  const { data, error } = await untypedDb
+  const params: RejectPurchaseOrderParams =
+    typeof poIdOrParams === 'string'
+      ? {
+          poId: poIdOrParams,
+          reason: maybeReason!,
+          userId: maybeUserId!,
+          expectedUpdatedAt: maybeExpectedUpdatedAt,
+        }
+      : poIdOrParams;
+
+  let query = untypedDb
     .from('purchase_orders')
     .update({
       status: 'rejected',
-      rejection_reason: reason,
+      rejection_reason: params.reason,
     })
-    .eq('id', poId)
-    .select()
-    .single();
+    .eq('id', params.poId)
+    .eq('status', 'pending_approval');
 
-  if (error) throw error;
+  if (params.expectedUpdatedAt) {
+    query = query.eq('updated_at', params.expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+
+  const validatedData = assertSingleMutation(data, error, {
+    entityName: 'Đơn mua hàng',
+    expectedStatus: 'pending_approval',
+    expectedUpdatedAt: params.expectedUpdatedAt,
+    transitionName: 'từ chối phê duyệt',
+  });
 
   await safeUpsert({
     table: 'po_audit_logs',
     data: {
       entity_type: 'purchase_order',
-      entity_id: poId,
+      entity_id: params.poId,
       action: 'rejected',
-      actor_id: userId,
-      snapshot: data,
-      comment: reason,
+      actor_id: params.userId,
+      snapshot: validatedData,
+      comment: params.reason,
     },
     conflictKey: 'id',
   });
 
-  return data;
+  return validatedData;
 }
 
 export async function createGoodsReceipt(

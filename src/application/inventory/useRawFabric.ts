@@ -100,7 +100,14 @@ export function useUpdateRawFabric() {
 export function useDeleteRawFabric() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteRawFabric,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return deleteRawFabric(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

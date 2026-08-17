@@ -7,6 +7,7 @@ import { supabase } from '@/services/supabase/client';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { validateApiInput } from '@/lib/validate-api-input';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 import { apiQuotationHeader } from '@/schema/api-validation.schema';
 
 const HEADER_TABLE = 'quotations';
@@ -207,26 +208,40 @@ export async function updateQuotationWithItems(
     throw error;
   }
 }
-
 /* ── Status transitions ── */
 
-export async function sendQuotation(id: string): Promise<void> {
+export async function sendQuotation(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
   let query = supabase
     .from(HEADER_TABLE)
     .update({ status: 'sent' as QuotationStatus })
     .eq('id', id)
     .in('status', ['draft']);
 
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
   const customerIds = await getSalespersonCustomerIds();
   if (customerIds) {
     query = query.in('customer_id', customerIds);
   }
 
-  const { error } = await query;
-  if (error) throw error;
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Báo giá',
+    expectedStatus: 'draft',
+    expectedUpdatedAt,
+    transitionName: 'gửi báo giá',
+  });
 }
 
-export async function confirmQuotation(id: string): Promise<void> {
+export async function confirmQuotation(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
   let query = supabase
     .from(HEADER_TABLE)
     .update({
@@ -236,41 +251,78 @@ export async function confirmQuotation(id: string): Promise<void> {
     .eq('id', id)
     .in('status', ['sent', 'draft']);
 
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
   const customerIds = await getSalespersonCustomerIds();
   if (customerIds) {
     query = query.in('customer_id', customerIds);
   }
 
-  const { error } = await query;
-  if (error) throw error;
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Báo giá',
+    expectedStatus: 'sent / draft',
+    expectedUpdatedAt,
+    transitionName: 'xác nhận báo giá',
+  });
 }
 
-export async function rejectQuotation(id: string): Promise<void> {
+export async function rejectQuotation(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
   let query = supabase
     .from(HEADER_TABLE)
     .update({ status: 'rejected' as QuotationStatus })
     .eq('id', id)
     .in('status', ['sent', 'draft']);
 
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
   const customerIds = await getSalespersonCustomerIds();
   if (customerIds) {
     query = query.in('customer_id', customerIds);
   }
 
-  const { error } = await query;
-  if (error) throw error;
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Báo giá',
+    expectedStatus: 'sent / draft',
+    expectedUpdatedAt,
+    transitionName: 'từ chối báo giá',
+  });
 }
 
-export async function deleteQuotation(id: string): Promise<void> {
-  let query = supabase.from(HEADER_TABLE).delete().eq('id', id);
+export async function deleteQuotation(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
+    .from(HEADER_TABLE)
+    .delete()
+    .eq('id', id)
+    .eq('status', 'draft');
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
 
   const customerIds = await getSalespersonCustomerIds();
   if (customerIds) {
     query = query.in('customer_id', customerIds);
   }
 
-  const { error } = await query;
-  if (error) throw error;
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Báo giá',
+    expectedStatus: 'draft',
+    expectedUpdatedAt,
+    transitionName: 'xóa báo giá',
+  });
 }
 
 /* ── Expiring quotations count ── */

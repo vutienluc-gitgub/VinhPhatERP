@@ -4,6 +4,7 @@ import type {
 } from '@/domain/settings/yarn-catalog.types';
 import { supabase } from '@/services/supabase/client';
 import { safeUpsertOne } from '@/lib/db-guard';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -133,22 +134,39 @@ export async function createYarnCatalog(
   });
   return inserted as unknown as YarnCatalog;
 }
-
 export async function updateYarnCatalog(
   id: string,
   row: YarnCatalogRow,
+  expectedUpdatedAt?: string,
 ): Promise<YarnCatalog> {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update(row)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
-  return data as unknown as YarnCatalog;
+  let query = supabase.from(TABLE).update(row).eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  return assertSingleMutation(data, error, {
+    entityName: 'Loại sợi',
+    expectedUpdatedAt,
+    transitionName: 'cập nhật loại sợi',
+  }) as unknown as YarnCatalog;
 }
 
-export async function deleteYarnCatalog(id: string): Promise<void> {
-  const { error } = await supabase.from(TABLE).delete().eq('id', id);
-  if (error) throw error;
+export async function deleteYarnCatalog(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase.from(TABLE).delete().eq('id', id);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Loại sợi',
+    expectedUpdatedAt,
+    transitionName: 'xóa loại sợi',
+  });
 }

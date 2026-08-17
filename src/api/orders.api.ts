@@ -12,6 +12,10 @@ import type { PaginatedResult } from '@/shared/types/pagination';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import { orderResponseSchema } from '@/schema/order.schema';
 import { safeUpsertOne } from '@/lib/db-guard';
+import {
+  assertSingleMutation,
+  assertVoidMutation,
+} from '@/lib/db-mutation-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiOrderHeader, apiOrderItem } from '@/schema/api-validation.schema';
 import {
@@ -200,25 +204,83 @@ export async function updateOrderWithItems(
     throw new Error(error.message || String(error));
   }
 }
-
 /* ── Delete order ── */
 
-export async function deleteOrder(id: string): Promise<void> {
-  const { error } = await supabase.from(HEADER_TABLE).delete().eq('id', id);
-  if (error) throw error;
+export async function deleteOrder(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
+    .from(HEADER_TABLE)
+    .delete()
+    .eq('id', id)
+    .in('status', ['draft', 'pending_review']);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Đơn hàng',
+    expectedStatus: 'draft / pending_review',
+    expectedUpdatedAt,
+    transitionName: 'xóa đơn hàng',
+  });
 }
 
-/* ── Update order status (used by Kanban) ── */
+/* ── Update order status (used by Kanban / Actions) ── */
+
+export interface UpdateOrderStatusParams {
+  id: string;
+  status: DbOrderStatus;
+  expectedCurrentStatus?: DbOrderStatus | DbOrderStatus[];
+  expectedUpdatedAt?: string;
+}
 
 export async function updateOrderStatus(
-  id: string,
-  status: DbOrderStatus,
+  idOrParams: string | UpdateOrderStatusParams,
+  maybeStatus?: DbOrderStatus,
+  maybeExpectedStatus?: DbOrderStatus | DbOrderStatus[],
+  maybeExpectedUpdatedAt?: string,
 ): Promise<void> {
-  const { error } = await supabase
+  const params: UpdateOrderStatusParams =
+    typeof idOrParams === 'string'
+      ? {
+          id: idOrParams,
+          status: maybeStatus!,
+          expectedCurrentStatus: maybeExpectedStatus,
+          expectedUpdatedAt: maybeExpectedUpdatedAt,
+        }
+      : idOrParams;
+
+  let query = supabase
     .from(HEADER_TABLE)
-    .update({ status })
-    .eq('id', id);
-  if (error) throw error;
+    .update({ status: params.status })
+    .eq('id', params.id);
+
+  if (params.expectedCurrentStatus) {
+    if (Array.isArray(params.expectedCurrentStatus)) {
+      query = query.in('status', params.expectedCurrentStatus);
+    } else {
+      query = query.eq('status', params.expectedCurrentStatus);
+    }
+  }
+
+  if (params.expectedUpdatedAt) {
+    query = query.eq('updated_at', params.expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+
+  assertSingleMutation(data, error, {
+    entityName: 'Đơn hàng',
+    expectedStatus: Array.isArray(params.expectedCurrentStatus)
+      ? params.expectedCurrentStatus.join('/')
+      : params.expectedCurrentStatus,
+    expectedUpdatedAt: params.expectedUpdatedAt,
+    transitionName: `chuyển trạng thái sang "${params.status}"`,
+  });
 
   const {
     data: { user },
@@ -236,10 +298,10 @@ export async function updateOrderStatus(
       data: {
         tenant_id: profile?.tenant_id,
         entity_type: 'orders',
-        entity_id: id,
+        entity_id: params.id,
         event_type: 'ORDER_STATUS_CHANGED',
         payload: {
-          new_status: status,
+          new_status: params.status,
           action: 'update_status',
         },
         user_id: user.id,
@@ -255,7 +317,11 @@ export async function confirmOrder(orderId: string): Promise<void> {
   const { error } = await supabase.rpc('rpc_confirm_order', {
     p_order_id: orderId,
   });
-  if (error) throw error;
+  assertVoidMutation(error, {
+    entityName: 'Đơn hàng',
+    expectedStatus: 'draft',
+    transitionName: 'xác nhận đơn hàng',
+  });
 }
 
 /* ── Create and confirm order ── */
@@ -281,17 +347,36 @@ export async function cancelOrder(orderId: string): Promise<void> {
   const { error } = await supabase.rpc('rpc_cancel_order', {
     p_order_id: orderId,
   });
-  if (error) throw error;
+  assertVoidMutation(error, {
+    entityName: 'Đơn hàng',
+    expectedStatus: 'draft / confirmed',
+    transitionName: 'hủy đơn hàng',
+  });
 }
 
 /* ── Complete order ── */
 
-export async function completeOrder(orderId: string): Promise<void> {
-  const { error } = await supabase
+export async function completeOrder(
+  orderId: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
     .from(HEADER_TABLE)
     .update({ status: 'completed' as OrderStatus })
-    .eq('id', orderId);
-  if (error) throw error;
+    .eq('id', orderId)
+    .in('status', ['in_progress', 'confirmed']);
+
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Đơn hàng',
+    expectedStatus: 'in_progress / confirmed',
+    expectedUpdatedAt,
+    transitionName: 'hoàn thành đơn hàng',
+  });
 }
 
 /* ── Confirm trading order (with stock deduction) ── */

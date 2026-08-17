@@ -154,7 +154,14 @@ export function useUpdateQuotation() {
 export function useSendQuotation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: sendQuotation,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return sendQuotation(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -164,7 +171,14 @@ export function useSendQuotation() {
 export function useConfirmQuotation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: confirmQuotation,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return confirmQuotation(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -174,7 +188,14 @@ export function useConfirmQuotation() {
 export function useRejectQuotation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: rejectQuotation,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return rejectQuotation(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
@@ -184,7 +205,14 @@ export function useRejectQuotation() {
 export function useDeleteQuotation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteQuotation,
+    mutationFn: (
+      params: { id: string; expectedUpdatedAt?: string } | string,
+    ) => {
+      const id = typeof params === 'string' ? params : params.id;
+      const expectedUpdatedAt =
+        typeof params === 'string' ? undefined : params.expectedUpdatedAt;
+      return deleteQuotation(id, expectedUpdatedAt);
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },

@@ -6,6 +6,7 @@ import { supabase } from '@/services/supabase/client';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import { validateApiInput } from '@/lib/validate-api-input';
+import { assertSingleMutation } from '@/lib/db-mutation-guard';
 import { apiYarnReceiptInput } from '@/schema/api-validation.schema';
 
 const HEADER_TABLE = 'yarn_receipts';
@@ -262,27 +263,50 @@ export async function updateYarnReceiptFull(
     throw error;
   }
 }
+export async function deleteYarnReceiptRecord(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
+    .from(HEADER_TABLE)
+    .delete()
+    .eq('id', id)
+    .eq('status', 'draft');
 
-export async function deleteYarnReceiptRecord(id: string): Promise<void> {
-  const { error } = await supabase.from(HEADER_TABLE).delete().eq('id', id);
-  if (error) throw error;
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
+  }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Phiếu nhập sợi',
+    expectedStatus: 'draft',
+    expectedUpdatedAt,
+    transitionName: 'xóa phiếu nhập sợi',
+  });
 }
 
-export async function confirmYarnReceipt(id: string): Promise<void> {
-  const { error } = await supabase
+export async function confirmYarnReceipt(
+  id: string,
+  expectedUpdatedAt?: string,
+): Promise<void> {
+  let query = supabase
     .from(HEADER_TABLE)
     .update({ status: 'confirmed' })
     .eq('id', id)
-    .eq('status', 'draft')
-    .select()
-    .single();
+    .eq('status', 'draft');
 
-  if (error) {
-    if (error.code === 'PGRST116') {
-      throw new Error('Phiếu không tồn tại hoặc đã được xác nhận trước đó.');
-    }
-    throw error;
+  if (expectedUpdatedAt) {
+    query = query.eq('updated_at', expectedUpdatedAt);
   }
+
+  const { data, error } = await query.select().single();
+  assertSingleMutation(data, error, {
+    entityName: 'Phiếu nhập sợi',
+    expectedStatus: 'draft',
+    expectedUpdatedAt,
+    transitionName: 'xác nhận phiếu nhập sợi',
+  });
 }
 
 export async function fetchLatestYarnPrices(
