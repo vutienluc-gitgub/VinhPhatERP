@@ -1,4 +1,4 @@
-import type { FeaturePlugin } from '@/shared/lib/FeatureRegistry';
+import type { ERPPlugin } from '@/app/types/plugin';
 import { FeatureRegistry } from '@/shared/lib/FeatureRegistry';
 import { customersPlugin } from '@/features/customers';
 import { quotationsPlugin } from '@/features/quotations';
@@ -38,15 +38,16 @@ import { mediaPlugin } from '@/features/media';
 import { approvalPlugin } from '@/features/approval';
 
 /**
- * Plugin Registry — Đăng ký tất cả features vào hệ thống.
+ * Plugin Registry — Composition Root.
  *
+ * Tất cả feature modules được đăng ký tại đây.
  * Để bật/tắt một feature, chỉ cần comment hoặc xóa dòng tương ứng.
  * Không cần chỉnh sửa routes.tsx hay Sidebar.
  *
- * Thứ tự plugins = thứ tự hiển thị trên menu (dùng field `order`).
+ * Thứ tự hiển thị trên menu dựa vào field `order` của mỗi plugin.
  */
 
-const plugins: FeaturePlugin[] = [
+const plugins: ERPPlugin[] = [
   // ── SALES ──
   quotationsPlugin,
   ordersPlugin,
@@ -93,15 +94,20 @@ const plugins: FeaturePlugin[] = [
   approvalPlugin,
 ];
 
-let pluginsInitialized = false;
-
-export function initPlugins() {
-  if (pluginsInitialized) {
-    return;
-  }
-
+/**
+ * Initialize the Plugin Registry.
+ *
+ * Phase 1: Register all plugins (sync, builds dependency graph)
+ * Phase 2: Validate graph + run lifecycle init in dependency order (async)
+ *
+ * Idempotent — safe to call multiple times.
+ */
+export async function initPlugins(): Promise<void> {
+  // Phase 1: Registration (sync)
   FeatureRegistry.registerAll(plugins);
-  pluginsInitialized = true;
+
+  // Phase 2: Graph validation + lifecycle init (async)
+  await FeatureRegistry.init();
 }
 
 export { FeatureRegistry };
