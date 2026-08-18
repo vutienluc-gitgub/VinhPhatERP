@@ -35,14 +35,21 @@ function pluginToRoute(plugin: FeaturePlugin): RouteObject[] {
   // 1. Phân tích cấu trúc mới 'routes' (Nested Routes / Mạng phẳng routes)
   if (plugin.routes && plugin.routes.length > 0) {
     for (const r of plugin.routes) {
-      const LazyComponent = lazy(r.component);
-      const routeObj: RouteObject = {
-        path: r.path,
-        element: (
+      let element: React.ReactNode = undefined;
+      if (r.component) {
+        const LazyComponent = lazy(r.component);
+        element = (
           <LazyPage>
             <LazyComponent />
           </LazyPage>
-        ),
+        );
+      } else if (r.element) {
+        element = r.element;
+      }
+
+      const routeObj: RouteObject = {
+        path: r.path,
+        element,
       };
 
       // Support nested children (Outlet-based layouts)
@@ -55,14 +62,22 @@ function pluginToRoute(plugin: FeaturePlugin): RouteObject[] {
             element: <Navigate to={firstChildPath} replace />,
           },
           ...r.children.map((child) => {
-            const ChildComponent = lazy(child.component);
-            return {
-              path: child.path,
-              element: (
+            let childElement: React.ReactNode = undefined;
+            if (child.component) {
+              const ChildComponent = lazy(child.component);
+              childElement = (
                 <LazyPage>
                   <ChildComponent />
                 </LazyPage>
-              ),
+              );
+            } else if (child.element) {
+              childElement = child.element;
+            }
+
+            return {
+              path: child.path,
+              index: child.index,
+              element: childElement,
             } as RouteObject;
           }),
         ];
@@ -103,11 +118,13 @@ function pluginToRoute(plugin: FeaturePlugin): RouteObject[] {
 }
 
 export function hasAccess(
-  requiredRoles: UserRole[] | undefined,
-  role: UserRole | undefined,
+  requiredRoles: UserRole[] | string[] | undefined,
+  role: UserRole | string | undefined,
 ): boolean {
   if (!requiredRoles || requiredRoles.length === 0) return true;
-  return role !== undefined && requiredRoles.includes(role);
+  return (
+    role !== undefined && (requiredRoles as string[]).includes(role as string)
+  );
 }
 
 /* ── Navigation (re-exported for Sidebar/BottomNav) ── */
@@ -120,7 +137,7 @@ export type NavigationItem = {
   icon?: string;
   primaryMobile?: boolean;
   group?: string;
-  requiredRoles?: UserRole[];
+  requiredRoles?: UserRole[] | string[];
 };
 
 /**

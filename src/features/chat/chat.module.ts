@@ -33,8 +33,10 @@ export const chatPlugin: FeaturePlugin = {
   route: '',
   label: 'Chat',
   shortLabel: 'Chat',
-  description: 'Hệ thống Chat nội bộ đa thực thể.',
-  icon: 'MessageCircle', // Thay thế bằng icon phù hợp
+  description: 'He thong Chat noi bo da thuc the.',
+  icon: 'MessageCircle',
+  group: 'system',
+  order: 92,
   requiredRoles: ['admin', 'driver', 'customer', 'staff', 'manager'],
   routes: [
     {

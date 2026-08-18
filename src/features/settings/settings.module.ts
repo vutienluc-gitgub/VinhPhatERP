@@ -42,12 +42,13 @@ export const settingsFeature: FeatureDefinition = {
 export const settingsPlugin: FeaturePlugin = {
   key: 'settings',
   route: 'settings',
-  label: 'Cài đặt',
-  shortLabel: 'Cấu hình',
-  description: 'Cài đặt thông tin công ty và các tham số vận hành hệ thống.',
+  label: 'Cai dat',
+  shortLabel: 'Cau hinh',
+  description: 'Cai dat thong tin cong ty va cac tham so van hanh he thong.',
   icon: 'Settings',
   requiredRoles: ['admin'],
   group: 'system',
+  order: 99,
   routes: [
     {
       path: 'settings',
