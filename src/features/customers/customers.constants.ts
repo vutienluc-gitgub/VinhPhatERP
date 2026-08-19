@@ -1,4 +1,39 @@
+import dayjs from 'dayjs';
+
 import { PAYMENT_METHOD_LABELS } from '@/schema/payment.schema';
+import type { CustomersFilter } from '@/domain/crm/customers.types';
+
+/** Tab keys hợp lệ cho danh sách khách hàng. */
+export type CustomerTab = 'all' | 'mine' | 'new';
+
+export const CUSTOMER_TABS = [
+  'all',
+  'mine',
+  'new',
+] as const satisfies readonly CustomerTab[];
+
+/**
+ * getTabPreset — Pure function trả về filter preset cho mỗi tab.
+ *
+ * Tách biệt hoàn toàn khỏi UI component, có thể test độc lập.
+ * Kết quả được merge vào effectiveFilters: tabPreset < userFilters.
+ *
+ * @param tab        Tab key đang active.
+ * @param employeeId Employee ID của user hiện tại (dùng cho tab 'mine').
+ */
+export function getTabPreset(
+  tab: CustomerTab,
+  employeeId: string | undefined,
+): Partial<CustomersFilter> {
+  switch (tab) {
+    case 'mine':
+      return employeeId ? { salesperson_id: employeeId } : {};
+    case 'new':
+      return { created_from: dayjs().startOf('week').toISOString() };
+    default:
+      return {};
+  }
+}
 
 /** Centralized labels for the Deposit (advance payment) form. */
 export const DEPOSIT_FORM_LABELS = {

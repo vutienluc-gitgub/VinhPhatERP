@@ -17,6 +17,7 @@ export type { ShippingRate } from './useShippingRateOptions';
 export { useKeyboardNavigation } from './useKeyboardNavigation';
 export { useMediaQuery } from './useMediaQuery';
 export { useStepper } from './useStepper';
+export { useTabState } from './useTabState';
 export { useTheme } from './useTheme';
 export { useUserPreferences } from './useUserPreferences';
 export type { UserPreferences } from './useUserPreferences';
