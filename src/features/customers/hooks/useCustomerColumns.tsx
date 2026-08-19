@@ -133,22 +133,14 @@ export function useCustomerColumns({
       cell: (info) => {
         const sourceKey = info.row.original.source || 'other';
         return (
-          <button
-            type="button"
-            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md inline-block cursor-pointer hover:scale-105 transition-transform"
-            title="Nhấn để lọc các khách hàng từ nguồn này"
-            onClick={(e) => {
-              e.stopPropagation();
-              onFilterSource?.(sourceKey);
-            }}
+          <Badge
+            variant={SOURCE_BADGE_VARIANT[sourceKey] ?? 'gray'}
+            icon={CUSTOMER_SOURCE_ICONS[sourceKey] as IconName}
+            onFilter={() => onFilterSource?.(sourceKey)}
+            filterTooltip="Nhấn để lọc các khách hàng từ nguồn này"
           >
-            <Badge
-              variant={SOURCE_BADGE_VARIANT[sourceKey] ?? 'gray'}
-              icon={CUSTOMER_SOURCE_ICONS[sourceKey] as IconName}
-            >
-              {CUSTOMER_SOURCE_LABELS[sourceKey]}
-            </Badge>
-          </button>
+            {CUSTOMER_SOURCE_LABELS[sourceKey]}
+          </Badge>
         );
       },
     },
