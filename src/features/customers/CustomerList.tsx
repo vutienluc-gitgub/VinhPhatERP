@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import dayjs from 'dayjs';
 
 import {
   CUSTOMER_STATUS_LABELS,
@@ -35,13 +33,18 @@ import {
   useBulkUpdateCustomers,
 } from '@/application/crm';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
-import { useCustomerVisibilityScope } from '@/shared/hooks';
+import { useCustomerVisibilityScope, useTabState } from '@/shared/hooks';
 import { useAuth } from '@/shared/hooks/useAuth';
 import type { Customer, CustomersFilter } from '@/domain/crm/customers.types';
 
 import { useCustomerColumns } from './hooks/useCustomerColumns';
 import { CustomerMobileCard } from './components/CustomerMobileCard';
-import { CUSTOMER_LIST_LABELS } from './customers.constants';
+import {
+  CUSTOMER_LIST_LABELS,
+  CUSTOMER_TABS,
+  getTabPreset,
+  type CustomerTab,
+} from './customers.constants';
 
 type CustomerListProps = {
   onEdit: (customer: Customer) => void;
@@ -67,10 +70,15 @@ export function CustomerList({
       'created_to',
       'source',
     ]);
-  const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const { profile } = useAuth();
+
+  const { activeTab, setTab } = useTabState<CustomerTab>(
+    'tab',
+    'all',
+    CUSTOMER_TABS,
+  );
 
   const { canSelectSalesperson, forcedSalespersonId, isSale } =
     useCustomerVisibilityScope();
@@ -80,9 +88,15 @@ export function CustomerList({
     status: 'active',
   });
 
+  // Tab preset được merge TRƯỚC user filters — user filters luôn thắng.
+  // Ví dụ: tab 'mine' inject salesperson_id, nhưng nếu user tự chọn salesperson
+  // khác trong FilterBar thì giá trị của user được ưu tiên.
+  const tabPreset = getTabPreset(activeTab, profile?.employee_id ?? undefined);
   const effectiveFilters = {
+    ...tabPreset,
     ...filters,
-    salesperson_id: forcedSalespersonId || filters.salesperson_id,
+    salesperson_id:
+      forcedSalespersonId || filters.salesperson_id || tabPreset.salesperson_id,
   } as CustomersFilter;
 
   const { data: result, isLoading } = useCustomerList(
@@ -166,43 +180,12 @@ export function CustomerList({
     setFilter(key, value);
   }
 
-  function handleTabChange(key: string) {
-    const next = new URLSearchParams(searchParams);
-    const filterKeys = [
-      'query',
-      'status',
-      'salesperson_id',
-      'created_from',
-      'created_to',
-      'source',
-    ];
-    filterKeys.forEach((k) => next.delete(k));
-
-    if (key === 'mine' && profile?.employee_id) {
-      next.set('salesperson_id', profile.employee_id);
-    } else if (key === 'new') {
-      next.set('created_from', dayjs().startOf('week').toISOString());
-    }
-
-    setSearchParams(next, { replace: true });
+  function handleTabChange(key: CustomerTab) {
+    setTab(key);
     setPage(1);
   }
 
-  let activeTab = 'all';
-  if (
-    filters.salesperson_id === profile?.employee_id &&
-    Object.keys(filters).length === 1
-  ) {
-    activeTab = 'mine';
-  } else if (filters.created_from && Object.keys(filters).length === 1) {
-    activeTab = 'new';
-  } else if (Object.keys(filters).length === 0) {
-    activeTab = 'all';
-  } else {
-    activeTab = 'custom';
-  }
-
-  const tabs: TabItem<string>[] = [
+  const tabs: TabItem<CustomerTab>[] = [
     {
       key: 'all',
       label: CUSTOMER_LIST_LABELS.tabAll,
@@ -327,7 +310,7 @@ export function CustomerList({
       <div className="pb-2 min-w-0">
         <TabSwitcher
           tabs={tabs}
-          active={activeTab === 'custom' ? 'all' : activeTab}
+          active={activeTab}
           onChange={handleTabChange}
           className="!border-b-0"
         />

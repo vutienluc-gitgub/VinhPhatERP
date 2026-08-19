@@ -1,3 +1,5 @@
+import type { MouseEvent } from 'react';
+
 import { Badge } from '@/shared/components/Badge';
 
 import { getStatusConfig, type StatusDomain } from './status.config';
@@ -8,6 +10,10 @@ export interface StatusBadgeProps {
   progress?: number | null;
   showDot?: boolean;
   className?: string;
+  /** Pass to enable contextual quick filter on this badge */
+  onFilter?: (e: MouseEvent<HTMLButtonElement>) => void;
+  /** Default: "Nhấn để lọc" */
+  filterTooltip?: string;
 }
 
 export function StatusBadge({
@@ -16,20 +22,29 @@ export function StatusBadge({
   progress,
   showDot = true,
   className,
+  onFilter,
+  filterTooltip,
 }: StatusBadgeProps) {
   const config = getStatusConfig(domain, status);
 
+  // Props chung cho Badge — spread conditionally để giữ discriminated union
+  const filterProps = onFilter ? ({ onFilter, filterTooltip } as const) : {};
+
   if (!config) {
-    // Fallback cho trạng thái không xác định
     return (
-      <Badge variant="gray" className={className}>
+      <Badge variant="gray" className={className} {...filterProps}>
         {String(status)}
       </Badge>
     );
   }
 
   const badgeNode = (
-    <Badge variant={config.variant} showDot={showDot} className={className}>
+    <Badge
+      variant={config.variant}
+      showDot={showDot}
+      className={className}
+      {...filterProps}
+    >
       {config.label}
     </Badge>
   );

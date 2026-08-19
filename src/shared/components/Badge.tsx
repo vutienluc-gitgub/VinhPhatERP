@@ -147,7 +147,7 @@ export function Badge(props: BadgeProps) {
       {...buttonRest}
       className={cn(
         baseClasses,
-        'cursor-pointer transition-colors',
+        'cursor-pointer transition-colors hover:opacity-85',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md',
       )}
       title={filterTooltip ?? 'Nhấn để lọc'}
