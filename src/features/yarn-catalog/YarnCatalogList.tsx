@@ -81,7 +81,7 @@ export function YarnCatalogList({ onEdit, onNew }: YarnCatalogListProps) {
             label={YARN_CATALOG_MESSAGES.KPI_ACTIVE}
             value={catalogs.filter((i) => i.status === 'active').length}
             icon="CheckCircle"
-            variant="secondary"
+            variant="warning"
             formatMode="number"
             footer={YARN_CATALOG_MESSAGES.KPI_ACTIVE_DESC}
           />
