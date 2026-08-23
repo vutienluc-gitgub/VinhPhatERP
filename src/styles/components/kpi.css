@@ -190,11 +190,11 @@
 }
 
 .kpi-card-premium.kpi-secondary {
-  border-bottom: 4px solid var(--surface-subtle);
+  border-bottom: 4px solid var(--secondary);
 }
 
 .kpi-card-premium.kpi-secondary::after {
-  background: var(--surface-subtle);
+  background: var(--secondary);
 }
 
 .kpi-card-premium.kpi-info {
@@ -301,8 +301,8 @@
 }
 
 .kpi-secondary .kpi-icon-box {
-  background: rgb(var(--base-rgb), 0.06);
-  color: var(--muted-foreground);
+  background: rgb(var(--base-rgb), 0.08);
+  color: var(--secondary);
 }
 
 .kpi-info .kpi-icon-box {
