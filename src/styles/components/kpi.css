@@ -301,7 +301,7 @@
 }
 
 .kpi-secondary .kpi-icon-box {
-  background: rgb(var(--base-rgb), 0.08);
+  background: rgb(var(--secondary-rgb, 92, 111, 136), 0.12);
   color: var(--secondary);
 }
 
