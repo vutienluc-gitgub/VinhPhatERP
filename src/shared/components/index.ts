@@ -56,8 +56,13 @@ export * from './TagInput';
 export { TabSwitcher } from './TabSwitcher';
 export type { TabItem } from './TabSwitcher';
 export { Switch } from './Switch';
+export { SegmentedControl } from './SegmentedControl';
+export type {
+  SegmentedControlOption,
+  SegmentedControlProps,
+} from './SegmentedControl';
 export { ViewToggle } from './ViewToggle';
-export type { ViewMode } from './ViewToggle';
+export type { ViewMode, ViewToggleProps } from './ViewToggle';
 export * from './PhoneContact';
 export { StepperFooter } from './StepperFooter';
 

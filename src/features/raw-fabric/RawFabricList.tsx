@@ -24,6 +24,7 @@ import type {
   RawFabricRoll,
   RollStatus,
 } from '@/domain/inventory/raw-fabric.types';
+import { useViewModePreference } from '@/shared/hooks';
 
 import { ActionMenu } from './ActionMenu';
 import { FilterBar } from './FilterBar';
@@ -58,7 +59,10 @@ export function RawFabricList({
   const [page, setPage] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useViewModePreference<ViewMode>(
+    'raw-fabric',
+    'grid',
+  );
 
   const filters = useMemo(() => toApiFilter(filterState), [filterState]);
 

@@ -11,6 +11,7 @@ import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import toast from 'react-hot-toast';
 
 import type { ViewMode } from '@/shared/components/ViewToggle';
+import { useViewModePreference } from '@/shared/hooks';
 import { Icon } from '@/shared/components/Icon';
 
 import type { MediaAsset, MediaFileType, MediaFilters } from './media.types';
@@ -29,7 +30,10 @@ import './media.css';
 
 export function MediaManagerPage() {
   // ── State ──────────────────────────────────────
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useViewModePreference<ViewMode>(
+    'media-manager',
+    'grid',
+  );
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [activeFileType, setActiveFileType] = useState<MediaFileType>('all');
   const [search, setSearch] = useState('');
