@@ -27,3 +27,4 @@ export {
   isConcurrencyConflictError,
   type ConcurrencyHandlerOptions,
 } from './useConcurrencyConflictHandler';
+export { useViewModePreference } from './useViewModePreference';

@@ -12,6 +12,18 @@ export const UI_LABELS = {
   CLOSE: 'Đóng',
 } as const;
 
+export const VIEW_TOGGLE_LABELS = {
+  TABLE_TITLE: 'Dạng bảng',
+  TABLE_LABEL: 'Bảng',
+  GRID_TITLE: 'Dạng lưới',
+  GRID_LABEL: 'Lưới',
+  KANBAN_TITLE: 'Dạng Kanban',
+  KANBAN_LABEL: 'Kanban',
+  CALENDAR_TITLE: 'Dạng lịch',
+  CALENDAR_LABEL: 'Lịch',
+  ARIA_LABEL: 'Chuyển đổi chế độ xem',
+} as const;
+
 export const STEPPER_LABELS = {
   BACK: 'Quay lại',
   CANCEL: 'Hủy',

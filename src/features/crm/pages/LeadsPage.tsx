@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useLeads } from '@/application/crm/useCrm';
 import type { LeadFilter, LeadStatus } from '@/domain/crm/crm.types';
 import { ViewToggle } from '@/shared/components/ViewToggle';
+import { useViewModePreference } from '@/shared/hooks';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { SearchInput } from '@/shared/components/SearchInput';
 import { Button } from '@/shared/components/Button';
@@ -16,7 +17,10 @@ import { LEAD_STATUS_MAP } from '@/features/crm/crm.constants';
 
 export function LeadsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState<'table' | 'grid'>('grid');
+  const [viewMode, setViewMode] = useViewModePreference<'table' | 'grid'>(
+    'crm-leads',
+    'grid',
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebouncedValue(searchQuery, 400);
 

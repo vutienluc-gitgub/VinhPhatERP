@@ -16,6 +16,7 @@ import {
 } from '@/shared/components';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
+import { useViewModePreference } from '@/shared/hooks';
 import { LotMatrixCard } from '@/shared/components/roll-grid';
 import {
   useDeleteFinishedFabric,
@@ -91,7 +92,10 @@ export function FinishedFabricList({
   const { filters, setFilter, clearFilters, hasActiveFilter } =
     useUrlFilterState(FILTER_KEYS);
   const [page, setPage] = useState(1);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useViewModePreference<ViewMode>(
+    'finished-fabric',
+    'grid',
+  );
 
   const {
     data: result,
