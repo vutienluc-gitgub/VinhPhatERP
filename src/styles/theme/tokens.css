@@ -79,6 +79,7 @@
   --link: rgb(var(--brand-rgb));
   --primary-hover: rgb(var(--brand-strong-rgb));
   --secondary: #5c6f88;
+  --secondary-rgb: 92, 111, 136;
 
   /* ── Elevation & Shape ─────────────────────────────────────── */
   --shadow-sm: 0 2px 8px rgba(var(--base-rgb), 0.04);
