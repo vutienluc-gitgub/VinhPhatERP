@@ -5,12 +5,14 @@ import type {
   CompanySettingRow,
   CompanySettingsFormValues,
   CompanySettingsMap,
+  PrintSettingsFormValues,
 } from '@/schema/company-settings.schema';
 
 export type {
   CompanySettingRow,
   CompanySettingsFormValues,
   CompanySettingsMap,
+  PrintSettingsFormValues,
 };
 
 export const settingsFeature: FeatureDefinition = {
@@ -42,9 +44,9 @@ export const settingsFeature: FeatureDefinition = {
 export const settingsPlugin: FeaturePlugin = {
   key: 'settings',
   route: 'settings',
-  label: 'Cai dat',
-  shortLabel: 'Cau hinh',
-  description: 'Cai dat thong tin cong ty va cac tham so van hanh he thong.',
+  label: 'Cài đặt',
+  shortLabel: 'Cấu hình',
+  description: 'Cài đặt thông tin công ty và các tham số vận hành hệ thống.',
   icon: 'Settings',
   requiredRoles: ['admin'],
   group: 'system',

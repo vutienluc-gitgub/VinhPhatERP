@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 import { useCompanySettings } from '@/application/settings';
 import { Button, Icon } from '@/shared/components';
@@ -154,11 +155,18 @@ export function PrintSettingsForm() {
       footerNote: watchedValues.print_footer_note,
       dotMatrixWidth: watchedValues.print_dot_matrix_width,
       dotMatrixHeight: watchedValues.print_dot_matrix_height,
+      margin: watchedValues.print_margin,
     });
   };
 
   const onSubmit = async (values: PrintSettingsFormValues) => {
-    await updateMutation.mutateAsync(values);
+    try {
+      await updateMutation.mutateAsync(values);
+      toast.success(SETTINGS_MESSAGES.SAVE_SUCCESS);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`${SETTINGS_MESSAGES.SAVE_ERROR} ${msg}`);
+    }
   };
 
   if (isLoading) {
@@ -322,58 +330,116 @@ export function PrintSettingsForm() {
               </div>
             </div>
 
-            {/* 2. A5 Dot Matrix Dimensions (Conditional) */}
+            {/* 2. A5 Dot Matrix Micro Spec Bar (Sleek 4-column inline) */}
             {selectedFormat === 'A5_DOT_MATRIX' && (
-              <div className="p-4 rounded-xl bg-surface-secondary border border-default flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="flex items-center gap-2">
-                  <Icon name="Maximize2" size={16} className="text-primary" />
-                  <span className="text-xs font-bold text-foreground uppercase tracking-wider">
-                    Kích thước giấy in kim thực tế (Khổ A5 ngang)
+              <div className="p-3.5 rounded-xl bg-surface-secondary/70 border border-default flex flex-col gap-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-foreground">
+                    <Icon
+                      name="SlidersHorizontal"
+                      size={14}
+                      className="text-primary"
+                    />
+                    <span>{SETTINGS_LABELS.PRINT_A5_SPEC_TITLE}</span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground font-mono">
+                    {SETTINGS_LABELS.PRINT_A5_SPEC_SUB}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {/* Bề rộng */}
                   <div className="flex flex-col gap-1">
                     <label
                       htmlFor="dot-matrix-width"
-                      className="text-xs font-medium text-foreground"
+                      className="text-[11px] font-medium text-muted-foreground"
                     >
-                      {SETTINGS_LABELS.PRINT_DOT_MATRIX_WIDTH}
+                      {SETTINGS_LABELS.PRINT_WIDTH_SHORT}
                     </label>
                     <input
                       id="dot-matrix-width"
                       type="text"
-                      className={`field-input ${
+                      className={`field-input h-8 text-xs font-semibold font-mono text-center pr-2 ${
                         errors.print_dot_matrix_width ? 'border-danger' : ''
                       }`}
                       placeholder="200mm"
                       {...register('print_dot_matrix_width')}
                     />
                     {errors.print_dot_matrix_width && (
-                      <span className="text-[11px] text-danger font-medium">
+                      <span className="text-[10px] text-danger">
                         {errors.print_dot_matrix_width.message}
                       </span>
                     )}
                   </div>
 
+                  {/* Chiều cao */}
                   <div className="flex flex-col gap-1">
                     <label
                       htmlFor="dot-matrix-height"
-                      className="text-xs font-medium text-foreground"
+                      className="text-[11px] font-medium text-muted-foreground"
                     >
-                      {SETTINGS_LABELS.PRINT_DOT_MATRIX_HEIGHT}
+                      {SETTINGS_LABELS.PRINT_HEIGHT_SHORT}
                     </label>
                     <input
                       id="dot-matrix-height"
                       type="text"
-                      className={`field-input ${
+                      className={`field-input h-8 text-xs font-semibold font-mono text-center pr-2 ${
                         errors.print_dot_matrix_height ? 'border-danger' : ''
                       }`}
-                      placeholder="145mm"
+                      placeholder="148mm"
                       {...register('print_dot_matrix_height')}
                     />
                     {errors.print_dot_matrix_height && (
-                      <span className="text-[11px] text-danger font-medium">
+                      <span className="text-[10px] text-danger">
                         {errors.print_dot_matrix_height.message}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Lề trái */}
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="margin-left"
+                      className="text-[11px] font-medium text-muted-foreground"
+                    >
+                      {SETTINGS_LABELS.PRINT_MARGIN_LEFT_SHORT}
+                    </label>
+                    <input
+                      id="margin-left"
+                      type="text"
+                      className={`field-input h-8 text-xs font-semibold font-mono text-center pr-2 ${
+                        errors.print_margin?.left ? 'border-danger' : ''
+                      }`}
+                      placeholder="3mm"
+                      {...register('print_margin.left')}
+                    />
+                    {errors.print_margin?.left && (
+                      <span className="text-[10px] text-danger">
+                        {errors.print_margin.left.message}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Lề phải */}
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="margin-right"
+                      className="text-[11px] font-medium text-muted-foreground"
+                    >
+                      {SETTINGS_LABELS.PRINT_MARGIN_RIGHT_SHORT}
+                    </label>
+                    <input
+                      id="margin-right"
+                      type="text"
+                      className={`field-input h-8 text-xs font-semibold font-mono text-center pr-2 ${
+                        errors.print_margin?.right ? 'border-danger' : ''
+                      }`}
+                      placeholder="3mm"
+                      {...register('print_margin.right')}
+                    />
+                    {errors.print_margin?.right && (
+                      <span className="text-[10px] text-danger">
+                        {errors.print_margin.right.message}
                       </span>
                     )}
                   </div>
@@ -449,7 +515,7 @@ export function PrintSettingsForm() {
                 className={`field-input ${
                   errors.print_footer_note ? 'border-danger' : ''
                 }`}
-                placeholder="VD: Vui lòng kiểm tra kỹ số lượng và chất lượng trước khi rời kho."
+                placeholder={SETTINGS_LABELS.PRINT_FOOTER_NOTE_PLACEHOLDER}
                 {...register('print_footer_note')}
               />
               {errors.print_footer_note && (
