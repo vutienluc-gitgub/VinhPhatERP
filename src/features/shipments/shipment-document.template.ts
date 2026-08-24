@@ -30,6 +30,12 @@ export type PrintOptions = {
   footerNote?: string;
   dotMatrixWidth?: string;
   dotMatrixHeight?: string;
+  margin?: {
+    top?: string;
+    right?: string;
+    bottom?: string;
+    left?: string;
+  };
   verifyBaseUrl?: string;
   format?: 'A4' | 'A5_DOT_MATRIX';
 };
@@ -300,6 +306,25 @@ export async function buildShipmentPrintHtml(
     )
     .join('');
 
+  const customStyles =
+    isA5 &&
+    (options.dotMatrixWidth || options.dotMatrixHeight || options.margin)
+      ? `
+        @page {
+          size: ${options.dotMatrixWidth || '200mm'} ${options.dotMatrixHeight || '145mm'};
+          margin: 0;
+        }
+        .a5-page {
+          width: ${options.dotMatrixWidth || '200mm'};
+          height: ${options.dotMatrixHeight || '145mm'};
+          padding-top: ${options.margin?.top || '2mm'};
+          padding-right: ${options.margin?.right || '12mm'};
+          padding-bottom: ${options.margin?.bottom || '2mm'};
+          padding-left: ${options.margin?.left || '12mm'};
+        }
+      `
+      : '';
+
   const html = `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -307,6 +332,7 @@ export async function buildShipmentPrintHtml(
 <title>${escapeHtml(fileName)}</title>
 <style>
 ${isA5 ? SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS : SHIPMENT_DOCUMENT_CSS}
+${customStyles}
 </style>
 </head>
 <body>

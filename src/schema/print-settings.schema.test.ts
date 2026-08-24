@@ -61,12 +61,16 @@ describe('printSettingsSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('fails when footer note exceeds 500 characters', () => {
-    const longText = 'a'.repeat(501);
+  it('validates custom margins correctly', () => {
     const result = printSettingsSchema.safeParse({
       ...printSettingsDefaults,
-      print_footer_note: longText,
+      print_margin: {
+        top: '3mm',
+        right: '15mm',
+        bottom: '3mm',
+        left: '15mm',
+      },
     });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 });

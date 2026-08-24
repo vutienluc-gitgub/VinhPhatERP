@@ -42,15 +42,44 @@ export function PrintLivePreview({
       {/* Scaled Preview Paper Canvas */}
       <div className="bg-surface-secondary border border-default rounded-xl p-4 flex items-center justify-center min-h-[380px] overflow-hidden shadow-inner">
         <div
-          className={`bg-white text-slate-900 shadow-md transition-all duration-300 origin-top text-[10px] leading-snug select-none ${
+          className={`bg-white text-slate-900 shadow-md transition-all duration-300 origin-top text-[10px] leading-snug select-none relative ${
             isA4 ? 'w-[280px] min-h-[396px] p-4' : ''
-          } ${isA5 ? 'w-[320px] min-h-[232px] p-3 border border-black font-sans' : ''} ${
+          } ${isA5 ? 'w-[330px] min-h-[232px] px-6 py-3 border border-black font-sans' : ''} ${
             isK80 ? 'w-[180px] min-h-[260px] p-2 font-mono text-[9px]' : ''
           }`}
           style={{
             transform: 'scale(0.92)',
           }}
         >
+          {/* Tractor Feed Holes Visualizer for A5 Dot Matrix */}
+          {isA5 && (
+            <>
+              {/* Left Sprocket Holes */}
+              <div className="absolute left-1 top-0 bottom-0 flex flex-col justify-around py-2 pointer-events-none">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div
+                    key={`lh-${i}`}
+                    className="w-2 h-2 rounded-full border border-slate-300 bg-slate-100 shadow-inner"
+                  />
+                ))}
+              </div>
+              {/* Left Perforation Line */}
+              <div className="absolute left-4 top-0 bottom-0 border-r border-dashed border-slate-300 pointer-events-none" />
+
+              {/* Right Sprocket Holes */}
+              <div className="absolute right-1 top-0 bottom-0 flex flex-col justify-around py-2 pointer-events-none">
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div
+                    key={`rh-${i}`}
+                    className="w-2 h-2 rounded-full border border-slate-300 bg-slate-100 shadow-inner"
+                  />
+                ))}
+              </div>
+              {/* Right Perforation Line */}
+              <div className="absolute right-4 top-0 bottom-0 border-r border-dashed border-slate-300 pointer-events-none" />
+            </>
+          )}
+
           {/* Header */}
           <div
             className={`pb-2 mb-2 flex items-start justify-between ${

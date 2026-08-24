@@ -357,7 +357,7 @@ export const SHIPMENT_DOCUMENT_CSS = `
 
 export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
   @page {
-    size: 200mm 145mm;
+    size: 200mm 148mm;
     margin: 0;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -379,12 +379,12 @@ export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
 
   .accent-bar { display: none; }
 
-  /* ── A5 Page wrapper for continuous printing (200mm x 145mm, margin 0mm) ── */
+  /* ── A5 Page wrapper for continuous printing (200mm x 148mm, margin 0mm, safe padding 3mm) ── */
   .a5-page {
-    height: 145mm;
+    height: 148mm;
     width: 200mm;
     overflow: hidden;
-    padding: 0;
+    padding: 2mm 3mm;
     margin: 0;
     page-break-inside: avoid;
     break-inside: avoid;
