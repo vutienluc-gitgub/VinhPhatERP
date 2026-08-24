@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 import {
   shipmentSettingsSchema,
   shipmentSettingsDefaults,
@@ -27,6 +27,7 @@ export function ShipmentSettingsForm() {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting, isDirty },
@@ -59,19 +60,24 @@ export function ShipmentSettingsForm() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-info-soft/10 text-info flex items-center justify-center shrink-0">
             <Icon name="Truck" size={20} strokeWidth={1.5} />
           </div>
-          <span className="font-bold text-lg">
-            {SETTINGS_LABELS.SHIPMENT_TITLE}
-          </span>
+          <div>
+            <span className="font-bold text-lg text-foreground block">
+              {SETTINGS_LABELS.SHIPMENT_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.SHIPMENT_SUBTITLE}
+            </span>
+          </div>
         </div>
       </div>
       <div className="p-6">
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="form-grid gap-4"
+          className="flex flex-col gap-6"
         >
           {mutation.isSuccess && (
             <div className="success-inline">
@@ -89,61 +95,91 @@ export function ShipmentSettingsForm() {
             </p>
           )}
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="form-field">
-              <label htmlFor="sh-unit">
+              <label
+                htmlFor="sh-unit"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.DEFAULT_SHIPPING_UNIT}
               </label>
-              <select
-                id="sh-unit"
-                className="field-select w-full"
-                {...register('default_shipping_unit')}
-              >
-                {SHIPPING_UNIT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="default_shipping_unit"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    id="sh-unit"
+                    options={SHIPPING_UNIT_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={!!errors.default_shipping_unit}
+                    className="w-full"
+                  />
+                )}
+              />
+              {errors.default_shipping_unit && (
+                <span className="field-error text-xs text-danger mt-1 block">
+                  {errors.default_shipping_unit.message}
+                </span>
+              )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="sh-region">
+              <label
+                htmlFor="sh-region"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.DEFAULT_SHIPPING_REGION}
               </label>
-              <select
-                id="sh-region"
-                className="field-select w-full"
-                {...register('default_shipping_region')}
-              >
-                {REGION_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="default_shipping_region"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    id="sh-region"
+                    options={REGION_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={!!errors.default_shipping_region}
+                    className="w-full"
+                  />
+                )}
+              />
+              {errors.default_shipping_region && (
+                <span className="field-error text-xs text-danger mt-1 block">
+                  {errors.default_shipping_region.message}
+                </span>
+              )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="sh-days">
+              <label
+                htmlFor="sh-days"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.DEFAULT_DELIVERY_DAYS}
               </label>
-              <input
-                id="sh-days"
-                className={`field-input${errors.default_delivery_days ? ' border-danger' : ''}`}
-                type="text"
-                placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_DELIVERY_DAYS}
-                {...register('default_delivery_days')}
-              />
+              <div className="relative flex items-center">
+                <input
+                  id="sh-days"
+                  className={`field-input pr-14 w-full${errors.default_delivery_days ? ' border-danger ring-1 ring-danger' : ''}`}
+                  type="text"
+                  placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_DELIVERY_DAYS}
+                  {...register('default_delivery_days')}
+                />
+                <span className="pointer-events-none absolute right-3 text-xs font-semibold text-muted select-none">
+                  ngày
+                </span>
+              </div>
               {errors.default_delivery_days && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.default_delivery_days.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 border-t border-border/50">
             <Button
               variant="secondary"
               type="button"

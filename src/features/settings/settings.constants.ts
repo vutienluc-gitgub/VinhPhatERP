@@ -13,6 +13,8 @@ export const SETTINGS_LABELS = {
   PAGE_SUBTITLE: 'Quản lý cấu hình công ty và các tham số vận hành.',
   // Company info panel
   COMPANY_INFO_TITLE: 'Thông tin công ty',
+  COMPANY_INFO_SUBTITLE:
+    'Cấu hình thông tin pháp nhân công ty và thông tin tài khoản ngân hàng.',
   COMPANY_NAME: 'Tên công ty',
   TAX_CODE: 'Mã số thuế',
   ADDRESS: 'Địa chỉ',
@@ -24,18 +26,24 @@ export const SETTINGS_LABELS = {
   BANK_ACCOUNT: 'Số tài khoản',
   // System display panel
   SYSTEM_DISPLAY_TITLE: 'Hiển thị hệ thống',
+  SYSTEM_DISPLAY_SUBTITLE:
+    'Thiết lập bố cục hiển thị toàn màn hình và vai trò người dùng mặc định.',
   FLUID_LAYOUT_LABEL: 'Chế độ tràn viền (Fluid Dashboard)',
   FLUID_LAYOUT_DESC:
     'Bật công tắc này để giao diện mở rộng 100% diện tích màn hình.',
   DEFAULT_USER_ROLE: 'Vai trò mặc định cho người dùng mới',
   // Finance panel
   FINANCE_TITLE: 'Cài đặt tài chính',
+  FINANCE_SUBTITLE:
+    'Thiết lập tiền tệ gốc, thuế suất VAT, hạn nợ và hạn mức tín dụng.',
   DEFAULT_CURRENCY: 'Đơn vị tiền tệ mặc định',
   DEFAULT_VAT_RATE: 'Thuế VAT mặc định (%)',
   DEFAULT_PAYMENT_TERMS: 'Hạn thanh toán mặc định (ngày)',
   DEFAULT_CREDIT_LIMIT: 'Hạn mức tín dụng mặc định (VNĐ)',
   // Numbering panel
   NUMBERING_TITLE: 'Đánh số chứng từ',
+  NUMBERING_SUBTITLE:
+    'Quy chuẩn tiền tố mã chứng từ và chu kỳ đánh số tự động.',
   ORDER_PREFIX: 'Prefix đơn hàng',
   QUOTATION_PREFIX: 'Prefix báo giá',
   INVOICE_PREFIX: 'Prefix hóa đơn',
@@ -46,6 +54,8 @@ export const SETTINGS_LABELS = {
     'Bật để số chứng từ tự động reset về 001 vào đầu năm mới.',
   // Notification panel
   NOTIFICATION_TITLE: 'Thông báo hệ thống',
+  NOTIFICATION_SUBTITLE:
+    'Cấu hình cảnh báo tự động về đơn hàng, công nợ và ngưỡng an toàn tồn kho.',
   NOTIFY_NEW_ORDER: 'Thông báo khi có đơn hàng mới',
   NOTIFY_NEW_ORDER_DESC: 'Gửi thông báo cho admin và manager.',
   NOTIFY_PAYMENT_OVERDUE: 'Cảnh báo thanh toán quá hạn',
@@ -56,16 +66,22 @@ export const SETTINGS_LABELS = {
   NOTIFICATION_EMAIL: 'Email nhận thông báo',
   // Production & Warehouse panel
   PRODUCTION_TITLE: 'Sản xuất & Kho',
+  PRODUCTION_SUBTITLE:
+    'Cấu hình đơn vị mặc định, định mức hao hụt và tiến độ sản xuất.',
   DEFAULT_UNIT: 'Đơn vị đo lường mặc định',
   DEFAULT_WASTE_RATE: 'Tỷ lệ hao hụt mặc định (%)',
   DEFAULT_PRODUCTION_DAYS: 'Số ngày sản xuất dự kiến',
   // Shipment panel
   SHIPMENT_TITLE: 'Giao hàng & Vận chuyển',
+  SHIPMENT_SUBTITLE:
+    'Cấu hình đơn vị tính cước, khu vực giao nhận và thời gian cam kết.',
   DEFAULT_SHIPPING_UNIT: 'Đơn vị cước vận chuyển',
   DEFAULT_SHIPPING_REGION: 'Khu vực giao hàng mặc định',
   DEFAULT_DELIVERY_DAYS: 'Thời gian giao hàng ước tính (ngày)',
   // User management panel
   USER_MGMT_TITLE: 'Quản lý người dùng',
+  USER_MGMT_SUBTITLE:
+    'Chính sách đăng ký tài khoản, phiên đăng nhập và giới hạn thiết bị.',
   ALLOW_SELF_SIGNUP: 'Cho phép tự đăng ký tài khoản',
   ALLOW_SELF_SIGNUP_DESC: 'Cho phép người dùng đăng ký không cần lời mời.',
   REQUIRE_APPROVAL: 'Yêu cầu phê duyệt tài khoản mới',
@@ -74,11 +90,15 @@ export const SETTINGS_LABELS = {
   MAX_DEVICES: 'Số thiết bị đăng nhập đồng thời',
   // Report panel
   REPORT_TITLE: 'Báo cáo & Hiển thị',
+  REPORT_SUBTITLE:
+    'Múi giờ vận hành, ngày bắt đầu năm tài chính và định dạng ngày tháng.',
   TIMEZONE: 'Múi giờ',
   FISCAL_YEAR_START: 'Ngày bắt đầu năm tài chính',
   DATE_FORMAT: 'Định dạng ngày',
   // Integration panel
   INTEGRATION_TITLE: 'Tích hợp & Kết nối',
+  INTEGRATION_SUBTITLE:
+    'Cấu hình Webhook sự kiện và máy chủ gửi email giao dịch (SMTP).',
   WEBHOOK_URL: 'Webhook URL',
   WEBHOOK_URL_DESC: 'Nhận thông báo tự động khi có sự kiện trong hệ thống.',
   SMTP_HOST: 'SMTP Server',
@@ -86,6 +106,8 @@ export const SETTINGS_LABELS = {
   SMTP_FROM_EMAIL: 'Email gửi đi',
   // UI panel
   UI_TITLE: 'Giao diện & Ngôn ngữ',
+  UI_SUBTITLE:
+    'Tùy biến chủ đề hiển thị, ngôn ngữ và bộ nhận diện thương hiệu.',
   THEME_MODE: 'Chế độ giao diện',
   LANGUAGE: 'Ngôn ngữ hiển thị',
   PRINT_LOGO_URL: 'Logo cho hóa đơn in',
@@ -152,6 +174,8 @@ export const SETTINGS_LABELS = {
   BTN_SAVE: 'Lưu thông tin',
   // Colors Section
   COLOR_TITLE: 'Danh mục màu sắc',
+  COLOR_SUBTITLE:
+    'Quản lý danh sách bảng màu tiêu chuẩn và năm xu hướng thời trang.',
   COLOR_DELETE_CONFIRM: 'Bạn có chắc chắn muốn xóa màu này?',
   COLOR_DELETE_SUCCESS: 'Đã xóa màu thành công',
   COLOR_DELETE_ERROR: 'Lỗi khi xóa:',
@@ -298,4 +322,19 @@ export const THEME_OPTIONS = [
 export const LANGUAGE_OPTIONS = [
   { value: 'vi', label: 'Tiếng Việt' },
   { value: 'en', label: 'English' },
+];
+
+export const COLOR_GROUP_OPTIONS = [
+  {
+    value: SETTINGS_LABELS.COLOR_GROUP_DARK,
+    label: SETTINGS_LABELS.COLOR_GROUP_DARK,
+  },
+  {
+    value: SETTINGS_LABELS.COLOR_GROUP_MID,
+    label: SETTINGS_LABELS.COLOR_GROUP_MID,
+  },
+  {
+    value: SETTINGS_LABELS.COLOR_GROUP_LIGHT,
+    label: SETTINGS_LABELS.COLOR_GROUP_LIGHT,
+  },
 ];

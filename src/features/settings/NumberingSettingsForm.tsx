@@ -70,16 +70,21 @@ export function NumberingSettingsForm() {
           <div className="w-10 h-10 rounded-xl bg-warning-soft/10 text-warning flex items-center justify-center shrink-0">
             <Icon name="Hash" size={20} strokeWidth={1.5} />
           </div>
-          <span className="font-bold text-lg">
-            {SETTINGS_LABELS.NUMBERING_TITLE}
-          </span>
+          <div>
+            <span className="font-bold text-lg text-foreground block">
+              {SETTINGS_LABELS.NUMBERING_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.NUMBERING_SUBTITLE}
+            </span>
+          </div>
         </div>
       </div>
       <div className="p-6">
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="form-grid gap-4"
+          className="flex flex-col gap-6"
         >
           {mutation.isSuccess && (
             <div className="success-inline">
@@ -97,99 +102,114 @@ export function NumberingSettingsForm() {
             </p>
           )}
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <div className="form-field">
-              <label htmlFor="ns-order">{SETTINGS_LABELS.ORDER_PREFIX}</label>
+              <label
+                htmlFor="ns-order"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
+                {SETTINGS_LABELS.ORDER_PREFIX}
+              </label>
               <input
                 id="ns-order"
-                className={`field-input${errors.order_prefix ? ' border-danger' : ''}`}
+                className={`field-input w-full${errors.order_prefix ? ' border-danger ring-1 ring-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.ORDER_PREFIX}
                 {...register('order_prefix')}
               />
               {errors.order_prefix && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.order_prefix.message}
                 </span>
               )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="ns-quotation">
+              <label
+                htmlFor="ns-quotation"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.QUOTATION_PREFIX}
               </label>
               <input
                 id="ns-quotation"
-                className={`field-input${errors.quotation_prefix ? ' border-danger' : ''}`}
+                className={`field-input w-full${errors.quotation_prefix ? ' border-danger ring-1 ring-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.QUOTATION_PREFIX}
                 {...register('quotation_prefix')}
               />
               {errors.quotation_prefix && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.quotation_prefix.message}
                 </span>
               )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="ns-invoice">
+              <label
+                htmlFor="ns-invoice"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.INVOICE_PREFIX}
               </label>
               <input
                 id="ns-invoice"
-                className={`field-input${errors.invoice_prefix ? ' border-danger' : ''}`}
+                className={`field-input w-full${errors.invoice_prefix ? ' border-danger ring-1 ring-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.INVOICE_PREFIX}
                 {...register('invoice_prefix')}
               />
               {errors.invoice_prefix && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.invoice_prefix.message}
                 </span>
               )}
             </div>
-          </div>
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
             <div className="form-field">
-              <label htmlFor="ns-payment">
+              <label
+                htmlFor="ns-payment"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.PAYMENT_PREFIX}
               </label>
               <input
                 id="ns-payment"
-                className={`field-input${errors.payment_prefix ? ' border-danger' : ''}`}
+                className={`field-input w-full${errors.payment_prefix ? ' border-danger ring-1 ring-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.PAYMENT_PREFIX}
                 {...register('payment_prefix')}
               />
               {errors.payment_prefix && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.payment_prefix.message}
                 </span>
               )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="ns-expense">
+              <label
+                htmlFor="ns-expense"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.EXPENSE_PREFIX}
               </label>
               <input
                 id="ns-expense"
-                className={`field-input${errors.expense_prefix ? ' border-danger' : ''}`}
+                className={`field-input w-full${errors.expense_prefix ? ' border-danger ring-1 ring-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.EXPENSE_PREFIX}
                 {...register('expense_prefix')}
               />
               {errors.expense_prefix && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.expense_prefix.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="max-w-lg">
+          <div className="p-4 rounded-xl border border-border/60 bg-surface-secondary/30 max-w-lg">
             <Switch
               id="ns-reset-yearly"
               checked={resetYearly === 'true'}
@@ -203,7 +223,7 @@ export function NumberingSettingsForm() {
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 border-t border-border/50">
             <Button
               variant="secondary"
               type="button"

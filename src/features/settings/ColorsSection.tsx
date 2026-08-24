@@ -12,6 +12,7 @@ import { TabSwitcher, type TabItem } from '@/shared/components/TabSwitcher';
 
 import { SETTINGS_LABELS } from './settings.constants';
 import { ColorForm } from './ColorForm';
+import { PanelIcon } from './PanelIcon';
 
 export function ColorsSection() {
   const { data: colors, isLoading } = useColors();
@@ -129,8 +130,18 @@ export function ColorsSection() {
   return (
     <div className="panel-card card-flush">
       {/* Header */}
-      <div className="card-header-area">
-        <span className="font-bold text-lg">{SETTINGS_LABELS.COLOR_TITLE}</span>
+      <div className="card-header-area flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <PanelIcon name="Palette" variant="pink" />
+          <div>
+            <span className="font-bold text-lg text-foreground block">
+              {SETTINGS_LABELS.COLOR_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.COLOR_SUBTITLE}
+            </span>
+          </div>
+        </div>
         <Button
           variant="primary"
           leftIcon="Plus"

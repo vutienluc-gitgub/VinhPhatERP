@@ -73,16 +73,21 @@ export function NotificationSettingsForm() {
           <div className="w-10 h-10 rounded-xl bg-danger-soft/10 text-danger flex items-center justify-center shrink-0">
             <Icon name="Bell" size={20} strokeWidth={1.5} />
           </div>
-          <span className="font-bold text-lg">
-            {SETTINGS_LABELS.NOTIFICATION_TITLE}
-          </span>
+          <div>
+            <span className="font-bold text-lg text-foreground block">
+              {SETTINGS_LABELS.NOTIFICATION_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.NOTIFICATION_SUBTITLE}
+            </span>
+          </div>
         </div>
       </div>
       <div className="p-6">
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="form-grid gap-4"
+          className="flex flex-col gap-6"
         >
           {mutation.isSuccess && (
             <div className="success-inline">
@@ -100,83 +105,105 @@ export function NotificationSettingsForm() {
             </p>
           )}
 
-          <div className="flex flex-col gap-5 max-w-lg">
-            <Switch
-              id="nf-new-order"
-              checked={notifyNewOrder === 'true'}
-              onChange={(val) =>
-                setValue('notify_new_order', val ? 'true' : 'false', {
-                  shouldDirty: true,
-                })
-              }
-              label={SETTINGS_LABELS.NOTIFY_NEW_ORDER}
-              description={SETTINGS_LABELS.NOTIFY_NEW_ORDER_DESC}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 rounded-xl border border-border/60 bg-surface-secondary/30 flex flex-col justify-between">
+              <Switch
+                id="nf-new-order"
+                checked={notifyNewOrder === 'true'}
+                onChange={(val) =>
+                  setValue('notify_new_order', val ? 'true' : 'false', {
+                    shouldDirty: true,
+                  })
+                }
+                label={SETTINGS_LABELS.NOTIFY_NEW_ORDER}
+                description={SETTINGS_LABELS.NOTIFY_NEW_ORDER_DESC}
+              />
+            </div>
 
-            <Switch
-              id="nf-overdue"
-              checked={notifyOverdue === 'true'}
-              onChange={(val) =>
-                setValue('notify_payment_overdue', val ? 'true' : 'false', {
-                  shouldDirty: true,
-                })
-              }
-              label={SETTINGS_LABELS.NOTIFY_PAYMENT_OVERDUE}
-              description={SETTINGS_LABELS.NOTIFY_PAYMENT_OVERDUE_DESC}
-            />
+            <div className="p-4 rounded-xl border border-border/60 bg-surface-secondary/30 flex flex-col justify-between">
+              <Switch
+                id="nf-overdue"
+                checked={notifyOverdue === 'true'}
+                onChange={(val) =>
+                  setValue('notify_payment_overdue', val ? 'true' : 'false', {
+                    shouldDirty: true,
+                  })
+                }
+                label={SETTINGS_LABELS.NOTIFY_PAYMENT_OVERDUE}
+                description={SETTINGS_LABELS.NOTIFY_PAYMENT_OVERDUE_DESC}
+              />
+            </div>
 
-            <Switch
-              id="nf-low-stock"
-              checked={notifyLowStock === 'true'}
-              onChange={(val) =>
-                setValue('notify_low_stock', val ? 'true' : 'false', {
-                  shouldDirty: true,
-                })
-              }
-              label={SETTINGS_LABELS.NOTIFY_LOW_STOCK}
-              description={SETTINGS_LABELS.NOTIFY_LOW_STOCK_DESC}
-            />
+            <div className="p-4 rounded-xl border border-border/60 bg-surface-secondary/30 flex flex-col justify-between">
+              <Switch
+                id="nf-low-stock"
+                checked={notifyLowStock === 'true'}
+                onChange={(val) =>
+                  setValue('notify_low_stock', val ? 'true' : 'false', {
+                    shouldDirty: true,
+                  })
+                }
+                label={SETTINGS_LABELS.NOTIFY_LOW_STOCK}
+                description={SETTINGS_LABELS.NOTIFY_LOW_STOCK_DESC}
+              />
+            </div>
           </div>
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="form-field">
-              <label htmlFor="nf-threshold">
+              <label
+                htmlFor="nf-threshold"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.LOW_STOCK_THRESHOLD}
               </label>
-              <input
-                id="nf-threshold"
-                className={`field-input${errors.low_stock_threshold ? ' border-danger' : ''}`}
-                type="text"
-                placeholder={SETTINGS_PLACEHOLDERS.LOW_STOCK_THRESHOLD}
-                {...register('low_stock_threshold')}
-              />
+              <div className="relative flex items-center">
+                <input
+                  id="nf-threshold"
+                  className={`field-input pr-10 w-full${errors.low_stock_threshold ? ' border-danger ring-1 ring-danger' : ''}`}
+                  type="text"
+                  placeholder={SETTINGS_PLACEHOLDERS.LOW_STOCK_THRESHOLD}
+                  {...register('low_stock_threshold')}
+                />
+                <span className="pointer-events-none absolute right-3 text-xs font-semibold text-muted select-none">
+                  kg
+                </span>
+              </div>
               {errors.low_stock_threshold && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.low_stock_threshold.message}
                 </span>
               )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="nf-email">
+              <label
+                htmlFor="nf-email"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.NOTIFICATION_EMAIL}
               </label>
-              <input
-                id="nf-email"
-                className={`field-input${errors.notification_email ? ' border-danger' : ''}`}
-                type="email"
-                placeholder={SETTINGS_PLACEHOLDERS.NOTIFICATION_EMAIL}
-                {...register('notification_email')}
-              />
+              <div className="relative flex items-center">
+                <input
+                  id="nf-email"
+                  className={`field-input pl-9 w-full${errors.notification_email ? ' border-danger ring-1 ring-danger' : ''}`}
+                  type="email"
+                  placeholder={SETTINGS_PLACEHOLDERS.NOTIFICATION_EMAIL}
+                  {...register('notification_email')}
+                />
+                <div className="pointer-events-none absolute left-3 text-muted">
+                  <Icon name="Mail" size={16} />
+                </div>
+              </div>
               {errors.notification_email && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.notification_email.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 border-t border-border/50">
             <Button
               variant="secondary"
               type="button"

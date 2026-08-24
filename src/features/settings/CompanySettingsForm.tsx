@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 import { Switch } from '@/shared/components/Switch';
 import {
   companySettingsSchema,
@@ -37,6 +37,7 @@ export function CompanySettingsForm({
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting, isDirty },
@@ -69,9 +70,14 @@ export function CompanySettingsForm({
             <div className="w-10 h-10 rounded-xl bg-info-soft/10 text-info flex items-center justify-center shrink-0">
               <Icon name="Building2" size={20} strokeWidth={1.5} />
             </div>
-            <span className="font-bold text-lg">
-              {SETTINGS_LABELS.COMPANY_INFO_TITLE}
-            </span>
+            <div>
+              <span className="font-bold text-lg text-foreground block">
+                {SETTINGS_LABELS.COMPANY_INFO_TITLE}
+              </span>
+              <span className="text-xs text-muted">
+                {SETTINGS_LABELS.COMPANY_INFO_SUBTITLE}
+              </span>
+            </div>
           </div>
         </div>
         <div className="p-6">
@@ -243,9 +249,14 @@ export function CompanySettingsForm({
               <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
                 <Icon name="LayoutTemplate" size={20} strokeWidth={1.5} />
               </div>
-              <span className="font-bold text-lg">
-                {SETTINGS_LABELS.SYSTEM_DISPLAY_TITLE}
-              </span>
+              <div>
+                <span className="font-bold text-lg text-foreground block">
+                  {SETTINGS_LABELS.SYSTEM_DISPLAY_TITLE}
+                </span>
+                <span className="text-xs text-muted">
+                  {SETTINGS_LABELS.SYSTEM_DISPLAY_SUBTITLE}
+                </span>
+              </div>
             </div>
           </div>
           <div className="p-6 flex flex-col gap-6">
@@ -260,26 +271,32 @@ export function CompanySettingsForm({
             </div>
 
             <div className="form-field max-w-lg">
-              <label htmlFor="cs-default-role">
+              <label
+                htmlFor="cs-default-role"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.DEFAULT_USER_ROLE}
               </label>
-              <select
-                id="cs-default-role"
-                className={`field-select w-full ${errors.default_user_role ? 'border-danger' : ''}`}
-                {...register('default_user_role')}
-              >
-                {USER_ROLE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="default_user_role"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    id="cs-default-role"
+                    options={USER_ROLE_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={!!errors.default_user_role}
+                    className="w-full"
+                  />
+                )}
+              />
               {errors.default_user_role && (
-                <p className="field-error">
+                <p className="field-error text-xs text-danger mt-1 block">
                   {errors.default_user_role.message}
                 </p>
               )}
-              <p className="text-xs text-muted-foreground mt-1 italic">
+              <p className="text-xs text-muted mt-1 italic">
                 {SETTINGS_MESSAGES.DEFAULT_ROLE_HINT}
               </p>
             </div>
