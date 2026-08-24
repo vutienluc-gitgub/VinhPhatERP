@@ -84,10 +84,8 @@ export async function buildShipmentPrintHtml(
   // Phân trang
   let pages: DocumentPage[] = [];
   if (isA5) {
-    // Với A5 in kim, ta giới hạn số dòng để không tràn
     pages = paginateGroupedRows(groupedRows, 14, 4);
   } else {
-    // Với A4 thường, không cần ngắt khắt khe, tuỳ CSS xử lý
     pages = [
       {
         page: 1,
