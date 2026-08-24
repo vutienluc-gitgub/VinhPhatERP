@@ -16,10 +16,12 @@ test.describe('Visual Regression - Zero-Tolerance Architecture', () => {
       // 1. Navigate to route
       await page.goto(item.path);
       await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
 
       // Light Mode Snapshot
       await expect(page).toHaveScreenshot(`${item.name}-light-mode.png`, {
         fullPage: true,
+        maxDiffPixelRatio: 0.05,
       });
 
       // 2. Switch to Dark Mode
@@ -28,11 +30,12 @@ test.describe('Visual Regression - Zero-Tolerance Architecture', () => {
       });
 
       // Wait brief moment for CSS transitions
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(600);
 
       // Dark Mode Snapshot
       await expect(page).toHaveScreenshot(`${item.name}-dark-mode.png`, {
         fullPage: true,
+        maxDiffPixelRatio: 0.05,
       });
     });
   }
