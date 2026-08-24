@@ -90,6 +90,41 @@ export const SETTINGS_LABELS = {
   LANGUAGE: 'Ngôn ngữ hiển thị',
   PRINT_LOGO_URL: 'Logo cho hóa đơn in',
   BRAND_COLOR: 'Màu chủ đạo',
+  // Print Customizer panel
+  PRINT_TITLE: 'Tùy biến Mẫu In Chứng Từ',
+  PRINT_SUBTITLE:
+    'Cấu hình định dạng in ấn, khổ giấy in kim, logo và ghi chú chân trang.',
+  PRINT_FORMAT_LABEL: 'Khổ in mặc định',
+  PRINT_FORMAT_A4_TITLE: 'A4 Laser / PDF',
+  PRINT_FORMAT_A4_DESC:
+    'Khổ giấy chuẩn A4 (210×297mm) cho in văn phòng và lưu trữ PDF.',
+  PRINT_FORMAT_A5_TITLE: 'A5 In Kim Dot Matrix',
+  PRINT_FORMAT_A5_DESC:
+    'Khổ in chuyên dụng giấy đục lỗ liên tục 2-3 liên than (200×145mm).',
+  PRINT_FORMAT_K80_TITLE: 'K80 In Nhiệt',
+  PRINT_FORMAT_K80_DESC: 'Khổ in cuộn nhiệt 80mm cho phiếu giao hàng nhanh.',
+  PRINT_ORIENTATION_LABEL: 'Hướng in',
+  PRINT_ORIENTATION_PORTRAIT: 'Dọc (Portrait)',
+  PRINT_ORIENTATION_LANDSCAPE: 'Ngang (Landscape)',
+  PRINT_DOT_MATRIX_WIDTH: 'Chiều rộng giấy in kim',
+  PRINT_DOT_MATRIX_HEIGHT: 'Chiều cao giấy in kim',
+  PRINT_MARGIN_TITLE: 'Lề trang (Margin)',
+  PRINT_MARGIN_TOP: 'Lề trên',
+  PRINT_MARGIN_BOTTOM: 'Lề dưới',
+  PRINT_MARGIN_LEFT: 'Lề trái',
+  PRINT_MARGIN_RIGHT: 'Lề phải',
+  PRINT_SHOW_LOGO_LABEL: 'Hiển thị Logo thương hiệu',
+  PRINT_SHOW_LOGO_DESC:
+    'Chèn biểu tượng nhận diện công ty ở góc trên bên trái header.',
+  PRINT_SHOW_QR_LABEL: 'Hiển thị Mã QR xác thực',
+  PRINT_SHOW_QR_DESC:
+    'In mã QR liên kết trang kiểm tra xuất xứ và tính hợp lệ của phiếu.',
+  PRINT_FOOTER_NOTE_LABEL: 'Lời nhắn & Điều khoản chân trang',
+  PRINT_FOOTER_NOTE_DESC:
+    'Cam kết chất lượng hoặc lưu ý kiểm tra hàng trước khi rời kho.',
+  PRINT_LIVE_PREVIEW_TITLE: 'Mô phỏng mẫu in trực quan',
+  PRINT_BTN_TEST: 'In Thử Ngay',
+  PRINT_BTN_SAVE: 'Lưu Cài Đặt Mẫu In',
   // Settings tabs
   TAB_GENERAL: 'Tổng quan',
   TAB_FINANCE: 'Tài chính',

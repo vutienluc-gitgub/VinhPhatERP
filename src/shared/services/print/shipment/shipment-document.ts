@@ -56,14 +56,15 @@ export async function exportShipmentToPdf(
     cleanup();
   };
 
-  frameWindow.addEventListener('afterprint', cleanup, { once: true });
-  printFrame.addEventListener('load', triggerPrint, { once: true });
-
   frameWindow.document.open();
   frameWindow.document.write(html);
   frameWindow.document.close();
 
-  if (frameWindow.document.readyState === 'complete') {
+  printFrame.onload = () => {
     triggerPrint();
-  }
+  };
+
+  window.setTimeout(() => {
+    triggerPrint();
+  }, 350);
 }

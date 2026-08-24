@@ -74,6 +74,15 @@ export const COMPANY_SETTING_KEYS = [
   'language',
   'print_logo_url',
   'brand_color',
+  // Print
+  'print_default_format',
+  'print_orientation',
+  'print_dot_matrix_width',
+  'print_dot_matrix_height',
+  'print_margin',
+  'print_show_logo',
+  'print_show_qr',
+  'print_footer_note',
 ] as const;
 
 export type CompanySettingKey = (typeof COMPANY_SETTING_KEYS)[number];
@@ -308,6 +317,75 @@ export const uiSettingsDefaults: UiSettingsFormValues = {
   brand_color: '#0B6BCB',
 };
 
+/* ── Print Settings ── */
+
+const dimensionRegex = /^\d+(\.\d+)?(mm|cm)$/i;
+export const dimensionSchema = z.string().regex(dimensionRegex, {
+  message: 'Định dạng kích thước không hợp lệ (VD: 200mm, 14.5cm)',
+});
+
+export const printSettingsSchema = z
+  .object({
+    print_default_format: z.enum(['A4', 'A5_DOT_MATRIX', 'K80']).default('A4'),
+    print_orientation: z.enum(['PORTRAIT', 'LANDSCAPE']).default('PORTRAIT'),
+    print_dot_matrix_width: dimensionSchema.optional().or(z.literal('')),
+    print_dot_matrix_height: dimensionSchema.optional().or(z.literal('')),
+    print_margin: z
+      .object({
+        top: dimensionSchema,
+        right: dimensionSchema,
+        bottom: dimensionSchema,
+        left: dimensionSchema,
+      })
+      .default({ top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' }),
+    print_show_logo: z.boolean().default(true),
+    print_show_qr: z.boolean().default(true),
+    print_footer_note: z
+      .string()
+      .trim()
+      .max(500, 'Lời nhắn không quá 500 ký tự')
+      .default(
+        'Vui lòng kiểm tra kỹ số lượng và chất lượng trước khi rời kho.',
+      ),
+  })
+  .superRefine((data, ctx) => {
+    if (data.print_default_format === 'A5_DOT_MATRIX') {
+      if (!data.print_dot_matrix_width) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Bắt buộc nhập chiều rộng khi dùng máy in kim',
+          path: ['print_dot_matrix_width'],
+        });
+      }
+      if (!data.print_dot_matrix_height) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Bắt buộc nhập chiều cao khi dùng máy in kim',
+          path: ['print_dot_matrix_height'],
+        });
+      }
+    }
+  });
+
+export type PrintSettingsFormValues = z.infer<typeof printSettingsSchema>;
+
+export const printSettingsDefaults: PrintSettingsFormValues = {
+  print_default_format: 'A4',
+  print_orientation: 'PORTRAIT',
+  print_dot_matrix_width: '200mm',
+  print_dot_matrix_height: '145mm',
+  print_margin: {
+    top: '0mm',
+    right: '0mm',
+    bottom: '0mm',
+    left: '0mm',
+  },
+  print_show_logo: true,
+  print_show_qr: true,
+  print_footer_note:
+    'Vui lòng kiểm tra kỹ số lượng và chất lượng trước khi rời kho.',
+};
+
 /* ── Helpers ── */
 
 /** Merged defaults for all sections — used to initialise the settings map */
@@ -322,6 +400,14 @@ const ALL_DEFAULTS: CompanySettingsMap = {
   ...reportSettingsDefaults,
   ...integrationSettingsDefaults,
   ...uiSettingsDefaults,
+  print_default_format: printSettingsDefaults.print_default_format,
+  print_orientation: printSettingsDefaults.print_orientation,
+  print_dot_matrix_width: printSettingsDefaults.print_dot_matrix_width ?? '',
+  print_dot_matrix_height: printSettingsDefaults.print_dot_matrix_height ?? '',
+  print_margin: JSON.stringify(printSettingsDefaults.print_margin),
+  print_show_logo: String(printSettingsDefaults.print_show_logo),
+  print_show_qr: String(printSettingsDefaults.print_show_qr),
+  print_footer_note: printSettingsDefaults.print_footer_note ?? '',
 } as CompanySettingsMap;
 
 /** Chuyển mảng key-value rows thành object phẳng */
