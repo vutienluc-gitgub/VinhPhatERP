@@ -151,10 +151,10 @@ export function AppShell() {
             <div className="topbar-brand-block">
               <AppLauncher />
               <NavLink to="/" className="topbar-brand-logo">
-                <Icon
-                  name="Hexagon"
-                  size={20}
-                  className="text-primary-strong"
+                <img
+                  src="/favicon.svg"
+                  alt="Logo"
+                  className="w-6 h-6 object-contain"
                 />
                 <h1 className="hidden sm:block title-premium-gradient text-base font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
                   {APP_SHELL_LABELS.BRAND_NAME}

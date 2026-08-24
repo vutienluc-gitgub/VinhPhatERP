@@ -80,7 +80,7 @@ export const ViewToggle = memo(function ViewToggle({
   }, [modes, showLabels, labels]);
 
   return (
-    <SegmentedControl
+    <SegmentedControl<ViewMode>
       value={value}
       onChange={onChange}
       options={options}
