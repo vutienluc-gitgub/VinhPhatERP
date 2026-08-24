@@ -56,46 +56,48 @@ export function AppShell() {
   const [showCostingModal, setShowCostingModal] = useState(false);
   const totalUnread = useTotalUnread();
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const currentItem = getCurrentItem(pathname);
-  const navigationItems = getNavigationItems();
+  const navigationItems = useMemo(() => getNavigationItems(), []);
+  const currentItem = useMemo(() => getCurrentItem(pathname), [pathname]);
 
   // ── User Preferences từ DB (nguồn sự thật duy nhất) ─────────────────────────
   const { prefs, toggleTheme, setFluidLayout } = useUserPreferences(
     profile?.id,
   );
 
-  // ── Khi bật fluid → lưu lại nhưng không còn ảnh hưởng đến sidebar ──────────────────────────────────
-  useEffect(() => {
-    const handleFluidChange = () => {
-      if (prefs.fluid_layout) {
-        // fluid_layout enabled
-      }
-    };
-    window.addEventListener('layout-mode-changed', handleFluidChange);
-    return () =>
-      window.removeEventListener('layout-mode-changed', handleFluidChange);
-  }, [prefs.fluid_layout]);
-
   const userRole = profile?.role;
-  const visibleNavItems = navigationItems.filter((item) =>
-    hasAccess(item.requiredRoles, userRole),
+  const visibleNavItems = useMemo(
+    () =>
+      navigationItems.filter((item) => hasAccess(item.requiredRoles, userRole)),
+    [navigationItems, userRole],
   );
 
   // Fixed bottom nav tabs (high-frequency features)
-  const bottomTabs = BOTTOM_TAB_PATHS.map((p) =>
-    visibleNavItems.find((item) => item.path === p),
-  ).filter(
-    (item): item is NavigationItem => item !== null && item !== undefined,
+  const bottomTabs = useMemo(
+    () =>
+      BOTTOM_TAB_PATHS.map((p) =>
+        visibleNavItems.find((item) => item.path === p),
+      ).filter(
+        (item): item is NavigationItem => item !== null && item !== undefined,
+      ),
+    [visibleNavItems],
   );
 
   // All non-tab items for drawer (exclude bottom tabs to avoid duplicates)
-  const drawerItems = visibleNavItems.filter(
-    (item) => !(BOTTOM_TAB_PATHS as readonly string[]).includes(item.path),
+  const drawerItems = useMemo(
+    () =>
+      visibleNavItems.filter(
+        (item) => !(BOTTOM_TAB_PATHS as readonly string[]).includes(item.path),
+      ),
+    [visibleNavItems],
   );
 
   // Check if active page is in the drawer (not in bottom tabs)
-  const isDrawerActive = drawerItems.some((item) =>
-    item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
+  const isDrawerActive = useMemo(
+    () =>
+      drawerItems.some((item) =>
+        item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
+      ),
+    [drawerItems, pathname],
   );
 
   // Close user menu on click outside
@@ -271,22 +273,12 @@ export function AppShell() {
                 <>
                   <button
                     type="button"
-                    className="topbar-icon-btn topbar-chat-inbox-btn"
+                    className="topbar-icon-btn topbar-chat-inbox-btn relative"
                     onClick={() => setShowChatInbox(true)}
                     title={APP_SHELL_LABELS.INBOX}
                     aria-label={APP_SHELL_LABELS.INBOX}
-                    style={{ position: 'relative' }}
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
+                    <Icon name="MessageSquare" size={17} strokeWidth={1.5} />
                     {totalUnread > 0 && (
                       <span className="topbar-chat-badge">
                         {totalUnread > 9 ? '9+' : totalUnread}
@@ -337,7 +329,7 @@ export function AppShell() {
                     role="menuitem"
                     onClick={() => {
                       setShowUserMenu(false);
-                      signOut();
+                      void signOut();
                     }}
                   >
                     <Icon name="LogOut" size={16} strokeWidth={1.5} />
