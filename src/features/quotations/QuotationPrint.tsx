@@ -36,7 +36,7 @@ export default function QuotationPrint() {
   const companyAddress = company?.address || '';
   const companyPhone = company?.phone || '';
   const companyTaxCode = company?.tax_code || '';
-  const companyLogo = company?.logo_url || '/vite.svg';
+  const companyLogo = company?.logo_url || '/favicon.svg';
   const companyBankName = company?.bank_name || '';
   const companyBankAccount = company?.bank_account || '';
 
