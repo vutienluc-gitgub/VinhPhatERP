@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 import {
   productionSettingsSchema,
   productionSettingsDefaults,
@@ -26,6 +26,7 @@ export function ProductionSettingsForm() {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting, isDirty },
@@ -61,16 +62,21 @@ export function ProductionSettingsForm() {
           <div className="w-10 h-10 rounded-xl bg-info-soft/10 text-info flex items-center justify-center shrink-0">
             <Icon name="Factory" size={20} strokeWidth={1.5} />
           </div>
-          <span className="font-bold text-lg">
-            {SETTINGS_LABELS.PRODUCTION_TITLE}
-          </span>
+          <div>
+            <span className="font-bold text-lg text-foreground block">
+              {SETTINGS_LABELS.PRODUCTION_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.PRODUCTION_SUBTITLE}
+            </span>
+          </div>
         </div>
       </div>
       <div className="p-6">
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="form-grid gap-4"
+          className="flex flex-col gap-6"
         >
           {mutation.isSuccess && (
             <div className="success-inline">
@@ -88,60 +94,89 @@ export function ProductionSettingsForm() {
             </p>
           )}
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="form-field">
-              <label htmlFor="ps-unit">{SETTINGS_LABELS.DEFAULT_UNIT}</label>
-              <select
-                id="ps-unit"
-                className="field-select w-full"
-                {...register('default_unit')}
+              <label
+                htmlFor="ps-unit"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
               >
-                {UNIT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                {SETTINGS_LABELS.DEFAULT_UNIT}
+              </label>
+              <Controller
+                name="default_unit"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    id="ps-unit"
+                    options={UNIT_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={!!errors.default_unit}
+                    className="w-full"
+                  />
+                )}
+              />
+              {errors.default_unit && (
+                <span className="field-error text-xs text-danger mt-1 block">
+                  {errors.default_unit.message}
+                </span>
+              )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="ps-waste">
+              <label
+                htmlFor="ps-waste"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.DEFAULT_WASTE_RATE}
               </label>
-              <input
-                id="ps-waste"
-                className={`field-input${errors.default_waste_rate ? ' border-danger' : ''}`}
-                type="text"
-                placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_WASTE_RATE}
-                {...register('default_waste_rate')}
-              />
+              <div className="relative flex items-center">
+                <input
+                  id="ps-waste"
+                  className={`field-input pr-9 w-full${errors.default_waste_rate ? ' border-danger ring-1 ring-danger' : ''}`}
+                  type="text"
+                  placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_WASTE_RATE}
+                  {...register('default_waste_rate')}
+                />
+                <span className="pointer-events-none absolute right-3 text-xs font-semibold text-muted select-none">
+                  %
+                </span>
+              </div>
               {errors.default_waste_rate && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.default_waste_rate.message}
                 </span>
               )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="ps-days">
+              <label
+                htmlFor="ps-days"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.DEFAULT_PRODUCTION_DAYS}
               </label>
-              <input
-                id="ps-days"
-                className={`field-input${errors.default_production_days ? ' border-danger' : ''}`}
-                type="text"
-                placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_PRODUCTION_DAYS}
-                {...register('default_production_days')}
-              />
+              <div className="relative flex items-center">
+                <input
+                  id="ps-days"
+                  className={`field-input pr-14 w-full${errors.default_production_days ? ' border-danger ring-1 ring-danger' : ''}`}
+                  type="text"
+                  placeholder={SETTINGS_PLACEHOLDERS.DEFAULT_PRODUCTION_DAYS}
+                  {...register('default_production_days')}
+                />
+                <span className="pointer-events-none absolute right-3 text-xs font-semibold text-muted select-none">
+                  ngày
+                </span>
+              </div>
               {errors.default_production_days && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.default_production_days.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 border-t border-border/50">
             <Button
               variant="secondary"
               type="button"

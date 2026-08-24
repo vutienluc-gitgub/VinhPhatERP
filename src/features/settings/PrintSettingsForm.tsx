@@ -187,12 +187,12 @@ export function PrintSettingsForm() {
             <Icon name="Printer" size={20} strokeWidth={1.5} />
           </div>
           <div>
-            <h3 className="font-bold text-lg text-foreground">
+            <span className="font-bold text-lg text-foreground block">
               {SETTINGS_LABELS.PRINT_TITLE}
-            </h3>
-            <p className="text-xs text-muted-foreground">
+            </span>
+            <span className="text-xs text-muted">
               {SETTINGS_LABELS.PRINT_SUBTITLE}
-            </p>
+            </span>
           </div>
         </div>
       </div>
@@ -207,20 +207,19 @@ export function PrintSettingsForm() {
           <div className="flex flex-col gap-6">
             {/* Feedback Messages */}
             {updateMutation.isSuccess && (
-              <div className="success-inline flex items-center gap-2 text-sm text-success bg-success-soft px-3 py-2 rounded-lg">
+              <div className="success-inline">
                 <Icon name="CheckCircle2" size={16} strokeWidth={2} />
                 {SETTINGS_MESSAGES.SAVE_SUCCESS}
               </div>
             )}
 
             {updateMutation.error && (
-              <div className="error-inline flex items-center gap-2 text-sm text-danger bg-danger-soft px-3 py-2 rounded-lg">
-                <Icon name="AlertCircle" size={16} strokeWidth={2} />
+              <p className="error-inline">
                 {SETTINGS_MESSAGES.SAVE_ERROR}{' '}
                 {updateMutation.error instanceof Error
                   ? updateMutation.error.message
                   : String(updateMutation.error)}
-              </div>
+              </p>
             )}
 
             {/* 1. Format Selection */}
@@ -534,15 +533,15 @@ export function PrintSettingsForm() {
               </div>
             )}
 
-            {/* 3. Element Toggles */}
-            <div className="flex flex-col gap-3 border-t border-default pt-4">
-              {/* Show Logo Switch */}
-              <div className="flex items-center justify-between py-1">
+            {/* 3. Element Toggles (2-Column Switch Cards) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 border-t border-default pt-4">
+              {/* Show Logo Switch Card */}
+              <div className="p-3.5 rounded-xl border border-border/60 bg-surface-secondary/30 flex items-center justify-between gap-3">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm font-semibold text-foreground">
                     {SETTINGS_LABELS.PRINT_SHOW_LOGO_LABEL}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted">
                     {SETTINGS_LABELS.PRINT_SHOW_LOGO_DESC}
                   </span>
                 </div>
@@ -559,13 +558,13 @@ export function PrintSettingsForm() {
                 />
               </div>
 
-              {/* Show QR Switch */}
-              <div className="flex items-center justify-between py-1 border-t border-default/50 pt-3">
+              {/* Show QR Switch Card */}
+              <div className="p-3.5 rounded-xl border border-border/60 bg-surface-secondary/30 flex items-center justify-between gap-3">
                 <div className="flex flex-col gap-0.5">
                   <span className="text-sm font-semibold text-foreground">
                     {SETTINGS_LABELS.PRINT_SHOW_QR_LABEL}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted">
                     {SETTINGS_LABELS.PRINT_SHOW_QR_DESC}
                   </span>
                 </div>

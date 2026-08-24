@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 import {
   reportSettingsSchema,
   reportSettingsDefaults,
@@ -27,6 +27,7 @@ export function ReportSettingsForm() {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting, isDirty },
@@ -57,19 +58,24 @@ export function ReportSettingsForm() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-info-soft/10 text-info flex items-center justify-center shrink-0">
             <Icon name="BarChart3" size={20} strokeWidth={1.5} />
           </div>
-          <span className="font-bold text-lg">
-            {SETTINGS_LABELS.REPORT_TITLE}
-          </span>
+          <div>
+            <span className="font-bold text-lg text-foreground block">
+              {SETTINGS_LABELS.REPORT_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.REPORT_SUBTITLE}
+            </span>
+          </div>
         </div>
       </div>
       <div className="p-6">
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="form-grid gap-4"
+          className="flex flex-col gap-6"
         >
           {mutation.isSuccess && (
             <div className="success-inline">
@@ -87,57 +93,86 @@ export function ReportSettingsForm() {
             </p>
           )}
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="form-field">
-              <label htmlFor="rp-timezone">{SETTINGS_LABELS.TIMEZONE}</label>
-              <select
-                id="rp-timezone"
-                className="field-select w-full"
-                {...register('timezone')}
+              <label
+                htmlFor="rp-timezone"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
               >
-                {TIMEZONE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                {SETTINGS_LABELS.TIMEZONE}
+              </label>
+              <Controller
+                name="timezone"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    id="rp-timezone"
+                    options={TIMEZONE_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={!!errors.timezone}
+                    className="w-full"
+                  />
+                )}
+              />
+              {errors.timezone && (
+                <span className="field-error text-xs text-danger mt-1 block">
+                  {errors.timezone.message}
+                </span>
+              )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="rp-fiscal">
+              <label
+                htmlFor="rp-fiscal"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.FISCAL_YEAR_START}
               </label>
               <input
                 id="rp-fiscal"
-                className={`field-input${errors.fiscal_year_start ? ' border-danger' : ''}`}
+                className={`field-input w-full${errors.fiscal_year_start ? ' border-danger ring-1 ring-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.FISCAL_YEAR_START}
                 {...register('fiscal_year_start')}
               />
               {errors.fiscal_year_start && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.fiscal_year_start.message}
                 </span>
               )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="rp-date-fmt">{SETTINGS_LABELS.DATE_FORMAT}</label>
-              <select
-                id="rp-date-fmt"
-                className="field-select w-full"
-                {...register('date_format')}
+              <label
+                htmlFor="rp-date-fmt"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
               >
-                {DATE_FORMAT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                {SETTINGS_LABELS.DATE_FORMAT}
+              </label>
+              <Controller
+                name="date_format"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    id="rp-date-fmt"
+                    options={DATE_FORMAT_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={!!errors.date_format}
+                    className="w-full"
+                  />
+                )}
+              />
+              {errors.date_format && (
+                <span className="field-error text-xs text-danger mt-1 block">
+                  {errors.date_format.message}
+                </span>
+              )}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 border-t border-border/50">
             <Button
               variant="secondary"
               type="button"

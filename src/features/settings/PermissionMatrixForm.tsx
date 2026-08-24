@@ -63,7 +63,7 @@ export function PermissionMatrixForm() {
     return (
       <div className="panel-card card-flush p-6">
         <div className="flex items-center gap-3 mb-6">
-          <PanelIcon name="ShieldCheck" color="indigo" />
+          <PanelIcon name="ShieldCheck" variant="purple" />
           <div>
             <span className="font-bold text-lg block">
               {SETTINGS_LABELS.PERM_TITLE}
@@ -139,7 +139,7 @@ export function PermissionMatrixForm() {
     >
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <PanelIcon name="ShieldCheck" color="indigo" />
+          <PanelIcon name="ShieldCheck" variant="purple" />
           <div>
             <span className="font-bold text-lg block">
               {SETTINGS_LABELS.PERM_TITLE}

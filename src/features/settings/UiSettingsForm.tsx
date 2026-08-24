@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 import {
   uiSettingsSchema,
   uiSettingsDefaults,
@@ -27,6 +27,7 @@ export function UiSettingsForm() {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     watch,
@@ -66,14 +67,21 @@ export function UiSettingsForm() {
           <div className="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-600 flex items-center justify-center shrink-0">
             <Icon name="Palette" size={20} strokeWidth={1.5} />
           </div>
-          <span className="font-bold text-lg">{SETTINGS_LABELS.UI_TITLE}</span>
+          <div>
+            <span className="font-bold text-lg text-foreground block">
+              {SETTINGS_LABELS.UI_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.UI_SUBTITLE}
+            </span>
+          </div>
         </div>
       </div>
       <div className="p-6">
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="form-grid gap-4"
+          className="flex flex-col gap-6"
         >
           {mutation.isSuccess && (
             <div className="success-inline">
@@ -91,39 +99,70 @@ export function UiSettingsForm() {
             </p>
           )}
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="form-field">
-              <label htmlFor="ui-theme">{SETTINGS_LABELS.THEME_MODE}</label>
-              <select
-                id="ui-theme"
-                className="field-select w-full"
-                {...register('theme_mode')}
+              <label
+                htmlFor="ui-theme"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
               >
-                {THEME_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                {SETTINGS_LABELS.THEME_MODE}
+              </label>
+              <Controller
+                name="theme_mode"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    id="ui-theme"
+                    options={THEME_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={!!errors.theme_mode}
+                    className="w-full"
+                  />
+                )}
+              />
+              {errors.theme_mode && (
+                <span className="field-error text-xs text-danger mt-1 block">
+                  {errors.theme_mode.message}
+                </span>
+              )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="ui-lang">{SETTINGS_LABELS.LANGUAGE}</label>
-              <select
-                id="ui-lang"
-                className="field-select w-full"
-                {...register('language')}
+              <label
+                htmlFor="ui-lang"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
               >
-                {LANGUAGE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                {SETTINGS_LABELS.LANGUAGE}
+              </label>
+              <Controller
+                name="language"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    id="ui-lang"
+                    options={LANGUAGE_OPTIONS}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={!!errors.language}
+                    className="w-full"
+                  />
+                )}
+              />
+              {errors.language && (
+                <span className="field-error text-xs text-danger mt-1 block">
+                  {errors.language.message}
+                </span>
+              )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="ui-brand">{SETTINGS_LABELS.BRAND_COLOR}</label>
+              <label
+                htmlFor="ui-brand"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
+                {SETTINGS_LABELS.BRAND_COLOR}
+              </label>
               <div className="flex items-center gap-3">
                 <input
                   id="ui-brand-picker"
@@ -138,14 +177,14 @@ export function UiSettingsForm() {
                 />
                 <input
                   id="ui-brand"
-                  className={`field-input flex-1${errors.brand_color ? ' border-danger' : ''}`}
+                  className={`field-input flex-1${errors.brand_color ? ' border-danger ring-1 ring-danger' : ''}`}
                   type="text"
                   placeholder={SETTINGS_PLACEHOLDERS.BRAND_COLOR}
                   {...register('brand_color')}
                 />
               </div>
               {errors.brand_color && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.brand_color.message}
                 </span>
               )}
@@ -153,24 +192,27 @@ export function UiSettingsForm() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="ui-print-logo">
+            <label
+              htmlFor="ui-print-logo"
+              className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+            >
               {SETTINGS_LABELS.PRINT_LOGO_URL}
             </label>
             <input
               id="ui-print-logo"
-              className={`field-input${errors.print_logo_url ? ' border-danger' : ''}`}
+              className={`field-input w-full${errors.print_logo_url ? ' border-danger ring-1 ring-danger' : ''}`}
               type="text"
               placeholder={SETTINGS_PLACEHOLDERS.PRINT_LOGO_URL}
               {...register('print_logo_url')}
             />
             {errors.print_logo_url && (
-              <span className="field-error">
+              <span className="field-error text-xs text-danger mt-1 block">
                 {errors.print_logo_url.message}
               </span>
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 border-t border-border/50">
             <Button
               variant="secondary"
               type="button"

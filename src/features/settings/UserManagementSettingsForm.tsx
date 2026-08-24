@@ -66,19 +66,24 @@ export function UserManagementSettingsForm() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
             <Icon name="Users" size={20} strokeWidth={1.5} />
           </div>
-          <span className="font-bold text-lg">
-            {SETTINGS_LABELS.USER_MGMT_TITLE}
-          </span>
+          <div>
+            <span className="font-bold text-lg text-foreground block">
+              {SETTINGS_LABELS.USER_MGMT_TITLE}
+            </span>
+            <span className="text-xs text-muted">
+              {SETTINGS_LABELS.USER_MGMT_SUBTITLE}
+            </span>
+          </div>
         </div>
       </div>
       <div className="p-6">
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="form-grid gap-4"
+          className="flex flex-col gap-6"
         >
           {mutation.isSuccess && (
             <div className="success-inline">
@@ -96,69 +101,91 @@ export function UserManagementSettingsForm() {
             </p>
           )}
 
-          <div className="flex flex-col gap-5 max-w-lg">
-            <Switch
-              id="um-signup"
-              checked={allowSignup === 'true'}
-              onChange={(val) =>
-                setValue('allow_self_signup', val ? 'true' : 'false', {
-                  shouldDirty: true,
-                })
-              }
-              label={SETTINGS_LABELS.ALLOW_SELF_SIGNUP}
-              description={SETTINGS_LABELS.ALLOW_SELF_SIGNUP_DESC}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl border border-border/60 bg-surface-secondary/30 flex flex-col justify-between">
+              <Switch
+                id="um-signup"
+                checked={allowSignup === 'true'}
+                onChange={(val) =>
+                  setValue('allow_self_signup', val ? 'true' : 'false', {
+                    shouldDirty: true,
+                  })
+                }
+                label={SETTINGS_LABELS.ALLOW_SELF_SIGNUP}
+                description={SETTINGS_LABELS.ALLOW_SELF_SIGNUP_DESC}
+              />
+            </div>
 
-            <Switch
-              id="um-approval"
-              checked={requireApproval === 'true'}
-              onChange={(val) =>
-                setValue('require_account_approval', val ? 'true' : 'false', {
-                  shouldDirty: true,
-                })
-              }
-              label={SETTINGS_LABELS.REQUIRE_APPROVAL}
-              description={SETTINGS_LABELS.REQUIRE_APPROVAL_DESC}
-            />
+            <div className="p-4 rounded-xl border border-border/60 bg-surface-secondary/30 flex flex-col justify-between">
+              <Switch
+                id="um-approval"
+                checked={requireApproval === 'true'}
+                onChange={(val) =>
+                  setValue('require_account_approval', val ? 'true' : 'false', {
+                    shouldDirty: true,
+                  })
+                }
+                label={SETTINGS_LABELS.REQUIRE_APPROVAL}
+                description={SETTINGS_LABELS.REQUIRE_APPROVAL_DESC}
+              />
+            </div>
           </div>
 
-          <div className="form-grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="form-field">
-              <label htmlFor="um-timeout">
+              <label
+                htmlFor="um-timeout"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
                 {SETTINGS_LABELS.SESSION_TIMEOUT}
               </label>
-              <input
-                id="um-timeout"
-                className={`field-input${errors.session_timeout_minutes ? ' border-danger' : ''}`}
-                type="text"
-                placeholder={SETTINGS_PLACEHOLDERS.SESSION_TIMEOUT}
-                {...register('session_timeout_minutes')}
-              />
+              <div className="relative flex items-center">
+                <input
+                  id="um-timeout"
+                  className={`field-input pr-14 w-full${errors.session_timeout_minutes ? ' border-danger ring-1 ring-danger' : ''}`}
+                  type="text"
+                  placeholder={SETTINGS_PLACEHOLDERS.SESSION_TIMEOUT}
+                  {...register('session_timeout_minutes')}
+                />
+                <span className="pointer-events-none absolute right-3 text-xs font-semibold text-muted select-none">
+                  phút
+                </span>
+              </div>
               {errors.session_timeout_minutes && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.session_timeout_minutes.message}
                 </span>
               )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="um-devices">{SETTINGS_LABELS.MAX_DEVICES}</label>
-              <input
-                id="um-devices"
-                className={`field-input${errors.max_concurrent_devices ? ' border-danger' : ''}`}
-                type="text"
-                placeholder={SETTINGS_PLACEHOLDERS.MAX_DEVICES}
-                {...register('max_concurrent_devices')}
-              />
+              <label
+                htmlFor="um-devices"
+                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+              >
+                {SETTINGS_LABELS.MAX_DEVICES}
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  id="um-devices"
+                  className={`field-input pr-16 w-full${errors.max_concurrent_devices ? ' border-danger ring-1 ring-danger' : ''}`}
+                  type="text"
+                  placeholder={SETTINGS_PLACEHOLDERS.MAX_DEVICES}
+                  {...register('max_concurrent_devices')}
+                />
+                <span className="pointer-events-none absolute right-3 text-xs font-semibold text-muted select-none">
+                  thiết bị
+                </span>
+              </div>
               {errors.max_concurrent_devices && (
-                <span className="field-error">
+                <span className="field-error text-xs text-danger mt-1 block">
                   {errors.max_concurrent_devices.message}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 border-t border-border/50">
             <Button
               variant="secondary"
               type="button"

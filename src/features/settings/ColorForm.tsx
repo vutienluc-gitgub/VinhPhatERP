@@ -3,13 +3,13 @@ import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import { Button } from '@/shared/components';
+import { Button, VPSelect } from '@/shared/components';
 import { colorSchema, colorDefaultValues } from '@/schema/color.schema';
 import type { ColorFormValues, ColorRow } from '@/schema/color.schema';
 import { useColorMutations } from '@/application/settings';
 import { NumericInput } from '@/shared/value';
 
-import { SETTINGS_LABELS } from './settings.constants';
+import { SETTINGS_LABELS, COLOR_GROUP_OPTIONS } from './settings.constants';
 
 type ColorFormProps = {
   initialData: ColorRow | null;
@@ -132,27 +132,23 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
 
       <div className="form-field">
         <label htmlFor="color_group">
-          {SETTINGS_LABELS.COLOR_FORM_GROUP_LABEL || 'Nhóm màu'}
+          {SETTINGS_LABELS.COLOR_FORM_GROUP_LABEL}
         </label>
-        <select
-          id="color_group"
-          className={`field-select ${errors.color_group ? 'border-danger' : ''}`}
-          {...register('color_group')}
-        >
-          <option value="">
-            {SETTINGS_LABELS.COLOR_FORM_GROUP_PLACEHOLDER ||
-              '-- Chọn nhóm màu --'}
-          </option>
-          <option value={SETTINGS_LABELS.COLOR_GROUP_DARK}>
-            {SETTINGS_LABELS.COLOR_GROUP_DARK}
-          </option>
-          <option value={SETTINGS_LABELS.COLOR_GROUP_MID}>
-            {SETTINGS_LABELS.COLOR_GROUP_MID}
-          </option>
-          <option value={SETTINGS_LABELS.COLOR_GROUP_LIGHT}>
-            {SETTINGS_LABELS.COLOR_GROUP_LIGHT}
-          </option>
-        </select>
+        <Controller
+          name="color_group"
+          control={control}
+          render={({ field }) => (
+            <VPSelect
+              id="color_group"
+              options={COLOR_GROUP_OPTIONS}
+              value={field.value || undefined}
+              onValueChange={field.onChange}
+              placeholder={SETTINGS_LABELS.COLOR_FORM_GROUP_PLACEHOLDER}
+              error={!!errors.color_group}
+              className="w-full"
+            />
+          )}
+        />
         {errors.color_group && (
           <p className="field-error">{errors.color_group.message}</p>
         )}
