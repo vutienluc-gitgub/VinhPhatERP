@@ -319,10 +319,20 @@ export const uiSettingsDefaults: UiSettingsFormValues = {
 
 /* ── Print Settings ── */
 
-const dimensionRegex = /^\d+(\.\d+)?(mm|cm)$/i;
-export const dimensionSchema = z.string().regex(dimensionRegex, {
-  message: 'Định dạng kích thước không hợp lệ (VD: 200mm, 14.5cm)',
-});
+const dimensionRegex = /^\d+(\.\d+)?(mm|cm)?$/i;
+export const dimensionSchema = z
+  .string()
+  .trim()
+  .regex(dimensionRegex, {
+    message: 'Định dạng kích thước không hợp lệ (VD: 200, 200mm, 14.5cm)',
+  })
+  .transform((val) => {
+    if (!val) return val;
+    if (/^\d+(\.\d+)?$/.test(val)) {
+      return `${val}mm`;
+    }
+    return val;
+  });
 
 export const printSettingsSchema = z
   .object({

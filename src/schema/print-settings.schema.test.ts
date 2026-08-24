@@ -61,16 +61,26 @@ describe('printSettingsSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('validates custom margins correctly', () => {
+  it('auto-normalizes pure numeric dimensions to mm', () => {
     const result = printSettingsSchema.safeParse({
-      ...printSettingsDefaults,
+      print_default_format: 'A5_DOT_MATRIX',
+      print_dot_matrix_width: '200',
+      print_dot_matrix_height: '148',
       print_margin: {
-        top: '3mm',
-        right: '15mm',
-        bottom: '3mm',
-        left: '15mm',
+        top: '2',
+        right: '3',
+        bottom: '2',
+        left: '3',
       },
+      print_show_logo: true,
+      print_show_qr: true,
     });
     expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.print_dot_matrix_width).toBe('200mm');
+      expect(result.data.print_dot_matrix_height).toBe('148mm');
+      expect(result.data.print_margin.left).toBe('3mm');
+      expect(result.data.print_margin.right).toBe('3mm');
+    }
   });
 });

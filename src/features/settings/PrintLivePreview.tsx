@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 
 import type { PrintSettingsFormValues } from '@/schema/company-settings.schema';
@@ -18,25 +19,83 @@ export function PrintLivePreview({
   logoUrl = '/favicon.svg',
   onTestPrint,
 }: PrintLivePreviewProps) {
+  const [zoomLevel, setZoomLevel] = useState<number>(0.92);
+  const [isLongFixture, setIsLongFixture] = useState<boolean>(false);
+
   const isA4 = values.print_default_format === 'A4';
   const isA5 = values.print_default_format === 'A5_DOT_MATRIX';
   const isK80 = values.print_default_format === 'K80';
 
+  const handleZoom = (delta: number) => {
+    setZoomLevel((prev) =>
+      Math.min(1.2, Math.max(0.7, Number((prev + delta).toFixed(2)))),
+    );
+  };
+
+  // Convert mm margin string to preview px padding
+  const marginLeftNum = parseFloat(values.print_margin?.left || '3') || 3;
+  const marginRightNum = parseFloat(values.print_margin?.right || '3') || 3;
+  const dynamicPaddingLeft = isA5
+    ? Math.max(16, marginLeftNum * 2.2 + 10)
+    : undefined;
+  const dynamicPaddingRight = isA5
+    ? Math.max(16, marginRightNum * 2.2 + 10)
+    : undefined;
+
   return (
     <div className="flex flex-col gap-3 sticky top-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Icon name="Eye" size={16} className="text-primary" />
-          <span className="text-sm font-bold text-foreground">
+      {/* Top Bar with Title, Dimension & Zoom */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Icon name="Eye" size={16} className="text-primary shrink-0" />
+          <span className="text-sm font-bold text-foreground truncate">
             {SETTINGS_LABELS.PRINT_LIVE_PREVIEW_TITLE}
           </span>
         </div>
-        <span className="text-xs text-muted-foreground font-mono">
+
+        {/* Zoom Toolset */}
+        <div className="flex items-center gap-1 bg-surface-secondary border border-default rounded-lg p-0.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => handleZoom(-0.1)}
+            aria-label="Thu nhỏ"
+            className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-surface text-xs font-bold transition-colors"
+          >
+            -
+          </button>
+          <span className="text-[10px] font-mono font-semibold px-1 text-foreground">
+            {Math.round(zoomLevel * 100)}%
+          </span>
+          <button
+            type="button"
+            onClick={() => handleZoom(0.1)}
+            aria-label="Phóng to"
+            className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-surface text-xs font-bold transition-colors"
+          >
+            +
+          </button>
+        </div>
+      </div>
+
+      {/* Sub Info & Fixture Switcher */}
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span className="text-[11px] font-mono">
           {isA4 && 'Khổ A4 (210×297mm)'}
           {isA5 &&
-            `In kim (${values.print_dot_matrix_width || '200mm'} × ${values.print_dot_matrix_height || '145mm'})`}
+            `In kim (${values.print_dot_matrix_width || '200mm'} × ${values.print_dot_matrix_height || '148mm'})`}
           {isK80 && 'In nhiệt K80 (80mm)'}
         </span>
+
+        {/* Fixture Toggle */}
+        <button
+          type="button"
+          onClick={() => setIsLongFixture(!isLongFixture)}
+          className="text-[10px] text-primary hover:underline font-medium"
+        >
+          {isLongFixture
+            ? SETTINGS_LABELS.PRINT_FIXTURE_LONG
+            : SETTINGS_LABELS.PRINT_FIXTURE_SHORT}
+        </button>
       </div>
 
       {/* Scaled Preview Paper Canvas */}
@@ -44,11 +103,17 @@ export function PrintLivePreview({
         <div
           className={`bg-white text-slate-900 shadow-md transition-all duration-300 origin-top text-[10px] leading-snug select-none relative ${
             isA4 ? 'w-[280px] min-h-[396px] p-4' : ''
-          } ${isA5 ? 'w-[330px] min-h-[232px] px-6 py-3 border border-black font-sans' : ''} ${
+          } ${isA5 ? 'w-[330px] min-h-[232px] py-3 border border-black font-sans' : ''} ${
             isK80 ? 'w-[180px] min-h-[260px] p-2 font-mono text-[9px]' : ''
           }`}
           style={{
-            transform: 'scale(0.92)',
+            transform: `scale(${zoomLevel})`,
+            paddingLeft: dynamicPaddingLeft
+              ? `${dynamicPaddingLeft}px`
+              : undefined,
+            paddingRight: dynamicPaddingRight
+              ? `${dynamicPaddingRight}px`
+              : undefined,
           }}
         >
           {/* Tractor Feed Holes Visualizer for A5 Dot Matrix */}
@@ -147,6 +212,28 @@ export function PrintLivePreview({
                 <td className="py-0.5 px-1 text-right">C03, C04</td>
                 <td className="py-0.5 px-1 text-right font-bold">298.0</td>
               </tr>
+              {isLongFixture && (
+                <>
+                  <tr className="border-b border-slate-200">
+                    <td className="py-0.5 px-1">3</td>
+                    <td className="py-0.5 px-1">TC 65/35 Khổ 1m6</td>
+                    <td className="py-0.5 px-1 text-right">C05, C06</td>
+                    <td className="py-0.5 px-1 text-right font-bold">310.5</td>
+                  </tr>
+                  <tr className="border-b border-slate-200">
+                    <td className="py-0.5 px-1">4</td>
+                    <td className="py-0.5 px-1">Viscose Hàn Quốc</td>
+                    <td className="py-0.5 px-1 text-right">C07, C08</td>
+                    <td className="py-0.5 px-1 text-right font-bold">195.0</td>
+                  </tr>
+                  <tr className="border-b border-slate-200">
+                    <td className="py-0.5 px-1">5</td>
+                    <td className="py-0.5 px-1">Thun Lạnh 4C Spandex</td>
+                    <td className="py-0.5 px-1 text-right">C09, C10</td>
+                    <td className="py-0.5 px-1 text-right font-bold">275.0</td>
+                  </tr>
+                </>
+              )}
             </tbody>
           </table>
 
