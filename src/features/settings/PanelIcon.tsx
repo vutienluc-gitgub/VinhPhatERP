@@ -20,10 +20,10 @@ interface PanelIconProps {
 
 const VARIANT_CLASSES: Record<PanelIconVariant, string> = {
   primary: 'bg-primary/10 text-primary',
-  info: 'bg-info-soft/10 text-info',
-  success: 'bg-success-soft/10 text-success',
-  warning: 'bg-warning-soft/10 text-warning',
-  danger: 'bg-danger-soft/10 text-danger',
+  info: 'bg-info-soft text-info',
+  success: 'bg-success-soft text-success',
+  warning: 'bg-warning-soft text-warning',
+  danger: 'bg-danger-soft text-danger',
   purple: 'bg-purple-500/10 text-purple-600',
   pink: 'bg-pink-500/10 text-pink-600',
 };
