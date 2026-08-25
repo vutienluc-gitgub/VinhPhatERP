@@ -13,6 +13,7 @@ import {
   useUpdatePartialSettings,
 } from '@/application/settings';
 
+import { PanelIcon } from './PanelIcon';
 import {
   SETTINGS_LABELS,
   SETTINGS_MESSAGES,
@@ -58,14 +59,12 @@ export function ReportSettingsForm() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-info-soft/10 text-info flex items-center justify-center shrink-0">
-            <Icon name="BarChart3" size={20} strokeWidth={1.5} />
-          </div>
+          <PanelIcon name="BarChart3" variant="info" />
           <div>
             <span className="font-bold text-lg text-foreground block">
               {SETTINGS_LABELS.REPORT_TITLE}
             </span>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-foreground/75 font-medium">
               {SETTINGS_LABELS.REPORT_SUBTITLE}
             </span>
           </div>
@@ -97,7 +96,7 @@ export function ReportSettingsForm() {
             <div className="form-field">
               <label
                 htmlFor="rp-timezone"
-                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+                className="text-xs font-bold text-foreground/80 uppercase tracking-wider mb-1.5 block"
               >
                 {SETTINGS_LABELS.TIMEZONE}
               </label>
@@ -125,7 +124,7 @@ export function ReportSettingsForm() {
             <div className="form-field">
               <label
                 htmlFor="rp-fiscal"
-                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+                className="text-xs font-bold text-foreground/80 uppercase tracking-wider mb-1.5 block"
               >
                 {SETTINGS_LABELS.FISCAL_YEAR_START}
               </label>
@@ -146,7 +145,7 @@ export function ReportSettingsForm() {
             <div className="form-field">
               <label
                 htmlFor="rp-date-fmt"
-                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
+                className="text-xs font-bold text-foreground/80 uppercase tracking-wider mb-1.5 block"
               >
                 {SETTINGS_LABELS.DATE_FORMAT}
               </label>
@@ -181,15 +180,15 @@ export function ReportSettingsForm() {
             >
               {SETTINGS_LABELS.BTN_UNDO}
             </Button>
-            <button
-              className="primary-button btn-standard"
+            <Button
+              variant="primary"
               type="submit"
               disabled={isSubmitting || !isDirty}
             >
               {isSubmitting
                 ? SETTINGS_LABELS.BTN_SAVING
                 : SETTINGS_LABELS.BTN_SAVE}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
