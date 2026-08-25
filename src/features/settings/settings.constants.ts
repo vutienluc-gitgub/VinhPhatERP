@@ -167,6 +167,7 @@ export const SETTINGS_LABELS = {
   TAB_GENERAL: 'Tổng quan',
   TAB_FINANCE: 'Tài chính',
   TAB_OPERATIONS: 'Vận hành',
+  TAB_PRINT_TEMPLATES: 'Mẫu in',
   TAB_SYSTEM: 'Hệ thống',
   // Common buttons
   BTN_UNDO: 'Hoàn tác',

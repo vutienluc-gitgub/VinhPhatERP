@@ -38,6 +38,13 @@ export const settingsPluginV2: ERPPlugin = {
             })),
         },
         {
+          path: 'print-templates',
+          component: () =>
+            import('./pages/PrintTemplatesSettingsPage').then((m) => ({
+              default: m.PrintTemplatesSettingsPage,
+            })),
+        },
+        {
           path: 'system',
           component: () =>
             import('./pages/SystemSettingsPage').then((m) => ({

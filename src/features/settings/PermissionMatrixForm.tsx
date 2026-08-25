@@ -2,6 +2,7 @@ import { useEffect, useRef, Fragment } from 'react';
 
 import { Button } from '@/shared/components/Button';
 import { Icon } from '@/shared/components/Icon';
+import { Badge } from '@/shared/components/Badge';
 import { PanelIcon } from '@/features/settings/PanelIcon';
 import {
   PERMISSION_MODULE_LABELS,
@@ -13,6 +14,90 @@ import {
 
 import { usePermissionMatrix } from './usePermissionMatrix';
 import { SETTINGS_LABELS } from './settings.constants';
+
+function getPermissionActionBadge(action: string) {
+  const label = PERMISSION_ACTION_LABELS[action] ?? action;
+  switch (action) {
+    case 'read':
+      return (
+        <Badge
+          variant="info"
+          icon="Eye"
+          className="text-[10px] py-0.2 px-1.5 font-medium"
+        >
+          {label}
+        </Badge>
+      );
+    case 'create':
+      return (
+        <Badge
+          variant="success"
+          icon="Plus"
+          className="text-[10px] py-0.2 px-1.5 font-medium"
+        >
+          {label}
+        </Badge>
+      );
+    case 'update':
+    case 'update_status':
+      return (
+        <Badge
+          variant="warning"
+          icon="Pencil"
+          className="text-[10px] py-0.2 px-1.5 font-medium"
+        >
+          {label}
+        </Badge>
+      );
+    case 'delete':
+      return (
+        <Badge
+          variant="danger"
+          icon="Trash2"
+          className="text-[10px] py-0.2 px-1.5 font-medium"
+        >
+          {label}
+        </Badge>
+      );
+    case 'export':
+      return (
+        <Badge
+          variant="purple"
+          icon="Download"
+          className="text-[10px] py-0.2 px-1.5 font-medium"
+        >
+          {label}
+        </Badge>
+      );
+    case 'import':
+      return (
+        <Badge
+          variant="purple"
+          icon="Upload"
+          className="text-[10px] py-0.2 px-1.5 font-medium"
+        >
+          {label}
+        </Badge>
+      );
+    case 'manage':
+    case 'write':
+      return (
+        <Badge
+          variant="primary"
+          icon="Shield"
+          className="text-[10px] py-0.2 px-1.5 font-medium"
+        >
+          {label}
+        </Badge>
+      );
+    default:
+      return (
+        <Badge variant="gray" className="text-[10px] py-0.2 px-1.5 font-medium">
+          {label}
+        </Badge>
+      );
+  }
+}
 
 interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   indeterminate?: boolean;
@@ -276,13 +361,10 @@ export function PermissionMatrixForm() {
                         <td className="sticky-col py-1.5 px-3">
                           <div className="flex flex-col gap-0.5">
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm">
+                              <span className="font-semibold text-sm text-foreground">
                                 {perm.label}
                               </span>
-                              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--surface-subtle)] text-[var(--surface-subtle)] rounded font-mono uppercase tracking-tight">
-                                {PERMISSION_ACTION_LABELS[perm.action] ??
-                                  perm.action}
-                              </span>
+                              {getPermissionActionBadge(perm.action)}
                             </div>
                             {perm.description && (
                               <span className="text-xs text-muted-foreground">

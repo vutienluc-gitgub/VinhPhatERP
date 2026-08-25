@@ -250,13 +250,11 @@ export function PrintSettingsForm() {
                       name="FileText"
                       size={18}
                       className={
-                        selectedFormat === 'A4'
-                          ? 'text-primary'
-                          : 'text-muted-foreground'
+                        selectedFormat === 'A4' ? 'text-primary' : 'text-muted'
                       }
                     />
                   </div>
-                  <span className="text-[11px] text-muted-foreground leading-snug">
+                  <span className="text-[11px] text-muted leading-snug">
                     {SETTINGS_LABELS.PRINT_FORMAT_A4_DESC}
                   </span>
                 </button>
@@ -285,11 +283,11 @@ export function PrintSettingsForm() {
                       className={
                         selectedFormat === 'A5_DOT_MATRIX'
                           ? 'text-primary'
-                          : 'text-muted-foreground'
+                          : 'text-muted'
                       }
                     />
                   </div>
-                  <span className="text-[11px] text-muted-foreground leading-snug">
+                  <span className="text-[11px] text-muted leading-snug">
                     {SETTINGS_LABELS.PRINT_FORMAT_A5_DESC}
                   </span>
                 </button>
@@ -316,13 +314,11 @@ export function PrintSettingsForm() {
                       name="Receipt"
                       size={18}
                       className={
-                        selectedFormat === 'K80'
-                          ? 'text-primary'
-                          : 'text-muted-foreground'
+                        selectedFormat === 'K80' ? 'text-primary' : 'text-muted'
                       }
                     />
                   </div>
-                  <span className="text-[11px] text-muted-foreground leading-snug">
+                  <span className="text-[11px] text-muted leading-snug">
                     {SETTINGS_LABELS.PRINT_FORMAT_K80_DESC}
                   </span>
                 </button>
@@ -341,7 +337,7 @@ export function PrintSettingsForm() {
                     />
                     <span>{SETTINGS_LABELS.PRINT_A5_SPEC_TITLE}</span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground font-mono">
+                  <span className="text-[11px] text-muted font-mono">
                     {SETTINGS_LABELS.PRINT_A5_SPEC_SUB}
                   </span>
                 </div>
@@ -351,7 +347,7 @@ export function PrintSettingsForm() {
                   <div className="flex flex-col gap-1">
                     <label
                       htmlFor="dot-matrix-width"
-                      className="text-[11px] font-medium text-muted-foreground"
+                      className="text-[11px] font-medium text-muted"
                     >
                       {SETTINGS_LABELS.PRINT_WIDTH_SHORT}
                     </label>
@@ -365,7 +361,7 @@ export function PrintSettingsForm() {
                         placeholder="200"
                         {...register('print_dot_matrix_width')}
                       />
-                      <span className="absolute right-2 text-[10px] text-muted-foreground font-mono pointer-events-none">
+                      <span className="absolute right-2 text-[10px] text-muted font-mono pointer-events-none">
                         mm
                       </span>
                     </div>
@@ -380,7 +376,7 @@ export function PrintSettingsForm() {
                   <div className="flex flex-col gap-1">
                     <label
                       htmlFor="dot-matrix-height"
-                      className="text-[11px] font-medium text-muted-foreground"
+                      className="text-[11px] font-medium text-muted"
                     >
                       {SETTINGS_LABELS.PRINT_HEIGHT_SHORT}
                     </label>
@@ -394,7 +390,7 @@ export function PrintSettingsForm() {
                         placeholder="148"
                         {...register('print_dot_matrix_height')}
                       />
-                      <span className="absolute right-2 text-[10px] text-muted-foreground font-mono pointer-events-none">
+                      <span className="absolute right-2 text-[10px] text-muted font-mono pointer-events-none">
                         mm
                       </span>
                     </div>
@@ -409,7 +405,7 @@ export function PrintSettingsForm() {
                   <div className="flex flex-col gap-1">
                     <label
                       htmlFor="margin-left"
-                      className="text-[11px] font-medium text-muted-foreground"
+                      className="text-[11px] font-medium text-muted"
                     >
                       {SETTINGS_LABELS.PRINT_MARGIN_LEFT_SHORT}
                     </label>
@@ -423,7 +419,7 @@ export function PrintSettingsForm() {
                         placeholder="3"
                         {...register('print_margin.left')}
                       />
-                      <span className="absolute right-2 text-[10px] text-muted-foreground font-mono pointer-events-none">
+                      <span className="absolute right-2 text-[10px] text-muted font-mono pointer-events-none">
                         mm
                       </span>
                     </div>
@@ -438,7 +434,7 @@ export function PrintSettingsForm() {
                   <div className="flex flex-col gap-1">
                     <label
                       htmlFor="margin-right"
-                      className="text-[11px] font-medium text-muted-foreground"
+                      className="text-[11px] font-medium text-muted"
                     >
                       {SETTINGS_LABELS.PRINT_MARGIN_RIGHT_SHORT}
                     </label>
@@ -452,7 +448,7 @@ export function PrintSettingsForm() {
                         placeholder="3"
                         {...register('print_margin.right')}
                       />
-                      <span className="absolute right-2 text-[10px] text-muted-foreground font-mono pointer-events-none">
+                      <span className="absolute right-2 text-[10px] text-muted font-mono pointer-events-none">
                         mm
                       </span>
                     </div>
@@ -466,7 +462,7 @@ export function PrintSettingsForm() {
 
                 {/* Quick Presets Bar */}
                 <div className="flex items-center gap-1.5 flex-wrap pt-1.5 border-t border-default/40">
-                  <span className="text-[10px] text-muted-foreground font-medium">
+                  <span className="text-[10px] text-muted font-medium">
                     {SETTINGS_LABELS.PRINT_PRESET_LABEL}:
                   </span>
                   <button
@@ -591,7 +587,7 @@ export function PrintSettingsForm() {
                 >
                   {SETTINGS_LABELS.PRINT_FOOTER_NOTE_LABEL}
                 </label>
-                <span className="text-xs text-muted-foreground font-mono">
+                <span className="text-xs text-muted font-mono">
                   {footerNoteLength}/500
                 </span>
               </div>

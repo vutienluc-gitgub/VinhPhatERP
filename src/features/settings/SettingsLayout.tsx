@@ -7,12 +7,22 @@ import { useCompanySettings } from '@/application/settings';
 
 import { SETTINGS_LABELS, SETTINGS_MESSAGES } from './settings.constants';
 
-type SettingsTab = 'general' | 'finance' | 'operations' | 'system';
+type SettingsTab =
+  | 'general'
+  | 'finance'
+  | 'operations'
+  | 'print_templates'
+  | 'system';
 
 const ALL_TABS: (TabItem<SettingsTab> & { adminOnly?: boolean })[] = [
   { key: 'general', label: SETTINGS_LABELS.TAB_GENERAL },
   { key: 'finance', label: SETTINGS_LABELS.TAB_FINANCE, adminOnly: true },
   { key: 'operations', label: SETTINGS_LABELS.TAB_OPERATIONS, adminOnly: true },
+  {
+    key: 'print_templates',
+    label: SETTINGS_LABELS.TAB_PRINT_TEMPLATES,
+    adminOnly: true,
+  },
   { key: 'system', label: SETTINGS_LABELS.TAB_SYSTEM, adminOnly: true },
 ];
 
@@ -44,6 +54,7 @@ const TAB_TO_PATH: Record<SettingsTab, string> = {
   general: '/settings/general',
   finance: '/settings/finance',
   operations: '/settings/operations',
+  print_templates: '/settings/print-templates',
   system: '/settings/system',
 };
 
@@ -51,6 +62,7 @@ const PATH_TO_TAB: Record<string, SettingsTab> = {
   general: 'general',
   finance: 'finance',
   operations: 'operations',
+  'print-templates': 'print_templates',
   system: 'system',
 };
 
