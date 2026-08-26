@@ -158,6 +158,8 @@ describe('CustomerForm', () => {
   it('calls create mutation on valid submit', async () => {
     renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
 
+    mockCreateMutateAsync.mockResolvedValue({ id: 'new-cust-1' });
+
     // Fill in required fields
     fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), {
       target: { value: 'Khách hàng mới' },

@@ -155,12 +155,12 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
   const { data: currentGroupIds = [] } = useCustomerGroupMembers(customer?.id);
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
 
-  // Đồng bộ nhóm đã chọn khi dữ liệu tải xong
+  // Đồng bộ nhóm đã chọn khi dữ liệu tải xong (chỉ áp dụng khi đang Sửa)
   useEffect(() => {
-    if (currentGroupIds) {
+    if (isEditing && currentGroupIds) {
       setSelectedGroupIds(currentGroupIds);
     }
-  }, [currentGroupIds]);
+  }, [isEditing, currentGroupIds]);
 
   const canAssign = profile?.role === 'admin' || profile?.role === 'manager';
 
@@ -180,6 +180,9 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
 
   useEffect(() => {
     reset(isEditing ? customerToFormValues(customer) : customersDefaultValues);
+    if (!isEditing) {
+      setSelectedGroupIds([]);
+    }
   }, [customer, isEditing, reset]);
 
   useEffect(() => {
