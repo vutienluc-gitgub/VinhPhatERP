@@ -12,6 +12,8 @@
     "build:server": "cd server && npm run build",
     "build:all": "npm run build && npm run build:server",
     "lint": "eslint . --ext ts,tsx",
+    "lint:race": "eslint . --ext ts,tsx --rule \"require-atomic-updates: error\"",
+    "lint:fix-race": "eslint . --ext ts,tsx --fix --rule \"require-atomic-updates: error\"",
     "lint:css": "stylelint \"src/**/*.css\"",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write .",

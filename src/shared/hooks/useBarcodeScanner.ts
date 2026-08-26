@@ -127,6 +127,9 @@ export function useBarcodeScanner({
   const [cameraState, setCameraState] = useState<CameraState>('idle');
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const setScannerRef = useCallback((instance: Html5Qrcode | null) => {
+    scannerRef.current = instance;
+  }, []);
   const readerId = useRef(
     `reader-${Math.random().toString(36).substring(2, 9)}`,
   ).current;
@@ -320,7 +323,7 @@ export function useBarcodeScanner({
         if (!isMountedRef.current) return;
 
         const html5QrCode = new Html5Qrcode(readerId);
-        scannerRef.current = html5QrCode;
+        setScannerRef(html5QrCode);
 
         // Try environment camera, fallback to first enumerated
         let cameraStarted = false;
@@ -375,7 +378,7 @@ export function useBarcodeScanner({
         }
       }
     });
-  }, [readerId, handleDecoded, detectTorch, enqueueTransition]);
+  }, [readerId, handleDecoded, detectTorch, enqueueTransition, setScannerRef]);
 
   /* ── Reset all state ── */
   const resetState = useCallback(() => {

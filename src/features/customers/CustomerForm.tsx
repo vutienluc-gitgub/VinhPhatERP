@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect, VPEntityPicker } from '@/shared/components';
 import {
   customersDefaultValues,
   CUSTOMER_SOURCES,
@@ -16,8 +16,7 @@ import {
   CRM_STATUS_LABELS,
   CRM_STATUS_ICONS,
 } from '@/schema/customer.schema';
-import type { CustomersFormValues, LeadStatus } from '@/schema/customer.schema';
-import { VPSelect, VPEntityPicker } from '@/shared/components';
+import type { CustomersFormValues } from '@/schema/customer.schema';
 import {
   useCreateCustomer,
   useNextCustomerCode,
@@ -33,9 +32,14 @@ import {
 import { saveCustomerGroupsForCustomer } from '@/api/customer-groups.api';
 import type { Customer } from '@/domain/crm/customers.types';
 
+import { CustomerGroupSelector } from './components/CustomerGroupSelector';
 import { CustomerPortalAccountPanel } from './CustomerPortalAccountPanel';
 import { CustomerTimeline } from './CustomerTimeline';
 import { CUSTOMER_FORM_LABELS } from './customers.constants';
+import {
+  customerToFormValues,
+  onPhoneKeyDown,
+} from './utils/customer-form.helpers';
 
 const SOURCE_OPTIONS = CUSTOMER_SOURCES.map((s) => ({
   value: s,
@@ -121,23 +125,6 @@ type CustomerFormProps = {
   onClose: () => void;
 };
 
-function customerToFormValues(customer: Customer): CustomersFormValues {
-  return {
-    code: customer.code,
-    name: customer.name,
-    phone: customer.phone ?? '',
-    email: customer.email ?? '',
-    address: customer.address ?? '',
-    tax_code: customer.tax_code ?? '',
-    contact_person: customer.contact_person ?? '',
-    source: customer.source ?? 'other',
-    notes: customer.notes ?? '',
-    status: customer.status,
-    salesperson_id: customer.salesperson_id ?? '',
-    lead_status: (customer.lead_status as LeadStatus) || 'lead',
-  };
-}
-
 export function CustomerForm({ customer, onClose }: CustomerFormProps) {
   const isEditing = customer !== null;
   const queryClient = useQueryClient();
@@ -150,17 +137,21 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
     status: 'active',
   });
 
-  // Tải danh sách nhóm và thành viên nhóm của khách hàng
-  const { data: groupsList = [] } = useCustomerGroupList();
+  const {
+    data: groupsList = [],
+    isLoading: isGroupsLoading,
+    isError: isGroupsError,
+    refetch: refetchGroups,
+  } = useCustomerGroupList();
   const { data: currentGroupIds = [] } = useCustomerGroupMembers(customer?.id);
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
 
-  // Đồng bộ nhóm đã chọn khi dữ liệu tải xong (chỉ áp dụng khi đang Sửa)
+  // Đồng bộ nhóm đã chọn khi ở chế độ Sửa
   useEffect(() => {
     if (isEditing && currentGroupIds) {
       setSelectedGroupIds(currentGroupIds);
     }
-  }, [isEditing, currentGroupIds]);
+  }, [customer, isEditing, currentGroupIds]);
 
   const canAssign = profile?.role === 'admin' || profile?.role === 'manager';
 
@@ -178,6 +169,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
       : customersDefaultValues,
   });
 
+  // Reset form & state khi chuyển đổi giữa các khách hàng
   useEffect(() => {
     reset(isEditing ? customerToFormValues(customer) : customersDefaultValues);
     if (!isEditing) {
@@ -202,19 +194,43 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
           values,
           expectedUpdatedAt: customer.updated_at,
         });
-        // Lưu liên kết nhóm khách hàng (Many-to-Many)
-        await saveCustomerGroupsForCustomer(customer.id, selectedGroupIds);
-        toast.success(CUSTOMER_FORM_LABELS.successUpdate);
+
+        let groupSaveFailed = false;
+        try {
+          await saveCustomerGroupsForCustomer(customer.id, selectedGroupIds);
+        } catch (groupErr) {
+          groupSaveFailed = true;
+          console.error('[CustomerGroupSave Error (Edit)]', groupErr);
+        }
+
+        if (groupSaveFailed) {
+          toast.error(CUSTOMER_FORM_LABELS.groupSavePartialWarning);
+        } else {
+          toast.success(CUSTOMER_FORM_LABELS.successUpdate);
+        }
       } else {
         const newCustomer = await createMutation.mutateAsync(values);
+        let groupSaveFailed = false;
+
         if (newCustomer?.id && selectedGroupIds.length > 0) {
-          // Lưu liên kết nhóm cho khách hàng mới vừa tạo
-          await saveCustomerGroupsForCustomer(newCustomer.id, selectedGroupIds);
+          try {
+            await saveCustomerGroupsForCustomer(
+              newCustomer.id,
+              selectedGroupIds,
+            );
+          } catch (groupErr) {
+            groupSaveFailed = true;
+            console.error('[CustomerGroupSave Error (Create)]', groupErr);
+          }
         }
-        toast.success(CUSTOMER_FORM_LABELS.successCreate);
+
+        if (groupSaveFailed) {
+          toast.error(CUSTOMER_FORM_LABELS.groupSavePartialWarning);
+        } else {
+          toast.success(CUSTOMER_FORM_LABELS.successCreate);
+        }
       }
 
-      // Invalidate cache để cập nhật giao diện
       void queryClient.invalidateQueries({
         queryKey: ['customer_groups', 'members'],
       });
@@ -223,7 +239,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       toast.error(message);
-      console.error('[CustomerForm Error]', err);
+      console.error('[CustomerForm Submit Error]', err);
     }
   }
 
@@ -288,28 +304,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               type="tel"
               placeholder={CUSTOMER_FORM_LABELS.phonePlaceholder}
               {...register('phone')}
-              onKeyDown={(e) => {
-                // Cho phép: Xóa, Điều hướng, Copy/Paste, các phím số và dấu cấu trúc cơ bản
-                const allowedKeys = [
-                  'Backspace',
-                  'Delete',
-                  'ArrowLeft',
-                  'ArrowRight',
-                  'Tab',
-                  'Home',
-                  'End',
-                  'Enter',
-                  'Escape',
-                ];
-                if (
-                  !allowedKeys.includes(e.key) &&
-                  !e.ctrlKey &&
-                  !e.metaKey &&
-                  !/^[0-9\s\-().+]$/.test(e.key)
-                ) {
-                  e.preventDefault();
-                }
-              }}
+              onKeyDown={onPhoneKeyDown}
             />
             {errors.phone && (
               <span className="field-error">{errors.phone.message}</span>
@@ -467,54 +462,15 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
 
         {/* Phân hạng sỉ & Tài khoản Portal */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Nhóm khách hàng (Many-to-Many Tags / Checkbox toggles) */}
-          <div className="form-field">
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2">
-              {CUSTOMER_FORM_LABELS.groupsLabel}
-            </span>
-            {groupsList.length === 0 ? (
-              <span className="text-xs text-muted-foreground italic">
-                {CUSTOMER_FORM_LABELS.noGroups}
-              </span>
-            ) : (
-              <div className="flex flex-wrap gap-2 p-3.5 bg-slate-50 rounded-xl border border-default h-full min-h-[90px] content-start">
-                {groupsList
-                  .filter(
-                    (g) =>
-                      g.status === 'active' || selectedGroupIds.includes(g.id),
-                  )
-                  .map((g) => {
-                    const isSelected = selectedGroupIds.includes(g.id);
-                    return (
-                      <button
-                        key={g.id}
-                        type="button"
-                        onClick={() => {
-                          if (isSelected) {
-                            setSelectedGroupIds(
-                              selectedGroupIds.filter((id) => id !== g.id),
-                            );
-                          } else {
-                            setSelectedGroupIds([...selectedGroupIds, g.id]);
-                          }
-                        }}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer h-fit ${
-                          isSelected
-                            ? 'bg-primary/10 border-primary text-foreground'
-                            : 'bg-surface border-default text-muted-foreground hover:bg-slate-50'
-                        }`}
-                      >
-                        <span>{isSelected ? '✓' : '+'}</span>
-                        <span>{g.name}</span>
-                        <span className="text-[10px] opacity-60 font-mono">
-                          ({g.code})
-                        </span>
-                      </button>
-                    );
-                  })}
-              </div>
-            )}
-          </div>
+          <CustomerGroupSelector
+            groups={groupsList}
+            selectedGroupIds={selectedGroupIds}
+            onChange={setSelectedGroupIds}
+            isLoading={isGroupsLoading}
+            isError={isGroupsError}
+            onRetry={() => void refetchGroups()}
+            disabled={isPending}
+          />
 
           {/* Tài khoản Customer Portal */}
           <div className="form-field">
@@ -527,7 +483,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
                 customerName={customer.name}
               />
             ) : (
-              <div className="border border-dashed border-default bg-slate-50/50 rounded-xl p-4 min-h-[90px] flex items-center justify-center text-center text-xs text-muted-foreground italic">
+              <div className="border border-dashed border-default bg-surface-secondary/50 rounded-xl p-4 min-h-[90px] flex items-center justify-center text-center text-xs text-muted-foreground italic">
                 {CUSTOMER_FORM_LABELS.portalPending}
               </div>
             )}

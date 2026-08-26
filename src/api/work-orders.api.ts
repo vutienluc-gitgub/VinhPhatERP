@@ -335,10 +335,13 @@ export async function updateWorkOrder(
       existingReqs = existingReqsData || [];
     }
 
+    let bomVersion = current.bom_version;
+    let standardLossPct = update.standard_loss_pct;
+
     if (bomChanged && bom) {
-      update.bom_version = bom.active_version;
+      bomVersion = bom.active_version;
       if (input.standard_loss_pct === undefined) {
-        update.standard_loss_pct = bom.standard_loss_pct ?? 0;
+        standardLossPct = bom.standard_loss_pct ?? 0;
       }
     }
 
@@ -352,7 +355,7 @@ export async function updateWorkOrder(
       );
       targetKg = update.target_quantity * totalConsumptionPerM;
     }
-    update.target_weight_kg = targetKg;
+
     // Build yarn_requirements to embed inside p_wo_data
     const yarnRequirements =
       input.yarn_requirements && input.yarn_requirements.length > 0
@@ -370,7 +373,7 @@ export async function updateWorkOrder(
               yarn_catalog_id: y.yarn_catalog_id,
               bom_ratio_pct: y.ratio_pct,
               required_kg:
-                (targetKg / (1 - (update.standard_loss_pct || 0) / 100)) *
+                (targetKg / (1 - (standardLossPct || 0) / 100)) *
                 (y.ratio_pct / 100),
               allocated_kg: 0,
             }))
@@ -381,6 +384,9 @@ export async function updateWorkOrder(
       p_wo_id: id,
       p_wo_data: {
         ...update,
+        bom_version: bomVersion,
+        standard_loss_pct: standardLossPct,
+        target_weight_kg: targetKg,
         yarn_requirements: yarnRequirements,
       } as never,
       p_expected_updated_at: expectedUpdatedAt,

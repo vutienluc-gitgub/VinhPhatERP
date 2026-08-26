@@ -585,37 +585,43 @@ export function useChatOfflineSync(roomId: string | undefined) {
   const [isFlushing, setIsFlushing] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
 
+  const setFlushing = useCallback((val: boolean) => {
+    isFlushingRef.current = val;
+    setIsFlushing(val);
+  }, []);
+
   const flushQueue = useCallback(async () => {
     if (!roomId || isFlushingRef.current) return;
 
-    const queued = await getQueuedMessages();
-    const roomMessages = queued.filter((m) => m.roomId === roomId);
-    if (roomMessages.length === 0) return;
+    setFlushing(true);
 
-    isFlushingRef.current = true;
-    setIsFlushing(true);
-    setPendingCount(roomMessages.length);
+    try {
+      const queued = await getQueuedMessages();
+      const roomMessages = queued.filter((m) => m.roomId === roomId);
+      if (roomMessages.length === 0) return;
 
-    for (const msg of roomMessages) {
-      try {
-        await sendChatMessage({
-          roomId: msg.roomId,
-          clientId: msg.clientId,
-          content: msg.content,
-          messageType: msg.messageType,
-          imageUrl: msg.imageUrl,
-        });
-        await dequeueMessage(msg.clientId);
-        setPendingCount((c) => Math.max(0, c - 1));
-      } catch {
-        // Keep in queue for next retry
-        break;
+      setPendingCount(roomMessages.length);
+
+      for (const msg of roomMessages) {
+        try {
+          await sendChatMessage({
+            roomId: msg.roomId,
+            clientId: msg.clientId,
+            content: msg.content,
+            messageType: msg.messageType,
+            imageUrl: msg.imageUrl,
+          });
+          await dequeueMessage(msg.clientId);
+          setPendingCount((c) => Math.max(0, c - 1));
+        } catch {
+          // Keep in queue for next retry
+          break;
+        }
       }
+    } finally {
+      setFlushing(false);
     }
-
-    isFlushingRef.current = false;
-    setIsFlushing(false);
-  }, [roomId]);
+  }, [roomId, setFlushing]);
 
   // Auto-flush when coming online
   useEffect(() => {
