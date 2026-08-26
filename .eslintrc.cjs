@@ -253,6 +253,9 @@ module.exports = {
     // [ADD] Không dùng var
     'no-var': 'error',
 
+    // [ADD] Bắt lỗi gán giá trị bất đồng bộ không an toàn (Race Condition)
+    'require-atomic-updates': 'error',
+
     // ========================
     // 📐 FORMATTING
     // ========================

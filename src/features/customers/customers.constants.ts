@@ -127,6 +127,11 @@ export const CUSTOMER_FORM_LABELS = {
   notesPlaceholder: 'Ghi chú thêm về khách hàng...',
   groupsLabel: 'Nhóm khách hàng (Mô hình KD)',
   noGroups: 'Chưa có nhóm nào được định nghĩa trên hệ thống.',
+  selectedCountPrefix: 'Đã chọn',
+  groupRetryBtn: 'Thử lại',
+  groupsLoadError: 'Không thể tải danh sách nhóm khách hàng',
+  groupSavePartialWarning:
+    'Đã lưu thông tin khách hàng nhưng chưa gán được nhóm. Vui lòng thử lại trong mục Sửa.',
   portalLabel: 'Tài khoản Customer Portal',
   portalPending: 'Tài khoản Portal sẽ khả dụng sau khi lưu khách hàng.',
   timelineLabel: 'Lịch sử tương tác (Leads)',

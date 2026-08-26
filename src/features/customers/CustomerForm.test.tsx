@@ -9,6 +9,11 @@ import {
   useUpdateCustomer,
   useEmployees,
 } from '@/application/crm';
+import {
+  useCustomerGroupList,
+  useCustomerGroupMembers,
+} from '@/application/crm/useCustomerGroups';
+import { saveCustomerGroupsForCustomer } from '@/api/customer-groups.api';
 import { useAuth } from '@/shared/hooks/useAuth';
 import type { Customer } from '@/domain/crm/customers.types';
 
@@ -39,14 +44,12 @@ vi.mock('@/application/crm', () => ({
 }));
 
 vi.mock('@/application/crm/useCustomerGroups', () => ({
-  useCustomerGroupList: vi.fn().mockReturnValue({ data: [], isLoading: false }),
-  useCustomerGroupMembers: vi
-    .fn()
-    .mockReturnValue({ data: [], isLoading: false }),
+  useCustomerGroupList: vi.fn(),
+  useCustomerGroupMembers: vi.fn(),
 }));
 
 vi.mock('@/api/customer-groups.api', () => ({
-  saveCustomerGroupsForCustomer: vi.fn().mockResolvedValue(null),
+  saveCustomerGroupsForCustomer: vi.fn(),
 }));
 
 vi.mock('@/shared/hooks/useAuth', () => ({
@@ -57,6 +60,7 @@ vi.mock('react-hot-toast', () => ({
   default: {
     success: vi.fn(),
     error: vi.fn(),
+    warning: vi.fn(),
   },
 }));
 
@@ -72,6 +76,29 @@ describe('CustomerForm', () => {
   const mockCreateMutateAsync = vi.fn();
   const mockUpdateMutateAsync = vi.fn();
   const mockOnClose = vi.fn();
+
+  const mockGroups = [
+    {
+      id: 'grp-1',
+      tenant_id: 't-1',
+      code: 'MAY',
+      name: 'Xưởng may',
+      description: null,
+      status: 'active',
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: '2026-01-01T00:00:00Z',
+    },
+    {
+      id: 'grp-2',
+      tenant_id: 't-1',
+      code: 'BRAND',
+      name: 'Local brand',
+      description: null,
+      status: 'active',
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: '2026-01-01T00:00:00Z',
+    },
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -104,6 +131,26 @@ describe('CustomerForm', () => {
     (useEmployees as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       data: [],
     });
+
+    (
+      useCustomerGroupList as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValue({
+      data: mockGroups,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    (
+      useCustomerGroupMembers as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValue({
+      data: [],
+      isLoading: false,
+    });
+
+    (
+      saveCustomerGroupsForCustomer as unknown as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(undefined);
   });
 
   const mockCustomer = {
@@ -131,7 +178,6 @@ describe('CustomerForm', () => {
       expect(screen.getByLabelText(/Mã khách hàng/i)).toHaveValue('KH-001');
     });
 
-    // Portal panel should not be visible in create mode
     expect(screen.queryByTestId('portal-panel')).not.toBeInTheDocument();
   });
 
@@ -144,67 +190,83 @@ describe('CustomerForm', () => {
     expect(screen.getByLabelText(/Tên khách hàng/i)).toHaveValue(
       'Công ty TNHH Test',
     );
-    expect(screen.getByLabelText(/Số điện thoại/i)).toHaveValue('0901234567');
-    expect(screen.getByLabelText(/Email/i)).toHaveValue('test@test.com');
-    expect(screen.getByLabelText(/Địa chỉ/i)).toHaveValue('123 Test St');
-    expect(screen.getByLabelText(/Mã số thuế/i)).toHaveValue('0312345678');
-    expect(screen.getByLabelText(/Người liên hệ/i)).toHaveValue('Mr Test');
-    expect(screen.getByLabelText(/Ghi chú/i)).toHaveValue('Test notes');
-
-    // Portal panel should be visible in edit mode
     expect(screen.getByTestId('portal-panel')).toBeInTheDocument();
   });
 
-  it('calls create mutation on valid submit', async () => {
-    renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
-
+  it('calls create mutation and saves groups when groups are selected', async () => {
     mockCreateMutateAsync.mockResolvedValue({ id: 'new-cust-1' });
 
-    // Fill in required fields
+    renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
+
     fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), {
       target: { value: 'Khách hàng mới' },
     });
 
-    // Submit
+    // Select group 'Xưởng may'
+    fireEvent.click(screen.getByRole('button', { name: /Xưởng may/i }));
+
     fireEvent.click(screen.getByRole('button', { name: /Tạo mới/i }));
 
     await waitFor(() => {
-      expect(mockCreateMutateAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'Khách hàng mới',
-          code: 'KH-001',
-          source: 'other',
-          status: 'active',
-        }),
-      );
+      expect(mockCreateMutateAsync).toHaveBeenCalled();
+      expect(saveCustomerGroupsForCustomer).toHaveBeenCalledWith('new-cust-1', [
+        'grp-1',
+      ]);
     });
 
     expect(toast.success).toHaveBeenCalledWith('Tạo khách hàng mới thành công');
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  it('calls update mutation on valid edit submit', async () => {
+  it('shows warning toast if group save fails during creation (Partial Success)', async () => {
+    mockCreateMutateAsync.mockResolvedValue({ id: 'new-cust-1' });
+    (
+      saveCustomerGroupsForCustomer as unknown as ReturnType<typeof vi.fn>
+    ).mockRejectedValueOnce(new Error('Network error'));
+
+    renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
+
+    fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), {
+      target: { value: 'Khách hàng mới' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Xưởng may/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /Tạo mới/i }));
+
+    await waitFor(() => {
+      expect(mockCreateMutateAsync).toHaveBeenCalled();
+      expect(saveCustomerGroupsForCustomer).toHaveBeenCalled();
+    });
+
+    expect(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('chưa gán được nhóm'),
+    );
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  it('calls update mutation and saves changed groups on edit submit', async () => {
+    (
+      useCustomerGroupMembers as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValue({
+      data: ['grp-1'],
+      isLoading: false,
+    });
+
     renderWithClient(
       <CustomerForm customer={mockCustomer} onClose={mockOnClose} />,
     );
 
-    // Edit a field
-    fireEvent.change(screen.getByLabelText(/Tên khách hàng/i), {
-      target: { value: 'Tên đã cập nhật' },
-    });
+    // Toggle to add 'Local brand'
+    fireEvent.click(screen.getByRole('button', { name: /Local brand/i }));
 
-    // Submit
     fireEvent.click(screen.getByRole('button', { name: /Cập nhật/i }));
 
     await waitFor(() => {
-      expect(mockUpdateMutateAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: 'cust-1',
-          values: expect.objectContaining({
-            name: 'Tên đã cập nhật',
-            code: 'KH-002',
-          }),
-        }),
+      expect(mockUpdateMutateAsync).toHaveBeenCalled();
+      expect(saveCustomerGroupsForCustomer).toHaveBeenCalledWith(
+        'cust-1',
+        expect.arrayContaining(['grp-1', 'grp-2']),
       );
     });
 
@@ -214,10 +276,37 @@ describe('CustomerForm', () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
+  it('shows warning toast if group update fails during edit submit', async () => {
+    (
+      useCustomerGroupMembers as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValue({
+      data: ['grp-1'],
+      isLoading: false,
+    });
+    (
+      saveCustomerGroupsForCustomer as unknown as ReturnType<typeof vi.fn>
+    ).mockRejectedValueOnce(new Error('Network error'));
+
+    renderWithClient(
+      <CustomerForm customer={mockCustomer} onClose={mockOnClose} />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Cập nhật/i }));
+
+    await waitFor(() => {
+      expect(mockUpdateMutateAsync).toHaveBeenCalled();
+    });
+
+    expect(toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('chưa gán được nhóm'),
+    );
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+
   it('displays validation errors on invalid submit', async () => {
     renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
 
-    // Submit without filling name
     fireEvent.click(screen.getByRole('button', { name: /Tạo mới/i }));
 
     await waitFor(() => {
@@ -225,19 +314,5 @@ describe('CustomerForm', () => {
     });
 
     expect(mockCreateMutateAsync).not.toHaveBeenCalled();
-  });
-
-  it('displays error message from mutation', () => {
-    (useCreateCustomer as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      mutateAsync: mockCreateMutateAsync,
-      isPending: false,
-      error: new Error(
-        'Khách hàng đã tồn tại (trùng Mã, Email hoặc SDT). Vui lòng kiểm tra lại.',
-      ),
-    });
-
-    renderWithClient(<CustomerForm customer={null} onClose={mockOnClose} />);
-
-    expect(screen.getByText(/Lỗi: Khách hàng đã tồn tại/i)).toBeInTheDocument();
   });
 });

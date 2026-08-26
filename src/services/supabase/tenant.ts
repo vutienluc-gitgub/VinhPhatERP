@@ -28,14 +28,9 @@ import { resolveTenant } from '@/shared/context/tenant-context';
  */
 
 let cachedTenantId: string | null = null;
+let pendingTenantPromise: Promise<string> | null = null;
 
-/**
- * Get the current tenant's database ID.
- * Fetches once then caches for the session.
- */
-export async function getTenantId(): Promise<string> {
-  if (cachedTenantId) return cachedTenantId;
-
+async function fetchTenantIdFromDb(): Promise<string> {
   const tenant = resolveTenant();
 
   const { data, error } = await supabase
@@ -57,15 +52,34 @@ export async function getTenantId(): Promise<string> {
       .single();
 
     if (fallback) {
-      cachedTenantId = fallback.id;
       return fallback.id;
     }
 
     throw new Error(`Tenant "${tenant.slug}" not found in database`);
   }
 
-  cachedTenantId = data.id;
   return data.id;
+}
+
+/**
+ * Get the current tenant's database ID.
+ * Fetches once then caches for the session.
+ */
+export async function getTenantId(): Promise<string> {
+  if (cachedTenantId) return cachedTenantId;
+
+  if (!pendingTenantPromise) {
+    pendingTenantPromise = fetchTenantIdFromDb()
+      .then((id) => {
+        cachedTenantId = id;
+        return id;
+      })
+      .finally(() => {
+        pendingTenantPromise = null;
+      });
+  }
+
+  return pendingTenantPromise;
 }
 
 /**
