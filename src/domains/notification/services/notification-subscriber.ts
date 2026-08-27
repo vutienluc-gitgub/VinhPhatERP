@@ -1,6 +1,6 @@
 import { APPROVAL_STATUS } from '@/domains/approval/models/constants';
 import { eventPublisher } from '@/domains/approval/services/domain-event-publisher';
-import { NotificationRepository } from '@/domains/notification/repositories/notification-repository';
+import { NotificationService } from '@/domains/notification/services/notification-service';
 import { ApprovalEvent } from '@/domains/approval/models/types';
 import { ApprovalRepository } from '@/domains/approval/repositories/approval-repository';
 
@@ -54,7 +54,11 @@ export class NotificationSubscriber {
     await this.notifyNextSteps(event.request.id, 'Đến lượt bạn duyệt');
   }
 
-  private static async notifyNextSteps(requestId: string, title: string) {
+  private static async notifyNextSteps(
+    requestId: string,
+    title: string,
+    priority: 'normal' | 'high' | 'urgent' = 'high',
+  ) {
     try {
       const steps = await ApprovalRepository.getStepsByRequestId(requestId);
       const pendingSteps = steps.filter(
@@ -72,14 +76,17 @@ export class NotificationSubscriber {
       );
 
       for (const step of activeSteps) {
-        if (!step) continue;
-        await NotificationRepository.saveNotification({
-          target_role: step.role,
-          target_user_id: step.delegated_to_user_id || null,
+        if (!step || !step.delegated_to_user_id) continue;
+        await NotificationService.dispatch({
+          user_id: step.delegated_to_user_id,
+          domain: 'approval',
+          type: 'approval_step_pending',
+          priority,
           title,
-          message: `Có yêu cầu duyệt đang chờ xử lý ở bước ${step.role_name || step.role}.`,
-          resource_type: 'approval_request',
-          resource_id: requestId,
+          body: `Có yêu cầu duyệt đang chờ xử lý ở bước ${step.role_name || step.role}.`,
+          entity_type: 'approval_request',
+          entity_id: requestId,
+          action: 'approve',
         });
       }
     } catch (e) {
@@ -96,12 +103,18 @@ export class NotificationSubscriber {
       if (event.event_type === 'ApprovalRejected') title = 'Yêu cầu bị từ chối';
       if (event.event_type === 'ApprovalCancelled') title = 'Yêu cầu đã bị hủy';
 
-      await NotificationRepository.saveNotification({
-        target_user_id: event.request.created_by || null,
+      if (!event.request.created_by) return;
+
+      await NotificationService.dispatch({
+        user_id: event.request.created_by,
+        domain: 'approval',
+        type: 'approval_finalized',
+        priority: 'normal',
         title,
-        message: `Yêu cầu duyệt ${event.request.resource_type} #${event.request.resource_id} đã có kết quả.`,
-        resource_type: 'approval_request',
-        resource_id: event.request.id,
+        body: `Yêu cầu duyệt ${event.request.resource_type} #${event.request.resource_id} đã có kết quả.`,
+        entity_type: 'approval_request',
+        entity_id: event.request.id,
+        action: 'view',
       });
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -112,12 +125,18 @@ export class NotificationSubscriber {
   private static async handleDelegated(event: ApprovalEvent) {
     try {
       const delegatedTo = event.history.payload.delegated_to as string;
-      await NotificationRepository.saveNotification({
-        target_user_id: delegatedTo,
+      if (!delegatedTo) return;
+
+      await NotificationService.dispatch({
+        user_id: delegatedTo,
+        domain: 'approval',
+        type: 'approval_delegated',
+        priority: 'high',
         title: 'Được ủy quyền duyệt',
-        message: `Bạn được ủy quyền xử lý bước duyệt cho yêu cầu ${event.request.resource_type} #${event.request.resource_id}.`,
-        resource_type: 'approval_request',
-        resource_id: event.request.id,
+        body: `Bạn được ủy quyền xử lý bước duyệt cho yêu cầu ${event.request.resource_type} #${event.request.resource_id}.`,
+        entity_type: 'approval_request',
+        entity_id: event.request.id,
+        action: 'approve',
       });
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -126,13 +145,18 @@ export class NotificationSubscriber {
   }
 
   private static async handleSlaBreached(event: ApprovalEvent) {
-    await this.notifyNextSteps(event.request.id, 'CẢNH BÁO QUÁ HẠN DUYỆT');
+    await this.notifyNextSteps(
+      event.request.id,
+      'CẢNH BÁO QUÁ HẠN DUYỆT',
+      'urgent',
+    );
   }
 
   private static async handleEscalated(event: ApprovalEvent) {
     await this.notifyNextSteps(
       event.request.id,
       'Yêu cầu duyệt đã được chuyển cấp lên bạn',
+      'urgent',
     );
   }
 }

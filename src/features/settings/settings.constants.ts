@@ -64,6 +64,13 @@ export const SETTINGS_LABELS = {
   NOTIFY_LOW_STOCK_DESC: 'Thông báo khi nguyên liệu xuống dưới ngưỡng.',
   LOW_STOCK_THRESHOLD: 'Ngưỡng tồn kho tối thiểu (kg)',
   NOTIFICATION_EMAIL: 'Email nhận thông báo',
+  PUSH_DEVICE_TITLE: 'Thông báo đẩy trên thiết bị này (Web Push & Badging)',
+  PUSH_DEVICE_DESC:
+    'Nhận banner thông báo trên màn hình khóa và hiển thị số đếm đỏ trên icon app ngoài màn hình chính khi có công việc mới.',
+  PUSH_STATUS_ON: 'Đang bật nhận thông báo trên thiết bị này',
+  PUSH_STATUS_OFF: 'Chưa kích hoạt thông báo trên thiết bị này',
+  BTN_ENABLE_PUSH: 'Bật thông báo ngay',
+  BTN_DISABLE_PUSH: 'Tắt thông báo',
   // Production & Warehouse panel
   PRODUCTION_TITLE: 'Sản xuất & Kho',
   PRODUCTION_SUBTITLE:

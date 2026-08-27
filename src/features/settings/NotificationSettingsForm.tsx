@@ -13,6 +13,7 @@ import {
   useCompanySettings,
   useUpdatePartialSettings,
 } from '@/application/settings';
+import { usePushSubscription } from '@/shared/hooks/usePushSubscription';
 
 import {
   SETTINGS_LABELS,
@@ -23,6 +24,13 @@ import {
 export function NotificationSettingsForm() {
   const { data: settings } = useCompanySettings();
   const mutation = useUpdatePartialSettings();
+  const {
+    isSupported,
+    isSubscribed,
+    isLoading: isPushLoading,
+    subscribe,
+    unsubscribe,
+  } = usePushSubscription();
 
   const {
     register,
@@ -103,6 +111,68 @@ export function NotificationSettingsForm() {
                 ? mutation.error.message
                 : String(mutation.error)}
             </p>
+          )}
+
+          {isSupported && (
+            <div className="p-4 rounded-xl border border-border/80 bg-surface-secondary/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div
+                  className={`p-2.5 rounded-lg shrink-0 ${
+                    isSubscribed
+                      ? 'bg-success/10 text-success'
+                      : 'bg-muted/10 text-muted'
+                  }`}
+                >
+                  <Icon name="Smartphone" size={22} strokeWidth={1.75} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-foreground mb-0.5">
+                    {SETTINGS_LABELS.PUSH_DEVICE_TITLE}
+                  </h4>
+                  <p className="text-xs text-muted leading-relaxed mb-2">
+                    {SETTINGS_LABELS.PUSH_DEVICE_DESC}
+                  </p>
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-xs font-semibold ${
+                      isSubscribed ? 'text-success' : 'text-muted'
+                    }`}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        isSubscribed ? 'bg-success' : 'bg-muted'
+                      }`}
+                    ></span>
+                    {isSubscribed
+                      ? SETTINGS_LABELS.PUSH_STATUS_ON
+                      : SETTINGS_LABELS.PUSH_STATUS_OFF}
+                  </span>
+                </div>
+              </div>
+              <div className="shrink-0">
+                <Button
+                  type="button"
+                  variant={isSubscribed ? 'outline' : 'primary'}
+                  disabled={isPushLoading}
+                  onClick={() => {
+                    if (isSubscribed) {
+                      void unsubscribe();
+                    } else {
+                      void subscribe();
+                    }
+                  }}
+                  className="w-full sm:w-auto text-xs"
+                >
+                  <Icon
+                    name={isSubscribed ? 'BellOff' : 'BellRing'}
+                    size={15}
+                    className="mr-1.5"
+                  />
+                  {isSubscribed
+                    ? SETTINGS_LABELS.BTN_DISABLE_PUSH
+                    : SETTINGS_LABELS.BTN_ENABLE_PUSH}
+                </Button>
+              </div>
+            </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
