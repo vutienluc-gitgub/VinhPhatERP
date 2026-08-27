@@ -5,11 +5,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Icon } from '@/shared/components/Icon';
 import { buildMessageGroups } from '@/features/chat/chat.utils';
+import type { MessageCluster as MessageClusterType } from '@/features/chat/chat.types';
 
 import { MessageCluster } from './MessageCluster';
 
@@ -20,6 +22,10 @@ function DateDivider({ label }: { label: string }) {
     </div>
   );
 }
+
+type RenderItem =
+  | { type: 'date'; key: string; label: string }
+  | { type: 'cluster'; key: string; cluster: MessageClusterType };
 
 interface ChatMessageListProps {
   pages: ChatMessage[][] | undefined;
@@ -50,7 +56,6 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   // Convert pages (which come with newest-first per page) to a single chronological list (oldest-first)
   const chronologicalMessages = useMemo(() => {
     if (!pages || pages.length === 0) return [];
-    // Reverse page list, then reverse each page array to get chronological order [oldest ... newest]
     return [...pages].reverse().flatMap((page) => [...page].reverse());
   }, [pages]);
 
@@ -58,6 +63,32 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     () => buildMessageGroups(chronologicalMessages, user?.id),
     [chronologicalMessages, user?.id],
   );
+
+  // Flatten groups into renderable items for virtualization when message history is long
+  const flatItems: RenderItem[] = useMemo(() => {
+    const items: RenderItem[] = [];
+    for (const group of messageGroups) {
+      items.push({
+        type: 'date',
+        key: `date-${group.date}`,
+        label: group.label,
+      });
+      for (const cluster of group.clusters) {
+        items.push({ type: 'cluster', key: cluster.id, cluster });
+      }
+    }
+    return items;
+  }, [messageGroups]);
+
+  const isVirtualized = flatItems.length > 30;
+
+  const rowVirtualizer = useVirtualizer({
+    count: flatItems.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 72,
+    overscan: 6,
+    enabled: isVirtualized,
+  });
 
   // Scroll handler to detect position
   const handleScroll = useCallback(() => {
@@ -70,7 +101,6 @@ export const ChatMessageList = React.memo(function ChatMessageList({
 
     setIsNearBottom(nearBottom);
 
-    // Clear new message counter if user scrolled to bottom
     if (nearBottom) {
       setUnreadNewCount(0);
     }
@@ -96,10 +126,8 @@ export const ChatMessageList = React.memo(function ChatMessageList({
       const isMine = newestMsg?.sender_id === user?.id;
 
       if (isMine || isNearBottom) {
-        // Automatically scroll down if user sent it or is near bottom
         scrollToBottom(true);
       } else {
-        // Otherwise increment "New Messages" badge
         setUnreadNewCount((prev) => prev + (currentCount - prevCount));
       }
     }
@@ -122,7 +150,6 @@ export const ChatMessageList = React.memo(function ChatMessageList({
 
       onLoadMore();
 
-      // Preserve scroll offset after DOM updates
       requestAnimationFrame(() => {
         if (el) {
           const newScrollHeight = el.scrollHeight;
@@ -199,22 +226,61 @@ export const ChatMessageList = React.memo(function ChatMessageList({
           </div>
         )}
 
-        {/* Message Groups & Clusters in natural chronological order */}
-        <div className="chat-messages-container">
-          {messageGroups.map((group) => (
-            <React.Fragment key={group.date}>
-              <DateDivider label={group.label} />
-              {group.clusters.map((cluster) => (
-                <MessageCluster
-                  key={cluster.id}
-                  cluster={cluster}
-                  onRetry={onRetry}
-                  onQuoteReply={onQuoteReply}
-                />
-              ))}
-            </React.Fragment>
-          ))}
-        </div>
+        {/* Virtualized or Direct render */}
+        {isVirtualized ? (
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+              const item = flatItems[virtualItem.index];
+              if (!item) return null;
+              return (
+                <div
+                  key={item.key}
+                  ref={rowVirtualizer.measureElement}
+                  data-index={virtualItem.index}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                >
+                  {item.type === 'date' ? (
+                    <DateDivider label={item.label} />
+                  ) : (
+                    <MessageCluster
+                      cluster={item.cluster}
+                      onRetry={onRetry}
+                      onQuoteReply={onQuoteReply}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="chat-messages-container">
+            {messageGroups.map((group) => (
+              <React.Fragment key={group.date}>
+                <DateDivider label={group.label} />
+                {group.clusters.map((cluster) => (
+                  <MessageCluster
+                    key={cluster.id}
+                    cluster={cluster}
+                    onRetry={onRetry}
+                    onQuoteReply={onQuoteReply}
+                  />
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Floating Action Button (FAB): New Messages / Scroll to Bottom */}

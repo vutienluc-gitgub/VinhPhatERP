@@ -1,14 +1,13 @@
 import { supabase, untypedDb } from '@/services/supabase/client';
 import type { Json } from '@/services/supabase/database.types';
 import {
-  chatMessageResponseSchema,
   CHAT_MESSAGES_PAGE_SIZE,
+  chatMessageResponseSchema,
 } from '@/schema/chat.schema';
 import type {
   ChatMessage,
   ChatRoom,
   ChatMention,
-  ChatReaction,
   UnifiedTimelineItem,
 } from '@/schema/chat.schema';
 
@@ -77,19 +76,12 @@ export async function fetchChatMessages(
   roomId: string,
   cursor?: string,
 ): Promise<ChatMessage[]> {
-  let query = supabase
-    .from('chat_messages')
-    .select('*')
-    .eq('room_id', roomId)
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-    .limit(CHAT_MESSAGES_PAGE_SIZE);
+  const { data, error } = await untypedDb.rpc('rpc_get_chat_messages', {
+    p_room_id: roomId,
+    p_cursor: cursor ?? undefined,
+    p_limit: CHAT_MESSAGES_PAGE_SIZE,
+  });
 
-  if (cursor) {
-    query = query.lt('created_at', cursor);
-  }
-
-  const { data, error } = await query;
   if (error) {
     console.error(
       '[Chat] fetchChatMessages error:',
@@ -101,37 +93,7 @@ export async function fetchChatMessages(
     throw error;
   }
 
-  const parsed = chatMessageResponseSchema
-    .array()
-    .parse(data ?? []) as unknown as ChatMessage[];
-
-  if (parsed.length === 0) return [];
-
-  // Fetch reactions for returned messages
-  const messageIds = parsed.map((m) => m.id);
-  const { data: reactionsData, error: reactionsError } = await untypedDb
-    .from('chat_message_reactions')
-    .select('id, message_id, user_id, emoji, created_at')
-    .in('message_id', messageIds);
-
-  if (reactionsError) {
-    console.error('[Chat] fetchReactions error:', reactionsError.message);
-  }
-
-  const reactionsByMsg = new Map<string, ChatReaction[]>();
-  for (const r of (reactionsData as ChatReaction[] | null) ?? []) {
-    const list = reactionsByMsg.get(r.message_id) ?? [];
-    list.push({
-      ...r,
-      user_name: r.user_name ?? '',
-    });
-    reactionsByMsg.set(r.message_id, list);
-  }
-
-  return parsed.map((msg) => ({
-    ...msg,
-    reactions: reactionsByMsg.get(msg.id) ?? [],
-  }));
+  return (data as ChatMessage[]) ?? [];
 }
 
 // ── Send Message (via RPC — uses same tenant resolution as RLS) ──

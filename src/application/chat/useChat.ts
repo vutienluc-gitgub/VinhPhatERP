@@ -42,6 +42,10 @@ import {
   onTypingEvent,
 } from '@/shared/lib/chat-typing';
 import { chatAudio } from '@/shared/lib/chat-audio';
+import {
+  saveCachedMessages,
+  getCachedMessages,
+} from '@/shared/lib/chat-cache-storage';
 import { supabase } from '@/services/supabase/client';
 
 // ── Query Keys ──
@@ -122,14 +126,47 @@ export function useGetOrCreateRoom() {
   });
 }
 
-// ── Messages Hook (Infinite Scroll) ──
+// ── Messages Hook (Infinite Scroll + IndexedDB Persistent Cache) ──
 
 export function useChatMessages(roomId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  // Hydrate from IndexedDB on initial mount if cache is empty (0ms instant open)
+  useEffect(() => {
+    if (!roomId) return;
+    const current = queryClient.getQueryData(CHAT_KEYS.messages(roomId));
+    if (!current) {
+      void getCachedMessages(roomId).then((cached) => {
+        if (cached && cached.length > 0) {
+          queryClient.setQueryData(
+            CHAT_KEYS.messages(roomId),
+            (old: unknown) => {
+              if (old) return old;
+              return {
+                pages: [cached],
+                pageParams: [undefined],
+              };
+            },
+          );
+        }
+      });
+    }
+  }, [roomId, queryClient]);
+
   return useInfiniteQuery({
     queryKey: CHAT_KEYS.messages(roomId ?? ''),
     enabled: !!roomId,
-    queryFn: ({ pageParam }) =>
-      fetchChatMessages(roomId!, pageParam as string | undefined),
+    queryFn: async ({ pageParam }) => {
+      const messages = await fetchChatMessages(
+        roomId!,
+        pageParam as string | undefined,
+      );
+      // Persist latest page to IndexedDB cache
+      if (!pageParam && messages.length > 0) {
+        void saveCachedMessages(roomId!, messages);
+      }
+      return messages;
+    },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => {
       if (!lastPage || lastPage.length === 0) return undefined;
