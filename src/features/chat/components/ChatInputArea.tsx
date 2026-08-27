@@ -64,6 +64,7 @@ export function ChatInputArea({
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const emojiToggleBtnRef = useRef<HTMLButtonElement>(null);
 
   const { data: mentionOptions = [] } = useMentionsSearch(
     activeMention?.type ?? null,
@@ -75,9 +76,12 @@ export function ChatInputArea({
     if (!showEmojiPicker) return undefined;
 
     function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node;
       if (
         emojiPickerRef.current &&
-        !emojiPickerRef.current.contains(event.target as Node)
+        !emojiPickerRef.current.contains(target) &&
+        emojiToggleBtnRef.current &&
+        !emojiToggleBtnRef.current.contains(target)
       ) {
         setShowEmojiPicker(false);
       }
@@ -97,9 +101,8 @@ export function ChatInputArea({
       const newText = text.slice(0, start) + emoji + text.slice(end);
 
       setText(newText);
-      setShowEmojiPicker(false);
 
-      // Restore cursor position after emoji
+      // Restore cursor position after emoji without closing picker
       requestAnimationFrame(() => {
         textarea.focus();
         const newCursorPos = start + emoji.length;
@@ -487,6 +490,7 @@ export function ChatInputArea({
                 key={emoji}
                 type="button"
                 className="chat-emoji-btn"
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => insertEmoji(emoji)}
               >
                 {emoji}
@@ -549,6 +553,7 @@ export function ChatInputArea({
           />
 
           <button
+            ref={emojiToggleBtnRef}
             type="button"
             className="chat-emoji-toggle-btn"
             onClick={() => setShowEmojiPicker((v) => !v)}
