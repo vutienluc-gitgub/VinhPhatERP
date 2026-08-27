@@ -8,6 +8,7 @@ import type {
   ChatMessage,
   ChatRoom,
   ChatMention,
+  ChatReaction,
   UnifiedTimelineItem,
 } from '@/schema/chat.schema';
 
@@ -104,7 +105,33 @@ export async function fetchChatMessages(
     .array()
     .parse(data ?? []) as unknown as ChatMessage[];
 
-  return parsed;
+  if (parsed.length === 0) return [];
+
+  // Fetch reactions for returned messages
+  const messageIds = parsed.map((m) => m.id);
+  const { data: reactionsData, error: reactionsError } = await untypedDb
+    .from('chat_message_reactions')
+    .select('id, message_id, user_id, emoji, created_at')
+    .in('message_id', messageIds);
+
+  if (reactionsError) {
+    console.error('[Chat] fetchReactions error:', reactionsError.message);
+  }
+
+  const reactionsByMsg = new Map<string, ChatReaction[]>();
+  for (const r of (reactionsData as ChatReaction[] | null) ?? []) {
+    const list = reactionsByMsg.get(r.message_id) ?? [];
+    list.push({
+      ...r,
+      user_name: r.user_name ?? '',
+    });
+    reactionsByMsg.set(r.message_id, list);
+  }
+
+  return parsed.map((msg) => ({
+    ...msg,
+    reactions: reactionsByMsg.get(msg.id) ?? [],
+  }));
 }
 
 // ── Send Message (via RPC — uses same tenant resolution as RLS) ──
