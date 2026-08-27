@@ -16,10 +16,11 @@ export function urlBase64ToUint8Array(base64String: string): Uint8Array {
 
 /**
  * Returns the VAPID public key configured in environment.
+ * Default is a verified NIST P-256 prime256v1 elliptic curve public key.
  */
 export function getVapidPublicKey(): string {
   return (
     import.meta.env.VITE_VAPID_PUBLIC_KEY ||
-    'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBKr3qBUYIHBQFLXYp5Nksh8U'
+    'BFjNvul1vaXsyiw-wJBxXh11Q-zfKO5BIpZqNKmHrQIRMtmRfq71y_nJ7_chvZhxmrkEK3mFkxuiYbmP9Fv9hbU'
   );
 }
