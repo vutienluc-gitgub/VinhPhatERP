@@ -268,3 +268,55 @@
 .chat-error-retry-btn:hover {
   background: var(--surface-hover);
 }
+
+/* ── Floating Action Button (ChatWidget FAB) ── */
+
+.chat-widget-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground, #fff);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease;
+}
+
+.chat-widget-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.chat-widget-fab:active {
+  transform: scale(0.95);
+}
+
+.chat-widget-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  padding: 0 5px;
+  background: var(--danger);
+  color: var(--color-primary-foreground, #fff);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface-strong);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  animation: chatPulse 2s infinite;
+}
