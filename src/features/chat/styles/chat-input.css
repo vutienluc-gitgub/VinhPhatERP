@@ -27,9 +27,10 @@
   gap: 2px;
 }
 
+.chat-attach-btn,
 .chat-composer-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: transparent;
   color: var(--muted-foreground);
@@ -43,9 +44,19 @@
     color 0.15s;
 }
 
+.chat-attach-btn:hover,
 .chat-composer-btn:hover {
   background: var(--surface-hover);
   color: var(--foreground);
+}
+
+.chat-file-input-hidden {
+  display: none !important;
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .chat-composer-input-box {
@@ -62,8 +73,8 @@
 }
 
 .chat-composer-input-box:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--surface-hover);
 }
 
 .chat-composer-input-box .chat-input-field {

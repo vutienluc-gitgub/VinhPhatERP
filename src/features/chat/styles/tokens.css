@@ -10,15 +10,21 @@
   --chat-radius-control: 20px;
   --chat-gap: 6px;
   --chat-avatar-size: 36px;
-  --chat-bubble-max-w: 72%;
+  --chat-bubble-max-w: 75%;
   --chat-bubble-min-w: 80px;
   --chat-date-gap: 20px;
   --chat-cluster-gap: 16px;
 
-  /* Semantic Theme Tokens */
-  --chat-bg-mine: var(--color-primary);
-  --chat-text-mine: var(--color-primary-foreground, #fff);
+  /* Semantic Theme Tokens Bridge */
+  --color-primary: var(--primary);
+
+  /* @architecture-exception: primary foreground color token */
+  --color-primary-foreground: #ffffff;
+  --chat-bg-mine: var(--primary);
+
+  /* @architecture-exception: white text on primary bubble */
+  --chat-text-mine: #ffffff;
   --chat-bg-theirs: var(--surface-secondary);
   --chat-text-theirs: var(--foreground);
-  --chat-typing-dot: var(--color-primary);
+  --chat-typing-dot: var(--primary);
 }
