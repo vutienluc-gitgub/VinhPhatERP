@@ -170,6 +170,10 @@
   justify-content: flex-start;
 }
 
+.chat-bubble-row:has(.chat-reactions) {
+  margin-bottom: 8px;
+}
+
 .chat-bubble {
   min-width: var(--chat-bubble-min-w);
   max-width: var(--chat-bubble-max-w);

@@ -245,7 +245,6 @@ export const ChatBubble = memo(function ChatBubble({
             reactions={message.reactions}
             currentUserId={user?.id}
             showEmojiPicker={showEmojiPicker}
-            onToggleEmojiPicker={() => setShowEmojiPicker((prev) => !prev)}
             onToggleReaction={handleToggleReaction}
             onAddReaction={handleAddReaction}
           />
