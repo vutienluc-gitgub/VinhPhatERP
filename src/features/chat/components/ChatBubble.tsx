@@ -1,10 +1,6 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState, type MouseEvent } from 'react';
 
-import {
-  CHAT_LABELS,
-  type ChatMessage,
-  type ChatMention,
-} from '@/schema/chat.schema';
+import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { useAuth } from '@/shared/hooks/useAuth';
 import {
   useTogglePin,
@@ -15,6 +11,9 @@ import { Icon } from '@/shared/components/Icon';
 import { getChatThumbnailUrl } from '@/shared/lib/chat-storage';
 
 import { ChatImagePreview } from './ChatImagePreview';
+import { ChatMentionContent } from './ChatMentionContent';
+import { ChatQuickActions } from './ChatQuickActions';
+import { ChatReactions } from './ChatReactions';
 
 function formatTime(iso: string): string {
   try {
@@ -25,62 +24,6 @@ function formatTime(iso: string): string {
   } catch {
     return '';
   }
-}
-
-function renderTextWithMentions(content: string, mentions?: ChatMention[]) {
-  if (!mentions || mentions.length === 0) return <div>{content}</div>;
-
-  // Escape regex special chars in labels just in case
-  const escapeRegExp = (str: string) =>
-    str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const mentionLabels = mentions
-    .map((m) => escapeRegExp(m.label))
-    .sort((a, b) => b.length - a.length);
-
-  if (mentionLabels.length === 0) return <div>{content}</div>;
-
-  const regex = new RegExp(`(${mentionLabels.join('|')})`, 'g');
-  const parts = content.split(regex);
-
-  return (
-    <div>
-      {parts.map((part, i) => {
-        const mention = mentions.find((m) => m.label === part);
-        if (mention) {
-          return (
-            <span
-              key={i}
-              className={`chat-mention-inline chat-mention-inline--${mention.type}`}
-            >
-              {part}
-            </span>
-          );
-        }
-        return <span key={i}>{part}</span>;
-      })}
-    </div>
-  );
-}
-
-function renderContent(content: string, mentions?: ChatMention[]) {
-  const quoteMatch = content.match(/^↩️ "(.*?)"\n([\s\S]*)$/);
-
-  if (quoteMatch) {
-    const [, quoteText, bodyText] = quoteMatch;
-    return (
-      <div className="chat-bubble-content-with-quote">
-        <div className="chat-bubble-quote-snippet">
-          <Icon name="CornerUpLeft" size={12} />
-          <span className="chat-bubble-quote-text">{quoteText}</span>
-        </div>
-        <div className="chat-bubble-text-body">
-          {renderTextWithMentions(bodyText ?? '', mentions)}
-        </div>
-      </div>
-    );
-  }
-
-  return renderTextWithMentions(content, mentions);
 }
 
 interface ChatBubbleProps {
@@ -112,10 +55,10 @@ export const ChatBubble = memo(function ChatBubble({
     if (onRetry) onRetry(message);
   }, [onRetry, message]);
 
-  const handleContextMenu = (e: React.MouseEvent) => {
+  const handleContextMenu = (e: MouseEvent) => {
     if (!canPin || isOptimistic) return;
     e.preventDefault();
-    setShowContextMenu(!showContextMenu);
+    setShowContextMenu((prev) => !prev);
   };
 
   const handleTogglePin = () => {
@@ -159,28 +102,6 @@ export const ChatBubble = memo(function ChatBubble({
     [message.reactions, user?.id, handleAddReaction, handleRemoveReaction],
   );
 
-  const groupedReactions = useCallback(() => {
-    if (!message.reactions) return [];
-    const grouped = new Map<
-      string,
-      { emoji: string; count: number; user_ids: string[] }
-    >();
-    for (const r of message.reactions) {
-      const existing = grouped.get(r.emoji);
-      if (existing) {
-        existing.count++;
-        existing.user_ids.push(r.user_id);
-      } else {
-        grouped.set(r.emoji, {
-          emoji: r.emoji,
-          count: 1,
-          user_ids: [r.user_id],
-        });
-      }
-    }
-    return Array.from(grouped.values());
-  }, [message.reactions]);
-
   // System message (journey updates)
   if (message.message_type === 'system') {
     return (
@@ -219,42 +140,12 @@ export const ChatBubble = memo(function ChatBubble({
       >
         {/* Hover Quick Action Bar */}
         {!isOptimistic && (
-          <div className="chat-bubble-quick-actions">
-            <button
-              type="button"
-              className="chat-quick-action-btn"
-              onClick={() => handleAddReaction('👍')}
-              title="Thích 👍"
-            >
-              👍
-            </button>
-            <button
-              type="button"
-              className="chat-quick-action-btn"
-              onClick={() => handleAddReaction('❤️')}
-              title="Yêu thích ❤️"
-            >
-              ❤️
-            </button>
-            {onQuoteReply && (
-              <button
-                type="button"
-                className="chat-quick-action-btn"
-                onClick={() => onQuoteReply(message)}
-                title="Trả lời tin nhắn"
-              >
-                <Icon name="CornerUpLeft" size={12} />
-              </button>
-            )}
-            <button
-              type="button"
-              className="chat-quick-action-btn"
-              onClick={handleCopyText}
-              title="Sao chép văn bản"
-            >
-              <Icon name="Copy" size={12} />
-            </button>
-          </div>
+          <ChatQuickActions
+            message={message}
+            onAddReaction={handleAddReaction}
+            onQuoteReply={onQuoteReply}
+            onCopyText={handleCopyText}
+          />
         )}
 
         <div
@@ -329,10 +220,13 @@ export const ChatBubble = memo(function ChatBubble({
             </a>
           ) : null}
 
-          {/* Text content */}
-          {message.content
-            ? renderContent(message.content, message.mentions)
-            : null}
+          {/* Text content with Mention / Quote parsing */}
+          {message.content ? (
+            <ChatMentionContent
+              content={message.content}
+              mentions={message.mentions}
+            />
+          ) : null}
 
           {/* Error: Retry */}
           {isError && onRetry ? (
@@ -346,50 +240,15 @@ export const ChatBubble = memo(function ChatBubble({
             </button>
           ) : null}
 
-          {/* Reactions */}
-          {groupedReactions().length > 0 && (
-            <div className="chat-reactions">
-              {groupedReactions().map((r) => {
-                const hasReacted = r.user_ids.includes(user?.id ?? '');
-                return (
-                  <button
-                    key={r.emoji}
-                    type="button"
-                    className={`chat-reaction-btn ${hasReacted ? 'chat-reaction-btn--active' : ''}`}
-                    onClick={() => handleToggleReaction(r.emoji)}
-                    title={`${r.count} người đã react`}
-                  >
-                    <span className="chat-reaction-emoji">{r.emoji}</span>
-                    <span className="chat-reaction-count">{r.count}</span>
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                className="chat-reaction-add-btn"
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                title="Thêm reaction"
-              >
-                <Icon name="Smile" size={14} />
-              </button>
-            </div>
-          )}
-
-          {/* Reaction Emoji Picker */}
-          {showEmojiPicker && (
-            <div className="chat-reaction-emoji-picker">
-              {['👍', '👎', '❤️', '😂', '🔥', '🎉', '🙏', '🤝'].map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  className="chat-reaction-emoji-btn"
-                  onClick={() => handleAddReaction(emoji)}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Reactions & Emoji Picker */}
+          <ChatReactions
+            reactions={message.reactions}
+            currentUserId={user?.id}
+            showEmojiPicker={showEmojiPicker}
+            onToggleEmojiPicker={() => setShowEmojiPicker((prev) => !prev)}
+            onToggleReaction={handleToggleReaction}
+            onAddReaction={handleAddReaction}
+          />
         </div>
       </div>
 

@@ -192,6 +192,12 @@ export const CHAT_LABELS = {
   UNPIN_MESSAGE: 'Bỏ ghim',
   PINNED_MESSAGES: 'Tin nhắn đã ghim',
   COPY_TEXT: 'Sao chép nội dung',
+  LIKE: 'Thích',
+  HEART: 'Yêu thích',
+  REPLY_MESSAGE: 'Trả lời tin nhắn',
+  COPY_TEXT_ACTION: 'Sao chép văn bản',
+  ADD_REACTION: 'Thêm reaction',
+  REACTED_SUFFIX: 'người đã react',
   DEPARTMENT: 'Bộ phận',
   UNKNOWN_USER: 'Chưa rõ tên',
   // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
