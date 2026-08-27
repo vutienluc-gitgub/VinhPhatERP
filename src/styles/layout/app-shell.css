@@ -58,8 +58,10 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  height: 56px;
-  padding: 0 var(--shell-inset); /* INSET: tiêu thụ --shell-inset */
+  padding: env(safe-area-inset-top, 0px)
+    calc(var(--shell-inset) + env(safe-area-inset-right, 0px)) 0
+    calc(var(--shell-inset) + env(safe-area-inset-left, 0px));
+  height: calc(56px + env(safe-area-inset-top, 0px));
   background: var(--surface-strong);
   border-bottom: 1px solid var(--border);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -627,8 +629,9 @@ html.fluid .content-shell {
 
   .topbar {
     height: 60px;
-
-    /* padding-x được xử lý bởi --shell-inset, không override ở đây */
+    padding-top: 0;
+    padding-left: var(--shell-inset);
+    padding-right: var(--shell-inset);
   }
 
   .placeholder-grid {
