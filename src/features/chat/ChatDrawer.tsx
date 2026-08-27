@@ -337,7 +337,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
 
         {/* Messages (only when room creation succeeded or is in progress) */}
         {!createRoomMutation.isError ? (
-          <div ref={messageListRef}>
+          <div ref={messageListRef} className="chat-body-viewport">
             <ChatMessageList
               pages={data?.pages}
               hasNextPage={hasNextPage}
