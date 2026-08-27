@@ -124,6 +124,10 @@ export function useChatMessages(roomId: string | undefined) {
       const last = lastPage[lastPage.length - 1];
       return last ? last.created_at : undefined;
     },
+    // Realtime handles new messages — no polling needed.
+    // Cache survives 30 min so close→reopen is instant.
+    staleTime: Infinity,
+    gcTime: 30 * 60 * 1000,
   });
 }
 
@@ -236,13 +240,9 @@ export function useSendMessage(roomId: string | undefined) {
         queryClient.setQueryData(CHAT_KEYS.messages(roomId), context.previous);
       }
     },
-    onSettled: () => {
-      if (roomId) {
-        void queryClient.invalidateQueries({
-          queryKey: CHAT_KEYS.messages(roomId),
-        });
-      }
-    },
+    // onSettled invalidation removed — the realtime INSERT handler
+    // already appends the confirmed message via appendMessage() with
+    // client_id dedup. No need for a redundant full-page refetch.
   });
 }
 

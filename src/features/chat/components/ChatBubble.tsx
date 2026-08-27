@@ -194,6 +194,9 @@ export const ChatBubble = memo(function ChatBubble({
               alt={CHAT_LABELS.IMAGE}
               className="chat-bubble-image"
               loading="lazy"
+              width={280}
+              height={280}
+              style={{ aspectRatio: '1', objectFit: 'cover' }}
               onClick={() => setPreviewImage(message.image_url)}
             />
           ) : null}
