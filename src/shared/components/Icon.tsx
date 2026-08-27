@@ -1,5 +1,25 @@
-import { memo, lazy, Suspense } from 'react';
+import { memo, lazy, Suspense, type ComponentType } from 'react';
 import type { LucideProps } from 'lucide-react';
+import {
+  Send,
+  Smile,
+  Paperclip,
+  Search,
+  X,
+  ChevronDown,
+  Pin,
+  RotateCcw,
+  CornerUpLeft,
+  MessageSquare,
+  Check,
+  FileText,
+  Plus,
+  Trash2,
+  Clock,
+  Sparkles,
+  Bot,
+  ExternalLink,
+} from 'lucide-react';
 import type * as LucideIcons from 'lucide-react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
 
@@ -11,6 +31,45 @@ export type IconName =
 interface IconProps extends Omit<LucideProps, 'ref'> {
   name: IconName;
 }
+
+const STATIC_ICONS: Record<string, ComponentType<LucideProps>> = {
+  Send,
+  send: Send,
+  Smile,
+  smile: Smile,
+  Paperclip,
+  paperclip: Paperclip,
+  Search,
+  search: Search,
+  X,
+  x: X,
+  ChevronDown,
+  'chevron-down': ChevronDown,
+  Pin,
+  pin: Pin,
+  RotateCcw,
+  'rotate-ccw': RotateCcw,
+  CornerUpLeft,
+  'corner-up-left': CornerUpLeft,
+  MessageSquare,
+  'message-square': MessageSquare,
+  Check,
+  check: Check,
+  FileText,
+  'file-text': FileText,
+  Plus,
+  plus: Plus,
+  Trash2,
+  'trash-2': Trash2,
+  Clock,
+  clock: Clock,
+  Sparkles,
+  sparkles: Sparkles,
+  Bot,
+  bot: Bot,
+  ExternalLink,
+  'external-link': ExternalLink,
+};
 
 const toKebabCase = (str: string) => {
   return str
@@ -47,6 +106,14 @@ function getLazyIcon(name: string) {
 
 export const Icon = memo(
   ({ name, size = 20, strokeWidth = 1.5, ...props }: IconProps) => {
+    // Fast path: Synchronous render for primary/frequent icons
+    const StaticComponent = STATIC_ICONS[name];
+    if (StaticComponent) {
+      return (
+        <StaticComponent size={size} strokeWidth={strokeWidth} {...props} />
+      );
+    }
+
     const LucideIcon = getLazyIcon(name);
 
     if (!LucideIcon) {

@@ -176,8 +176,8 @@
 }
 
 .chat-send-btn--active {
-  background: var(--color-primary);
-  color: var(--color-primary-foreground, #fff);
+  background: var(--primary);
+  color: var(--primary-foreground, #fff);
   cursor: pointer;
 }
 
