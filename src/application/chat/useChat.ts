@@ -88,6 +88,8 @@ export function useChatRoom(entityType: string, entityId: string | undefined) {
     queryKey: CHAT_KEYS.room(entityType, entityId ?? ''),
     enabled: !!entityId,
     queryFn: () => fetchChatRoomByEntity(entityType, entityId!),
+    staleTime: Infinity,
+    gcTime: 60 * 60 * 1000, // 1 hour
   });
 }
 
@@ -102,10 +104,20 @@ export function useGetOrCreateRoom() {
       entityType: string;
       entityId: string;
     }) => getOrCreateChatRoom(entityType, entityId),
-    onSuccess: (_roomId, { entityType, entityId }) => {
-      void queryClient.invalidateQueries({
-        queryKey: CHAT_KEYS.room(entityType, entityId),
-      });
+    onSuccess: (roomId, { entityType, entityId }) => {
+      queryClient.setQueryData(
+        CHAT_KEYS.room(entityType, entityId),
+        (old: ChatRoom | null | undefined) =>
+          ({
+            id: roomId,
+            tenant_id: old?.tenant_id ?? '',
+            entity_type: entityType,
+            entity_id: entityId,
+            status: 'active',
+            created_at: old?.created_at ?? new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }) as ChatRoom,
+      );
     },
   });
 }
@@ -514,9 +526,10 @@ export function useChatRealtime(roomId: string | undefined) {
           event: '*',
           schema: 'public',
           table: 'chat_message_reactions',
+          filter: `room_id=eq.${roomId}`,
         },
         () => {
-          // Invalidate messages when reactions are added/removed in realtime
+          // Invalidate messages when reactions are added/removed in realtime for this room
           void queryClient.invalidateQueries({
             queryKey: CHAT_KEYS.messages(roomId),
           });
@@ -527,11 +540,38 @@ export function useChatRealtime(roomId: string | undefined) {
         if (channelRef.current !== channel) return;
 
         if (status === 'SUBSCRIBED') {
-          // If we recovered from a disconnect, fetch any missed messages
+          // If we recovered from a disconnect, delta sync only missed messages
           if (retryCountRef.current > 0) {
-            void queryClient.invalidateQueries({
-              queryKey: CHAT_KEYS.messages(roomId),
-            });
+            const cached = queryClient.getQueryData(
+              CHAT_KEYS.messages(roomId),
+            ) as InfiniteData | undefined;
+            const allMessages = cached?.pages.flat() ?? [];
+            const latestMsg = allMessages[0]; // Newest is at index 0 of page 0
+
+            if (latestMsg?.created_at) {
+              void supabase
+                .from('chat_messages')
+                .select('*')
+                .eq('room_id', roomId)
+                .is('deleted_at', null)
+                .gt('created_at', latestMsg.created_at)
+                .order('created_at', { ascending: true })
+                .then(({ data: missed }) => {
+                  if (missed && missed.length > 0) {
+                    for (const msg of missed) {
+                      queryClient.setQueryData(
+                        CHAT_KEYS.messages(roomId),
+                        (old: unknown) =>
+                          appendMessage(old, msg as ChatMessage),
+                      );
+                    }
+                  }
+                });
+            } else {
+              void queryClient.invalidateQueries({
+                queryKey: CHAT_KEYS.messages(roomId),
+              });
+            }
           }
           retryCountRef.current = 0;
           setConnectionStatus('connected');
