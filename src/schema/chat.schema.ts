@@ -200,6 +200,11 @@ export const CHAT_LABELS = {
   REACTED_SUFFIX: 'người đã react',
   DEPARTMENT: 'Bộ phận',
   UNKNOWN_USER: 'Chưa rõ tên',
+  REPLYING_TO: 'Đang trả lời tin nhắn:',
+  CANCEL_REPLY: 'Hủy trả lời',
+  CHOOSE_EMOJI: 'Chọn emoji',
+  EMOJI_TOOLTIP: 'Biểu tượng cảm xúc',
+  UPLOAD_ATTACHMENT_TOOLTIP: 'Tải lên tệp/hình ảnh',
   // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   MENTION_DOC_ICON: '📄',
   // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
