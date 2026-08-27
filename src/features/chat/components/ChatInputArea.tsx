@@ -456,50 +456,6 @@ export function ChatInputArea({
       {/* Upload Error */}
       {uploadError && <div className="chat-upload-error">{uploadError}</div>}
 
-      {/* Emoji Picker */}
-      {showEmojiPicker && (
-        <div ref={emojiPickerRef} className="chat-emoji-picker">
-          <div className="chat-emoji-grid">
-            {[
-              '😀',
-              '😂',
-              '🥰',
-              '😍',
-              '🤔',
-              '👍',
-              '👎',
-              '🙏',
-              '🔥',
-              '❤️',
-              '🎉',
-              '✅',
-              '⚠️',
-              '❌',
-              '📎',
-              '📅',
-              '🕐',
-              '👋',
-              '🤝',
-              '🚀',
-              '💡',
-              '🔴',
-              '🟢',
-              '🔵',
-            ].map((emoji) => (
-              <button
-                key={emoji}
-                type="button"
-                className="chat-emoji-btn"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => insertEmoji(emoji)}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Quick Canned Replies */}
       <ChatQuickReplies
         onSelectReply={handleQuickReply}
@@ -508,6 +464,50 @@ export function ChatInputArea({
 
       {/* Input Row — Toolbar Architecture */}
       <div className="chat-composer">
+        {/* Emoji Picker Popover anchored right above composer */}
+        {showEmojiPicker && (
+          <div ref={emojiPickerRef} className="chat-emoji-picker">
+            <div className="chat-emoji-grid">
+              {[
+                '😀',
+                '😂',
+                '🥰',
+                '😍',
+                '🤔',
+                '👍',
+                '👎',
+                '🙏',
+                '🔥',
+                '❤️',
+                '🎉',
+                '✅',
+                '⚠️',
+                '❌',
+                '📎',
+                '📅',
+                '🕐',
+                '👋',
+                '🤝',
+                '🚀',
+                '💡',
+                '🔴',
+                '🟢',
+                '🔵',
+              ].map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  className="chat-emoji-btn"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => insertEmoji(emoji)}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Toolbar Left */}
         <div className="chat-composer-left">
           {onSendImage && roomId && (
