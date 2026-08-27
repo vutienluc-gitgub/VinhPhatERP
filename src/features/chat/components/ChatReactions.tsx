@@ -12,6 +12,7 @@ interface Props {
   onAddReaction: (emoji: string) => void;
 }
 
+// eslint-disable-next-line no-restricted-syntax -- Allowed reaction dataset
 const COMMON_EMOJIS = ['👍', '👎', '❤️', '😂', '🔥', '🎉', '🙏', '🤝'] as const;
 
 function groupChatReactions(reactions?: ChatReaction[] | null) {
@@ -34,6 +35,16 @@ function groupChatReactions(reactions?: ChatReaction[] | null) {
     }
   }
   return Array.from(grouped.values());
+}
+
+function renderReactionDisplay(codeOrEmoji: string) {
+  if (codeOrEmoji === 'like' || codeOrEmoji === '👍') {
+    return <Icon name="ThumbsUp" size={12} />;
+  }
+  if (codeOrEmoji === 'heart' || codeOrEmoji === '❤️') {
+    return <Icon name="Heart" size={12} />;
+  }
+  return <span className="chat-reaction-emoji">{codeOrEmoji}</span>;
 }
 
 export const ChatReactions = memo(function ChatReactions({
@@ -62,7 +73,7 @@ export const ChatReactions = memo(function ChatReactions({
                 onClick={() => onToggleReaction(group.emoji)}
                 title={`${group.count} ${CHAT_LABELS.REACTED_SUFFIX}`}
               >
-                <span className="chat-reaction-emoji">{group.emoji}</span>
+                {renderReactionDisplay(group.emoji)}
                 <span className="chat-reaction-count">{group.count}</span>
               </button>
             );
