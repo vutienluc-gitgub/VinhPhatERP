@@ -31,6 +31,7 @@
   width: 100%;
   max-width: 440px;
   height: 85vh;
+  height: 85dvh;
   max-height: 720px;
   background: var(--surface-strong);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -40,6 +41,7 @@
   z-index: 1011;
   animation: chatSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @media (width >= 640px) {
@@ -2278,62 +2280,74 @@
 
 /* ── Phase 3: Advanced Collaboration ── */
 
-.chat-bubble-quick-actions {
-  position: absolute;
-  top: -14px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 8px rgb(0, 0, 0, 0.12);
-  border-radius: 16px;
-  padding: 2px 6px;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease-in-out,
-    transform 0.15s ease-in-out;
-  transform: translateY(4px);
-  z-index: 5;
+/* ── Phase 3: Advanced Collaboration — Responsive Quick Actions ── */
+
+@media (hover: hover) and (pointer: fine) {
+  .chat-bubble-quick-actions {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    top: auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-radius: 16px;
+    padding: 2px 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.15s ease-in-out,
+      transform 0.15s ease-in-out;
+    transform: translateY(4px);
+    z-index: 10;
+  }
+
+  .chat-bubble-row--mine .chat-bubble-quick-actions {
+    right: 8px;
+  }
+
+  .chat-bubble-row--theirs .chat-bubble-quick-actions {
+    left: 8px;
+  }
+
+  .chat-bubble-row:hover .chat-bubble-quick-actions {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .chat-quick-action-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition:
+      background 0.12s,
+      color 0.12s,
+      transform 0.1s;
+  }
+
+  .chat-quick-action-btn:hover {
+    background: var(--surface-hover);
+    color: var(--foreground);
+    transform: scale(1.15);
+  }
 }
 
-.chat-bubble-row--mine .chat-bubble-quick-actions {
-  right: 8px;
-}
-
-.chat-bubble-row--theirs .chat-bubble-quick-actions {
-  left: 8px;
-}
-
-.chat-bubble-row:hover .chat-bubble-quick-actions {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.chat-quick-action-btn {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: 50%;
-  font-size: 0.75rem;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  transition:
-    background 0.12s,
-    color 0.12s,
-    transform 0.1s;
-}
-
-.chat-quick-action-btn:hover {
-  background: var(--surface-hover);
-  color: var(--foreground);
-  transform: scale(1.15);
+/* Touch devices (iPhone, iPad, Android) — avoid sticky hover overlap */
+@media (hover: none) or (pointer: coarse) {
+  .chat-bubble-quick-actions {
+    display: none !important;
+  }
 }
 
 .chat-reply-banner {
