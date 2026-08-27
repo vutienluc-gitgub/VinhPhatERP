@@ -54,9 +54,12 @@ export const ChatMentionContent = memo(function ChatMentionContent({
   if (quoteMatch) {
     const [, quoteText, bodyText] = quoteMatch;
     return (
-      <div className="chat-bubble-content-with-quote">
+      <div className="chat-bubble-reply-container">
+        <div className="chat-bubble-reply-header">
+          <Icon name="CornerUpLeft" size={11} />
+          <span>Bạn đã trả lời</span>
+        </div>
         <div className="chat-bubble-quote-snippet">
-          <Icon name="CornerUpLeft" size={12} />
           <span className="chat-bubble-quote-text">{quoteText}</span>
         </div>
         <div className="chat-bubble-text-body">

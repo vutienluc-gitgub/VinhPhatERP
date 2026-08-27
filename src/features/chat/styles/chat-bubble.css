@@ -309,3 +309,61 @@
   color: var(--muted-foreground);
   margin-top: 2px;
 }
+
+/* ── Messenger-Style Quoted Reply Box ── */
+
+.chat-bubble-reply-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-bubble-reply-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  opacity: 0.85;
+  margin-bottom: 1px;
+}
+
+.chat-bubble-quote-snippet {
+  padding: 6px 10px;
+  background: var(--surface-hover);
+  border-left: 3px solid currentcolor;
+  border-radius: 4px 8px 8px 4px;
+  font-size: 0.8125rem;
+  font-style: italic;
+  opacity: 0.9;
+  max-height: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-bubble--mine .chat-bubble-quote-snippet {
+  /* @architecture-exception: Quote bubble translucent white overlay on brand background */
+  background: rgba(255, 255, 255, 0.2);
+  /* @architecture-exception: Translucent white left border on quote bubble */
+  border-left-color: rgba(255, 255, 255, 0.85);
+}
+
+.chat-bubble-text-body {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* ── Messenger-Style Seen Indicator Avatar ── */
+
+.chat-seen-avatar {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--border);
+  display: inline-block;
+  vertical-align: middle;
+}
