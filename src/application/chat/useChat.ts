@@ -41,6 +41,7 @@ import {
   broadcastTypingStop,
   onTypingEvent,
 } from '@/shared/lib/chat-typing';
+import { chatAudio } from '@/shared/lib/chat-audio';
 import { supabase } from '@/services/supabase/client';
 
 // ── Query Keys ──
@@ -444,6 +445,7 @@ export function useTypingIndicator(roomId: string | undefined) {
 
 export function useChatRealtime(roomId: string | undefined) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retryCountRef = useRef(0);
@@ -473,6 +475,11 @@ export function useChatRealtime(roomId: string | undefined) {
         },
         (payload) => {
           const newMsg = payload.new as ChatMessage;
+
+          // Subtle audio cue for incoming messages from other participants
+          if (newMsg.sender_id && newMsg.sender_id !== user?.id) {
+            chatAudio.playReceivedSound();
+          }
 
           // Update local cache (with dedup)
           queryClient.setQueryData(CHAT_KEYS.messages(roomId), (old: unknown) =>
@@ -523,7 +530,7 @@ export function useChatRealtime(roomId: string | undefined) {
           // We do not need a manual setTimeout here, which prevents duplicate channel bugs.
         }
       });
-  }, [roomId, queryClient]);
+  }, [roomId, queryClient, user?.id]);
 
   const unsubscribe = useCallback(() => {
     if (retryTimerRef.current) {

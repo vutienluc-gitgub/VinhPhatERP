@@ -14,8 +14,11 @@ import {
   type ChatMention,
 } from '@/schema/chat.schema';
 import { uploadChatImage, uploadChatFile } from '@/shared/lib/chat-storage';
+import { chatAudio } from '@/shared/lib/chat-audio';
 import { useMentionsSearch, type MentionOption } from '@/application/chat';
 import { Icon } from '@/shared/components/Icon';
+
+import { ChatQuickReplies } from './ChatQuickReplies';
 
 interface ChatInputAreaProps {
   onSend: (content: string, mentions?: ChatMention[]) => void;
@@ -121,6 +124,7 @@ export function ChatInputArea({
     const validMentions = mentions.filter((m) => trimmed.includes(m.label));
 
     onSend(trimmed, validMentions.length > 0 ? validMentions : undefined);
+    chatAudio.playSentSound();
     setText('');
     setMentions([]);
     setActiveMention(null);
@@ -146,6 +150,14 @@ export function ChatInputArea({
     onCancelReply,
     onTypingStop,
   ]);
+
+  const handleQuickReply = useCallback(
+    (replyText: string) => {
+      onSend(replyText);
+      chatAudio.playSentSound();
+    },
+    [onSend],
+  );
 
   const clearPreview = useCallback(() => {
     setPreviewUrl(null);
@@ -483,6 +495,12 @@ export function ChatInputArea({
           </div>
         </div>
       )}
+
+      {/* Quick Canned Replies */}
+      <ChatQuickReplies
+        onSelectReply={handleQuickReply}
+        disabled={isInputDisabled}
+      />
 
       {/* Input Row — Toolbar Architecture */}
       <div className="chat-composer">

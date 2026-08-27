@@ -214,3 +214,11 @@ export const AVAILABLE_ROLES = [
   'staff',
   'kho',
 ] as const;
+
+export const CANNED_RESPONSES = [
+  'Dạ em đã nhận được thông tin ạ',
+  'Dạ đơn hàng đang được xử lý',
+  'Dạ tài xế đang trên đường giao hàng',
+  'Dạ đã chuẩn bị xong hàng',
+  'Dạ vâng ạ, cảm ơn quý khách!',
+] as const;
