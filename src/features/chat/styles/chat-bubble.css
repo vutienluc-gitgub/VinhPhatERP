@@ -13,6 +13,8 @@
   gap: var(--chat-cluster-gap);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
+  contain: layout style paint;
+  will-change: scroll-position;
 }
 
 /* ── Date Dividers ── */
