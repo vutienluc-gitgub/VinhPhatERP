@@ -433,9 +433,17 @@ export async function addReaction(
   messageId: string,
   emoji: string,
 ): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error('Authentication required');
+
   const { error } = await untypedDb
     .from('chat_message_reactions')
-    .insert({ message_id: messageId, emoji });
+    .upsert(
+      { message_id: messageId, emoji, user_id: user.id },
+      { onConflict: 'message_id,user_id,emoji', ignoreDuplicates: true },
+    );
 
   if (error) throw new Error(error.message);
 }
