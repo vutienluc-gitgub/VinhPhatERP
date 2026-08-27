@@ -7,7 +7,6 @@ interface Props {
   reactions?: ChatReaction[] | null;
   currentUserId?: string | null;
   showEmojiPicker: boolean;
-  onToggleEmojiPicker: () => void;
   onToggleReaction: (emoji: string) => void;
   onAddReaction: (emoji: string) => void;
 }
@@ -51,7 +50,6 @@ export const ChatReactions = memo(function ChatReactions({
   reactions,
   currentUserId,
   showEmojiPicker,
-  onToggleEmojiPicker,
   onToggleReaction,
   onAddReaction,
 }: Props) {
@@ -78,14 +76,6 @@ export const ChatReactions = memo(function ChatReactions({
               </button>
             );
           })}
-          <button
-            type="button"
-            className="chat-reaction-add-btn"
-            onClick={onToggleEmojiPicker}
-            title={CHAT_LABELS.ADD_REACTION}
-          >
-            <Icon name="Smile" size={14} />
-          </button>
         </div>
       )}
 

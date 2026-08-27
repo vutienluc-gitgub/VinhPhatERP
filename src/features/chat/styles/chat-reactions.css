@@ -6,30 +6,25 @@
 
 .chat-reactions {
   position: absolute;
-  bottom: -9px;
-  right: 10px;
+  bottom: -8px;
+  right: 6px;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   z-index: 5;
-}
-
-.chat-bubble-row--mine .chat-reactions {
-  right: auto;
-  left: 10px;
 }
 
 .chat-reaction-btn {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 1px 6px;
+  gap: 2px;
+  padding: 1px 5px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   font-size: 0.6875rem;
   color: var(--foreground);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition:
     background 0.12s,
