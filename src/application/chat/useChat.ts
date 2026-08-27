@@ -508,6 +508,20 @@ export function useChatRealtime(roomId: string | undefined) {
           });
         },
       )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chat_message_reactions',
+        },
+        () => {
+          // Invalidate messages when reactions are added/removed in realtime
+          void queryClient.invalidateQueries({
+            queryKey: CHAT_KEYS.messages(roomId),
+          });
+        },
+      )
       .subscribe((status) => {
         // Prevent zombie callbacks from removed channels
         if (channelRef.current !== channel) return;
