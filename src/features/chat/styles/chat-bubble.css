@@ -4,8 +4,19 @@
 
 /* ── Message List Container ── */
 
+.chat-body-viewport,
+.chat-message-list-viewport {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
 .chat-message-list {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 16px;
   display: flex;
