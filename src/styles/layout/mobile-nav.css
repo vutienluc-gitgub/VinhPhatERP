@@ -1,0 +1,82 @@
+/* ============================================================
+   Layout — Mobile Bottom Navigation Bar
+   ============================================================ */
+
+.mobile-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* Safe-area insets for notched devices (iPhone X+) */
+  padding: 0.5rem calc(0.5rem + env(safe-area-inset-right))
+    calc(0.5rem + env(safe-area-inset-bottom))
+    calc(0.5rem + env(safe-area-inset-left));
+  border-top: 1px solid var(--border);
+  background: var(--surface-strong);
+  z-index: 100;
+
+  /* Prevent any child from spilling and causing visual cutoff */
+  overflow: hidden;
+
+  /* ── Mobile browser bounce fix ──
+     Force GPU compositing layer so the element stays pinned
+     during URL bar collapse/expand animations on iOS Safari & Chrome */
+  transform: translateZ(0);
+  will-change: transform;
+
+  /* Prevent tap-highlight and callout glitches */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-link span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-nav-link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0;
+  border-radius: 0;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  background: transparent;
+  min-height: auto;
+  transition: 160ms ease;
+}
+
+.mobile-nav-link.is-active {
+  background: transparent;
+  color: var(--primary-strong);
+}
+
+.mobile-nav-link.is-active svg {
+  color: var(--primary-strong);
+  stroke-width: 2.5;
+}
+
+@media (width >= 768px) {
+  .mobile-nav {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-link {
+    transition: none;
+  }
+}

@@ -1,0 +1,118 @@
+/* ============================================================
+   Layout — Sidebar Promo Banner & Page Container Utilities
+   ============================================================ */
+
+/* Ẩn Promo banner trên mobile mặc định */
+.zircon-promo {
+  display: none;
+}
+
+/* ── Brand Sidebar Theme (Cut-out Active State) ── */
+@media (width >= 1100px) {
+  :root {
+    --sidebar-bg: rgb(var(--brand-strong-rgb));
+    --sidebar-text: rgb(255, 255, 255, 0.7);
+    --sidebar-text-hover: #fff;
+    --sidebar-active-text: rgb(var(--brand-strong-rgb));
+    --sidebar-cutout-bg: #f4f8fb;
+  }
+
+  [data-theme='dark'] {
+    --sidebar-cutout-bg: #08111d;
+  }
+
+  /* Promo Banner */
+  .zircon-promo {
+    margin: 1rem;
+    padding: 1.25rem 1rem;
+
+    /* @architecture-exception: legacy color migration */
+    background: linear-gradient(180deg, #fff 0%, #f0f4fb 100%);
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgb(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .zircon-promo-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(
+      135deg,
+      rgb(var(--brand-rgb)),
+      rgb(var(--brand-strong-rgb))
+    );
+
+    /* @architecture-exception: legacy color migration */
+    color: white;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 4px 12px rgb(var(--brand-rgb), 0.4);
+  }
+
+  .zircon-promo-title {
+    color: rgb(var(--brand-strong-rgb));
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .zircon-promo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(
+      135deg,
+      rgb(var(--brand-rgb)),
+      rgb(var(--brand-strong-rgb))
+    );
+
+    /* @architecture-exception: legacy color migration */
+    color: white;
+    border: none;
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 150ms;
+    width: 100%;
+  }
+
+  .zircon-promo-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgb(0, 0, 0, 0.15);
+  }
+}
+
+/* ── Page Layout Utilities ── */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem var(--shell-inset);
+  margin-bottom: 0.5rem;
+}
+
+@media (width <= 639px) {
+  .page-header {
+    flex-direction: column;
+    padding-bottom: 0.75rem;
+    gap: 0.75rem;
+  }
+}
