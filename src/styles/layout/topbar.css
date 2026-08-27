@@ -1,0 +1,281 @@
+/* ============================================================
+   Layout — TopBar, Brand, Breadcrumbs, and User Dropdown
+   ============================================================ */
+
+/* ── Topbar: Compact sticky header ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: env(safe-area-inset-top, 0px)
+    calc(var(--shell-inset) + env(safe-area-inset-right, 0px)) 0
+    calc(var(--shell-inset) + env(safe-area-inset-left, 0px));
+  height: calc(56px + env(safe-area-inset-top, 0px));
+  background: var(--surface-strong);
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+@media (width >= 768px) {
+  .topbar {
+    height: 60px;
+    padding-top: 0;
+    padding-left: var(--shell-inset);
+    padding-right: var(--shell-inset);
+  }
+}
+
+/* ── App Launcher & Topbar Brand ── */
+.topbar-brand-block {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  margin: 0 0.5rem;
+}
+
+/* ── Breadcrumbs ── */
+.topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.topbar-breadcrumb a {
+  color: var(--muted-foreground);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 150ms;
+}
+
+.topbar-breadcrumb a:hover {
+  color: var(--foreground);
+}
+
+.topbar-breadcrumb-sep {
+  flex-shrink: 0;
+  color: var(--border);
+}
+
+.topbar-breadcrumb-current {
+  color: var(--foreground);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-spacer {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Action Buttons ── */
+.topbar-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.topbar-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 150ms;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.topbar-icon-btn:hover {
+  background: var(--surface-subtle);
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.topbar-chat-inbox-btn {
+  position: relative;
+}
+
+.topbar-chat-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: var(--danger);
+  color: var(--color-primary-foreground, #fff);
+  font-size: 0.625rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 2px solid var(--surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ── User Trigger & Dropdown ── */
+.user-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-strong);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+@media (width >= 640px) {
+  .user-trigger {
+    padding: 0.35rem 0.6rem 0.35rem 0.35rem;
+  }
+}
+
+.user-trigger:hover {
+  border-color: rgb(var(--brand-rgb), 0.25);
+  box-shadow: 0 2px 8px rgb(var(--base-rgb), 0.06);
+}
+
+.user-trigger svg {
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.user-trigger[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+
+  /* @architecture-exception: legacy color migration */
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 200px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 12px 32px rgb(var(--base-rgb), 0.12);
+  padding: 0.5rem 0;
+  z-index: 100;
+  animation: dropdownFadeIn 0.12s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-dropdown-header {
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.user-dropdown-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--foreground);
+}
+
+.user-dropdown-header .status-pill {
+  margin-bottom: 0;
+  width: fit-content;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  margin: 0.25rem 0;
+  background: var(--border);
+}
+
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.user-dropdown-item:hover {
+  background: rgb(var(--base-rgb), 0.04);
+}
+
+.user-dropdown-item svg {
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}

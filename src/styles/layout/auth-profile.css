@@ -1,0 +1,110 @@
+/* ============================================================
+   Layout — Auth Status Pages & Profile Page Utilities
+   ============================================================ */
+
+/* ── Buttons Base ── */
+.primary-button {
+  border: 0;
+  border-radius: 999px;
+  min-height: 48px;
+  padding: 0.85rem 1.1rem;
+
+  /* @architecture-exception: legacy color migration */
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+  font-weight: 700;
+}
+
+.secondary-button {
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 0.7rem 1.1rem;
+  color: var(--foreground);
+  background: var(--surface);
+  font-weight: 600;
+}
+
+.secondary-button:hover {
+  border-color: rgb(var(--brand-rgb), 0.3);
+
+  /* @architecture-exception: legacy color migration */
+  background: rgb(255, 255, 255, 0.98);
+}
+
+/* ── Auth status pages: unauthorized, blocked ── */
+.auth-status-card {
+  max-width: 480px;
+  margin: 4rem auto;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.auth-status-card h2 {
+  margin: 0.5rem 0 1rem;
+}
+
+.auth-status-body {
+  color: var(--muted-foreground);
+  margin-bottom: 1.5rem;
+}
+
+.auth-status-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* ── Profile page ── */
+.profile-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.profile-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-row:last-child {
+  border-bottom: none;
+}
+
+.profile-label {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+.profile-value {
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.badge--danger {
+  /* @architecture-exception: legacy color migration */
+  background: rgb(220, 53, 69, 0.1);
+  color: var(--danger);
+}
