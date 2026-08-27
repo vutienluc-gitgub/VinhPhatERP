@@ -111,7 +111,7 @@
 @media (hover: hover) and (pointer: fine) {
   .chat-bubble-quick-actions {
     position: absolute;
-    bottom: calc(100% + 4px);
+    bottom: calc(100% + 2px);
     top: auto;
     display: flex;
     align-items: center;
@@ -130,6 +130,17 @@
     z-index: 10;
   }
 
+  /* Invisible hover bridge to prevent losing hover when cursor moves from bubble to bar */
+  .chat-bubble-quick-actions::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: transparent;
+  }
+
   .chat-bubble-row--mine .chat-bubble-quick-actions {
     right: 8px;
   }
@@ -138,7 +149,8 @@
     left: 8px;
   }
 
-  .chat-bubble-row:hover .chat-bubble-quick-actions {
+  .chat-bubble-row:hover .chat-bubble-quick-actions,
+  .chat-bubble-quick-actions:hover {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);

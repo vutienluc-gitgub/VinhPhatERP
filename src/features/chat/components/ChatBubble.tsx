@@ -142,7 +142,7 @@ export const ChatBubble = memo(function ChatBubble({
         {!isOptimistic && (
           <ChatQuickActions
             message={message}
-            onAddReaction={handleAddReaction}
+            onAddReaction={handleToggleReaction}
             onQuoteReply={onQuoteReply}
             onCopyText={handleCopyText}
           />

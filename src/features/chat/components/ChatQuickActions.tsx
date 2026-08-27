@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, type MouseEvent } from 'react';
 
 import { Icon } from '@/shared/components/Icon';
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
@@ -16,12 +16,21 @@ export const ChatQuickActions = memo(function ChatQuickActions({
   onQuoteReply,
   onCopyText,
 }: Props) {
+  const handleAction = (e: MouseEvent, callback: () => void) => {
+    e.stopPropagation();
+    e.preventDefault();
+    callback();
+  };
+
   return (
-    <div className="chat-bubble-quick-actions">
+    <div
+      className="chat-bubble-quick-actions"
+      onClick={(e) => e.stopPropagation()}
+    >
       <button
         type="button"
         className="chat-quick-action-btn"
-        onClick={() => onAddReaction('👍')}
+        onClick={(e) => handleAction(e, () => onAddReaction('👍'))}
         title={CHAT_LABELS.LIKE}
       >
         👍
@@ -29,7 +38,7 @@ export const ChatQuickActions = memo(function ChatQuickActions({
       <button
         type="button"
         className="chat-quick-action-btn"
-        onClick={() => onAddReaction('❤️')}
+        onClick={(e) => handleAction(e, () => onAddReaction('❤️'))}
         title={CHAT_LABELS.HEART}
       >
         ❤️
@@ -38,7 +47,7 @@ export const ChatQuickActions = memo(function ChatQuickActions({
         <button
           type="button"
           className="chat-quick-action-btn"
-          onClick={() => onQuoteReply(message)}
+          onClick={(e) => handleAction(e, () => onQuoteReply(message))}
           title={CHAT_LABELS.REPLY_MESSAGE}
         >
           <Icon name="CornerUpLeft" size={12} />
@@ -47,7 +56,7 @@ export const ChatQuickActions = memo(function ChatQuickActions({
       <button
         type="button"
         className="chat-quick-action-btn"
-        onClick={onCopyText}
+        onClick={(e) => handleAction(e, onCopyText)}
         title={CHAT_LABELS.COPY_TEXT_ACTION}
       >
         <Icon name="Copy" size={12} />
