@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchMyChatRooms, type MyChatRoomSummary } from '@/api/chat.api';
 
 import { ChatDrawer } from './ChatDrawer';
+import './chat.css';
 
 // Mappings for UI
 const ENTITY_COLORS: Record<string, string> = {
