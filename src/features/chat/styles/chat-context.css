@@ -1,0 +1,150 @@
+/* ============================================================
+   Chat Module — ERP Context, Pinned Messages, and Quoting
+   ============================================================ */
+
+/* ── ERP Context Bar (Order, Shipment, Invoice) ── */
+
+.chat-context-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--surface-secondary);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8125rem;
+}
+
+.chat-context-icon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.chat-context-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-context-code {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.chat-context-meta {
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+
+/* ── Pinned Messages Bar ── */
+
+.chat-pinned-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.chat-pinned-bar:hover {
+  background: var(--surface-hover);
+}
+
+.chat-pinned-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-pinned-text {
+  font-weight: 500;
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Quote & Reply Composer Banner ── */
+
+.chat-reply-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--surface-secondary);
+  border-left: 3px solid var(--color-primary);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+}
+
+.chat-reply-banner-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.chat-reply-banner-sender {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.chat-reply-banner-text {
+  color: var(--muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-reply-banner-cancel {
+  background: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.chat-reply-banner-cancel:hover {
+  color: var(--foreground);
+}
+
+/* ── Quoted Message inside Bubble ── */
+
+.chat-bubble-quote {
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  background: var(--surface-hover);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.chat-bubble--mine .chat-bubble-quote {
+  /* @architecture-exception: contrast tint on primary bubble */
+  background: rgba(255, 255, 255, 0.15);
+
+  /* @architecture-exception: contrast border on primary bubble */
+  border-left-color: rgba(255, 255, 255, 0.8);
+  color: inherit;
+}
+
+.chat-bubble-quote-sender {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.chat-bubble-quote-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+}

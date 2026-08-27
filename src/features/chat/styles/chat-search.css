@@ -1,0 +1,98 @@
+/* ============================================================
+   Chat Module — In-Room Search & Results Highlights
+   ============================================================ */
+
+/* ── Search Input Bar ── */
+
+.chat-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+}
+
+.chat-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.8125rem;
+  color: var(--foreground);
+}
+
+.chat-search-close {
+  background: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.chat-search-close:hover {
+  color: var(--foreground);
+}
+
+/* ── Search Results List ── */
+
+.chat-search-results {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.chat-search-result-item {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.chat-search-result-item:hover {
+  background: var(--surface-hover);
+}
+
+.chat-search-result-sender {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 2px;
+}
+
+.chat-search-result-text {
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-search-empty {
+  padding: 16px;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-search-highlight {
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-weight: 600;
+  border-radius: 2px;
+  padding: 0 2px;
+}

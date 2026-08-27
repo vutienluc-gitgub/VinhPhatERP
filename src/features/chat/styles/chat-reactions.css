@@ -1,0 +1,178 @@
+/* ============================================================
+   Chat Module — Reactions, Emoji Picker, and Quick Actions
+   ============================================================ */
+
+/* ── Message Reaction Badges ── */
+
+.chat-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.chat-reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: var(--foreground);
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    transform 0.1s;
+}
+
+.chat-reaction-btn:hover {
+  background: var(--surface-hover);
+  transform: scale(1.05);
+}
+
+.chat-reaction-btn--active {
+  background: var(--primary-soft, rgba(99, 102, 241, 0.12));
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.chat-reaction-emoji {
+  font-size: 0.8125rem;
+}
+
+.chat-reaction-count {
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.chat-reaction-add-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.chat-reaction-add-btn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+/* ── Emoji Picker Popover ── */
+
+.chat-reaction-emoji-picker {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--chat-radius-control);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  margin-top: 6px;
+  animation: chatFadeIn 0.15s ease-out;
+}
+
+.chat-reaction-emoji-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    transform 0.1s;
+}
+
+.chat-reaction-emoji-btn:hover {
+  background: var(--surface-hover);
+  transform: scale(1.2);
+}
+
+/* ── Desktop Hover Quick Actions (Isolated from Touch) ── */
+
+@media (hover: hover) and (pointer: fine) {
+  .chat-bubble-quick-actions {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    top: auto;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-radius: 16px;
+    padding: 2px 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.15s ease-in-out,
+      transform 0.15s ease-in-out;
+    transform: translateY(4px);
+    z-index: 10;
+  }
+
+  .chat-bubble-row--mine .chat-bubble-quick-actions {
+    right: 8px;
+  }
+
+  .chat-bubble-row--theirs .chat-bubble-quick-actions {
+    left: 8px;
+  }
+
+  .chat-bubble-row:hover .chat-bubble-quick-actions {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .chat-quick-action-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition:
+      background 0.12s,
+      color 0.12s,
+      transform 0.1s;
+  }
+
+  .chat-quick-action-btn:hover {
+    background: var(--surface-hover);
+    color: var(--foreground);
+    transform: scale(1.15);
+  }
+}
+
+/* ── Touch Devices (iPhone, iPad, Android) — Avoid Sticky Hover ── */
+
+@media (hover: none) or (pointer: coarse) {
+  .chat-bubble-quick-actions {
+    display: none !important;
+  }
+}

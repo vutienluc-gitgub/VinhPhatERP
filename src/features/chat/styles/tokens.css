@@ -1,0 +1,24 @@
+/* ============================================================
+   Chat Module — Design Tokens Contract
+   ============================================================ */
+
+:root {
+  /* Dimensions & Spacing */
+  --chat-radius: var(--radius-lg, 16px);
+  --chat-radius-sm: var(--radius-sm, 8px);
+  --chat-radius-bubble: 14px;
+  --chat-radius-control: 20px;
+  --chat-gap: 6px;
+  --chat-avatar-size: 36px;
+  --chat-bubble-max-w: 72%;
+  --chat-bubble-min-w: 80px;
+  --chat-date-gap: 20px;
+  --chat-cluster-gap: 16px;
+
+  /* Semantic Theme Tokens */
+  --chat-bg-mine: var(--color-primary);
+  --chat-text-mine: var(--color-primary-foreground, #fff);
+  --chat-bg-theirs: var(--surface-secondary);
+  --chat-text-theirs: var(--foreground);
+  --chat-typing-dot: var(--color-primary);
+}

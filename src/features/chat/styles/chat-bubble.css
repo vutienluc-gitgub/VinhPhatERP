@@ -1,0 +1,298 @@
+/* ============================================================
+   Chat Module — Message List, Clusters, and Bubbles
+   ============================================================ */
+
+/* ── Message List Container ── */
+
+.chat-message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--chat-cluster-gap);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* ── Date Dividers ── */
+
+.chat-date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--chat-date-gap) 0 12px;
+  position: relative;
+}
+
+.chat-date-divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
+
+.chat-date-label {
+  background: var(--surface-strong);
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Load Older Messages Button ── */
+
+.chat-load-more {
+  text-align: center;
+  padding: 8px 0 16px;
+}
+
+.chat-load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: var(--chat-radius-control);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.chat-load-more-btn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+/* ── Message Clusters ── */
+
+.chat-cluster {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.chat-cluster--mine {
+  justify-content: flex-end;
+}
+
+.chat-cluster--theirs {
+  justify-content: flex-start;
+}
+
+.chat-cluster-avatar {
+  width: var(--chat-avatar-size);
+  height: var(--chat-avatar-size);
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground, #fff);
+  font-weight: 600;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+.chat-cluster-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+.chat-cluster--mine .chat-cluster-content {
+  align-items: flex-end;
+}
+
+.chat-cluster-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  padding-left: 2px;
+}
+
+.chat-cluster-sender {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.chat-cluster-messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--chat-gap);
+  width: 100%;
+}
+
+.chat-cluster--mine .chat-cluster-messages {
+  align-items: flex-end;
+}
+
+/* ── Chat Bubbles ── */
+
+.chat-bubble-row {
+  display: flex;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.chat-bubble-row--mine {
+  justify-content: flex-end;
+}
+
+.chat-bubble-row--theirs {
+  justify-content: flex-start;
+}
+
+.chat-bubble {
+  min-width: var(--chat-bubble-min-w);
+  max-width: var(--chat-bubble-max-w);
+  padding: 8px 12px;
+  border-radius: var(--chat-radius-bubble);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  word-break: break-word;
+  position: relative;
+  box-shadow: 0 1px 2px rgb(0, 0, 0, 0.04);
+}
+
+.chat-bubble--mine {
+  background: var(--chat-bg-mine);
+  color: var(--chat-text-mine);
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble--theirs {
+  background: var(--chat-bg-theirs);
+  color: var(--chat-text-theirs);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-bubble--pending {
+  opacity: 0.7;
+}
+
+.chat-bubble--error {
+  border: 1px solid var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.chat-cluster-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+
+.chat-cluster--mine .chat-cluster-meta {
+  justify-content: flex-end;
+}
+
+.chat-cluster--theirs .chat-cluster-meta {
+  justify-content: flex-start;
+  padding-left: 2px;
+}
+
+.chat-status-indicator {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  display: inline-flex;
+  align-items: center;
+}
+
+.chat-status-check--read {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── Attachments: Images & Files ── */
+
+.chat-bubble-image {
+  max-width: 240px;
+  max-height: 240px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: block;
+  object-fit: cover;
+  transition: opacity 0.15s;
+}
+
+.chat-bubble-image:hover {
+  opacity: 0.9;
+}
+
+.chat-bubble-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 4px;
+}
+
+.chat-bubble-file-icon {
+  flex-shrink: 0;
+}
+
+.chat-bubble-file-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chat-bubble-file-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-bubble-file-type {
+  font-size: 0.6875rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+/* ── ePOD System Events ── */
+
+.chat-system-epod {
+  margin: 8px auto;
+  padding: 8px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  max-width: 90%;
+  text-align: center;
+}
+
+.chat-system-epod-content {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.chat-system-epod-time {
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}
