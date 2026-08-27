@@ -44,8 +44,10 @@ const COMPATIBLE_CASTS = new Set([
   'text -> jsonb', // JSON.stringify() sent as text, DB accepts jsonb
   'numeric -> jsonb', // number sent, DB accepts jsonb (inside JSON payload)
   'text -> date', // date string sent as text, DB accepts date
+  'text -> timestamptz', // ISO string sent as text, DB accepts timestamptz
   'text -> uuid', // uuid string sent as text, DB accepts uuid
   'numeric -> int', // JS number sent, DB accepts int
+  'text -> int', // number/string sent, DB accepts int
   'text -> uuid[]', // uuid array sent as text, DB accepts uuid[]
   'timestamptz -> date', // timestamp sent, DB stores as date
   'text -> supplier_category', // custom enum
