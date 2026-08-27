@@ -19,6 +19,9 @@ import { useMentionsSearch, type MentionOption } from '@/application/chat';
 import { Icon } from '@/shared/components/Icon';
 
 import { ChatQuickReplies } from './ChatQuickReplies';
+import { ChatEmojiPicker } from './ChatEmojiPicker';
+import { ChatUploadPreview } from './ChatUploadPreview';
+import { ChatMentionsPopover } from './ChatMentionsPopover';
 
 interface ChatInputAreaProps {
   onSend: (content: string, mentions?: ChatMention[]) => void;
@@ -60,6 +63,7 @@ export function ChatInputArea({
     type: string;
   } | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -123,7 +127,6 @@ export function ChatInputArea({
       trimmed = `↩️ "${snippet}"\n${trimmed}`;
     }
 
-    // Filter mentions that actually exist in the text
     const validMentions = mentions.filter((m) => trimmed.includes(m.label));
 
     onSend(trimmed, validMentions.length > 0 ? validMentions : undefined);
@@ -171,7 +174,6 @@ export function ChatInputArea({
     }
   }, []);
 
-  // Stop typing on blur
   const handleBlur = useCallback(() => {
     onTypingStop?.();
     if (typingTimeoutRef.current) {
@@ -196,7 +198,6 @@ export function ChatInputArea({
       setMentions((prev) => [...prev, { ...option, label: mentionText }]);
       setActiveMention(null);
 
-      // Focus back
       setTimeout(() => {
         textareaRef.current?.focus();
       }, 0);
@@ -256,7 +257,6 @@ export function ChatInputArea({
     const val = e.target.value;
     setText(val);
 
-    // Typing indicator with debounce
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
@@ -264,12 +264,11 @@ export function ChatInputArea({
     if (val.length > 0) {
       typingTimeoutRef.current = setTimeout(() => {
         onTypingStart?.();
-      }, 300); // 300ms debounce
+      }, 300);
     } else {
       onTypingStop?.();
     }
 
-    // Simple mention detection
     const cursor = e.target.selectionStart;
     const textBeforeCursor = val.slice(0, cursor);
     const match = textBeforeCursor.match(/(?:^|\s)([@#])(\S*)$/);
@@ -298,17 +297,15 @@ export function ChatInputArea({
       try {
         if (!roomId) return;
 
-        // Check if it's an image
         if (file.type.startsWith('image/')) {
           setPreviewUrl(objectUrl);
-          const result = await uploadChatImage(file, roomId as string);
+          const result = await uploadChatImage(file, roomId);
           if (onSendImage) {
             onSendImage(result.publicUrl);
           }
         } else {
-          // It's a file (PDF, Excel, Word)
           setPreviewFile({ url: objectUrl, name: file.name, type: file.type });
-          const result = await uploadChatFile(file, roomId as string);
+          const result = await uploadChatFile(file, roomId);
           if (onSendFile) {
             onSendFile(result.publicUrl, result.fileName, result.fileType);
           }
@@ -367,7 +364,7 @@ export function ChatInputArea({
           <div className="chat-reply-banner-content">
             <div className="chat-reply-banner-header">
               <Icon name="CornerUpLeft" size={12} />
-              <span>Đang trả lời tin nhắn:</span>
+              <span>{CHAT_LABELS.REPLYING_TO}</span>
             </div>
             <p className="chat-reply-banner-text">
               {replyingToMessage.content || replyingToMessage.message_type}
@@ -377,80 +374,28 @@ export function ChatInputArea({
             type="button"
             className="chat-reply-banner-close"
             onClick={onCancelReply}
-            aria-label="Hủy trả lời"
+            aria-label={CHAT_LABELS.CANCEL_REPLY}
           >
             <Icon name="X" size={14} />
           </button>
         </div>
       )}
 
-      {/* Image Preview */}
-      {previewUrl && (
-        <div className="chat-image-preview">
-          <img src={previewUrl} alt="Preview" className="chat-preview-thumb" />
-          {isUploading && (
-            <span className="chat-preview-uploading">
-              {CHAT_LABELS.LOADING}
-            </span>
-          )}
-          {!isUploading && (
-            <button
-              type="button"
-              className="chat-preview-close"
-              onClick={clearPreview}
-              aria-label={CHAT_LABELS.CANCEL}
-            >
-              <Icon name="X" size={12} />
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* File Preview */}
-      {previewFile && (
-        <div className="chat-file-preview">
-          <div className="chat-file-preview-icon">
-            <Icon name="FileText" size={24} />
-          </div>
-          <div className="chat-file-preview-info">
-            <span className="chat-file-preview-name">{previewFile.name}</span>
-            {isUploading && (
-              <span className="chat-preview-uploading">
-                {CHAT_LABELS.LOADING}
-              </span>
-            )}
-          </div>
-          {!isUploading && (
-            <button
-              type="button"
-              className="chat-preview-close"
-              onClick={clearPreview}
-              aria-label={CHAT_LABELS.CANCEL}
-            >
-              <Icon name="X" size={12} />
-            </button>
-          )}
-        </div>
-      )}
+      {/* Attachment Previews */}
+      <ChatUploadPreview
+        previewUrl={previewUrl}
+        previewFile={previewFile}
+        isUploading={isUploading}
+        onClear={clearPreview}
+      />
 
       {/* Mentions Popover */}
       {activeMention && mentionOptions.length > 0 && (
-        <div className="chat-mentions-popover">
-          {mentionOptions.map((opt, idx) => (
-            <button
-              key={`${opt.type}-${opt.id}`}
-              className={`chat-mention-option ${idx === selectedMentionIndex ? 'chat-mention-option--active' : ''}`}
-              onClick={() => handleSelectMention(opt)}
-            >
-              <span className="chat-mention-type">
-                {opt.type === 'document'
-                  ? CHAT_LABELS.MENTION_DOC_ICON
-                  : CHAT_LABELS.MENTION_USER_ICON}
-              </span>
-              <span className="chat-mention-label">{opt.label}</span>
-            </button>
-          ))}
-        </div>
+        <ChatMentionsPopover
+          options={mentionOptions}
+          selectedIndex={selectedMentionIndex}
+          onSelectOption={handleSelectMention}
+        />
       )}
 
       {/* Upload Error */}
@@ -464,48 +409,9 @@ export function ChatInputArea({
 
       {/* Input Row — Toolbar Architecture */}
       <div className="chat-composer">
-        {/* Emoji Picker Popover anchored right above composer */}
+        {/* Emoji Picker Popover anchored directly to composer */}
         {showEmojiPicker && (
-          <div ref={emojiPickerRef} className="chat-emoji-picker">
-            <div className="chat-emoji-grid">
-              {[
-                '😀',
-                '😂',
-                '🥰',
-                '😍',
-                '🤔',
-                '👍',
-                '👎',
-                '🙏',
-                '🔥',
-                '❤️',
-                '🎉',
-                '✅',
-                '⚠️',
-                '❌',
-                '📎',
-                '📅',
-                '🕐',
-                '👋',
-                '🤝',
-                '🚀',
-                '💡',
-                '🔴',
-                '🟢',
-                '🔵',
-              ].map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  className="chat-emoji-btn"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => insertEmoji(emoji)}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          </div>
+          <ChatEmojiPicker ref={emojiPickerRef} onSelectEmoji={insertEmoji} />
         )}
 
         {/* Toolbar Left */}
@@ -518,7 +424,7 @@ export function ChatInputArea({
                 onClick={handleAttachClick}
                 disabled={isInputDisabled}
                 aria-label={CHAT_LABELS.ATTACH_IMAGE}
-                title="Tải lên tệp/hình ảnh"
+                title={CHAT_LABELS.UPLOAD_ATTACHMENT_TOOLTIP}
               >
                 <Icon name="Paperclip" size={18} />
               </button>
@@ -558,8 +464,8 @@ export function ChatInputArea({
             className="chat-emoji-toggle-btn"
             onClick={() => setShowEmojiPicker((v) => !v)}
             disabled={isInputDisabled}
-            aria-label="Chọn emoji"
-            title="Biểu tượng cảm xúc"
+            aria-label={CHAT_LABELS.CHOOSE_EMOJI}
+            title={CHAT_LABELS.EMOJI_TOOLTIP}
           >
             <Icon name="Smile" size={18} />
           </button>
