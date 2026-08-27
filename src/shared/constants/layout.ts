@@ -51,6 +51,7 @@ export const NOTIFICATION_BELL_LABELS = {
   ORDER_DESC:
     'vừa tạo yêu cầu đặt hàng mã {orderNumber}. Vui lòng kiểm tra và duyệt!',
   SEE_MORE: 'Xem thêm',
+  MARK_ALL_READ: 'Đánh dấu tất cả đã đọc',
 };
 
 export const DRAWER_LABELS = {

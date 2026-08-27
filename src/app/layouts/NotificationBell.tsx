@@ -1,17 +1,37 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
 
-import { supabase } from '@/services/supabase/client';
 import { Icon } from '@/shared/components';
 import { NOTIFICATION_BELL_LABELS } from '@/shared/constants/layout';
+import { useNotifications } from '@/shared/hooks/useNotifications';
+import { resolveDeepLink } from '@/shared/notifications/deepLinkResolver';
+import type { NotificationDomain } from '@/domains/notification/models/types';
+
+function getDomainIconName(domain: NotificationDomain): string {
+  switch (domain) {
+    case 'purchasing':
+      return 'ShoppingCart';
+    case 'approval':
+      return 'CheckSquare';
+    case 'inventory':
+      return 'Package';
+    case 'finance':
+      return 'CircleDollarSign';
+    case 'production':
+      return 'Factory';
+    case 'system':
+    default:
+      return 'Megaphone';
+  }
+}
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+
+  const { notifications, unreadCount, markAsRead, markAllAsRead } =
+    useNotifications(10);
 
   // Đóng khi click ngoài
   useEffect(() => {
@@ -27,172 +47,146 @@ export function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Kích hoạt WebSocket Realtime cho Bảng Orders
-  useEffect(() => {
-    const channel = supabase
-      .channel('realtime_pending_orders')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'orders',
-        },
-        (payload) => {
-          // Báo cho React Query update lại chuông
-          queryClient.invalidateQueries({
-            queryKey: ['pending-review-notifications'],
-          });
-
-          // Hiển thị Popup Toast nổi ngay lập tức nếu là Đơn Vừa Mới Đặt (INSERT)
-          if (
-            payload.eventType === 'INSERT' &&
-            payload.new.status === 'pending_review'
-          ) {
-            toast.success(
-              NOTIFICATION_BELL_LABELS.NEW_ORDER_TOAST.replace(
-                '{orderNumber}',
-                payload.new.order_number,
-              ),
-              { icon: '🔔' },
-            );
-          }
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
-  // Fetch đơn hàng đang chờ duyệt
-  type PendingOrder = {
+  const handleNotificationClick = async (notif: {
     id: string;
-    order_number: string;
-    created_at: string;
-    customer: { name: string } | null;
+    entity_type: string;
+    entity_id: string;
+    action?: string;
+    read_at?: string | null;
+  }) => {
+    setIsOpen(false);
+    if (!notif.read_at) {
+      try {
+        await markAsRead(notif.id);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to mark read', err);
+      }
+    }
+    const targetUrl = resolveDeepLink({
+      entity_type: notif.entity_type,
+      entity_id: notif.entity_id,
+      action: notif.action,
+    });
+    navigate(targetUrl);
   };
-
-  const { data: pendingOrders = [] } = useQuery({
-    queryKey: ['pending-review-notifications'],
-    queryFn: async () => {
-      // Fetch đơn hàng pending_review cùng với tên khách hàng
-      const { data, error } = await supabase
-        .from('orders')
-        .select(
-          `
-          id,
-          order_number,
-          created_at,
-          customer:customers(name)
-        `,
-        )
-        .eq('status', 'pending_review')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      if (error) throw error;
-      return (data || []) as PendingOrder[];
-    },
-    // refetchInterval không cần nữa vì đã có WebSocket lo!
-  });
-
-  const unreadCount = pendingOrders.length;
 
   return (
     <div className="relative" ref={containerRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Thông báo"
-        className="relative flex items-center justify-center bg-transparent hover:bg-surface rounded-full w-9 h-9 cursor-pointer text-muted-foreground hover:text-text transition-colors border-none p-0"
+        aria-label={NOTIFICATION_BELL_LABELS.TITLE}
+        className="relative flex items-center justify-center bg-transparent hover:bg-surface rounded-full w-9 h-9 cursor-pointer text-muted-foreground hover:text-foreground transition-colors border-none p-0"
       >
         <Icon name="Bell" size={20} strokeWidth={1.5} />
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 bg-danger w-2 h-2 rounded-full border border-surface shadow-sm animate-pulse"></span>
+          <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5 items-center justify-center">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-danger"></span>
+          </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-[360px] max-w-[360px] bg-surface border border-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-[380px] max-w-[380px] bg-surface border border-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
           <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-surface sticky top-0">
-            <div className="flex items-center gap-2 text-text">
-              <Icon name="Bell" size={14} strokeWidth={2} />
+            <div className="flex items-center gap-2 text-foreground">
+              <Icon name="Bell" size={16} strokeWidth={2} />
               <h3 className="font-bold text-xs uppercase m-0 tracking-wider">
                 {NOTIFICATION_BELL_LABELS.TITLE}
               </h3>
+              {unreadCount > 0 && (
+                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-danger/10 text-danger rounded-full">
+                  {unreadCount}
+                </span>
+              )}
             </div>
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="text-muted-foreground hover:text-danger mix-blend-multiply opacity-60 hover:opacity-100 transition-opacity"
-            >
-              <Icon name="X" size={16} />
-            </button>
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => markAllAsRead()}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium border-none bg-transparent cursor-pointer p-0"
+                >
+                  {NOTIFICATION_BELL_LABELS.MARK_ALL_READ}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="text-muted-foreground hover:text-danger opacity-70 hover:opacity-100 transition-opacity border-none bg-transparent cursor-pointer p-0"
+              >
+                <Icon name="X" size={16} />
+              </button>
+            </div>
           </div>
 
-          <div className="max-h-[350px] overflow-y-auto">
-            {pendingOrders.length === 0 ? (
+          <div className="max-h-[360px] overflow-y-auto divide-y divide-border">
+            {notifications.length === 0 ? (
               <div className="py-8 px-4 text-center text-muted-foreground flex flex-col items-center gap-2">
-                <Icon name="CheckCircle2" size={24} className="opacity-50" />
+                <Icon name="CheckCircle2" size={28} className="opacity-40" />
                 <p className="text-sm">{NOTIFICATION_BELL_LABELS.EMPTY}</p>
               </div>
             ) : (
-              <div className="flex flex-col">
-                {pendingOrders.map((order) => (
+              notifications.map((notif) => {
+                const isUnread = !notif.read_at;
+                const iconName = getDomainIconName(notif.domain);
+
+                return (
                   <button
-                    key={order.id}
+                    key={notif.id}
                     type="button"
-                    onClick={() => {
-                      setIsOpen(false);
-                      navigate('/orders');
-                    }}
-                    className="p-3 border-b border-border text-left hover:bg-hover active:bg-active transition-colors flex gap-3 items-start"
+                    onClick={() => handleNotificationClick(notif)}
+                    className={`w-full p-3.5 text-left hover:bg-hover active:bg-active transition-colors flex gap-3 items-start border-none bg-transparent cursor-pointer ${
+                      isUnread ? 'bg-primary/5' : ''
+                    }`}
                   >
-                    <div className="bg-danger/10 text-danger p-1.5 rounded-lg mt-0.5 shrink-0 flex items-center justify-center">
-                      <Icon name="Megaphone" size={18} strokeWidth={1.5} />
+                    <div
+                      className={`p-2 rounded-lg mt-0.5 shrink-0 flex items-center justify-center ${
+                        isUnread
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-muted/10 text-muted-foreground'
+                      }`}
+                    >
+                      <Icon name={iconName} size={18} strokeWidth={1.75} />
                     </div>
                     <div className="flex-1 min-w-0 pr-2">
-                      <p className="text-sm font-bold leading-tight mb-1 uppercase tracking-wide">
-                        {NOTIFICATION_BELL_LABELS.NEW_ORDER_WAITING}
-                      </p>
-                      <p className="text-[13px] text-muted-foreground leading-relaxed line-clamp-3">
-                        {NOTIFICATION_BELL_LABELS.TIME_PREFIX}{' '}
-                        {/* eslint-disable-next-line no-restricted-syntax */}
-                        {new Date(order.created_at).toLocaleString(
-                          'vi-VN',
-                        )} -{' '}
-                        {order.customer?.name
-                          ? `${NOTIFICATION_BELL_LABELS.CUSTOMER_PREFIX} ${order.customer.name}`
-                          : NOTIFICATION_BELL_LABELS.UNKNOWN_CUSTOMER}{' '}
-                        {NOTIFICATION_BELL_LABELS.ORDER_DESC.replace(
-                          '{orderNumber}',
-                          order.order_number,
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <p
+                          className={`text-xs font-semibold leading-tight truncate ${
+                            isUnread
+                              ? 'text-foreground font-bold'
+                              : 'text-muted-foreground'
+                          }`}
+                        >
+                          {notif.title}
+                        </p>
+                        {isUnread && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
                         )}
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                        {notif.body}
                       </p>
+                      <span className="text-[11px] text-muted-foreground/70 mt-1 block">
+                        {/* eslint-disable-next-line no-restricted-syntax */}
+                        {new Date(notif.created_at).toLocaleTimeString(
+                          'vi-VN',
+                          {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            day: '2-digit',
+                            month: '2-digit',
+                          },
+                        )}
+                      </span>
                     </div>
                   </button>
-                ))}
-              </div>
+                );
+              })
             )}
           </div>
-
-          {pendingOrders.length > 0 && (
-            <div className="px-4 py-2 bg-surface text-right border-t border-border">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate('/orders');
-                }}
-                className="text-xs font-semibold text-text hover:text-foreground transition-colors inline-flex items-center gap-1"
-              >
-                {NOTIFICATION_BELL_LABELS.SEE_MORE}{' '}
-                <Icon name="ChevronRight" size={14} />
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react';
 
 import { initPlugins } from '@/app/plugins';
 import { initIntegration } from '@/integration';
+import { registerServiceWorker } from '@/shared/lib/serviceWorkerRegistration';
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN || '',
@@ -41,6 +42,7 @@ window.addEventListener('vite:preloadError', () => {
 
 initPlugins().then(() => {
   initIntegration();
+  void registerServiceWorker();
 
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>

@@ -23,6 +23,9 @@ import { GROUP_LABELS } from '@/shared/constants/navigation';
 import { GuideCommandPalette } from '@/features/guide-system/components/GuideCommandPalette';
 import { GreigeCalculatorModal } from '@/features/costing/components/GreigeCalculatorModal';
 import { APP_SHELL_LABELS, USER_ROLE_LABELS } from '@/shared/constants/layout';
+import { useNotifications } from '@/shared/hooks/useNotifications';
+import { useAppBadging } from '@/shared/hooks/useAppBadging';
+import { useNotificationDeepLink } from '@/shared/hooks/useNotificationDeepLink';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { NotificationBell } from './NotificationBell';
@@ -55,9 +58,17 @@ export function AppShell() {
   const [showChatInbox, setShowChatInbox] = useState(false);
   const [showCostingModal, setShowCostingModal] = useState(false);
   const totalUnread = useTotalUnread();
+  const { unreadCount: notifUnread } = useNotifications();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigationItems = useMemo(() => getNavigationItems(), []);
   const currentItem = useMemo(() => getCurrentItem(pathname), [pathname]);
+
+  // Đồng bộ số đếm huy hiệu icon PWA ngoài màn hình chính (Chat + Thông báo)
+  const totalDeviceBadgeCount = (totalUnread || 0) + (notifUnread || 0);
+  useAppBadging({ unreadCount: totalDeviceBadgeCount });
+
+  // Xử lý deep link tự động khi chạm vào thông báo từ Service Worker hoặc màn hình khóa
+  useNotificationDeepLink();
 
   // ── User Preferences từ DB (nguồn sự thật duy nhất) ─────────────────────────
   const { prefs, toggleTheme, setFluidLayout } = useUserPreferences(
