@@ -12,6 +12,7 @@ import {
   useRemoveReaction,
 } from '@/application/chat';
 import { Icon } from '@/shared/components/Icon';
+import { getChatThumbnailUrl } from '@/shared/lib/chat-storage';
 
 import { ChatImagePreview } from './ChatImagePreview';
 
@@ -298,7 +299,7 @@ export const ChatBubble = memo(function ChatBubble({
           {/* Image */}
           {message.message_type === 'image' && message.image_url ? (
             <img
-              src={message.image_url}
+              src={getChatThumbnailUrl(message.image_url, 400, 400)}
               alt={CHAT_LABELS.IMAGE}
               className="chat-bubble-image"
               loading="lazy"
