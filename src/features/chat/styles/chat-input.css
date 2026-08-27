@@ -1,0 +1,200 @@
+/* ============================================================
+   Chat Module — Input Area, Composer, and Mention Popup
+   ============================================================ */
+
+/* ── Chat Input Area ── */
+
+.chat-input-area {
+  padding: 10px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.chat-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.chat-composer-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.chat-composer-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted-foreground);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.chat-composer-btn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.chat-composer-input-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--chat-radius-control);
+  padding: 4px 12px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.chat-composer-input-box:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.chat-composer-input-box .chat-input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 6px 0;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  resize: none;
+  max-height: 100px;
+  line-height: 1.4;
+}
+
+.chat-composer-right {
+  display: flex;
+  align-items: center;
+}
+
+.chat-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-secondary);
+  color: var(--muted-foreground);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: not-allowed;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    transform 0.1s;
+}
+
+.chat-send-btn--active {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground, #fff);
+  cursor: pointer;
+}
+
+.chat-send-btn--active:hover {
+  transform: scale(1.05);
+}
+
+/* ── Mention Popup ── */
+
+.chat-mention-popup {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 16px;
+  right: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.chat-mention-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.chat-mention-item--selected,
+.chat-mention-item:hover {
+  background: var(--surface-hover);
+}
+
+.chat-mention-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.chat-mention-role {
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+}
+
+/* ── Upload Previews ── */
+
+.chat-upload-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.chat-upload-preview img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.chat-upload-preview-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-upload-preview-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-upload-preview-remove {
+  background: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.chat-upload-preview-remove:hover {
+  color: var(--danger);
+}

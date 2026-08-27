@@ -1,0 +1,12 @@
+/* ============================================================
+   Chat Module — Master CSS Entry Point (Modular Architecture)
+   ============================================================ */
+
+@import './tokens.css';
+@import './base.css';
+@import './chat-drawer.css';
+@import './chat-bubble.css';
+@import './chat-input.css';
+@import './chat-reactions.css';
+@import './chat-context.css';
+@import './chat-search.css';

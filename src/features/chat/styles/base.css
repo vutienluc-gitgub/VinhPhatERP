@@ -1,0 +1,66 @@
+/* ============================================================
+   Chat Module — Base & Keyframe Animations
+   ============================================================ */
+
+@keyframes chatFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes chatSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes chatPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes chatSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Custom Scrollbar for Chat Areas ── */
+
+.chat-custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.chat-custom-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.chat-custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-custom-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.chat-custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}

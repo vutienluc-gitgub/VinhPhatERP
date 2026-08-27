@@ -1,0 +1,270 @@
+/* ============================================================
+   Chat Module — Drawer, Header, and Status Banners
+   ============================================================ */
+
+/* ── Chat Drawer Overlay ── */
+
+.chat-drawer-overlay {
+  position: fixed;
+  inset: 0;
+
+  /* @architecture-exception: modal backdrop overlay */
+  background: rgb(0, 0, 0, 0.4);
+  z-index: 1010;
+  animation: chatFadeIn 0.2s ease-out;
+}
+
+/* ── Chat Drawer Shell ── */
+
+.chat-drawer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  max-width: 440px;
+  height: 85vh;
+  height: 85dvh;
+  max-height: 720px;
+  background: var(--surface-strong);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  z-index: 1011;
+  animation: chatSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (width >= 640px) {
+  .chat-drawer {
+    bottom: 16px;
+    right: 16px;
+    border-radius: var(--radius-lg);
+    height: 640px;
+  }
+}
+
+/* ── Chat Header ── */
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.chat-header-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-header-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-header-subtitle {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin: 2px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.chat-header-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted-foreground);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.chat-header-btn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+/* ── Presence Indicator ── */
+
+.chat-presence-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chat-presence-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chat-presence-dot--online {
+  background: var(--success);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.chat-presence-dot--offline {
+  background: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+/* ── Connection & Offline Banners ── */
+
+.chat-connection-banner {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  animation: chatFadeIn 0.2s ease-out;
+}
+
+.chat-connection-banner--warning {
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-bottom: 1px solid var(--warning);
+}
+
+.chat-connection-banner--info {
+  background: var(--info-soft);
+  color: var(--info);
+  border-bottom: 1px solid var(--info);
+}
+
+/* ── Typing Indicator (Fixed Contrast!) ── */
+
+.chat-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.chat-typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.chat-typing-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: inline-block;
+  animation: chatPulse 1.2s infinite ease-in-out;
+}
+
+.chat-typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.chat-typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ── Empty & Error States ── */
+
+.chat-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 32px 16px;
+  gap: 8px;
+  text-align: center;
+}
+
+.chat-empty-icon {
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+.chat-empty-text {
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.chat-empty-hint {
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.chat-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 32px 16px;
+  gap: 12px;
+  text-align: center;
+}
+
+.chat-error-msg {
+  color: var(--danger);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.chat-error-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.chat-error-retry-btn:hover {
+  background: var(--surface-hover);
+}
