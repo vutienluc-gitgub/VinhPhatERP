@@ -80,6 +80,7 @@
   display: flex;
   align-items: flex-end;
   gap: 8px;
+  position: relative;
 }
 
 .chat-composer-left {
@@ -276,7 +277,7 @@
 .chat-emoji-picker {
   position: absolute;
   bottom: calc(100% + 8px);
-  right: 16px;
+  right: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md, 12px);
