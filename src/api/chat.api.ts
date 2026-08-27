@@ -142,9 +142,12 @@ export async function sendChatMessage(params: {
   content?: string;
   messageType?: string;
   imageUrl?: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileType?: string;
   mentions?: ChatMention[];
 }): Promise<ChatMessage> {
-  const { data, error } = await supabase.rpc('rpc_send_chat_message', {
+  const { data, error } = await untypedDb.rpc('rpc_send_chat_message', {
     p_client_id: params.clientId,
     p_room_id: params.roomId,
     p_content: params.content || '',
@@ -153,6 +156,9 @@ export async function sendChatMessage(params: {
     p_mentions: params.mentions
       ? (params.mentions as unknown as Json)
       : undefined,
+    p_file_url: params.fileUrl ?? undefined,
+    p_file_name: params.fileName ?? undefined,
+    p_file_type: params.fileType ?? undefined,
   });
 
   if (error) {

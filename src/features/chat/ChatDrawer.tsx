@@ -5,6 +5,7 @@ import {
   useChatMessages,
   useChatRealtime,
   useChatOfflineSync,
+  useChatRoom,
   useGetOrCreateRoom,
   useSendMessage,
   useSearchMessages,
@@ -48,10 +49,14 @@ export const ChatDrawer = React.memo(function ChatDrawer({
   title,
   subtitle,
 }: ChatDrawerProps) {
+  const { data: cachedRoom } = useChatRoom(
+    entityType,
+    open ? entityId : undefined,
+  );
   const createRoomMutation = useGetOrCreateRoom();
 
-  // Get or create room on open, unless roomId is provided via props
-  const roomId = propRoomId ?? createRoomMutation.data;
+  // Get or create room on open, unless roomId is provided via props or memory cache
+  const roomId = propRoomId ?? cachedRoom?.id ?? createRoomMutation.data;
 
   const {
     data,
@@ -71,15 +76,13 @@ export const ChatDrawer = React.memo(function ChatDrawer({
 
   /**
    * Track which entity key has been triggered to prevent duplicate room
-   * creation. The ref is immune to stale closures — unlike reading
-   * `createRoomMutation.isPending` which was previously suppressed via
-   * eslint-disable and could fire twice during fast prop changes.
+   * creation. The ref is immune to stale closures.
    */
   const triggeredEntityKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Skip mutation if we already have the roomId via props
-    if (propRoomId) return;
+    // Skip mutation if we already have the roomId via props or cache
+    if (propRoomId || cachedRoom?.id) return;
 
     const entityKey = `${entityType}:${entityId}`;
     if (open && triggeredEntityKeyRef.current !== entityKey) {
@@ -89,7 +92,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
     if (!open) {
       triggeredEntityKeyRef.current = null;
     }
-  }, [open, entityType, entityId, propRoomId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, entityType, entityId, propRoomId, cachedRoom?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Register room globally so notifications are muted for this active room
   useEffect(() => {
