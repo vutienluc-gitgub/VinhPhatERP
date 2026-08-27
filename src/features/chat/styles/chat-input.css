@@ -5,7 +5,7 @@
 /* ── Chat Input Area ── */
 
 .chat-input-area {
-  padding: 8px 16px 10px;
+  padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
@@ -13,6 +13,7 @@
   flex-direction: column;
   gap: 6px;
   position: relative;
+  z-index: 10;
 }
 
 /* ── Quick Replies Pills ── */
