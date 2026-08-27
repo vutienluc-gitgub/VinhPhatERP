@@ -110,3 +110,4 @@ export {
   type ConcurrencyConflictModalProps,
   type ConcurrencyErrorType,
 } from './ConcurrencyConflictModal';
+export * from './notifications/NotificationSettingsCard';
