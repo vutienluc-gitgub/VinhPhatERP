@@ -95,6 +95,35 @@ export function ChatInputArea({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showEmojiPicker]);
 
+  // Auto-focus textarea on desktop devices on mount for instant T5 interactivity
+  useEffect(() => {
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (!isMobile && textareaRef.current && !disabled) {
+      textareaRef.current.focus();
+    }
+  }, [disabled]);
+
+  // Focus textarea when quoting/replying to a message
+  useEffect(() => {
+    if (replyingToMessage && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [replyingToMessage]);
+
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  }, []);
+
   const insertEmoji = useCallback(
     (emoji: string) => {
       const textarea = textareaRef.current;
@@ -350,6 +379,19 @@ export function ChatInputArea({
     [processFile],
   );
 
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragOver(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file) {
+        void processFile(file);
+      }
+    },
+    [processFile],
+  );
+
   const handleAttachClick = useCallback(() => {
     fileInputRef.current?.click();
   }, []);
@@ -357,7 +399,12 @@ export function ChatInputArea({
   const isInputDisabled = disabled || isUploading;
 
   return (
-    <div className="chat-input-area-wrapper">
+    <div
+      className={`chat-input-area-wrapper${isDragOver ? ' chat-input-area-wrapper--dragover' : ''}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       {/* Quoted Reply Banner */}
       {replyingToMessage && (
         <div className="chat-reply-banner">
