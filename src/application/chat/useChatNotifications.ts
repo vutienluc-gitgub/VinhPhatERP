@@ -2,10 +2,13 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { fetchUnreadCount, fetchChatRoomByEntity } from '@/api/chat.api';
+import { fetchUnreadCount, updateReadReceipt } from '@/api/chat.api';
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { playNotificationSound } from '@/shared/lib/chat-sound';
 import { supabase } from '@/services/supabase/client';
+import { useAuth } from '@/shared/hooks/useAuth';
+
+import { useChatRoom } from './useChat';
 
 // ── Unread Count Hook ──
 
@@ -23,14 +26,11 @@ export function useUnreadCount(roomId: string | undefined) {
 
 // ── Portal Unread Hook (by entity ID) ──
 
-export function usePortalChatUnread(customerId: string | undefined): number {
-  const { data: room } = useQuery({
-    queryKey: ['chat-room', 'customer', customerId],
-    enabled: !!customerId,
-    queryFn: () => fetchChatRoomByEntity('customer', customerId!),
-    staleTime: 60_000,
-  });
-
+export function usePortalChatUnread(
+  entityId: string | undefined,
+  entityType = 'customer',
+): number {
+  const { data: room } = useChatRoom(entityType, entityId);
   const { data: unread = 0 } = useUnreadCount(room?.id);
 
   return unread;
@@ -45,6 +45,11 @@ export function useMarkAsRead(roomId: string | undefined) {
     if (!roomId) return;
     // Optimistically set unread to 0
     queryClient.setQueryData(UNREAD_KEY(roomId), 0);
+    void queryClient.invalidateQueries({ queryKey: ['chat-total-unread'] });
+    // Update read receipt in DB
+    void updateReadReceipt(roomId).catch((err) => {
+      console.error('[Chat] Failed to update read receipt:', err);
+    });
   }, [roomId, queryClient]);
 }
 
@@ -75,6 +80,7 @@ export function useChatNotifications(
   const { openRoomIds, soundEnabled = true } = options;
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [lastMessage, setLastMessage] = useState<ChatMessage | null>(null);
 
   useEffect(() => {
@@ -98,40 +104,42 @@ export function useChatNotifications(
             return;
 
           // Skip own messages (sender_id matches current user)
-          const userId = supabase.auth.getUser().then((r) => r.data.user?.id);
-          void userId.then((uid) => {
-            if (msg.sender_id === uid) return;
+          const currentUserId = user?.id;
+          if (currentUserId && msg.sender_id === currentUserId) return;
 
-            setLastMessage(msg);
+          setLastMessage(msg);
 
-            // Play sound
-            if (soundEnabled) {
-              playNotificationSound();
-            }
+          // Play sound
+          if (soundEnabled) {
+            playNotificationSound();
+          }
 
-            // Show toast
-            toast(msg.content || CHAT_LABELS.NEW_IMAGE, {
-              // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
-              icon: '\u{1F4AC}',
-              duration: 4000,
-              position: 'top-right',
-              style: {
-                borderRadius: '10px',
-                background: 'var(--surface-strong, #1a1a2e)',
-                color: 'var(--text, #fff)',
-                fontSize: '0.8125rem',
-                maxWidth: '320px',
-              },
-            });
+          // Show toast
+          const toastContent = msg.content || CHAT_LABELS.NEW_IMAGE;
+          toast(`Tin nhắn mới: ${toastContent}`, {
+            duration: 4000,
+            position: 'top-right',
+            style: {
+              borderRadius: '10px',
+              background: 'var(--surface-strong, #1a1a2e)',
+              color: 'var(--text, #fff)',
+              fontSize: '0.8125rem',
+              maxWidth: '320px',
+            },
+          });
 
-            // Invalidate unread count for this room
-            void queryClient.invalidateQueries({
-              queryKey: UNREAD_KEY(msg.room_id),
-            });
-            // Invalidate total global unread count
-            void queryClient.invalidateQueries({
-              queryKey: ['chat-total-unread'],
-            });
+          // Invalidate unread count and rooms
+          void queryClient.invalidateQueries({
+            queryKey: UNREAD_KEY(msg.room_id),
+          });
+          void queryClient.invalidateQueries({
+            queryKey: ['chat-rooms'],
+          });
+          void queryClient.invalidateQueries({
+            queryKey: ['chat-total-unread'],
+          });
+          void queryClient.invalidateQueries({
+            queryKey: ['chat-messages', msg.room_id],
           });
         },
       )
@@ -145,7 +153,7 @@ export function useChatNotifications(
         channelRef.current = null;
       }
     };
-  }, [openRoomIds, soundEnabled, queryClient]);
+  }, [openRoomIds, soundEnabled, queryClient, user?.id]);
 
   return { lastMessage };
 }

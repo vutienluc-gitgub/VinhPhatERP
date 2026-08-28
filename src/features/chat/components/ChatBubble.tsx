@@ -14,6 +14,7 @@ import { ChatImagePreview } from './ChatImagePreview';
 import { ChatMentionContent } from './ChatMentionContent';
 import { ChatQuickActions } from './ChatQuickActions';
 import { ChatReactions } from './ChatReactions';
+import { ChatQuoteBox } from './ChatQuoteBox';
 
 function formatTime(iso: string): string {
   try {
@@ -102,6 +103,20 @@ export const ChatBubble = memo(function ChatBubble({
     [message.reactions, user?.id, handleAddReaction, handleRemoveReaction],
   );
 
+  const handleScrollToMessage = useCallback((targetMessageId?: string) => {
+    if (!targetMessageId) return;
+    const targetElement = document.querySelector(
+      `[data-message-id="${targetMessageId}"]`,
+    );
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      targetElement.classList.add('chat-message-highlight');
+      setTimeout(() => {
+        targetElement.classList.remove('chat-message-highlight');
+      }, 2000);
+    }
+  }, []);
+
   // System message (journey updates)
   if (message.message_type === 'system') {
     return (
@@ -129,6 +144,14 @@ export const ChatBubble = memo(function ChatBubble({
     : isError
       ? 'chat-bubble--error'
       : '';
+
+  const legacyQuoteMatch = message.content
+    ? message.content.match(/^↩️ "([^"]+)"\n([\s\S]*)$/)
+    : null;
+  const displayContent = legacyQuoteMatch
+    ? legacyQuoteMatch[2]
+    : message.content;
+  const legacyQuoteSnippet = legacyQuoteMatch ? legacyQuoteMatch[1] : null;
 
   return (
     <>
@@ -187,6 +210,15 @@ export const ChatBubble = memo(function ChatBubble({
             </div>
           )}
 
+          {/* Quoted Reply Box */}
+          {(message.reply_to_message || legacyQuoteSnippet) && (
+            <ChatQuoteBox
+              replyToMessage={message.reply_to_message}
+              fallbackSnippet={legacyQuoteSnippet}
+              onClick={handleScrollToMessage}
+            />
+          )}
+
           {/* Image */}
           {message.message_type === 'image' && message.image_url ? (
             <img
@@ -224,9 +256,9 @@ export const ChatBubble = memo(function ChatBubble({
           ) : null}
 
           {/* Text content with Mention / Quote parsing */}
-          {message.content ? (
+          {displayContent ? (
             <ChatMentionContent
-              content={message.content}
+              content={displayContent}
               mentions={message.mentions}
             />
           ) : null}

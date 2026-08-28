@@ -18,13 +18,30 @@
   /* Semantic Theme Tokens Bridge */
   --color-primary: var(--primary);
 
-  /* @architecture-exception: primary foreground color token */
-  --color-primary-foreground: #ffffff;
-  --chat-bg-mine: var(--primary);
+  /* @architecture-exception: soft cyan outgoing bubble token */
+  --chat-bg-mine: #d9f1ff;
+  --chat-text-mine: #0f172a;
 
-  /* @architecture-exception: white text on primary bubble */
-  --chat-text-mine: #ffffff;
-  --chat-bg-theirs: var(--surface-secondary);
+  /* @architecture-exception: pure white incoming bubble token */
+  --chat-bg-theirs: #ffffff;
   --chat-text-theirs: var(--foreground);
   --chat-typing-dot: var(--primary);
+
+  /* Quote / Reply Tokens */
+  /* @architecture-exception: quote border brand color */
+  --chat-quote-border: var(--primary, #0f6fff);
+  /* @architecture-exception: quote translucent background */
+  --chat-quote-bg: rgba(0, 0, 0, 0.04);
+  /* @architecture-exception: quote hover translucent background */
+  --chat-quote-bg-hover: rgba(0, 0, 0, 0.08);
+  /* @architecture-exception: quote mine translucent background */
+  --chat-quote-bg-mine: rgba(15, 111, 255, 0.08);
+  /* @architecture-exception: quote mine hover translucent background */
+  --chat-quote-bg-mine-hover: rgba(15, 111, 255, 0.14);
+
+  /* Date Pill Tokens */
+  /* @architecture-exception: date pill translucent background */
+  --chat-date-pill-bg: rgba(0, 0, 0, 0.22);
+  /* @architecture-exception: date pill text color */
+  --chat-date-pill-text: #ffffff;
 }

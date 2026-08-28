@@ -158,23 +158,33 @@ export async function sendChatMessage(params: {
 
 export async function updateReadReceipt(
   roomId: string,
-  lastMessageId: string,
+  lastMessageId?: string,
 ): Promise<void> {
   // Get current user to filter correctly
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) return;
+
+  const updatePayload: { last_read_at: string; last_read_message_id?: string } =
+    {
+      last_read_at: new Date().toISOString(),
+    };
+  if (lastMessageId) {
+    updatePayload.last_read_message_id = lastMessageId;
+  }
+
   const { error } = await supabase
     .from('chat_room_participants')
-    .update({
-      last_read_message_id: lastMessageId,
-      last_read_at: new Date().toISOString(),
-    })
+    .update(updatePayload)
     .eq('room_id', roomId)
-    .eq('user_id', user?.id ?? '');
+    .eq('user_id', user.id);
 
-  if (error) throw error;
+  if (error) {
+    console.error('[Chat] updateReadReceipt error:', error);
+    throw error;
+  }
 }
 
 export type MyChatRoomSummary = {
@@ -371,23 +381,34 @@ export async function softDeleteMessage(messageId: string): Promise<void> {
 // ── Fetch Unread Count for a Room ──
 
 export async function fetchUnreadCount(roomId: string): Promise<number> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return 0;
+
   // Get the user's last_read_at for this room
   const { data: participant, error: pErr } = await supabase
     .from('chat_room_participants')
     .select('last_read_at')
     .eq('room_id', roomId)
+    .eq('user_id', user.id)
     .maybeSingle();
 
-  if (pErr) throw pErr;
+  if (pErr) {
+    console.error('[Chat] fetchUnreadCount participant query error:', pErr);
+    throw pErr;
+  }
 
   const lastReadAt = (participant as { last_read_at: string } | null)
     ?.last_read_at;
 
-  // Count messages newer than last_read_at
+  // Count messages newer than last_read_at (exclude own messages)
   let query = supabase
     .from('chat_messages')
     .select('id', { count: 'exact', head: true })
     .eq('room_id', roomId)
+    .neq('sender_id', user.id)
     .is('deleted_at', null)
     .neq('message_type', 'system');
 
@@ -396,7 +417,10 @@ export async function fetchUnreadCount(roomId: string): Promise<number> {
   }
 
   const { count, error: cErr } = await query;
-  if (cErr) throw cErr;
+  if (cErr) {
+    console.error('[Chat] fetchUnreadCount count query error:', cErr);
+    throw cErr;
+  }
 
   return count ?? 0;
 }

@@ -147,13 +147,14 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     if (!isFetchingNextPage && hasNextPage) {
       const el = scrollRef.current;
       const prevScrollHeight = el?.scrollHeight ?? 0;
+      const prevScrollTop = el?.scrollTop ?? 0;
 
       onLoadMore();
 
       requestAnimationFrame(() => {
         if (el) {
           const newScrollHeight = el.scrollHeight;
-          el.scrollTop = newScrollHeight - prevScrollHeight;
+          el.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop;
         }
       });
     }
