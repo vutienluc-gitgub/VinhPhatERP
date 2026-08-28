@@ -6,6 +6,8 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { ChatDrawer } from '@/features/chat/ChatDrawer';
 import { Icon } from '@/shared/components';
 
+import { PushNotificationBanner } from './PushNotificationBanner';
+
 // We reuse the CSS from customer-portal for now.
 // Ideally it gets moved to portal-shared/styles/portal.css later.
 import '@/features/customer-portal/portal.css';
@@ -107,7 +109,12 @@ export function PortalLayout({
       </nav>
 
       {/* Content */}
-      <main className="portal-content">{children}</main>
+      <main className="portal-content">
+        <div className="mb-4">
+          <PushNotificationBanner />
+        </div>
+        {children}
+      </main>
 
       {/* Floating chat button */}
       {entityId && (
