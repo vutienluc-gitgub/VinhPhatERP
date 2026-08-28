@@ -19,9 +19,9 @@ function formatDateLabel(isoDate: string): string {
   if (isSameDay(date, yesterday)) return 'Hôm qua';
 
   return new Intl.DateTimeFormat('vi-VN', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   }).format(date);
 }
 

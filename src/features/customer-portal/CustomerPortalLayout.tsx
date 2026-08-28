@@ -25,6 +25,7 @@ function PortalLayoutInner() {
 
   const unreadChatCount = usePortalChatUnread(
     profile?.customer_id ?? undefined,
+    'customer',
   );
 
   // Enable global chat notifications (with sound)

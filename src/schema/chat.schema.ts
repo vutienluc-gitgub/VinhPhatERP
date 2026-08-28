@@ -82,12 +82,21 @@ export interface ChatMessage {
   tenant_id: string;
   room_id: string;
   sender_id: string | null;
+  sender_name?: string | null;
+  sender_role?: string | null;
   message_type: ChatMessageType;
   content: string;
   image_url: string | null;
   file_url: string | null;
   file_name: string | null;
   file_type: string | null;
+  reply_to_id?: string | null;
+  reply_to_message?: {
+    id: string;
+    sender_name: string;
+    content: string;
+    message_type: string;
+  } | null;
   status: ChatMessageStatus;
   created_at: string;
   deleted_at: string | null;

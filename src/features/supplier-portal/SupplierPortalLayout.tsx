@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { PortalLayout } from '@/features/portal-shared/components/PortalLayout';
-import { usePortalChatUnread } from '@/application/chat';
+import { usePortalChatUnread, useChatNotifications } from '@/application/chat';
 import { NotificationCenter } from '@/features/supplier-portal/notifications/NotificationCenter';
 import { InteractionProvider } from '@/shared/interaction';
 import { fetchSupplierById } from '@/api/suppliers.api';
@@ -15,7 +15,10 @@ export function SupplierPortalLayout() {
   const location = useLocation();
 
   const supplierId = profile?.supplier_id ?? undefined;
-  const unreadChatCount = usePortalChatUnread(supplierId);
+  const unreadChatCount = usePortalChatUnread(supplierId, 'supplier');
+
+  // Global chat notifications — sound + toast for incoming chat messages
+  useChatNotifications({ soundEnabled: true });
 
   const { data: supplier, isLoading } = useQuery({
     queryKey: ['supplier', supplierId],

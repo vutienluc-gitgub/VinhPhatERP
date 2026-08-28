@@ -39,24 +39,18 @@
   position: relative;
 }
 
-.chat-date-divider::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--border);
-}
-
 .chat-date-label {
-  background: var(--surface-strong);
-  color: var(--muted-foreground);
-  font-size: 0.75rem;
+  background: var(--chat-date-pill-bg, rgba(0, 0, 0, 0.25));
+  color: var(--chat-date-pill-text, #ffffff);
+  font-size: 0.6875rem;
   font-weight: 500;
-  padding: 4px 12px;
-  border-radius: var(--radius-sm);
+  padding: 3px 12px;
+  border-radius: 9999px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   position: relative;
   z-index: 1;
+  letter-spacing: 0.01em;
 }
 
 /* ── Load Older Messages Button ── */
@@ -315,43 +309,49 @@
   margin-top: 2px;
 }
 
-/* ── Messenger-Style Quoted Reply Box ── */
+/* ── Zalo-Style Quoted Reply Box ── */
 
-.chat-bubble-reply-container {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.chat-bubble-reply-header {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  opacity: 0.85;
-  margin-bottom: 1px;
-}
-
-.chat-bubble-quote-snippet {
+.chat-quote-box {
   padding: 6px 10px;
-  background: var(--surface-hover);
-  border-left: 3px solid currentcolor;
+  background: var(--chat-quote-bg, rgba(0, 0, 0, 0.04));
+  border-left: 3px solid var(--chat-quote-border, var(--primary));
   border-radius: 4px 8px 8px 4px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  user-select: none;
+}
+
+.chat-bubble--mine .chat-quote-box {
+  background: var(--chat-quote-bg-mine);
+  border-left-color: var(--primary);
+}
+
+.chat-quote-box:hover {
+  background: var(--chat-quote-bg-hover);
+}
+
+.chat-bubble--mine .chat-quote-box:hover {
+  background: var(--chat-quote-bg-mine-hover);
+}
+
+.chat-quote-author {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 2px;
+  display: block;
+}
+
+.chat-quote-text {
   font-size: 0.8125rem;
-  font-style: italic;
-  opacity: 0.9;
-  max-height: 48px;
+  color: var(--muted-foreground);
+  line-height: 1.35;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chat-bubble--mine .chat-bubble-quote-snippet {
-  /* @architecture-exception: Quote bubble translucent white overlay on brand background */
-  background: rgba(255, 255, 255, 0.2);
-  /* @architecture-exception: Translucent white left border on quote bubble */
-  border-left-color: rgba(255, 255, 255, 0.85);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .chat-bubble-text-body {

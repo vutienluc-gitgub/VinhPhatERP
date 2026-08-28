@@ -10,6 +10,7 @@ import {
   useSendMessage,
   useSearchMessages,
   useTypingIndicator,
+  useMarkAsRead,
 } from '@/application/chat';
 import {
   registerOpenRoom,
@@ -93,6 +94,14 @@ export const ChatDrawer = React.memo(function ChatDrawer({
       triggeredEntityKeyRef.current = null;
     }
   }, [open, entityType, entityId, propRoomId, cachedRoom?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Mark room as read when drawer is open
+  const markAsRead = useMarkAsRead(roomId);
+  useEffect(() => {
+    if (open && roomId) {
+      markAsRead();
+    }
+  }, [open, roomId, markAsRead, data]);
 
   // Register room globally so notifications are muted for this active room
   useEffect(() => {

@@ -260,6 +260,14 @@ export function ChatInputArea({
         }
       }
 
+      if (e.key === 'Escape') {
+        if (replyingToMessage) {
+          e.preventDefault();
+          onCancelReply?.();
+          return;
+        }
+      }
+
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         handleSend();
@@ -271,6 +279,8 @@ export function ChatInputArea({
       selectedMentionIndex,
       handleSelectMention,
       handleSend,
+      replyingToMessage,
+      onCancelReply,
     ],
   );
 
@@ -520,15 +530,32 @@ export function ChatInputArea({
 
         {/* Toolbar Right */}
         <div className="chat-composer-right">
-          <button
-            type="button"
-            className={`chat-send-btn ${text.trim().length > 0 ? 'chat-send-btn--active' : ''}`}
-            onClick={handleSend}
-            disabled={isInputDisabled || text.trim().length === 0}
-            aria-label={CHAT_LABELS.SEND}
-          >
-            <Icon name="Send" size={16} />
-          </button>
+          {text.trim().length > 0 ? (
+            <button
+              type="button"
+              className="chat-send-btn chat-send-btn--active"
+              onClick={handleSend}
+              disabled={isInputDisabled}
+              aria-label={CHAT_LABELS.SEND}
+              title={CHAT_LABELS.SEND}
+            >
+              <Icon name="Send" size={16} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="chat-composer-btn"
+              disabled={isInputDisabled}
+              aria-label="Thu âm giọng nói"
+              title="Tin nhắn thoại"
+              onClick={() => {
+                // Focus input if clicked
+                textareaRef.current?.focus();
+              }}
+            >
+              <Icon name="Mic" size={18} />
+            </button>
+          )}
         </div>
       </div>
     </div>
