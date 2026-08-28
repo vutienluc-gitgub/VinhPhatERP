@@ -22,6 +22,7 @@ import { ChatQuickReplies } from './ChatQuickReplies';
 import { ChatEmojiPicker } from './ChatEmojiPicker';
 import { ChatUploadPreview } from './ChatUploadPreview';
 import { ChatMentionsPopover } from './ChatMentionsPopover';
+import { ChatUtilityMenu, type ChatUtilityType } from './ChatUtilityMenu';
 
 export interface ChatSendMeta {
   mentions?: ChatMention[];
@@ -70,12 +71,15 @@ export function ChatInputArea({
     type: string;
   } | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showUtilityMenu, setShowUtilityMenu] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const emojiToggleBtnRef = useRef<HTMLButtonElement>(null);
+  const utilityMenuRef = useRef<HTMLDivElement>(null);
+  const utilityToggleBtnRef = useRef<HTMLButtonElement>(null);
 
   // Debounce mention query to avoid flooding database with queries
   useEffect(() => {
@@ -104,13 +108,14 @@ export function ChatInputArea({
     };
   }, [previewUrl]);
 
-  // Close emoji picker when clicking outside
+  // Close emoji picker and utility menu when clicking outside
   useEffect(() => {
-    if (!showEmojiPicker) return undefined;
+    if (!showEmojiPicker && !showUtilityMenu) return undefined;
 
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node;
       if (
+        showEmojiPicker &&
         emojiPickerRef.current &&
         !emojiPickerRef.current.contains(target) &&
         emojiToggleBtnRef.current &&
@@ -118,11 +123,41 @@ export function ChatInputArea({
       ) {
         setShowEmojiPicker(false);
       }
+
+      if (
+        showUtilityMenu &&
+        utilityMenuRef.current &&
+        !utilityMenuRef.current.contains(target) &&
+        utilityToggleBtnRef.current &&
+        !utilityToggleBtnRef.current.contains(target)
+      ) {
+        setShowUtilityMenu(false);
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showEmojiPicker]);
+  }, [showEmojiPicker, showUtilityMenu]);
+
+  const handleSelectUtility = useCallback((type: ChatUtilityType) => {
+    let prefix = '#';
+    if (type === 'shipment') prefix = '#GH-';
+    if (type === 'quotation') prefix = '#BG-';
+    if (type === 'order') prefix = '#DH-';
+
+    setText((prev) => {
+      const space = prev.length > 0 && !prev.endsWith(' ') ? ' ' : '';
+      return `${prev}${space}${prefix}`;
+    });
+
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        const length = textareaRef.current.value.length;
+        textareaRef.current.setSelectionRange(length, length);
+      }
+    }, 50);
+  }, []);
 
   // Auto-focus textarea on desktop devices on mount for instant T5 interactivity
   useEffect(() => {
@@ -503,34 +538,31 @@ export function ChatInputArea({
           <ChatEmojiPicker ref={emojiPickerRef} onSelectEmoji={insertEmoji} />
         )}
 
-        {/* Toolbar Left */}
+        {/* ERP Utility Menu Popover */}
+        {showUtilityMenu && (
+          <ChatUtilityMenu
+            ref={utilityMenuRef}
+            onSelectUtility={handleSelectUtility}
+            onClose={() => setShowUtilityMenu(false)}
+          />
+        )}
+
+        {/* Toolbar Left: Emoji */}
         <div className="chat-composer-left">
-          {onSendImage && roomId && (
-            <>
-              <button
-                type="button"
-                className="chat-attach-btn"
-                onClick={handleAttachClick}
-                disabled={isInputDisabled}
-                aria-label={CHAT_LABELS.ATTACH_IMAGE}
-                title={CHAT_LABELS.UPLOAD_ATTACHMENT_TOOLTIP}
-              >
-                <Icon name="Paperclip" size={18} />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                onChange={(e) => void handleFileSelect(e)}
-                className="chat-file-input-hidden"
-                aria-hidden="true"
-                tabIndex={-1}
-              />
-            </>
-          )}
+          <button
+            ref={emojiToggleBtnRef}
+            type="button"
+            className="chat-attach-btn"
+            onClick={() => setShowEmojiPicker((v) => !v)}
+            disabled={isInputDisabled}
+            aria-label={CHAT_LABELS.CHOOSE_EMOJI}
+            title={CHAT_LABELS.EMOJI_TOOLTIP}
+          >
+            <Icon name="Smile" size={20} />
+          </button>
         </div>
 
-        {/* Composer Central Box (Textarea + Inner Toolbar) */}
+        {/* Composer Central Box (Auto-grow Textarea) */}
         <div className="chat-composer-input-box">
           <textarea
             ref={textareaRef}
@@ -546,23 +578,49 @@ export function ChatInputArea({
             rows={1}
             aria-label={CHAT_LABELS.TYPE_MESSAGE}
           />
-
-          <button
-            ref={emojiToggleBtnRef}
-            type="button"
-            className="chat-emoji-toggle-btn"
-            onClick={() => setShowEmojiPicker((v) => !v)}
-            disabled={isInputDisabled}
-            aria-label={CHAT_LABELS.CHOOSE_EMOJI}
-            title={CHAT_LABELS.EMOJI_TOOLTIP}
-          >
-            <Icon name="Smile" size={18} />
-          </button>
         </div>
 
-        {/* Toolbar Right */}
-        <div className="chat-composer-right">
-          {text.trim().length > 0 ? (
+        {/* Toolbar Right: Quick Image, ERP Utility Menu, Send */}
+        <div className="chat-composer-right flex items-center gap-1">
+          {onSendImage && roomId && (
+            <>
+              <button
+                type="button"
+                className="chat-composer-btn"
+                onClick={handleAttachClick}
+                disabled={isInputDisabled}
+                aria-label={CHAT_LABELS.ATTACH_IMAGE_QUICK}
+                title={CHAT_LABELS.UPLOAD_ATTACHMENT_TOOLTIP}
+              >
+                <Icon name="Image" size={19} />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={(e) => void handleFileSelect(e)}
+                className="chat-file-input-hidden"
+                aria-hidden="true"
+                tabIndex={-1}
+              />
+            </>
+          )}
+
+          {/* ERP Utility Menu (•••) */}
+          <button
+            ref={utilityToggleBtnRef}
+            type="button"
+            className={`chat-composer-btn${showUtilityMenu ? ' chat-composer-btn--active' : ''}`}
+            onClick={() => setShowUtilityMenu((v) => !v)}
+            disabled={isInputDisabled}
+            aria-label={CHAT_LABELS.UTILITIES_MENU}
+            title={CHAT_LABELS.UTILITIES_MENU}
+          >
+            <Icon name="MoreHorizontal" size={19} />
+          </button>
+
+          {/* Send Button */}
+          {text.trim().length > 0 && (
             <button
               type="button"
               className="chat-send-btn chat-send-btn--active"
@@ -572,20 +630,6 @@ export function ChatInputArea({
               title={CHAT_LABELS.SEND}
             >
               <Icon name="Send" size={16} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="chat-composer-btn"
-              disabled={isInputDisabled}
-              aria-label="Thu âm giọng nói"
-              title="Tin nhắn thoại"
-              onClick={() => {
-                // Focus input if clicked
-                textareaRef.current?.focus();
-              }}
-            >
-              <Icon name="Mic" size={18} />
             </button>
           )}
         </div>

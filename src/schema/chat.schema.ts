@@ -219,6 +219,22 @@ export const CHAT_LABELS = {
   LOAD_OLDER_MESSAGES: 'Tải thêm tin nhắn cũ',
   SCROLL_TO_BOTTOM: 'Cuộn xuống dưới cùng',
   NEW_MESSAGES_COUNT_SUFFIX: 'tin nhắn mới',
+  ACTIVE_NOW: 'Đang hoạt động',
+  ACCESSED_MINS_AGO: 'Truy cập {mins} phút trước',
+  ACCESSED_HOURS_AGO: 'Truy cập {hours} giờ trước',
+  ACCESSED_JUST_NOW: 'Vừa mới truy cập',
+  ACCESSED_LONG_AGO: 'Ngoại tuyến',
+  TYPING_STATUS: 'Đang nhập tin nhắn...',
+  ATTACH_IMAGE_QUICK: 'Gửi hình ảnh',
+  UTILITIES_MENU: 'Tiện ích mở rộng',
+  UTILITY_ORDER_TITLE: 'Thông tin Đơn hàng',
+  UTILITY_ORDER_DESC: 'Chia sẻ tiến độ đơn hàng dệt/nhuộm',
+  UTILITY_SHIPMENT_TITLE: 'Chuyến giao hàng',
+  UTILITY_SHIPMENT_DESC: 'Chia sẻ phiếu giao và vị trí',
+  UTILITY_QUOTATION_TITLE: 'Báo giá sản phẩm',
+  UTILITY_QUOTATION_DESC: 'Gửi bảng giá sợi và vải mộc',
+  MORE_OPTIONS: 'Tùy chọn khác',
+  VIEW_PARTNER_INFO: 'Xem thông tin đối tác',
 } as const;
 
 export const AVAILABLE_ROLES = [

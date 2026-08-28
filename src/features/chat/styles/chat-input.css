@@ -116,9 +116,10 @@
 }
 
 .chat-attach-btn:hover,
-.chat-composer-btn:hover {
+.chat-composer-btn:hover,
+.chat-composer-btn--active {
   background: var(--surface-hover);
-  color: var(--foreground);
+  color: var(--primary);
 }
 
 .chat-file-input-hidden {
