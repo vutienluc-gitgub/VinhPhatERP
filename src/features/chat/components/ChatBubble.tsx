@@ -152,6 +152,12 @@ export const ChatBubble = memo(function ChatBubble({
     ? legacyQuoteMatch[2]
     : message.content;
   const legacyQuoteSnippet = legacyQuoteMatch ? legacyQuoteMatch[1] : null;
+  const isImageOnly =
+    message.message_type === 'image' &&
+    Boolean(message.image_url) &&
+    !displayContent &&
+    !message.reply_to_message &&
+    !legacyQuoteSnippet;
 
   return (
     <>
@@ -172,7 +178,7 @@ export const ChatBubble = memo(function ChatBubble({
         )}
 
         <div
-          className={`chat-bubble ${isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'} ${statusClass}`}
+          className={`chat-bubble ${isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'} ${statusClass} ${isImageOnly ? 'chat-bubble--image-only' : ''}`}
         >
           {/* Pin indicator */}
           {message.is_pinned ? (
@@ -221,16 +227,15 @@ export const ChatBubble = memo(function ChatBubble({
 
           {/* Image */}
           {message.message_type === 'image' && message.image_url ? (
-            <img
-              src={getChatThumbnailUrl(message.image_url, 400, 400)}
-              alt={CHAT_LABELS.IMAGE}
-              className="chat-bubble-image"
-              loading="lazy"
-              width={280}
-              height={280}
-              style={{ aspectRatio: '1', objectFit: 'cover' }}
-              onClick={() => setPreviewImage(message.image_url)}
-            />
+            <div className="chat-bubble-image-container">
+              <img
+                src={getChatThumbnailUrl(message.image_url, 400, 400)}
+                alt={CHAT_LABELS.IMAGE}
+                className="chat-bubble-image"
+                loading="lazy"
+                onClick={() => setPreviewImage(message.image_url)}
+              />
+            </div>
           ) : null}
 
           {/* File */}

@@ -197,6 +197,15 @@
   opacity: 0.7;
 }
 
+.chat-bubble--image-only {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+  max-width: min(260px, 72vw);
+}
+
 .chat-bubble--error {
   border: 1px solid var(--danger);
   background: var(--danger-soft);
@@ -235,18 +244,32 @@
 
 /* ── Attachments: Images & Files ── */
 
+.chat-bubble-image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md, 10px);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  max-width: min(260px, 72vw);
+  background: var(--surface-secondary);
+}
+
 .chat-bubble-image {
-  max-width: 240px;
-  max-height: 240px;
-  border-radius: var(--radius-sm);
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 280px;
+  border-radius: var(--radius-md, 10px);
   cursor: pointer;
   display: block;
   object-fit: cover;
-  transition: opacity 0.15s;
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.15s ease;
 }
 
 .chat-bubble-image:hover {
-  opacity: 0.9;
+  opacity: 0.96;
+  transform: scale(1.015);
 }
 
 .chat-bubble-file {
