@@ -14,29 +14,26 @@ const corsHeaders = {
 
 interface PushNotificationPayload {
   notification_id?: string;
-  user_id: string;
+  user_id?: string;
   domain?: string;
   type?: string;
-  title: string;
-  body: string;
+  title?: string;
+  body?: string;
   entity_type?: string;
   entity_id?: string;
   action?: string;
   priority?: string;
   metadata?: Record<string, unknown>;
+  message_id?: string;
 }
 
 // Configure VAPID details from environment
-const vapidPublicKey =
-  Deno.env.get('VAPID_PUBLIC_KEY') ||
-  'BFjNvul1vaXsyiw-wJBxXh11Q-zfKO5BIpZqNKmHrQIRMtmRfq71y_nJ7_chvZhxmrkEK3mFkxuiYbmP9Fv9hbU';
-const vapidPrivateKey =
-  Deno.env.get('VAPID_PRIVATE_KEY') ||
-  'Tc3cDQM-dHqPmfoX-YYxb3yWhywpBBsjXNnPCyWLRUI';
+const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY') || '';
+const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY') || '';
 const vapidSubject =
   Deno.env.get('VAPID_SUBJECT') || 'mailto:admin@detmayvinhphat.com';
 
-if (vapidPrivateKey) {
+if (vapidPrivateKey && vapidPublicKey) {
   webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 }
 
@@ -44,6 +41,7 @@ if (vapidPrivateKey) {
  * Sanitizes push message body to guarantee enterprise privacy on lock screens
  */
 function sanitizePushBody(body: string): string {
+  if (!body) return '';
   // Mask explicit monetary amount patterns (e.g. 1.250.000.000đ or 50,000,000 VND)
   return body.replace(
     /(\d{1,3}[.,]\d{3}[.,]\d{3}[.,]\d{3}|\d{1,3}[.,]\d{3}[.,]\d{3}|\d{1,3}[.,]\d{3})\s*(đ|VND|vnđ|USD|\$)/gi,
@@ -64,9 +62,173 @@ serve(async (req: Request) => {
 
     const payload: PushNotificationPayload = await req.json();
 
+    // ── CHAT MESSAGE FAN-OUT ──
+    if (payload.type === 'CHAT_MESSAGE' && payload.message_id) {
+      // 1. Fetch message with retry logic to avoid race condition
+      let message: {
+        id: string;
+        content: string | null;
+        message_type: string;
+        sender_id: string | null;
+        room_id: string;
+        sender?: { full_name?: string } | { full_name?: string }[] | null;
+      } | null = null;
+      let retryCount = 0;
+
+      while (retryCount < 2) {
+        const { data } = await supabase
+          .from('chat_messages')
+          .select(
+            'id, content, message_type, sender_id, room_id, sender:sender_id(full_name)',
+          )
+          .eq('id', payload.message_id)
+          .single();
+
+        if (data) {
+          message = data as typeof message;
+          break;
+        }
+
+        // Wait 300ms before retrying
+        await new Promise((r) => setTimeout(r, 300));
+        retryCount++;
+      }
+
+      if (!message) return new Response('OK', { status: 200 }); // Fail silently
+
+      // 2. Fetch all participants of this room EXCEPT sender
+      const { data: participants } = await supabase
+        .from('chat_room_participants')
+        .select('user_id, unread_count')
+        .eq('room_id', message.room_id)
+        .neq('user_id', message.sender_id);
+
+      if (!participants || participants.length === 0) {
+        return new Response('OK', { status: 200 });
+      }
+
+      // 3. Fetch push subscriptions for all participants
+      const userIds = participants.map((p) => p.user_id);
+      const { data: subscriptions } = await supabase
+        .from('push_subscriptions')
+        .select('*')
+        .in('user_id', userIds)
+        .is('revoked_at', null);
+
+      if (!subscriptions || subscriptions.length === 0) {
+        return new Response('OK', { status: 200 });
+      }
+
+      // 4. Format push body (No emoji in source code)
+      let bodyText = '';
+      if (message.message_type === 'image') {
+        bodyText = '[Hinh anh] Da gui mot hinh anh';
+      } else if (message.message_type === 'file') {
+        bodyText = '[Tep dinh kem] Da gui mot tep dinh kem';
+      } else {
+        bodyText = (message.content || '').substring(0, 100);
+      }
+
+      // Strip mentions from push notification
+      bodyText = bodyText.replace(/[@#]\S+/g, '').trim();
+      bodyText = sanitizePushBody(bodyText);
+
+      // We need to look up unread count per user
+      const unreadMap = new Map<string, number>();
+      participants.forEach((p) => {
+        unreadMap.set(p.user_id, p.unread_count || 1);
+      });
+
+      let senderName = 'Nguoi dung';
+      if (message.sender) {
+        if (Array.isArray(message.sender) && message.sender.length > 0) {
+          senderName = message.sender[0]?.full_name || senderName;
+        } else if (
+          typeof message.sender === 'object' &&
+          'full_name' in message.sender
+        ) {
+          senderName =
+            (message.sender as { full_name?: string }).full_name || senderName;
+        }
+      }
+
+      // 5. Send push to all devices
+      const results = [];
+      for (const sub of subscriptions) {
+        const pushMessage = JSON.stringify({
+          title: `${senderName} (Chat)`,
+          body: bodyText,
+          action: 'chat',
+          roomId: message.room_id,
+          senderName: senderName,
+          unreadCount: unreadMap.get(sub.user_id) || 1,
+        });
+
+        const pushSubscription = {
+          endpoint: sub.endpoint,
+          keys: { p256dh: sub.p256dh, auth: sub.auth },
+        };
+
+        try {
+          if (!vapidPrivateKey) {
+            results.push({
+              subscription_id: sub.id,
+              status: 'sent_mock',
+              response_code: 200,
+            });
+            continue;
+          }
+
+          const response = await webpush.sendNotification(
+            pushSubscription,
+            pushMessage,
+            { TTL: 86400, urgency: 'high' },
+          );
+          results.push({
+            subscription_id: sub.id,
+            status: 'delivered',
+            response_code: response.statusCode,
+          });
+        } catch (err: unknown) {
+          const error = err as { statusCode?: number; message?: string };
+          const statusCode = error.statusCode || 500;
+          results.push({
+            subscription_id: sub.id,
+            status: 'failed',
+            response_code: statusCode,
+          });
+
+          if (statusCode === 410 || statusCode === 404) {
+            await supabase
+              .from('push_subscriptions')
+              .update({
+                revoked_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', sub.id);
+          }
+        }
+      }
+
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          devices_targeted: subscriptions.length,
+          results,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        },
+      );
+    }
+
+    // ── NORMAL NOTIFICATION ──
     if (!payload.user_id || !payload.title) {
       return new Response(
-        JSON.stringify({ error: 'user_id and title are required' }),
+        JSON.stringify({
+          error: 'user_id and title are required for standard notifications',
+        }),
         {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -104,9 +266,7 @@ serve(async (req: Request) => {
       .eq('user_id', payload.user_id)
       .is('revoked_at', null);
 
-    if (subsError) {
-      throw subsError;
-    }
+    if (subsError) throw subsError;
 
     if (!subscriptions || subscriptions.length === 0) {
       return new Response(
@@ -146,15 +306,11 @@ serve(async (req: Request) => {
     for (const sub of subscriptions) {
       const pushSubscription = {
         endpoint: sub.endpoint,
-        keys: {
-          p256dh: sub.p256dh,
-          auth: sub.auth,
-        },
+        keys: { p256dh: sub.p256dh, auth: sub.auth },
       };
 
       try {
         if (!vapidPrivateKey) {
-          // In dev/mock mode without private key
           results.push({
             subscription_id: sub.id,
             status: 'sent_mock',
@@ -167,7 +323,7 @@ serve(async (req: Request) => {
           pushSubscription,
           pushMessage,
           {
-            TTL: 86400, // 24 hours
+            TTL: 86400,
             urgency: payload.priority === 'urgent' ? 'high' : 'normal',
           },
         );

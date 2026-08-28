@@ -21,30 +21,70 @@ self.addEventListener('push', (event) => {
     };
   }
 
-  const title = payload.title || 'Vinh Phat ERP';
-  const options = {
-    body: payload.body || 'Bạn có thông báo công việc mới.',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    tag: payload.notification_id || `vp-${Date.now()}`,
-    data: {
-      notification_id: payload.notification_id,
-      entity_type: payload.entity_type,
-      entity_id: payload.entity_id,
-      action: payload.action,
-    },
-    vibrate: [100, 50, 100],
-  };
+  event.waitUntil((async () => {
+    // ── CHAT MESSAGE LOGIC ──
+    if (payload.action === 'chat' && payload.roomId) {
+      const roomId = payload.roomId;
+      const messageBody = payload.body;
+      const senderName = payload.senderName || payload.title;
+      const unreadCount = payload.unreadCount || 1;
 
-  const notifPromise = self.registration.showNotification(title, options);
-  const badgePromise =
-    typeof navigator !== 'undefined' && 'setAppBadge' in navigator
-      ? typeof payload.unread_count === 'number'
-        ? navigator.setAppBadge(payload.unread_count).catch(() => {})
-        : navigator.setAppBadge().catch(() => {})
-      : Promise.resolve();
+      // 1. Check if the chat room is currently open and visible
+      const allClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      const isRoomOpenAndVisible = allClients.some(client => {
+        return client.visibilityState === 'visible' && client.url.includes(roomId);
+      });
 
-  event.waitUntil(Promise.all([notifPromise, badgePromise]));
+      // 2. If open and visible in foreground, skip push notification
+      if (isRoomOpenAndVisible) {
+        return;
+      }
+
+      // 3. Otherwise show push notification
+      await self.registration.showNotification(senderName, {
+        body: messageBody,
+        icon: '/icon-192.png', // Fallback to main app icon
+        badge: '/icon-192.png',
+        tag: `chat-${roomId}`, // Group messages from the same room
+        data: { url: `/customer-portal/chat?roomId=${roomId}`, action: 'chat', roomId },
+        vibrate: [100, 50, 100],
+      });
+
+      if ('setAppBadge' in navigator) {
+        // @ts-ignore
+        navigator.setAppBadge(unreadCount).catch(() => {});
+      }
+      return;
+    }
+
+    // ── NORMAL NOTIFICATION LOGIC ──
+    const title = payload.title || 'Vinh Phat ERP';
+    const options = {
+      body: payload.body || 'Bạn có thông báo công việc mới.',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: payload.notification_id || `vp-${Date.now()}`,
+      data: {
+        notification_id: payload.notification_id,
+        entity_type: payload.entity_type,
+        entity_id: payload.entity_id,
+        action: payload.action,
+      },
+      vibrate: [100, 50, 100],
+    };
+
+    const notifPromise = self.registration.showNotification(title, options);
+    const badgePromise =
+      typeof navigator !== 'undefined' && 'setAppBadge' in navigator
+        ? typeof payload.unread_count === 'number'
+          // @ts-ignore
+          ? navigator.setAppBadge(payload.unread_count).catch(() => {})
+          // @ts-ignore
+          : navigator.setAppBadge().catch(() => {})
+        : Promise.resolve();
+
+    await Promise.all([notifPromise, badgePromise]);
+  })());
 });
 
 self.addEventListener('notificationclick', (event) => {
@@ -52,22 +92,37 @@ self.addEventListener('notificationclick', (event) => {
   const notifData = event.notification.data || {};
 
   if (typeof navigator !== 'undefined' && 'clearAppBadge' in navigator) {
+    // @ts-ignore
     navigator.clearAppBadge().catch(() => {});
   }
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // 1. Try to focus an existing window
       for (const client of clientList) {
         if ('focus' in client) {
-          client.postMessage({
-            type: 'NAVIGATE_FROM_NOTIFICATION',
-            payload: notifData,
-          });
+          // If it's a chat notification, navigate to chat
+          if (notifData.action === 'chat' && notifData.roomId) {
+             client.postMessage({ type: 'NAVIGATE_TO_CHAT', payload: { roomId: notifData.roomId } });
+             // If url already has chat, you might just focus it
+          } else {
+            client.postMessage({
+              type: 'NAVIGATE_FROM_NOTIFICATION',
+              payload: notifData,
+            });
+          }
           return client.focus();
         }
       }
 
-      // Build target path with query parameters if opening fresh window
+      // 2. Open new window if none exists
+      if (notifData.action === 'chat' && notifData.url) {
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(notifData.url);
+        }
+      }
+
+      // Build target path with query parameters if opening fresh window for normal notification
       const params = new URLSearchParams();
       if (notifData.entity_type) params.set('notif_entity', notifData.entity_type);
       if (notifData.entity_id) params.set('notif_id', notifData.entity_id);

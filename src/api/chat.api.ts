@@ -167,10 +167,14 @@ export async function updateReadReceipt(
 
   if (!user) return;
 
-  const updatePayload: { last_read_at: string; last_read_message_id?: string } =
-    {
-      last_read_at: new Date().toISOString(),
-    };
+  const updatePayload: {
+    last_read_at: string;
+    last_read_message_id?: string;
+    unread_count: number;
+  } = {
+    last_read_at: new Date().toISOString(),
+    unread_count: 0,
+  };
   if (lastMessageId) {
     updatePayload.last_read_message_id = lastMessageId;
   }
@@ -396,10 +400,10 @@ export async function fetchUnreadCount(roomId: string): Promise<number> {
 
   if (!user) return 0;
 
-  // Get the user's last_read_at for this room
+  // Get the user's unread_count for this room
   const { data: participant, error: pErr } = await supabase
     .from('chat_room_participants')
-    .select('last_read_at')
+    .select('unread_count')
     .eq('room_id', roomId)
     .eq('user_id', user.id)
     .maybeSingle();
@@ -409,29 +413,7 @@ export async function fetchUnreadCount(roomId: string): Promise<number> {
     throw pErr;
   }
 
-  const lastReadAt = (participant as { last_read_at: string } | null)
-    ?.last_read_at;
-
-  // Count messages newer than last_read_at (exclude own messages)
-  let query = supabase
-    .from('chat_messages')
-    .select('id', { count: 'exact', head: true })
-    .eq('room_id', roomId)
-    .neq('sender_id', user.id)
-    .is('deleted_at', null)
-    .neq('message_type', 'system');
-
-  if (lastReadAt) {
-    query = query.gt('created_at', lastReadAt);
-  }
-
-  const { count, error: cErr } = await query;
-  if (cErr) {
-    console.error('[Chat] fetchUnreadCount count query error:', cErr);
-    throw cErr;
-  }
-
-  return count ?? 0;
+  return participant?.unread_count ?? 0;
 }
 
 // ── Unified Timeline ──
