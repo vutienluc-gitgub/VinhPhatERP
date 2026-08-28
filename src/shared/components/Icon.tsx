@@ -19,6 +19,7 @@ import {
   Sparkles,
   Bot,
   ExternalLink,
+  ArrowUp,
 } from 'lucide-react';
 import type * as LucideIcons from 'lucide-react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
@@ -69,6 +70,8 @@ const STATIC_ICONS: Record<string, ComponentType<LucideProps>> = {
   bot: Bot,
   ExternalLink,
   'external-link': ExternalLink,
+  ArrowUp,
+  'arrow-up': ArrowUp,
 };
 
 const toKebabCase = (str: string) => {
