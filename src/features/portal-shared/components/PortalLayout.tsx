@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
@@ -61,6 +61,14 @@ export function PortalLayout({
 }: PortalLayoutProps) {
   const { profile, signOut } = useAuth();
   const [chatOpen, setChatOpen] = useState(false);
+
+  useEffect(() => {
+    const handleNavigate = () => {
+      setChatOpen(true);
+    };
+    window.addEventListener('navigate-to-chat', handleNavigate);
+    return () => window.removeEventListener('navigate-to-chat', handleNavigate);
+  }, []);
 
   return (
     <div className="portal-shell">

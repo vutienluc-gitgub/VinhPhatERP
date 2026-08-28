@@ -14,3 +14,12 @@ export const NOTIFICATION_CARD_LABELS = {
   ARIA_CLOSE_BANNER: 'Đóng biểu ngữ thông báo',
   ARIA_ENABLE_NOTIFICATION: 'Kích hoạt thông báo',
 } as const;
+
+export const CHAT_TOAST_LABELS = {
+  NEW_IMAGE: 'Hình ảnh mới',
+  NEW_FILE: 'Đã gửi tệp đính kèm',
+  SENDER_DEFAULT: 'Tin nhắn mới',
+  SENDER_UNKNOWN: 'Người dùng',
+  GROUP_SUFFIX: 'tin nhắn mới',
+  OPEN_CHAT: 'Mở cuộc trò chuyện',
+} as const;

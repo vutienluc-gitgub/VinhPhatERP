@@ -1,13 +1,13 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
-import toast from 'react-hot-toast';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { fetchUnreadCount, updateReadReceipt } from '@/api/chat.api';
-import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
+import type { ChatMessage } from '@/schema/chat.schema';
 import { playNotificationSound } from '@/shared/lib/chat-sound';
 import { supabase } from '@/services/supabase/client';
 import { useAuth } from '@/shared/hooks/useAuth';
 
+import { showChatToast } from './ChatToast';
 import { useChatRoom } from './useChat';
 
 // ── Unread Count Hook ──
@@ -114,11 +114,8 @@ export function useChatNotifications(
             playNotificationSound();
           }
 
-          // Show toast
-          const toastContent = msg.content || CHAT_LABELS.NEW_IMAGE;
-          toast(`Tin nhắn mới: ${toastContent}`, {
-            duration: 4000,
-          });
+          // Show rich grouped toast
+          void showChatToast(msg);
 
           // Invalidate unread count and rooms
           void queryClient.invalidateQueries({
