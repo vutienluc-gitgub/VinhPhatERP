@@ -77,8 +77,14 @@ export function PortalLayout({
           )}
           <span className="portal-username">{profile?.full_name}</span>
           {headerRightActions}
-          <button onClick={signOut} className="portal-signout-btn">
-            Đăng xuất
+          <button
+            onClick={signOut}
+            className="portal-signout-btn"
+            title="Đăng xuất"
+            aria-label="Đăng xuất"
+          >
+            <Icon name="LogOut" size={14} />
+            <span className="portal-signout-text">Đăng xuất</span>
           </button>
         </div>
       </header>
