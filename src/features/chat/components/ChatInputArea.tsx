@@ -23,8 +23,14 @@ import { ChatEmojiPicker } from './ChatEmojiPicker';
 import { ChatUploadPreview } from './ChatUploadPreview';
 import { ChatMentionsPopover } from './ChatMentionsPopover';
 
+export interface ChatSendMeta {
+  mentions?: ChatMention[];
+  replyToId?: string | null;
+  replyToMessage?: ChatMessage | null;
+}
+
 interface ChatInputAreaProps {
-  onSend: (content: string, mentions?: ChatMention[]) => void;
+  onSend: (content: string, meta?: ChatSendMeta) => void;
   onSendImage?: (imageUrl: string) => void;
   onSendFile?: (fileUrl: string, fileName: string, fileType: string) => void;
   roomId?: string;
@@ -53,6 +59,7 @@ export function ChatInputArea({
     query: string;
     startIndex: number;
   } | null>(null);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedMentionIndex, setSelectedMentionIndex] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -70,10 +77,32 @@ export function ChatInputArea({
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const emojiToggleBtnRef = useRef<HTMLButtonElement>(null);
 
+  // Debounce mention query to avoid flooding database with queries
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(activeMention?.query ?? '');
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [activeMention?.query]);
+
+  // Reset selected mention index when query or active type changes
+  useEffect(() => {
+    setSelectedMentionIndex(0);
+  }, [debouncedQuery, activeMention?.type]);
+
   const { data: mentionOptions = [] } = useMentionsSearch(
     activeMention?.type ?? null,
-    activeMention?.query ?? '',
+    debouncedQuery,
   );
+
+  // Clean up objectUrl on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   // Close emoji picker when clicking outside
   useEffect(() => {
@@ -146,19 +175,18 @@ export function ChatInputArea({
   );
 
   const handleSend = useCallback(() => {
-    let trimmed = text.trim();
+    const trimmed = text.trim();
     if (!trimmed || disabled || isUploading) return;
 
+    const validMentions = mentions.filter((m) => trimmed.includes(m.label));
+    const meta: ChatSendMeta = {};
+    if (validMentions.length > 0) meta.mentions = validMentions;
     if (replyingToMessage) {
-      const snippet = replyingToMessage.content
-        ? replyingToMessage.content.slice(0, 40)
-        : replyingToMessage.message_type;
-      trimmed = `↩️ "${snippet}"\n${trimmed}`;
+      meta.replyToId = replyingToMessage.id;
+      meta.replyToMessage = replyingToMessage;
     }
 
-    const validMentions = mentions.filter((m) => trimmed.includes(m.label));
-
-    onSend(trimmed, validMentions.length > 0 ? validMentions : undefined);
+    onSend(trimmed, Object.keys(meta).length > 0 ? meta : undefined);
     chatAudio.playSentSound();
     setText('');
     setMentions([]);
@@ -195,13 +223,16 @@ export function ChatInputArea({
   );
 
   const clearPreview = useCallback(() => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
     setPreviewUrl(null);
     setPreviewFile(null);
     setUploadError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, []);
+  }, [previewUrl]);
 
   const handleBlur = useCallback(() => {
     onTypingStop?.();
@@ -301,9 +332,10 @@ export function ChatInputArea({
     }
 
     if (val.length > 0) {
+      onTypingStart?.(); // Notify immediately
       typingTimeoutRef.current = setTimeout(() => {
-        onTypingStart?.();
-      }, 300);
+        onTypingStop?.(); // Idle after 2 seconds
+      }, 2000);
     } else {
       onTypingStop?.();
     }
@@ -351,12 +383,12 @@ export function ChatInputArea({
         }
         clearPreview();
       } catch (err) {
+        URL.revokeObjectURL(objectUrl);
         const message =
           err instanceof Error ? err.message : CHAT_LABELS.SEND_ERROR;
         setUploadError(message);
       } finally {
         setIsUploading(false);
-        URL.revokeObjectURL(objectUrl);
       }
     },
     [roomId, onSendImage, onSendFile, clearPreview],

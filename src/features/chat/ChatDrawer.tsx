@@ -120,12 +120,28 @@ export const ChatDrawer = React.memo(function ChatDrawer({
   }, [createRoomMutation, entityType, entityId]);
 
   const handleSend = useCallback(
-    (content: string, mentions?: ChatMention[]) => {
+    (
+      content: string,
+      meta?: {
+        mentions?: ChatMention[];
+        replyToId?: string | null;
+        replyToMessage?: ChatMessage | null;
+      },
+    ) => {
       if (!roomId) return;
       sendMutation.mutate({
         clientId: crypto.randomUUID(),
         content,
-        mentions,
+        mentions: meta?.mentions,
+        replyToId: meta?.replyToId,
+        replyToMessage: meta?.replyToMessage
+          ? {
+              id: meta.replyToMessage.id,
+              sender_name: meta.replyToMessage.sender_name ?? 'Người dùng',
+              content: meta.replyToMessage.content,
+              message_type: meta.replyToMessage.message_type,
+            }
+          : null,
       });
     },
     [roomId, sendMutation],
