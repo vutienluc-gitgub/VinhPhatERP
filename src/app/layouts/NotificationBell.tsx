@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/shared/components';
 import { NOTIFICATION_BELL_LABELS } from '@/shared/constants/layout';
 import { useNotifications } from '@/shared/hooks/useNotifications';
+import { usePushSubscription } from '@/shared/hooks/usePushSubscription';
 import { resolveDeepLink } from '@/shared/notifications/deepLinkResolver';
 import type { NotificationDomain } from '@/domains/notification/models/types';
 
@@ -32,6 +33,14 @@ export function NotificationBell() {
 
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotifications(10);
+
+  const {
+    isSupported,
+    isSubscribed,
+    permission,
+    isLoading: isPushLoading,
+    subscribe: subscribePush,
+  } = usePushSubscription();
 
   // Đóng khi click ngoài
   useEffect(() => {
@@ -121,6 +130,35 @@ export function NotificationBell() {
               </button>
             </div>
           </div>
+
+          {/* Push Notification Banner for Admin */}
+          {isSupported && !isSubscribed && permission !== 'denied' && (
+            <div className="p-3 bg-primary/10 border-b border-border flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <Icon
+                  name="BellRing"
+                  size={16}
+                  className="text-primary shrink-0"
+                />
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-foreground truncate">
+                    {NOTIFICATION_BELL_LABELS.ENABLE_PUSH}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    {NOTIFICATION_BELL_LABELS.ENABLE_PUSH_DESC}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => void subscribePush()}
+                disabled={isPushLoading}
+                className="shrink-0 px-2.5 py-1 text-xs font-medium bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors border-none cursor-pointer disabled:opacity-50"
+              >
+                {isPushLoading ? '...' : 'Bật'}
+              </button>
+            </div>
+          )}
 
           <div className="max-h-[360px] overflow-y-auto divide-y divide-border">
             {notifications.length === 0 ? (

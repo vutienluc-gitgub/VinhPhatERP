@@ -55,6 +55,15 @@ export const TopBar = React.memo(function TopBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showUserMenu]);
 
+  // Open Chat Inbox when navigate-to-chat event is dispatched (e.g. from notification click)
+  useEffect(() => {
+    const handleNavigate = () => {
+      setShowChatInbox(true);
+    };
+    window.addEventListener('navigate-to-chat', handleNavigate);
+    return () => window.removeEventListener('navigate-to-chat', handleNavigate);
+  }, []);
+
   return (
     <header className="topbar">
       {/* App Launcher & Brand Block */}

@@ -52,6 +52,9 @@ export const NOTIFICATION_BELL_LABELS = {
     'vừa tạo yêu cầu đặt hàng mã {orderNumber}. Vui lòng kiểm tra và duyệt!',
   SEE_MORE: 'Xem thêm',
   MARK_ALL_READ: 'Đánh dấu tất cả đã đọc',
+  ENABLE_PUSH: 'Bật thông báo đẩy trên thiết bị này',
+  ENABLE_PUSH_DESC: 'Nhận thông báo màn hình khóa khi có đơn hoặc tin nhắn mới',
+  PUSH_ACTIVE: 'Đã bật thông báo đẩy trên thiết bị',
 };
 
 export const DRAWER_LABELS = {
