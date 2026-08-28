@@ -12,36 +12,74 @@ function renderTextWithMentions(
   content: string,
   mentions?: ChatMention[] | null,
 ) {
-  if (!mentions || mentions.length === 0) return <div>{content}</div>;
+  if (!content) return null;
 
-  const escapeRegExp = (str: string) =>
-    str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const mentionLabels = mentions
-    .map((m) => escapeRegExp(m.label))
-    .sort((a, b) => b.length - a.length);
+  // 1. If explicit mentions metadata exists
+  if (mentions && mentions.length > 0) {
+    const escapeRegExp = (str: string) =>
+      str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const mentionLabels = mentions
+      .map((m) => escapeRegExp(m.label))
+      .sort((a, b) => b.length - a.length);
 
-  if (mentionLabels.length === 0) return <div>{content}</div>;
+    if (mentionLabels.length > 0) {
+      const regex = new RegExp(`(${mentionLabels.join('|')})`, 'g');
+      const parts = content.split(regex);
 
-  const regex = new RegExp(`(${mentionLabels.join('|')})`, 'g');
-  const parts = content.split(regex);
+      return (
+        <span className="chat-bubble-text">
+          {parts.map((part, index) => {
+            const mention = mentions.find((item) => item.label === part);
+            if (mention) {
+              return (
+                <span
+                  key={`mention-${mention.label}-${index}`}
+                  className={`chat-mention-inline chat-mention-inline--${mention.type || 'user'}`}
+                >
+                  {part}
+                </span>
+              );
+            }
+            return (
+              <span key={`text-${index}-${part.slice(0, 8)}`}>{part}</span>
+            );
+          })}
+        </span>
+      );
+    }
+  }
+
+  // 2. Fallback: Auto-highlight @mentions and #documents in raw text
+  const tokenRegex =
+    /(@[\p{L}\p{N}_-]+(?:\s+[\p{L}\p{N}_-]+)?|#[\p{L}\p{N}_-]+)/gu;
+  const parts = content.split(tokenRegex);
 
   return (
-    <div>
+    <span className="chat-bubble-text">
       {parts.map((part, index) => {
-        const mention = mentions.find((item) => item.label === part);
-        if (mention) {
+        if (part.startsWith('@')) {
           return (
             <span
-              key={`mention-${mention.label}-${index}`}
-              className={`chat-mention-inline chat-mention-inline--${mention.type}`}
+              key={`auto-mention-${part}-${index}`}
+              className="chat-mention-inline chat-mention-inline--user"
             >
               {part}
             </span>
           );
         }
-        return <span key={`text-${index}-${part.slice(0, 8)}`}>{part}</span>;
+        if (part.startsWith('#')) {
+          return (
+            <span
+              key={`auto-mention-${part}-${index}`}
+              className="chat-mention-inline chat-mention-inline--document"
+            >
+              {part}
+            </span>
+          );
+        }
+        return <span key={`raw-text-${index}`}>{part}</span>;
       })}
-    </div>
+    </span>
   );
 }
 

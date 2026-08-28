@@ -219,10 +219,6 @@ export const CHAT_LABELS = {
   LOAD_OLDER_MESSAGES: 'Tải thêm tin nhắn cũ',
   SCROLL_TO_BOTTOM: 'Cuộn xuống dưới cùng',
   NEW_MESSAGES_COUNT_SUFFIX: 'tin nhắn mới',
-  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
-  MENTION_DOC_ICON: '📄',
-  // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
-  MENTION_USER_ICON: '👤',
 } as const;
 
 export const AVAILABLE_ROLES = [
