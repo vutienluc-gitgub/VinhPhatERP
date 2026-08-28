@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { Icon } from '@/shared/components/Icon';
+import { usePushSubscription } from '@/shared/hooks/usePushSubscription';
+
 import { useNotifications } from './useNotifications';
 import type { NotificationItem } from './types';
 
@@ -8,15 +11,20 @@ interface Props {
   onClose: () => void;
 }
 
-const TYPE_ICON: Record<NotificationItem['type'], string> = {
-  order_status: '📦',
-  order_progress: '🏭',
-  shipment: '🚚',
-  quotation: '📄',
+const TYPE_ICON_NAME: Record<
+  NotificationItem['type'],
+  'Package' | 'Building2' | 'Truck' | 'FileText'
+> = {
+  order_status: 'Package',
+  order_progress: 'Building2',
+  shipment: 'Truck',
+  quotation: 'FileText',
 };
 
 export function NotificationCenter({ onClose }: Props) {
   const { items, markAllAsRead } = useNotifications();
+  const { isSupported, isSubscribed, permission, isLoading, subscribe } =
+    usePushSubscription();
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -58,13 +66,34 @@ export function NotificationCenter({ onClose }: Props) {
           Thông báo
         </span>
         <button
+          type="button"
           onClick={onClose}
-          className="bg-transparent border-none cursor-pointer text-muted-foreground text-base p-0 leading-none"
+          className="bg-transparent border-none cursor-pointer text-muted-foreground hover:text-foreground p-1 leading-none rounded"
           aria-label="Đóng"
         >
-          ✕
+          <Icon name="X" size={16} />
         </button>
       </div>
+
+      {/* Web Push Prompt for Mobile / Desktop PWA */}
+      {isSupported && !isSubscribed && permission !== 'denied' && (
+        <div className="p-3 bg-primary/10 border-b border-border flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Icon name="BellRing" size={16} className="text-primary shrink-0" />
+            <span className="text-[0.75rem] text-[var(--foreground)] font-medium truncate">
+              Bật thông báo trên màn hình
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => void subscribe()}
+            disabled={isLoading}
+            className="px-2.5 py-1 text-[0.7rem] font-semibold bg-primary text-white rounded-md shrink-0 border-none cursor-pointer hover:bg-primary/90 transition-colors"
+          >
+            {isLoading ? 'Đang bật...' : 'Bật ngay'}
+          </button>
+        </div>
+      )}
 
       {/* Items */}
       {items.length === 0 ? (
@@ -79,8 +108,8 @@ export function NotificationCenter({ onClose }: Props) {
               onClick={() => handleItemClick(item)}
               className={`px-4 py-3 border-b border-border/50 ${item.orderId || item.shipmentId || item.quotationId ? 'cursor-pointer' : 'cursor-default'} ${item.isRead ? 'bg-transparent' : 'bg-primary/5'} transition-colors duration-150 flex gap-[0.625rem] items-start`}
             >
-              <span className="text-base shrink-0 mt-[1px]">
-                {TYPE_ICON[item.type]}
+              <span className="shrink-0 mt-0.5 text-primary">
+                <Icon name={TYPE_ICON_NAME[item.type] ?? 'Bell'} size={16} />
               </span>
               <div className="flex-1 min-w-0">
                 <p
