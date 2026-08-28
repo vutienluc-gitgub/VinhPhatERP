@@ -20,23 +20,27 @@ BEGIN
       AND user_id != NEW.sender_id;
   END IF;
 
-  -- 2.2 Send Web Push notification via Edge Function
-  -- Only fire if not a system message (sender_id IS NOT NULL)
+  -- 2.2 Send Web Push notification via Edge Function (safe non-blocking)
   IF NEW.sender_id IS NOT NULL THEN
-    PERFORM net.http_post(
-      url := coalesce(
-        current_setting('app.settings.edge_function_url', true),
-        'http://host.docker.internal:54321/functions/v1/send-web-push'
-      ),
-      headers := jsonb_build_object(
-        'Content-Type', 'application/json',
-        'Authorization', coalesce(current_setting('app.settings.edge_function_anon_key', true), '')
-      ),
-      body := jsonb_build_object(
-        'type', 'CHAT_MESSAGE',
-        'message_id', NEW.id
-      )::text
-    );
+    BEGIN
+      PERFORM net.http_post(
+        url := coalesce(
+          current_setting('app.settings.edge_function_url', true),
+          'http://host.docker.internal:54321/functions/v1/send-web-push'
+        ),
+        headers := jsonb_build_object(
+          'Content-Type', 'application/json',
+          'Authorization', coalesce(current_setting('app.settings.edge_function_anon_key', true), '')
+        ),
+        body := jsonb_build_object(
+          'type', 'CHAT_MESSAGE',
+          'message_id', NEW.id
+        )::text
+      );
+    EXCEPTION WHEN OTHERS THEN
+      -- Silently catch network trigger errors so message insert always succeeds
+      RAISE WARNING '[trg_fn_chat_message_inserted] Push trigger notice: %', SQLERRM;
+    END;
   END IF;
 
   RETURN NEW;

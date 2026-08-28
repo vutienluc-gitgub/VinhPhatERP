@@ -478,15 +478,6 @@ export function ChatInputArea({
         onClear={clearPreview}
       />
 
-      {/* Mentions Popover */}
-      {activeMention && mentionOptions.length > 0 && (
-        <ChatMentionsPopover
-          options={mentionOptions}
-          selectedIndex={selectedMentionIndex}
-          onSelectOption={handleSelectMention}
-        />
-      )}
-
       {/* Upload Error */}
       {uploadError && <div className="chat-upload-error">{uploadError}</div>}
 
@@ -498,6 +489,15 @@ export function ChatInputArea({
 
       {/* Input Row — Toolbar Architecture */}
       <div className="chat-composer">
+        {/* Mentions Popover anchored directly to composer */}
+        {activeMention && mentionOptions.length > 0 && (
+          <ChatMentionsPopover
+            options={mentionOptions}
+            selectedIndex={selectedMentionIndex}
+            onSelectOption={handleSelectMention}
+          />
+        )}
+
         {/* Emoji Picker Popover anchored directly to composer */}
         {showEmojiPicker && (
           <ChatEmojiPicker ref={emojiPickerRef} onSelectEmoji={insertEmoji} />

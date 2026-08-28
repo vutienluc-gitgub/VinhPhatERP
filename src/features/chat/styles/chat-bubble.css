@@ -170,15 +170,82 @@
 }
 
 .chat-bubble {
-  min-width: var(--chat-bubble-min-w);
-  max-width: var(--chat-bubble-max-w);
-  padding: 8px 12px;
-  border-radius: var(--chat-radius-bubble);
+  width: fit-content;
+  max-width: min(480px, 82%);
+  min-width: fit-content;
+  padding: 8px 14px;
+  border-radius: var(--chat-radius-bubble, 14px);
   font-size: 0.875rem;
-  line-height: 1.4;
+  line-height: 1.45;
   word-break: break-word;
+  overflow-wrap: break-word;
   position: relative;
-  box-shadow: 0 1px 2px rgb(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.chat-bubble-text {
+  display: inline;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.chat-mention-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  vertical-align: baseline;
+  white-space: nowrap;
+  word-break: keep-all;
+  margin: 0 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.chat-mention-inline--user {
+  /* @architecture-exception: user mention blue background */
+  background: rgba(var(--brand-rgb), 0.12);
+  color: var(--primary);
+}
+
+.chat-bubble--mine .chat-mention-inline--user {
+  /* @architecture-exception: user mention bubble mine translucent */
+  background: rgba(255, 255, 255, 0.28);
+  /* @architecture-exception: user mention bubble mine text */
+  color: #ffffff;
+}
+
+.chat-mention-inline--role {
+  /* @architecture-exception: role mention indigo background */
+  background: rgba(99, 102, 241, 0.14);
+  /* @architecture-exception: role mention indigo text */
+  color: #4f46e5;
+}
+
+.chat-bubble--mine .chat-mention-inline--role {
+  /* @architecture-exception: role mention bubble mine translucent */
+  background: rgba(255, 255, 255, 0.28);
+  /* @architecture-exception: role mention bubble mine text */
+  color: #ffffff;
+}
+
+.chat-mention-inline--document {
+  /* @architecture-exception: document mention emerald background */
+  background: rgba(16, 185, 129, 0.14);
+  /* @architecture-exception: document mention emerald text */
+  color: #059669;
+}
+
+.chat-bubble--mine .chat-mention-inline--document {
+  /* @architecture-exception: document mention bubble mine translucent */
+  background: rgba(255, 255, 255, 0.28);
+  /* @architecture-exception: document mention bubble mine text */
+  color: #ffffff;
 }
 
 .chat-bubble--mine {

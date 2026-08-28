@@ -4,6 +4,14 @@
 
 /* ── Chat Input Area ── */
 
+.chat-input-area-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
 .chat-input-area {
   padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
@@ -187,43 +195,98 @@
 
 /* ── Mention Popup ── */
 
-.chat-mention-popup {
+.chat-mentions-popover {
   position: absolute;
-  bottom: calc(100% + 4px);
-  left: 16px;
-  right: 16px;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
-  max-height: 180px;
+  border-radius: var(--radius-md, 12px);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.18),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  max-height: 220px;
   overflow-y: auto;
-  z-index: 20;
+  z-index: 50;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  backdrop-filter: blur(12px);
 }
 
-.chat-mention-item {
+.chat-mention-option {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm, 8px);
   cursor: pointer;
-  transition: background 0.12s;
-}
-
-.chat-mention-item--selected,
-.chat-mention-item:hover {
-  background: var(--surface-hover);
-}
-
-.chat-mention-name {
-  font-size: 0.8125rem;
-  font-weight: 500;
+  text-align: left;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
   color: var(--foreground);
 }
 
-.chat-mention-role {
+.chat-mention-option:hover,
+.chat-mention-option--active {
+  background: var(--surface-hover);
+}
+
+.chat-mention-type-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chat-mention-type-icon--role {
+  /* @architecture-exception: role mention blue background */
+  background: rgba(var(--brand-rgb), 0.12);
+  color: var(--primary);
+}
+
+.chat-mention-type-icon--user {
+  background: var(--surface-secondary);
+  color: var(--muted-foreground);
+}
+
+.chat-mention-type-icon--document {
+  /* @architecture-exception: document mention emerald background */
+  background: rgba(16, 185, 129, 0.12);
+  /* @architecture-exception: document mention emerald text */
+  color: #10b981;
+}
+
+.chat-mention-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-mention-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground);
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-mention-subtext {
   font-size: 0.6875rem;
   color: var(--muted-foreground);
+  line-height: 1.2;
 }
 
 /* ── Upload Previews ── */
