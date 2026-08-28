@@ -10,18 +10,9 @@
   flex-direction: column;
   gap: 6px;
   width: 100%;
-}
-
-.chat-input-area {
-  padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 12px calc(8px + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
   border-top: 1px solid var(--border);
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  position: relative;
-  z-index: 10;
 }
 
 /* ── Quick Replies Pills ── */
@@ -87,15 +78,16 @@
 
 .chat-composer {
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
   position: relative;
+  width: 100%;
 }
 
 .chat-composer-left {
   display: flex;
   align-items: center;
-  gap: 2px;
+  flex-shrink: 0;
 }
 
 .chat-attach-btn,
@@ -110,6 +102,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-shrink: 0;
   transition:
     background 0.15s,
     color 0.15s;
@@ -137,8 +130,9 @@
   align-items: center;
   background: var(--surface-secondary);
   border: 1px solid var(--border);
-  border-radius: var(--chat-radius-control);
-  padding: 4px 12px;
+  border-radius: 9999px;
+  padding: 3px 14px;
+  min-height: 38px;
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
@@ -154,7 +148,7 @@
   background: transparent;
   border: none;
   outline: none;
-  padding: 6px 0;
+  padding: 5px 0;
   font-size: 0.875rem;
   color: var(--foreground);
   resize: none;
@@ -165,33 +159,29 @@
 .chat-composer-right {
   display: flex;
   align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 .chat-send-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--surface-secondary);
-  color: var(--muted-foreground);
+  background: var(--primary);
+  color: var(--primary-foreground, #fff);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: not-allowed;
-  transition:
-    background 0.15s,
-    color 0.15s,
-    transform 0.1s;
-}
-
-.chat-send-btn--active {
-  background: var(--primary);
-  color: var(--primary-foreground, #fff);
   cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    transform 0.1s,
+    opacity 0.15s;
 }
 
-.chat-send-btn--active:hover {
-  transform: scale(1.05);
+.chat-send-btn:hover {
+  transform: scale(1.06);
 }
 
 /* ── Mention Popup ── */

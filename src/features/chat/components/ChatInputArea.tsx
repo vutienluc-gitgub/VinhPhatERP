@@ -580,50 +580,12 @@ export function ChatInputArea({
           />
         </div>
 
-        {/* Toolbar Right: Quick Image, ERP Utility Menu, Send */}
-        <div className="chat-composer-right flex items-center gap-1">
-          {onSendImage && roomId && (
-            <>
-              <button
-                type="button"
-                className="chat-composer-btn"
-                onClick={handleAttachClick}
-                disabled={isInputDisabled}
-                aria-label={CHAT_LABELS.ATTACH_IMAGE_QUICK}
-                title={CHAT_LABELS.UPLOAD_ATTACHMENT_TOOLTIP}
-              >
-                <Icon name="Image" size={19} />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                onChange={(e) => void handleFileSelect(e)}
-                className="chat-file-input-hidden"
-                aria-hidden="true"
-                tabIndex={-1}
-              />
-            </>
-          )}
-
-          {/* ERP Utility Menu (•••) */}
-          <button
-            ref={utilityToggleBtnRef}
-            type="button"
-            className={`chat-composer-btn${showUtilityMenu ? ' chat-composer-btn--active' : ''}`}
-            onClick={() => setShowUtilityMenu((v) => !v)}
-            disabled={isInputDisabled}
-            aria-label={CHAT_LABELS.UTILITIES_MENU}
-            title={CHAT_LABELS.UTILITIES_MENU}
-          >
-            <Icon name="MoreHorizontal" size={19} />
-          </button>
-
-          {/* Send Button */}
-          {text.trim().length > 0 && (
+        {/* Toolbar Right: Quick Actions (idle) vs Send Button (typing) */}
+        <div className="chat-composer-right">
+          {text.trim().length > 0 ? (
             <button
               type="button"
-              className="chat-send-btn chat-send-btn--active"
+              className="chat-send-btn"
               onClick={handleSend}
               disabled={isInputDisabled}
               aria-label={CHAT_LABELS.SEND}
@@ -631,6 +593,45 @@ export function ChatInputArea({
             >
               <Icon name="Send" size={16} />
             </button>
+          ) : (
+            <>
+              {onSendImage && roomId && (
+                <>
+                  <button
+                    type="button"
+                    className="chat-composer-btn"
+                    onClick={handleAttachClick}
+                    disabled={isInputDisabled}
+                    aria-label={CHAT_LABELS.ATTACH_IMAGE_QUICK}
+                    title={CHAT_LABELS.UPLOAD_ATTACHMENT_TOOLTIP}
+                  >
+                    <Icon name="Image" size={20} />
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={(e) => void handleFileSelect(e)}
+                    className="chat-file-input-hidden"
+                    aria-hidden="true"
+                    tabIndex={-1}
+                  />
+                </>
+              )}
+
+              {/* ERP Utility Menu (•••) */}
+              <button
+                ref={utilityToggleBtnRef}
+                type="button"
+                className={`chat-composer-btn${showUtilityMenu ? ' chat-composer-btn--active' : ''}`}
+                onClick={() => setShowUtilityMenu((v) => !v)}
+                disabled={isInputDisabled}
+                aria-label={CHAT_LABELS.UTILITIES_MENU}
+                title={CHAT_LABELS.UTILITIES_MENU}
+              >
+                <Icon name="MoreHorizontal" size={20} />
+              </button>
+            </>
           )}
         </div>
       </div>
