@@ -43,6 +43,16 @@ export function useNotificationDeepLink() {
     }
 
     function handleServiceWorkerMessage(event: MessageEvent) {
+      if (event.data?.type === 'NAVIGATE_TO_CHAT') {
+        // Dispatch custom event that PortalLayout listens for to open ChatDrawer
+        window.dispatchEvent(
+          new CustomEvent('navigate-to-chat', {
+            detail: { roomId: event.data.payload?.roomId },
+          }),
+        );
+        return;
+      }
+
       if (event.data?.type === 'NAVIGATE_FROM_NOTIFICATION') {
         const payload = event.data.payload || {};
         if (payload.entity_type && payload.entity_id) {

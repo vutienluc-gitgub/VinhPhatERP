@@ -25,17 +25,20 @@ BEGIN
     BEGIN
       PERFORM net.http_post(
         url := coalesce(
-          current_setting('app.settings.edge_function_url', true),
-          'http://host.docker.internal:54321/functions/v1/send-web-push'
-        ),
-        headers := jsonb_build_object(
-          'Content-Type', 'application/json',
-          'Authorization', coalesce(current_setting('app.settings.edge_function_anon_key', true), '')
+          nullif(current_setting('app.settings.edge_function_url', true), ''),
+          'https://sxphijrofljxkccdwtub.supabase.co/functions/v1/send-web-push'
         ),
         body := jsonb_build_object(
           'type', 'CHAT_MESSAGE',
           'message_id', NEW.id
-        )::text
+        ),
+        headers := jsonb_build_object(
+          'Content-Type', 'application/json',
+          'Authorization', 'Bearer ' || coalesce(
+            nullif(current_setting('app.settings.edge_function_anon_key', true), ''),
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGhpanJvZmxqeGtjY2R3dHViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MDk1NTksImV4cCI6MjA5MDA4NTU1OX0.8e-qbhqv6UgCZ46Yx7sa9FWGCdT50q27i4kAiMtCpxc'
+          )
+        )
       );
     EXCEPTION WHEN OTHERS THEN
       -- Silently catch network trigger errors so message insert always succeeds

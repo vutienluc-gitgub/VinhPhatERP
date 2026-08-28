@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 // eslint-disable-next-line boundaries/dependencies
@@ -61,7 +61,10 @@ export function PortalLayout({
 }: PortalLayoutProps) {
   const { profile, signOut } = useAuth();
   const [chatOpen, setChatOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  // Listen for 'navigate-to-chat' custom event (dispatched by useNotificationDeepLink
+  // when Service Worker sends NAVIGATE_TO_CHAT postMessage)
   useEffect(() => {
     const handleNavigate = () => {
       setChatOpen(true);
@@ -69,6 +72,19 @@ export function PortalLayout({
     window.addEventListener('navigate-to-chat', handleNavigate);
     return () => window.removeEventListener('navigate-to-chat', handleNavigate);
   }, []);
+
+  // Auto-open ChatDrawer when opened fresh from push notification click
+  // (URL contains ?chatOpen=1&roomId=...)
+  useEffect(() => {
+    if (searchParams.get('chatOpen') === '1') {
+      setChatOpen(true);
+      // Clean up query params from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('chatOpen');
+      newParams.delete('roomId');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   return (
     <div className="portal-shell">
