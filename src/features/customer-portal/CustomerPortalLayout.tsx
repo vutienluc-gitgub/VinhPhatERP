@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { PortalLayout } from '@/features/portal-shared/components/PortalLayout';
 import { useChatNotifications, usePortalChatUnread } from '@/application/chat';
+import { useAppBadging } from '@/shared/hooks/useAppBadging';
 // eslint-disable-next-line boundaries/dependencies
 
 import {
@@ -20,7 +21,8 @@ import './portal.css';
  */
 function PortalLayoutInner() {
   const { profile } = useAuth();
-  const { addNotification, setConnectionWarning } = useNotifications();
+  const { addNotification, setConnectionWarning, unreadCount } =
+    useNotifications();
   const location = useLocation();
 
   const unreadChatCount = usePortalChatUnread(
@@ -30,6 +32,10 @@ function PortalLayoutInner() {
 
   // Enable global chat notifications (with sound)
   useChatNotifications({ soundEnabled: true });
+
+  // Sync PWA App Badge (iOS / Android / Desktop) with total unread
+  const totalDeviceUnreadCount = unreadCount + unreadChatCount;
+  useAppBadging({ unreadCount: totalDeviceUnreadCount });
 
   // Start/stop RealtimeService based on customer_id
   useEffect(() => {

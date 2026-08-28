@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { PortalLayout } from '@/features/portal-shared/components/PortalLayout';
 import { usePortalChatUnread, useChatNotifications } from '@/application/chat';
+import { useAppBadging } from '@/shared/hooks/useAppBadging';
 import { NotificationCenter } from '@/features/supplier-portal/notifications/NotificationCenter';
 import { InteractionProvider } from '@/shared/interaction';
 import { fetchSupplierById } from '@/api/suppliers.api';
@@ -19,6 +20,9 @@ export function SupplierPortalLayout() {
 
   // Global chat notifications — sound + toast for incoming chat messages
   useChatNotifications({ soundEnabled: true });
+
+  // Sync PWA App Badge (iOS / Android / Desktop)
+  useAppBadging({ unreadCount: unreadChatCount });
 
   const { data: supplier, isLoading } = useQuery({
     queryKey: ['supplier', supplierId],
