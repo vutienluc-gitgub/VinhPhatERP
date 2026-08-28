@@ -43,6 +43,9 @@ export function AppProviders({ children }: PropsWithChildren) {
                       <GlobalEntityDispatcher />
                       <Toaster
                         position="top-right"
+                        containerStyle={{
+                          top: 'calc(env(safe-area-inset-top, 0px) + 65px)',
+                        }}
                         toastOptions={{
                           className: 'premium-toast',
                           style: {

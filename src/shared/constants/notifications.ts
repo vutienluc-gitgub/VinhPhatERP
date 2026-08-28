@@ -6,4 +6,11 @@ export const NOTIFICATION_CARD_LABELS = {
   BTN_DISABLE_PUSH: 'Tắt thông báo thiết bị',
   PUSH_STATUS_ON: 'Đang hoạt động trên thiết bị này',
   PUSH_STATUS_OFF: 'Chưa kích hoạt thông báo trên thiết bị này',
+  BANNER_TITLE: 'Bật thông báo trên thiết bị',
+  BANNER_RECOMMENDED: 'Khuyên dùng',
+  BANNER_DESC:
+    'Nhận tin nhắn chat và cập nhật đơn hàng tức thì ngay cả khi đóng ứng dụng.',
+  BTN_ENABLING: 'Đang bật...',
+  ARIA_CLOSE_BANNER: 'Đóng biểu ngữ thông báo',
+  ARIA_ENABLE_NOTIFICATION: 'Kích hoạt thông báo',
 } as const;

@@ -28,8 +28,12 @@ interface PushNotificationPayload {
 }
 
 // Configure VAPID details from environment
-const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY') || '';
-const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY') || '';
+const vapidPublicKey =
+  Deno.env.get('VAPID_PUBLIC_KEY') ||
+  'BFjNvul1vaXsyiw-wJBxXh11Q-zfKO5BIpZqNKmHrQIRMtmRfq71y_nJ7_chvZhxmrkEK3mFkxuiYbmP9Fv9hbU';
+const vapidPrivateKey =
+  Deno.env.get('VAPID_PRIVATE_KEY') ||
+  'Tc3cDQM-dHqPmfoX-YYxb3yWhywpBBsjXNnPCyWLRUI';
 const vapidSubject =
   Deno.env.get('VAPID_SUBJECT') || 'mailto:admin@detmayvinhphat.com';
 

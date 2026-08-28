@@ -151,6 +151,19 @@ export async function sendChatMessage(params: {
     throw fetchErr;
   }
 
+  // Trigger Web Push to room participants (asynchronous fire-and-forget fallback)
+  void supabase.functions
+    .invoke('send-web-push', {
+      body: {
+        type: 'CHAT_MESSAGE',
+        message_id: messageId,
+      },
+    })
+    .catch((err: unknown) => {
+      // eslint-disable-next-line no-console
+      console.debug('[Chat] send-web-push invoke notice:', err);
+    });
+
   return msg as ChatMessage;
 }
 

@@ -118,14 +118,6 @@ export function useChatNotifications(
           const toastContent = msg.content || CHAT_LABELS.NEW_IMAGE;
           toast(`Tin nhắn mới: ${toastContent}`, {
             duration: 4000,
-            position: 'top-right',
-            style: {
-              borderRadius: '10px',
-              background: 'var(--surface-strong, #1a1a2e)',
-              color: 'var(--text, #fff)',
-              fontSize: '0.8125rem',
-              maxWidth: '320px',
-            },
           });
 
           // Invalidate unread count and rooms
