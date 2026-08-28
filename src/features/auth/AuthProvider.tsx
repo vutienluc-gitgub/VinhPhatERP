@@ -147,6 +147,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signOut = useCallback(async () => {
     resetTenantCache();
+    // Revoke device push subscription to prevent notifications leaking on shared computers/devices
+    try {
+      const { revokeCurrentDevicePushSubscription } =
+        await import('@/shared/hooks/usePushSubscription');
+      await revokeCurrentDevicePushSubscription();
+    } catch {
+      // Ignore cleanup error on signout
+    }
     await supabase.auth.signOut();
   }, []);
 

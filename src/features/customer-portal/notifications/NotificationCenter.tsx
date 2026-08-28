@@ -2,7 +2,11 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Icon } from '@/shared/components/Icon';
-import { usePushSubscription } from '@/shared/hooks/usePushSubscription';
+import {
+  usePushSubscription,
+  isIOSNonStandalone,
+} from '@/shared/hooks/usePushSubscription';
+import { NOTIFICATION_CARD_LABELS } from '@/shared/constants/notifications';
 
 import { useNotifications } from './useNotifications';
 import type { NotificationItem } from './types';
@@ -23,10 +27,10 @@ const TYPE_ICON_NAME: Record<
 
 export function NotificationCenter({ onClose }: Props) {
   const { items, markAllAsRead } = useNotifications();
-  const { isSupported, isSubscribed, permission, isLoading, subscribe } =
-    usePushSubscription();
+  const { isSubscribed, isLoading, subscribe } = usePushSubscription();
   const navigate = useNavigate();
   const panelRef = useRef<HTMLDivElement>(null);
+  const isIOS = isIOSNonStandalone();
 
   // Mark all read when opened
   useEffect(() => {
@@ -75,25 +79,56 @@ export function NotificationCenter({ onClose }: Props) {
         </button>
       </div>
 
-      {/* Web Push Prompt for Mobile / Desktop PWA */}
-      {isSupported && !isSubscribed && permission !== 'denied' && (
-        <div className="p-3 bg-primary/10 border-b border-border flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <Icon name="BellRing" size={16} className="text-primary shrink-0" />
-            <span className="text-[0.75rem] text-[var(--foreground)] font-medium truncate">
-              Bật thông báo trên màn hình
-            </span>
+      {/* Web Push Prompt & Device Status */}
+      <div className="p-3 bg-surface-secondary/70 border-b border-border">
+        {isSubscribed ? (
+          <div className="flex items-center gap-2 text-xs text-foreground font-medium">
+            <Icon
+              name="CheckCircle2"
+              size={16}
+              className="text-success shrink-0"
+            />
+            <span>{NOTIFICATION_CARD_LABELS.PUSH_STATUS_ON}</span>
           </div>
-          <button
-            type="button"
-            onClick={() => void subscribe()}
-            disabled={isLoading}
-            className="px-2.5 py-1 text-[0.7rem] font-semibold bg-primary text-white rounded-md shrink-0 border-none cursor-pointer hover:bg-primary/90 transition-colors"
-          >
-            {isLoading ? 'Đang bật...' : 'Bật ngay'}
-          </button>
-        </div>
-      )}
+        ) : isIOS ? (
+          <div className="flex flex-col gap-1 text-xs">
+            <div className="flex items-center gap-1.5 font-semibold text-primary">
+              <Icon name="Share2" size={14} className="shrink-0" />
+              <span>Cần thêm ra MH chính (iPhone)</span>
+            </div>
+            <p className="text-[0.7rem] text-muted-foreground m-0 leading-tight">
+              Chạm nút Chia sẻ ⎋ dưới Safari ➜ Chọn "Thêm vào MH chính" để bật
+              thông báo màn hình khóa.
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Icon
+                name="BellRing"
+                size={16}
+                className="text-primary shrink-0 animate-pulse"
+              />
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-foreground m-0 truncate">
+                  Thông báo màn hình khóa
+                </p>
+                <p className="text-[0.6875rem] text-muted-foreground m-0 truncate">
+                  Nhận tin nhắn & cập nhật
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => void subscribe()}
+              disabled={isLoading}
+              className="px-3 py-1.5 text-xs font-semibold bg-primary text-primary-foreground rounded-md shrink-0 border-none cursor-pointer hover:bg-primary/90 transition-colors"
+            >
+              {isLoading ? 'Đang bật...' : 'Bật ngay'}
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Items */}
       {items.length === 0 ? (
