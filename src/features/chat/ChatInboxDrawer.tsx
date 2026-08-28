@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { fetchMyChatRooms, type MyChatRoomSummary } from '@/api/chat.api';
 import { Icon } from '@/shared/components/Icon';
+import { CHAT_INBOX_LABELS, CHAT_LABELS } from '@/schema/chat.schema';
 
 import { ChatDrawer } from './ChatDrawer';
 import './chat.css';
@@ -12,17 +13,17 @@ function formatRelative(iso: string | null): string {
   if (!iso) return '';
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'vừa xong';
-  if (mins < 60) return `${mins} phút`;
+  if (mins < 1) return CHAT_INBOX_LABELS.JUST_NOW;
+  if (mins < 60) return `${mins} ${CHAT_INBOX_LABELS.MINS_AGO}`;
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours} giờ`;
+  if (hours < 24) return `${hours} ${CHAT_INBOX_LABELS.HOURS_AGO}`;
   const days = Math.floor(hours / 24);
-  return `${days} ngày`;
+  return `${days} ${CHAT_INBOX_LABELS.DAYS_AGO}`;
 }
 
 function cleanPreviewText(text: string | null, type?: string | null): string {
-  if (!text) return 'Chưa có tin nhắn';
-  if (type === 'image') return 'Hình ảnh';
+  if (!text) return CHAT_INBOX_LABELS.NO_MESSAGES_YET;
+  if (type === 'image') return CHAT_LABELS.IMAGE;
   return text.trim();
 }
 
@@ -129,7 +130,7 @@ function RoomRow({
             {isImage ? (
               <span className="inline-flex items-center gap-1">
                 <Icon name="Image" size={13} className="text-primary" />
-                <span>Hình ảnh</span>
+                <span>{CHAT_LABELS.IMAGE}</span>
               </span>
             ) : (
               preview
@@ -233,16 +234,16 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
         {/* Header */}
         <div className="chat-inbox-header">
           <div>
-            <h3 className="chat-inbox-title">Hộp thư hệ thống</h3>
+            <h3 className="chat-inbox-title">{CHAT_INBOX_LABELS.TITLE}</h3>
             <p className="chat-inbox-subtitle">
-              {rooms.length} cuộc trò chuyện
+              {rooms.length} {CHAT_INBOX_LABELS.CONVERSATIONS_SUFFIX}
             </p>
           </div>
           <button
             type="button"
             className="chat-close-btn"
             onClick={onClose}
-            aria-label="Đóng"
+            aria-label={CHAT_LABELS.CLOSE}
           >
             <Icon name="X" size={18} />
           </button>
@@ -260,7 +261,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm cuộc trò chuyện, lô hàng..."
+              placeholder={CHAT_INBOX_LABELS.SEARCH_PLACEHOLDER}
               className="w-full bg-transparent border-none outline-none text-xs text-foreground placeholder:text-muted-foreground"
             />
             {searchQuery && (
@@ -286,7 +287,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
-            Tất cả ({rooms.length})
+            {CHAT_INBOX_LABELS.FILTER_ALL} ({rooms.length})
           </button>
           <button
             type="button"
@@ -297,7 +298,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
-            Khách hàng
+            {CHAT_INBOX_LABELS.FILTER_CUSTOMER}
           </button>
           <button
             type="button"
@@ -308,7 +309,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
-            Lô hàng
+            {CHAT_INBOX_LABELS.FILTER_SHIPMENT}
           </button>
           <button
             type="button"
@@ -319,18 +320,20 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
-            Chưa đọc
+            {CHAT_INBOX_LABELS.FILTER_UNREAD}
           </button>
         </div>
 
         {/* Room list */}
         <div className="chat-inbox-list">
-          {isLoading && <div className="chat-inbox-empty">Đang tải...</div>}
+          {isLoading && (
+            <div className="chat-inbox-empty">{CHAT_LABELS.LOADING}</div>
+          )}
           {!isLoading && filteredRooms.length === 0 && (
             <div className="chat-inbox-empty">
               {searchQuery
-                ? 'Không tìm thấy cuộc trò chuyện phù hợp.'
-                : 'Chưa có cuộc trò chuyện nào.'}
+                ? CHAT_INBOX_LABELS.NOT_FOUND
+                : CHAT_INBOX_LABELS.EMPTY_ROOMS}
             </div>
           )}
           {filteredRooms.map((room) => (

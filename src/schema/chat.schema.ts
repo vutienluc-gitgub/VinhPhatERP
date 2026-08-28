@@ -241,3 +241,20 @@ export const CANNED_RESPONSES = [
   'Dạ đã chuẩn bị xong hàng',
   'Dạ vâng ạ, cảm ơn quý khách!',
 ] as const;
+
+export const CHAT_INBOX_LABELS = {
+  TITLE: 'Hộp thư hệ thống',
+  CONVERSATIONS_SUFFIX: 'cuộc trò chuyện',
+  SEARCH_PLACEHOLDER: 'Tìm cuộc trò chuyện, lô hàng...',
+  FILTER_ALL: 'Tất cả',
+  FILTER_CUSTOMER: 'Khách hàng',
+  FILTER_SHIPMENT: 'Lô hàng',
+  FILTER_UNREAD: 'Chưa đọc',
+  EMPTY_ROOMS: 'Chưa có cuộc trò chuyện nào',
+  NOT_FOUND: 'Không tìm thấy cuộc trò chuyện phù hợp.',
+  NO_MESSAGES_YET: 'Chưa có tin nhắn',
+  JUST_NOW: 'vừa xong',
+  MINS_AGO: 'phút',
+  HOURS_AGO: 'giờ',
+  DAYS_AGO: 'ngày',
+} as const;
