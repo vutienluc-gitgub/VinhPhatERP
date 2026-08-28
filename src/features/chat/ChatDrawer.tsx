@@ -27,7 +27,7 @@ import { ChatContextBar } from './components/ChatContextBar';
 import { ChatInputArea } from './components/ChatInputArea';
 import { ChatMessageList } from './components/ChatMessageList';
 import { PinnedMessagesBar } from './components/PinnedMessagesBar';
-import { PresenceIndicator } from './components/PresenceIndicator';
+import { ChatHeaderV3 } from './components/ChatHeaderV3';
 
 import './chat.css';
 
@@ -219,48 +219,17 @@ export const ChatDrawer = React.memo(function ChatDrawer({
         aria-modal="true"
         aria-label={title ?? CHAT_LABELS.TITLE}
       >
-        {/* Header */}
-        <div className="chat-header">
-          <div className="chat-header-title-section">
-            <div className="chat-header-avatar">
-              {(title ?? 'U')
-                .split(' ')
-                .slice(-2)
-                .map((w) => w[0])
-                .join('')
-                .toUpperCase()}
-            </div>
-            <div className="chat-header-meta">
-              <h3 className="chat-header-title">
-                {title ?? CHAT_LABELS.TITLE}
-              </h3>
-              <PresenceIndicator
-                presence={typingUsers.length > 0 ? 'typing' : 'online'}
-                subtext={subtitle ? `${subtitle} • Online` : undefined}
-              />
-            </div>
-          </div>
-          <div className="chat-header-actions">
-            <button
-              type="button"
-              className="chat-search-toggle-btn"
-              onClick={() => setSearchQuery(searchQuery ? '' : ' ')}
-              aria-label="Tìm kiếm"
-              title="Tìm kiếm tin nhắn"
-            >
-              <Icon name="Search" size={18} />
-            </button>
-            <button
-              type="button"
-              className="chat-close-btn"
-              onClick={onClose}
-              aria-label={CHAT_LABELS.CLOSE}
-              title="Đóng"
-            >
-              <Icon name="X" size={18} />
-            </button>
-          </div>
-        </div>
+        {/* Modern Header V3 */}
+        <ChatHeaderV3
+          title={title}
+          subtitle={subtitle}
+          isOnline={connectionStatus === 'connected'}
+          isTyping={typingUsers.length > 0}
+          typingUsers={typingUsers}
+          onClose={onClose}
+          onToggleSearch={() => setSearchQuery(searchQuery ? '' : ' ')}
+          isSearchActive={searchQuery !== ''}
+        />
 
         {/* ERP Context Bar (Phase 2) */}
         <ChatContextBar entityType={entityType} entityId={entityId} />
