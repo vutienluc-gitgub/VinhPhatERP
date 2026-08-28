@@ -106,7 +106,7 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
   }
 
   return (
-    <header className="chat-header-v3 flex items-center justify-between px-3.5 py-2.5 bg-surface border-b border-border select-none relative">
+    <header className="chat-header-v3 flex items-center justify-between px-3.5 pb-2.5 pt-[calc(10px+env(safe-area-inset-top,0px))] bg-surface border-b border-border select-none relative shrink-0">
       {/* Left: Back/Close & Avatar & Meta */}
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
         <button
