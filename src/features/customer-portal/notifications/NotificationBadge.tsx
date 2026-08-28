@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { Icon } from '@/shared/components/Icon';
+
 import { useNotifications } from './useNotifications';
 import { NotificationCenter } from './NotificationCenter';
 
@@ -22,14 +24,17 @@ export function NotificationBadge() {
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          padding: '0.25rem',
+          padding: '0.35rem',
           position: 'relative',
-          color: connectionWarning ? 'var(--warning)' : 'var(--surface-subtle)',
-          fontSize: '1.1rem',
-          lineHeight: 1,
+          color: connectionWarning
+            ? 'var(--warning)'
+            : 'rgba(255, 255, 255, 0.75)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        🔔
+        <Icon name="Bell" size={18} />
         {unreadCount > 0 && (
           <span
             style={{
