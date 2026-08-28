@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { AuthLoadingScreen } from '@/shared/components/AuthLoadingScreen';
@@ -11,6 +11,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps = {}) {
   const { session, loading, profile, isBlocked } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return <AuthLoadingScreen />;
@@ -40,13 +41,13 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps = {}) {
 
   if (!isInternalUser) {
     if (isSupplier) {
-      return <Navigate to="/portal/supplier" replace />;
+      return <Navigate to={`/portal/supplier${location.search}`} replace />;
     }
     if (isCustomer) {
-      return <Navigate to="/portal/customer" replace />;
+      return <Navigate to={`/portal/customer${location.search}`} replace />;
     }
     if (isDriver) {
-      return <Navigate to="/driver" replace />;
+      return <Navigate to={`/driver${location.search}`} replace />;
     }
   }
 

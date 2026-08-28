@@ -1,5 +1,5 @@
-import { Suspense, useCallback, useMemo, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useChatNotifications, useTotalUnread } from '@/application/chat';
@@ -15,6 +15,7 @@ import { GreigeCalculatorModal } from '@/features/costing/components/GreigeCalcu
 import { useNotifications } from '@/shared/hooks/useNotifications';
 import { useAppBadging } from '@/shared/hooks/useAppBadging';
 import { useNotificationDeepLink } from '@/shared/hooks/useNotificationDeepLink';
+import { usePushSubscription } from '@/shared/hooks/usePushSubscription';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { TopBar } from './TopBar';
@@ -36,10 +37,14 @@ const BOTTOM_TAB_PATHS = [
 
 export function AppShell() {
   const { pathname } = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { profile, signOut } = useAuth();
 
   // Enable global chat notifications (with sound)
   useChatNotifications({ soundEnabled: true });
+
+  // Tự động đồng bộ và đăng ký Web Push cho Admin/Staff khi đã cấp quyền
+  usePushSubscription();
 
   const [showMore, setShowMore] = useState(false);
   const closeMoreDrawer = useCallback(() => setShowMore(false), []);
@@ -55,6 +60,17 @@ export function AppShell() {
 
   // Xử lý deep link tự động khi chạm vào thông báo từ Service Worker hoặc màn hình khóa
   useNotificationDeepLink();
+
+  // Mở Chat Inbox tự động khi app được khởi chạy từ thông báo đẩy (?chatOpen=1)
+  useEffect(() => {
+    if (searchParams.get('chatOpen') === '1') {
+      window.dispatchEvent(new CustomEvent('navigate-to-chat'));
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('chatOpen');
+      newParams.delete('roomId');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // ── User Preferences từ DB (nguồn sự thật duy nhất) ─────────────────────────
   const { prefs, toggleTheme, setFluidLayout } = useUserPreferences(
