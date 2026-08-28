@@ -96,8 +96,8 @@ export interface ChatMessage {
   pinned_by: string | null;
   mentions?: ChatMention[];
   reactions?: ChatReaction[];
-  read_at: string | null;
-  read_by: string | null;
+  read_at?: string | null;
+  read_by?: string | null;
 }
 
 export interface UnifiedTimelineItem extends ChatMessage {
@@ -205,6 +205,11 @@ export const CHAT_LABELS = {
   CHOOSE_EMOJI: 'Chọn emoji',
   EMOJI_TOOLTIP: 'Biểu tượng cảm xúc',
   UPLOAD_ATTACHMENT_TOOLTIP: 'Tải lên tệp/hình ảnh',
+  START_CONVERSATION_HINT: 'Bắt đầu cuộc trò chuyện ngay!',
+  LOADING_OLDER_MESSAGES: 'Đang tải tin nhắn cũ...',
+  LOAD_OLDER_MESSAGES: 'Tải thêm tin nhắn cũ',
+  SCROLL_TO_BOTTOM: 'Cuộn xuống dưới cùng',
+  NEW_MESSAGES_COUNT_SUFFIX: 'tin nhắn mới',
   // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
   MENTION_DOC_ICON: '📄',
   // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji

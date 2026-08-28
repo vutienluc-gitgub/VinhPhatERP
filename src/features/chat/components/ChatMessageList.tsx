@@ -171,19 +171,16 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     return (
       <div className="chat-message-list">
         <div className="chat-empty-state">
-          <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
+          <Icon
+            name="MessageSquare"
+            size={48}
+            strokeWidth={1.5}
             className="chat-empty-icon"
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
+          />
           <p className="chat-empty-text">{CHAT_LABELS.NO_MESSAGES}</p>
-          <p className="chat-empty-hint">Bắt đầu cuộc trò chuyện ngay!</p>
+          <p className="chat-empty-hint">
+            {CHAT_LABELS.START_CONVERSATION_HINT}
+          </p>
         </div>
       </div>
     );
@@ -206,20 +203,11 @@ export const ChatMessageList = React.memo(function ChatMessageList({
               disabled={isFetchingNextPage}
             >
               {isFetchingNextPage ? (
-                'Đang tải tin nhắn cũ...'
+                CHAT_LABELS.LOADING_OLDER_MESSAGES
               ) : (
                 <>
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M12 5v14M5 12l7-7 7 7" />
-                  </svg>
-                  <span>Tải thêm tin nhắn cũ</span>
+                  <Icon name="ArrowUp" size={12} strokeWidth={2} />
+                  <span>{CHAT_LABELS.LOAD_OLDER_MESSAGES}</span>
                 </>
               )}
             </button>
@@ -289,12 +277,12 @@ export const ChatMessageList = React.memo(function ChatMessageList({
           type="button"
           className="chat-scroll-bottom-fab"
           onClick={() => scrollToBottom(true)}
-          aria-label="Cuộn xuống dưới cùng"
+          aria-label={CHAT_LABELS.SCROLL_TO_BOTTOM}
         >
           <Icon name="ChevronDown" size={16} />
           {unreadNewCount > 0 && (
             <span className="chat-scroll-bottom-badge">
-              {unreadNewCount} tin nhắn mới
+              {unreadNewCount} {CHAT_LABELS.NEW_MESSAGES_COUNT_SUFFIX}
             </span>
           )}
         </button>

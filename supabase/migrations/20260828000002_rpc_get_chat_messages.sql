@@ -12,11 +12,28 @@ CREATE OR REPLACE FUNCTION public.rpc_get_chat_messages(
 RETURNS JSONB AS $$
 DECLARE
   v_result JSONB;
+  v_user_id UUID;
+  v_tenant_id UUID;
 BEGIN
+  v_user_id := auth.uid();
+  v_tenant_id := public.current_tenant_id();
+
+  -- If caller is in tenant, ensure participant record exists
+  IF v_user_id IS NOT NULL AND v_tenant_id IS NOT NULL THEN
+    IF EXISTS (
+      SELECT 1 FROM public.chat_rooms
+      WHERE id = p_room_id AND tenant_id = v_tenant_id
+    ) THEN
+      INSERT INTO public.chat_room_participants (room_id, user_id, role)
+      VALUES (p_room_id, v_user_id, 'member')
+      ON CONFLICT (room_id, user_id) DO NOTHING;
+    END IF;
+  END IF;
+
   -- Verify caller is participant
   IF NOT EXISTS (
     SELECT 1 FROM public.chat_room_participants
-    WHERE room_id = p_room_id AND user_id = auth.uid()
+    WHERE room_id = p_room_id AND user_id = v_user_id
   ) THEN
     RAISE EXCEPTION 'Access denied to room %', p_room_id;
   END IF;
@@ -68,8 +85,6 @@ BEGIN
       'pinned_at', m.pinned_at,
       'pinned_by', m.pinned_by,
       'mentions', COALESCE(m.mentions, '[]'::jsonb),
-      'read_at', m.read_at,
-      'read_by', m.read_by,
       'reactions', COALESCE(mr.reactions, '[]'::jsonb)
     ) ORDER BY m.created_at DESC
   )
