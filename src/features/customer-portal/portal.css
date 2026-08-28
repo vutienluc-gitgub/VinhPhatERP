@@ -28,9 +28,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.25rem;
-  height: 56px;
-  min-height: 56px;
+  padding: env(safe-area-inset-top, 0px) 1.25rem 0;
+  height: calc(56px + env(safe-area-inset-top, 0px));
+  min-height: calc(56px + env(safe-area-inset-top, 0px));
 
   /* @architecture-exception: legacy color migration */
   background: #0f1f3d;
@@ -170,9 +170,9 @@
 /* ── Responsive Mobile Topbar (< 768px & < 480px) ── */
 @media (max-width: 768px) {
   .portal-header {
-    padding: 0 0.75rem;
-    height: 52px;
-    min-height: 52px;
+    padding: env(safe-area-inset-top, 0px) 0.75rem 0;
+    height: calc(52px + env(safe-area-inset-top, 0px));
+    min-height: calc(52px + env(safe-area-inset-top, 0px));
   }
 
   .portal-brand-sep,
@@ -200,7 +200,7 @@
 
 @media (max-width: 480px) {
   .portal-header {
-    padding: 0 0.5rem;
+    padding: env(safe-area-inset-top, 0px) 0.5rem 0;
   }
 
   .portal-brand-name {
@@ -1372,12 +1372,8 @@
   position: absolute;
   top: 0;
   right: 0;
-
-  /* @architecture-exception: legacy color migration */
-  background: #e03e3e;
-
-  /* @architecture-exception: legacy color migration */
-  color: #fff;
+  background: var(--danger, #e03e3e);
+  color: var(--color-primary-foreground, #fff);
   font-size: 0.7rem;
   font-weight: 700;
   min-width: 20px;
@@ -1387,7 +1383,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 2px #fff;
+  box-shadow: 0 0 0 2px var(--surface, #fff);
   transform: translate(15%, -15%);
 }
 

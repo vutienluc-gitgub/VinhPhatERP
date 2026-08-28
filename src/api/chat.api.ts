@@ -326,6 +326,16 @@ export async function fetchMyChatRooms(): Promise<MyChatRoomSummary[]> {
 
   return data.map((row) => {
     const details = detailsMap.get(row.entity_id);
+    const typeLabel =
+      row.entity_type === 'shipment'
+        ? 'Lô hàng'
+        : row.entity_type === 'order'
+          ? 'Đơn hàng'
+          : row.entity_type === 'customer'
+            ? 'Khách hàng'
+            : row.entity_type === 'supplier'
+              ? 'Nhà cung cấp'
+              : row.entity_type;
     return {
       roomId: row.room_id,
       entityType: row.entity_type,
@@ -336,8 +346,7 @@ export async function fetchMyChatRooms(): Promise<MyChatRoomSummary[]> {
       lastMessage: row.last_message,
       lastMessageAt: row.last_message_at,
       lastMessageType: row.last_message_type,
-      entityName:
-        details?.name || `${row.entity_type} ${row.entity_id.slice(0, 8)}`,
+      entityName: details?.name || `${typeLabel} #${row.entity_id.slice(0, 8)}`,
       entityCode: details?.code || '',
     };
   });

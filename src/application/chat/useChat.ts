@@ -195,6 +195,8 @@ export function useSendMessage(roomId: string | undefined) {
       fileName?: string;
       fileType?: string;
       mentions?: ChatMention[];
+      replyToId?: string | null;
+      replyToMessage?: ChatMessage['reply_to_message'];
     }) => {
       if (!roomId) throw new Error('Room ID is required');
 
@@ -224,6 +226,8 @@ export function useSendMessage(roomId: string | undefined) {
           file_url: params.fileUrl ?? null,
           file_name: params.fileName ?? null,
           file_type: params.fileType ?? null,
+          reply_to_id: params.replyToId ?? null,
+          reply_to_message: params.replyToMessage ?? null,
           status: 'pending' as const,
           created_at: new Date().toISOString(),
           deleted_at: null,
@@ -258,6 +262,8 @@ export function useSendMessage(roomId: string | undefined) {
         file_url: params.fileUrl ?? null,
         file_name: params.fileName ?? null,
         file_type: params.fileType ?? null,
+        reply_to_id: params.replyToId ?? null,
+        reply_to_message: params.replyToMessage ?? null,
         status: 'pending',
         created_at: new Date().toISOString(),
         deleted_at: null,

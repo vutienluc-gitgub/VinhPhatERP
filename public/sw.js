@@ -36,12 +36,24 @@ self.addEventListener('push', (event) => {
     vibrate: [100, 50, 100],
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  const notifPromise = self.registration.showNotification(title, options);
+  const badgePromise =
+    typeof navigator !== 'undefined' && 'setAppBadge' in navigator
+      ? typeof payload.unread_count === 'number'
+        ? navigator.setAppBadge(payload.unread_count).catch(() => {})
+        : navigator.setAppBadge().catch(() => {})
+      : Promise.resolve();
+
+  event.waitUntil(Promise.all([notifPromise, badgePromise]));
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const notifData = event.notification.data || {};
+
+  if (typeof navigator !== 'undefined' && 'clearAppBadge' in navigator) {
+    navigator.clearAppBadge().catch(() => {});
+  }
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

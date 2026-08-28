@@ -1,19 +1,12 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { fetchMyChatRooms, type MyChatRoomSummary } from '@/api/chat.api';
+import { Icon } from '@/shared/components/Icon';
 
 import { ChatDrawer } from './ChatDrawer';
 import './chat.css';
-
-// Mappings for UI
-const ENTITY_COLORS: Record<string, string> = {
-  customer: 'var(--color-primary, #6366f1)',
-  shipment: 'var(--color-success, #22c55e)',
-  order: 'var(--color-warning, #f59e0b)',
-  work_order: 'var(--color-info, #0ea5e9)',
-};
 
 function formatRelative(iso: string | null): string {
   if (!iso) return '';
@@ -27,6 +20,80 @@ function formatRelative(iso: string | null): string {
   return `${days} ngày`;
 }
 
+function cleanPreviewText(text: string | null, type?: string | null): string {
+  if (!text) return 'Chưa có tin nhắn';
+  if (type === 'image') return 'Hình ảnh';
+  return text.trim();
+}
+
+function RoomAvatar({
+  entityType,
+  entityName,
+}: {
+  entityType: string;
+  entityName: string;
+}) {
+  if (entityType === 'shipment') {
+    return (
+      <div
+        className="chat-inbox-avatar"
+        style={{
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+        }}
+      >
+        <Icon name="Truck" size={18} />
+      </div>
+    );
+  }
+
+  if (entityType === 'order') {
+    return (
+      <div
+        className="chat-inbox-avatar"
+        style={{
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        }}
+      >
+        <Icon name="Package" size={18} />
+      </div>
+    );
+  }
+
+  if (entityType === 'supplier') {
+    return (
+      <div
+        className="chat-inbox-avatar"
+        style={{
+          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+        }}
+      >
+        <Icon name="Building2" size={18} />
+      </div>
+    );
+  }
+
+  // Customer or default: initials
+  const initials = entityName
+    ? entityName
+        .split(' ')
+        .slice(-2)
+        .map((w) => w[0])
+        .join('')
+        .toUpperCase()
+    : 'KH';
+
+  return (
+    <div
+      className="chat-inbox-avatar"
+      style={{
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
+      }}
+    >
+      {initials}
+    </div>
+  );
+}
+
 function RoomRow({
   room,
   onClick,
@@ -35,43 +102,38 @@ function RoomRow({
   onClick: () => void;
 }) {
   const unread = room.unreadCount;
-
-  // Create an icon or initial based on entity type
-  const color = ENTITY_COLORS[room.entityType] || 'var(--muted-foreground)';
-
-  const initials =
-    room.entityType === 'customer'
-      ? (room.entityName || '')
-          .split(' ')
-          .slice(-2)
-          .map((w) => w[0])
-          .join('')
-          .toUpperCase()
-      : room.entityType.substring(0, 2).toUpperCase();
+  const isImage = room.lastMessageType === 'image';
+  const preview = cleanPreviewText(room.lastMessage, room.lastMessageType);
 
   return (
     <button type="button" className="chat-inbox-row" onClick={onClick}>
-      <div className="chat-inbox-avatar" style={{ backgroundColor: color }}>
-        {initials}
-      </div>
+      <RoomAvatar
+        entityType={room.entityType}
+        entityName={room.entityName || ''}
+      />
       <div className="chat-inbox-body">
         <div className="chat-inbox-row-header">
-          <span className="chat-inbox-name">{room.entityName}</span>
+          <span
+            className={`chat-inbox-name ${unread > 0 ? 'font-semibold text-foreground' : ''}`}
+          >
+            {room.entityName}
+          </span>
           <span className="chat-inbox-time">
             {formatRelative(room.lastMessageAt)}
           </span>
         </div>
         <div className="chat-inbox-row-footer">
           <span
-            className="chat-inbox-preview"
-            style={{
-              color: unread > 0 ? 'var(--text, #111)' : undefined,
-              fontWeight: unread > 0 ? 500 : 400,
-            }}
+            className={`chat-inbox-preview ${unread > 0 ? 'text-foreground font-medium' : 'text-muted-foreground'}`}
           >
-            {room.lastMessageType === 'image'
-              ? '🖼️ Hình ảnh'
-              : (room.lastMessage ?? 'Chưa có tin nhắn')}
+            {isImage ? (
+              <span className="inline-flex items-center gap-1">
+                <Icon name="Image" size={13} className="text-primary" />
+                <span>Hình ảnh</span>
+              </span>
+            ) : (
+              preview
+            )}
           </span>
           {unread > 0 && (
             <span className="chat-inbox-badge">
@@ -84,6 +146,8 @@ function RoomRow({
   );
 }
 
+type FilterTab = 'all' | 'customer' | 'shipment' | 'unread';
+
 interface ChatInboxDrawerProps {
   open: boolean;
   onClose: () => void;
@@ -91,6 +155,8 @@ interface ChatInboxDrawerProps {
 
 export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
   const [activeRoom, setActiveRoom] = useState<MyChatRoomSummary | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const queryClient = useQueryClient();
 
   const { data: rooms = [], isLoading } = useQuery({
@@ -100,6 +166,32 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
     staleTime: 15_000,
     refetchInterval: open ? 30_000 : false,
   });
+
+  const filteredRooms = useMemo(() => {
+    let result = rooms;
+
+    // 1. Filter tab
+    if (activeFilter === 'customer') {
+      result = result.filter((r) => r.entityType === 'customer');
+    } else if (activeFilter === 'shipment') {
+      result = result.filter((r) => r.entityType === 'shipment');
+    } else if (activeFilter === 'unread') {
+      result = result.filter((r) => r.unreadCount > 0);
+    }
+
+    // 2. Search query
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      result = result.filter(
+        (r) =>
+          r.entityName?.toLowerCase().includes(q) ||
+          r.entityCode?.toLowerCase().includes(q) ||
+          r.lastMessage?.toLowerCase().includes(q),
+      );
+    }
+
+    return result;
+  }, [rooms, activeFilter, searchQuery]);
 
   function handleOpen(room: MyChatRoomSummary) {
     setActiveRoom(room);
@@ -111,7 +203,6 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
   }
 
   // When a room is active, render ChatDrawer completely standalone
-  // (inbox panel is NOT rendered to avoid any z-index / pointer-events conflict)
   if (activeRoom) {
     return (
       <ChatDrawer
@@ -153,31 +244,96 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={onClose}
             aria-label="Đóng"
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <Icon name="X" size={18} />
+          </button>
+        </div>
+
+        {/* Search Bar */}
+        <div className="px-3 pt-2 pb-1">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-secondary border border-border rounded-lg">
+            <Icon
+              name="Search"
+              size={15}
+              className="text-muted-foreground shrink-0"
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm cuộc trò chuyện, lô hàng..."
+              className="w-full bg-transparent border-none outline-none text-xs text-foreground placeholder:text-muted-foreground"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="text-muted-foreground hover:text-foreground p-0.5 border-none bg-transparent cursor-pointer"
+              >
+                <Icon name="X" size={12} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1.5 px-3 py-2 border-b border-border overflow-x-auto scrollbar-none">
+          <button
+            type="button"
+            onClick={() => setActiveFilter('all')}
+            className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
+              activeFilter === 'all'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
+            }`}
+          >
+            Tất cả ({rooms.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveFilter('customer')}
+            className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
+              activeFilter === 'customer'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
+            }`}
+          >
+            Khách hàng
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveFilter('shipment')}
+            className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
+              activeFilter === 'shipment'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
+            }`}
+          >
+            Lô hàng
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveFilter('unread')}
+            className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
+              activeFilter === 'unread'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
+            }`}
+          >
+            Chưa đọc
           </button>
         </div>
 
         {/* Room list */}
         <div className="chat-inbox-list">
           {isLoading && <div className="chat-inbox-empty">Đang tải...</div>}
-          {!isLoading && rooms.length === 0 && (
+          {!isLoading && filteredRooms.length === 0 && (
             <div className="chat-inbox-empty">
-              Chưa có cuộc trò chuyện nào.
-              <br />
-              Vào thực thể → Nhắn tin để bắt đầu.
+              {searchQuery
+                ? 'Không tìm thấy cuộc trò chuyện phù hợp.'
+                : 'Chưa có cuộc trò chuyện nào.'}
             </div>
           )}
-          {rooms.map((room) => (
+          {filteredRooms.map((room) => (
             <RoomRow
               key={room.roomId}
               room={room}

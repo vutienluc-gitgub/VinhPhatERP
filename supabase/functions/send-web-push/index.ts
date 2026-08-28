@@ -121,7 +121,14 @@ serve(async (req: Request) => {
       );
     }
 
-    // 3. Prepare sanitized payload
+    // 3. Calculate recipient's total unread count for OS App Badging
+    const { count: unreadCount } = await supabase
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', payload.user_id)
+      .eq('is_read', false);
+
+    // Prepare sanitized payload
     const pushMessage = JSON.stringify({
       notification_id: payload.notification_id,
       title: payload.title,
@@ -130,6 +137,7 @@ serve(async (req: Request) => {
       entity_id: payload.entity_id,
       action: payload.action,
       priority: payload.priority || 'normal',
+      unread_count: (unreadCount ?? 0) + 1,
     });
 
     const results = [];
