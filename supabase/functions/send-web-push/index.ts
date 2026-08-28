@@ -41,6 +41,26 @@ if (vapidPrivateKey && vapidPublicKey) {
   webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 }
 
+// In-memory deduplication set to avoid duplicate pushes from dual-trigger mechanisms
+const processedMessageIds = new Map<string, number>();
+
+function isDuplicateChatMessage(messageId: string): boolean {
+  const now = Date.now();
+  // Cleanup entries older than 30s
+  for (const [id, timestamp] of processedMessageIds.entries()) {
+    if (now - timestamp > 30_000) {
+      processedMessageIds.delete(id);
+    }
+  }
+
+  if (processedMessageIds.has(messageId)) {
+    return true;
+  }
+
+  processedMessageIds.set(messageId, now);
+  return false;
+}
+
 /**
  * Sanitizes push message body to guarantee enterprise privacy on lock screens
  */
@@ -68,6 +88,19 @@ serve(async (req: Request) => {
 
     // ── CHAT MESSAGE FAN-OUT ──
     if (payload.type === 'CHAT_MESSAGE' && payload.message_id) {
+      // Idempotency check: Skip if already processed within the sliding window
+      if (isDuplicateChatMessage(payload.message_id)) {
+        return new Response(
+          JSON.stringify({
+            status: 'skipped_duplicate',
+            message_id: payload.message_id,
+          }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          },
+        );
+      }
       // 1. Fetch message with retry logic to avoid race condition
       let message: {
         id: string;

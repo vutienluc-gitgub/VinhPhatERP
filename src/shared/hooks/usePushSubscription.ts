@@ -37,7 +37,8 @@ function detectBrowser(): string {
   const isStandalone =
     ('standalone' in navigator &&
       (navigator as unknown as { standalone: boolean }).standalone) ||
-    window.matchMedia('(display-mode: standalone)').matches;
+    (typeof window !== 'undefined' &&
+      window.matchMedia('(display-mode: standalone)').matches);
 
   if (isStandalone && /iphone|ipad|ipod/.test(ua)) return 'safari-pwa';
   if (/edg/.test(ua)) return 'edge';
@@ -45,6 +46,39 @@ function detectBrowser(): string {
   if (/firefox/.test(ua)) return 'firefox';
   if (/safari/.test(ua) && !/chrome/.test(ua)) return 'safari';
   return 'other';
+}
+
+/**
+ * Checks if current environment is iOS Safari non-PWA (needs Add to Home Screen first)
+ */
+export function isIOSNonStandalone(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(ua);
+  const isStandalone =
+    ('standalone' in navigator &&
+      (navigator as unknown as { standalone: boolean }).standalone) ||
+    (typeof window !== 'undefined' &&
+      window.matchMedia('(display-mode: standalone)').matches);
+  return isIOS && !isStandalone;
+}
+
+/**
+ * Revokes current browser device push subscription on sign-out to prevent privacy leaks on shared devices
+ */
+export async function revokeCurrentDevicePushSubscription(): Promise<void> {
+  try {
+    const reg = await getServiceWorkerRegistration();
+    if (!reg) return;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      await sub.unsubscribe();
+      await PushSubscriptionRepository.revokeSubscription(sub.endpoint);
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.debug('[Push] Failed to revoke subscription on signout:', err);
+  }
 }
 
 export function usePushSubscription() {
@@ -67,13 +101,13 @@ export function usePushSubscription() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check current subscription status on mount
+  // Check current subscription status & perform silent re-sync on mount
   useEffect(() => {
     if (!isSupported || !userId) return;
 
     let mounted = true;
 
-    async function checkSubscription() {
+    async function checkAndResyncSubscription() {
       try {
         const reg = await getServiceWorkerRegistration();
         if (!reg) return;
@@ -82,18 +116,70 @@ export function usePushSubscription() {
           setIsSubscribed(Boolean(sub));
           setPermission(Notification.permission);
         }
+
+        // Silent Auto-Enroll / Re-sync:
+        // If permission is already granted in OS/browser, ensure active PushSubscription exists and is registered in DB
+        if (Notification.permission === 'granted' && userId) {
+          let activeSub = sub;
+
+          // If no subscription exists on PushManager, subscribe silently now
+          if (!activeSub) {
+            try {
+              const vapidPublicKey = getVapidPublicKey();
+              const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+              activeSub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey:
+                  convertedVapidKey as unknown as BufferSource,
+              });
+              if (mounted) {
+                setIsSubscribed(true);
+              }
+            } catch (subscribeErr) {
+              // eslint-disable-next-line no-console
+              console.debug(
+                '[usePushSubscription] Auto-subscribe error:',
+                subscribeErr,
+              );
+            }
+          }
+
+          if (activeSub) {
+            const subJson = activeSub.toJSON();
+            const p256dh = subJson.keys?.p256dh;
+            const auth = subJson.keys?.auth;
+
+            if (p256dh && auth) {
+              await PushSubscriptionRepository.saveSubscription({
+                user_id: userId,
+                endpoint: activeSub.endpoint,
+                p256dh,
+                auth,
+                device_id: getOrCreateDeviceId(),
+                device_name: `${detectPlatform()} (${detectBrowser()})`,
+                platform: detectPlatform(),
+                browser: detectBrowser(),
+                user_agent:
+                  typeof navigator !== 'undefined'
+                    ? navigator.userAgent
+                    : undefined,
+                tenant_id: tenantId,
+              });
+            }
+          }
+        }
       } catch (err) {
         // eslint-disable-next-line no-console
         console.debug('[usePushSubscription] Check error:', err);
       }
     }
 
-    void checkSubscription();
+    void checkAndResyncSubscription();
 
     return () => {
       mounted = false;
     };
-  }, [isSupported, userId]);
+  }, [isSupported, userId, tenantId]);
 
   const subscribe = useCallback(async (): Promise<boolean> => {
     if (!isSupported) {

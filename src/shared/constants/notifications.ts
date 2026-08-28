@@ -23,3 +23,13 @@ export const CHAT_TOAST_LABELS = {
   GROUP_SUFFIX: 'tin nhắn mới',
   OPEN_CHAT: 'Mở cuộc trò chuyện',
 } as const;
+
+export const IOS_PWA_LABELS = {
+  TITLE: 'Cần thêm ứng dụng vào Màn hình chính',
+  DESC: 'Theo quy định bảo mật của Apple, để nhận thông báo trên iPhone, bạn cần thêm ứng dụng ra Màn hình chính:',
+  STEP_1:
+    '1. Chạm nút Chia sẻ ở thanh dưới Safari (biểu tượng ô vuông có mũi tên lên)',
+  STEP_2: '2. Vuốt xuống và chọn "Thêm vào MH chính" (Add to Home Screen)',
+  STEP_3: '3. Mở ứng dụng từ Màn hình chính để bật thông báo',
+  GOT_IT: 'Đã hiểu',
+} as const;

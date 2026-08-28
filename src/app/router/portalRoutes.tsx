@@ -103,6 +103,16 @@ const PortalFabricCatalogPage = lazy(() =>
     (m) => ({ default: m.PortalFabricCatalogPage }),
   ),
 );
+const PortalQuotationsPage = lazy(() =>
+  import('@/features/customer-portal/quotations/PortalQuotationsPage').then(
+    (m) => ({ default: m.PortalQuotationsPage }),
+  ),
+);
+const PortalQuotationDetail = lazy(() =>
+  import('@/features/customer-portal/quotations/PortalQuotationDetail').then(
+    (m) => ({ default: m.PortalQuotationDetail }),
+  ),
+);
 
 const portalFallback = (
   <div className="p-4 text-sm text-muted-foreground">Đang tải…</div>
@@ -148,6 +158,14 @@ export const portalRoutes: RouteObject[] = [
           {
             path: 'fabric-catalog',
             element: withSuspense(<PortalFabricCatalogPage />, portalFallback),
+          },
+          {
+            path: 'quotations',
+            element: withSuspense(<PortalQuotationsPage />, portalFallback),
+          },
+          {
+            path: 'quotations/:id',
+            element: withSuspense(<PortalQuotationDetail />, portalFallback),
           },
         ],
       },
