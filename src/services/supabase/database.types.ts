@@ -551,6 +551,7 @@ export type Database = {
           last_read_message_id: string | null;
           role: string;
           room_id: string;
+          unread_count: number;
           user_id: string;
         };
         Insert: {
@@ -559,6 +560,7 @@ export type Database = {
           last_read_message_id?: string | null;
           role: string;
           room_id: string;
+          unread_count?: number;
           user_id: string;
         };
         Update: {
@@ -567,6 +569,7 @@ export type Database = {
           last_read_message_id?: string | null;
           role?: string;
           room_id?: string;
+          unread_count?: number;
           user_id?: string;
         };
         Relationships: [
