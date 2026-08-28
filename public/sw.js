@@ -45,7 +45,7 @@ self.addEventListener('push', (event) => {
         body: messageBody,
         icon: '/icon-192.png', // Fallback to main app icon
         badge: '/icon-192.png',
-        tag: `chat-${roomId}`, // Group messages from the same room
+        tag: `chat-${roomId}-${Date.now()}`, // Unique timestamp tag so iOS alerts on Lock Screen for each message
         data: { url: `/customer-portal/chat?roomId=${roomId}`, action: 'chat', roomId },
         vibrate: [100, 50, 100],
       });

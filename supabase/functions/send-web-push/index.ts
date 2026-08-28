@@ -108,16 +108,13 @@ serve(async (req: Request) => {
         message_type: string;
         sender_id: string | null;
         room_id: string;
-        sender?: { full_name?: string } | { full_name?: string }[] | null;
       } | null = null;
       let retryCount = 0;
 
       while (retryCount < 2) {
         const { data } = await supabase
           .from('chat_messages')
-          .select(
-            'id, content, message_type, sender_id, room_id, sender:sender_id(full_name)',
-          )
+          .select('id, content, message_type, sender_id, room_id')
           .eq('id', payload.message_id)
           .single();
 
@@ -177,15 +174,15 @@ serve(async (req: Request) => {
       });
 
       let senderName = 'Nguoi dung';
-      if (message.sender) {
-        if (Array.isArray(message.sender) && message.sender.length > 0) {
-          senderName = message.sender[0]?.full_name || senderName;
-        } else if (
-          typeof message.sender === 'object' &&
-          'full_name' in message.sender
-        ) {
-          senderName =
-            (message.sender as { full_name?: string }).full_name || senderName;
+      if (message.sender_id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', message.sender_id)
+          .maybeSingle();
+
+        if (profile?.full_name) {
+          senderName = profile.full_name;
         }
       }
 
@@ -193,11 +190,12 @@ serve(async (req: Request) => {
       const results = [];
       for (const sub of subscriptions) {
         const pushMessage = JSON.stringify({
-          title: `${senderName} (Chat)`,
+          title: `${senderName}`,
           body: bodyText,
           action: 'chat',
           roomId: message.room_id,
           senderName: senderName,
+          notification_id: `chat-${message.id}-${Date.now()}`,
           unreadCount: unreadMap.get(sub.user_id) || 1,
         });
 
