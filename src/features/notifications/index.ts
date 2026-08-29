@@ -3,6 +3,8 @@ export * from './domain/notification.types';
 export * from './domain/notification-errors';
 export * from './domain/notification-fsm';
 export * from './domain/badge-calculator';
+export * from './domain/active-view-registry';
+export * from './domain/notification-policy';
 
 // Application
 export * from './application/notification.facade';

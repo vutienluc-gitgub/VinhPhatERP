@@ -6,6 +6,11 @@ import type { ChatMessage } from '@/schema/chat.schema';
 import { playNotificationSound } from '@/shared/lib/chat-sound';
 import { supabase } from '@/services/supabase/client';
 import { useAuth } from '@/shared/hooks/useAuth';
+import {
+  evaluateNotificationPolicy,
+  registerActiveView,
+  unregisterActiveView,
+} from '@/features/notifications';
 
 import { showChatToast } from './ChatToast';
 import { useChatRoom } from './useChat';
@@ -53,27 +58,27 @@ export function useMarkAsRead(roomId: string | undefined) {
   }, [roomId, queryClient]);
 }
 
-// ── Global Chat Notifications Hook ──
-// Listens to ALL chat_messages inserts for the current user's rooms.
-// Shows toast + plays sound when a new message arrives and the chat is NOT open.
-
-export const globalOpenRooms = new Set<string>();
+// ── Room Registration Adapters (delegated to ActiveViewRegistry) ──
 
 export function registerOpenRoom(roomId: string) {
-  globalOpenRooms.add(roomId);
+  registerActiveView('chat_room', roomId);
 }
 
 export function unregisterOpenRoom(roomId: string) {
-  globalOpenRooms.delete(roomId);
+  unregisterActiveView('chat_room', roomId);
 }
 
 interface UseChatNotificationsOptions {
-  /** Set of room IDs currently open in a drawer — skip notifications for these */
+  /** Optional set of room IDs currently open in a drawer — skip notifications for these */
   openRoomIds?: Set<string>;
   /** Enable sound alerts (default: true) */
   soundEnabled?: boolean;
 }
 
+/**
+ * useChatNotifications: Thin Application Layer hook that observes incoming Realtime chat messages
+ * and dispatches notifications through the NotificationPolicy Engine.
+ */
 export function useChatNotifications(
   options: UseChatNotificationsOptions = {},
 ) {
@@ -84,6 +89,13 @@ export function useChatNotifications(
   const [lastMessage, setLastMessage] = useState<ChatMessage | null>(null);
 
   useEffect(() => {
+    // If specific openRoomIds provided in options, register them
+    if (openRoomIds) {
+      for (const rId of openRoomIds) {
+        registerActiveView('chat_room', rId);
+      }
+    }
+
     const channel = supabase
       .channel('global-chat-notifications')
       .on(
@@ -99,37 +111,58 @@ export function useChatNotifications(
           // Skip system messages
           if (msg.message_type === 'system') return;
 
-          // Skip if this room's drawer is currently open
-          if (openRoomIds?.has(msg.room_id) || globalOpenRooms.has(msg.room_id))
-            return;
+          // Evaluate Notification Policy
+          const decision = evaluateNotificationPolicy(
+            {
+              domain: 'chat',
+              entityType: 'chat_room',
+              entityId: msg.room_id,
+              senderId: msg.sender_id,
+            },
+            {
+              currentUserId: user?.id ?? '',
+              preferences: {
+                soundEnabled,
+                inAppEnabled: true,
+              },
+            },
+          );
 
-          // Skip own messages (sender_id matches current user)
-          const currentUserId = user?.id;
-          if (currentUserId && msg.sender_id === currentUserId) return;
+          if (
+            !decision.shouldDeliverInApp &&
+            !decision.shouldPlaySound &&
+            !decision.shouldUpdateBadge
+          ) {
+            return;
+          }
 
           setLastMessage(msg);
 
-          // Play sound
-          if (soundEnabled) {
+          // 1. Audio chime
+          if (decision.shouldPlaySound) {
             playNotificationSound();
           }
 
-          // Show rich grouped toast
-          void showChatToast(msg);
+          // 2. In-App Toast
+          if (decision.shouldDeliverInApp) {
+            void showChatToast(msg);
+          }
 
-          // Invalidate unread count and rooms
-          void queryClient.invalidateQueries({
-            queryKey: UNREAD_KEY(msg.room_id),
-          });
-          void queryClient.invalidateQueries({
-            queryKey: ['chat-rooms'],
-          });
-          void queryClient.invalidateQueries({
-            queryKey: ['chat-total-unread'],
-          });
-          void queryClient.invalidateQueries({
-            queryKey: ['chat-messages', msg.room_id],
-          });
+          // 3. Server-authoritative badge / unread counter invalidation
+          if (decision.shouldUpdateBadge) {
+            void queryClient.invalidateQueries({
+              queryKey: UNREAD_KEY(msg.room_id),
+            });
+            void queryClient.invalidateQueries({
+              queryKey: ['chat-rooms'],
+            });
+            void queryClient.invalidateQueries({
+              queryKey: ['chat-total-unread'],
+            });
+            void queryClient.invalidateQueries({
+              queryKey: ['chat-messages', msg.room_id],
+            });
+          }
         },
       )
       .subscribe();
@@ -140,6 +173,11 @@ export function useChatNotifications(
       if (channelRef.current) {
         void supabase.removeChannel(channelRef.current);
         channelRef.current = null;
+      }
+      if (openRoomIds) {
+        for (const rId of openRoomIds) {
+          unregisterActiveView('chat_room', rId);
+        }
       }
     };
   }, [openRoomIds, soundEnabled, queryClient, user?.id]);
