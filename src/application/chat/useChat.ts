@@ -74,10 +74,32 @@ function appendMessage(old: unknown, newMsg: ChatMessage): unknown {
   if (!data) return data;
 
   const allMessages = data.pages.flat();
-  const exists = allMessages.some(
-    (m) => m.id === newMsg.id || m.client_id === newMsg.client_id,
+  const existing = allMessages.find(
+    (m) =>
+      (Boolean(newMsg.client_id) && m.client_id === newMsg.client_id) ||
+      m.id === newMsg.id,
   );
-  if (exists) return data;
+
+  if (existing) {
+    // If message is already confirmed and identical, keep data
+    const isOpt = '_optimistic' in existing && Boolean(existing._optimistic);
+    if (!isOpt && existing.status !== 'pending' && existing.id === newMsg.id) {
+      return data;
+    }
+
+    // Replace optimistic / pending message with the confirmed real message
+    return {
+      ...data,
+      pages: data.pages.map((page) =>
+        page.map((m) =>
+          (Boolean(newMsg.client_id) && m.client_id === newMsg.client_id) ||
+          m.id === newMsg.id
+            ? { ...m, ...newMsg, status: 'sent', _optimistic: false }
+            : m,
+        ),
+      ),
+    };
+  }
 
   return {
     ...data,
@@ -184,6 +206,7 @@ export function useChatMessages(roomId: string | undefined) {
 
 export function useSendMessage(roomId: string | undefined) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (params: {
@@ -219,7 +242,7 @@ export function useSendMessage(roomId: string | undefined) {
           client_id: params.clientId,
           tenant_id: '',
           room_id: roomId,
-          sender_id: null,
+          sender_id: user?.id ?? null,
           message_type: params.messageType ?? 'text',
           content: params.content,
           image_url: params.imageUrl ?? null,
@@ -251,7 +274,7 @@ export function useSendMessage(roomId: string | undefined) {
         client_id: params.clientId,
         tenant_id: '',
         room_id: roomId,
-        sender_id: null,
+        sender_id: user?.id ?? null,
         message_type: (params.messageType ?? 'text') as
           | 'text'
           | 'image'
@@ -290,14 +313,17 @@ export function useSendMessage(roomId: string | undefined) {
 
       return { previous };
     },
+    onSuccess: (confirmedMsg) => {
+      if (!roomId || !confirmedMsg) return;
+      queryClient.setQueryData(CHAT_KEYS.messages(roomId), (old: unknown) =>
+        appendMessage(old, confirmedMsg as ChatMessage),
+      );
+    },
     onError: (_err, _vars, context) => {
       if (context?.previous && roomId) {
         queryClient.setQueryData(CHAT_KEYS.messages(roomId), context.previous);
       }
     },
-    // onSettled invalidation removed — the realtime INSERT handler
-    // already appends the confirmed message via appendMessage() with
-    // client_id dedup. No need for a redundant full-page refetch.
   });
 }
 

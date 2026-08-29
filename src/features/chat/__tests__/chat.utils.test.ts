@@ -84,4 +84,35 @@ describe('chat.utils - buildMessageGroups', () => {
     expect(cluster2?.isMine).toBe(true);
     expect(cluster2?.messages.length).toBe(1);
   });
+
+  it('correctly handles optimistic pending messages as mine with sending status', () => {
+    const now = new Date().toISOString();
+    const mockMessages: ChatMessage[] = [
+      {
+        id: 'opt-client-1',
+        client_id: 'opt-client-1',
+        tenant_id: 'tenant-1',
+        room_id: 'room-1',
+        sender_id: 'user-2',
+        message_type: 'text',
+        content: 'Dạ em đã nhận được thông tin ạ',
+        image_url: null,
+        file_url: null,
+        file_name: null,
+        file_type: null,
+        status: 'pending',
+        created_at: now,
+        deleted_at: null,
+        is_pinned: false,
+        pinned_at: null,
+        pinned_by: null,
+      },
+    ];
+
+    const groups = buildMessageGroups(mockMessages, 'user-2');
+    expect(groups.length).toBe(1);
+    const cluster = groups[0]?.clusters[0];
+    expect(cluster?.isMine).toBe(true);
+    expect(cluster?.messages[0]?.status).toBe('sending');
+  });
 });

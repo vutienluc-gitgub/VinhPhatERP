@@ -1,4 +1,6 @@
 export type NotificationDomain =
+  | 'chat'
+  | 'logistics'
   | 'purchasing'
   | 'approval'
   | 'inventory'

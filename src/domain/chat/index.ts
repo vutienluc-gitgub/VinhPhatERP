@@ -1,4 +1,5 @@
 export * from './ChatStateMachine';
+export * from './chat.events';
 export type {
   ChatRoom,
   ChatMessage,
