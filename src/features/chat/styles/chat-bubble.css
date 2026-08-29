@@ -289,6 +289,23 @@
   max-width: min(260px, 72vw);
 }
 
+.chat-bubble--emoji-only {
+  padding: 2px 4px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-width: auto !important;
+}
+
+.chat-bubble--emoji-only .chat-bubble-text-content {
+  font-size: 2.25rem !important;
+  line-height: 1.15 !important;
+}
+
+.chat-bubble--emoji-only.chat-bubble--mine .chat-message-meta--mine {
+  color: var(--muted-foreground) !important;
+}
+
 /* ── Bubble Content Layouts ── */
 
 .chat-bubble-compact-row {
@@ -313,7 +330,7 @@
 /* ── Embedded ChatMessageMeta (Timestamp + Receipt) ── */
 
 .chat-message-meta {
-  font-size: 0.6875rem;
+  font-size: 0.7rem;
   line-height: 1;
   user-select: none;
   display: inline-flex;
@@ -350,8 +367,8 @@
 }
 
 .chat-message-meta--mine {
-  /* @architecture-exception: muted time on primary bubble */
-  color: rgba(255, 255, 255, 0.75);
+  /* @architecture-exception: high contrast time on primary bubble */
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .chat-message-meta--theirs {
@@ -359,14 +376,16 @@
 }
 
 .chat-meta-time {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
 .chat-meta-status {
   display: inline-flex;
   align-items: center;
-  font-size: 0.6875rem;
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .chat-meta-status--read {

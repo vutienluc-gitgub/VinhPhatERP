@@ -209,9 +209,24 @@ export function ChatInputArea({
     [text],
   );
 
+  const lastSentRef = useRef<{ text: string; time: number }>({
+    text: '',
+    time: 0,
+  });
+
   const handleSend = useCallback(() => {
     const trimmed = text.trim();
     if (!trimmed || disabled || isUploading) return;
+
+    // Prevent repeat identical message spam within 3 seconds
+    const now = Date.now();
+    if (
+      lastSentRef.current.text === trimmed &&
+      now - lastSentRef.current.time < 3000
+    ) {
+      return;
+    }
+    lastSentRef.current = { text: trimmed, time: now };
 
     const validMentions = mentions.filter((m) => trimmed.includes(m.label));
     const meta: ChatSendMeta = {};
@@ -251,7 +266,17 @@ export function ChatInputArea({
 
   const handleQuickReply = useCallback(
     (replyText: string) => {
-      onSend(replyText);
+      const trimmed = replyText.trim();
+      const now = Date.now();
+      if (
+        lastSentRef.current.text === trimmed &&
+        now - lastSentRef.current.time < 3000
+      ) {
+        return;
+      }
+      lastSentRef.current = { text: trimmed, time: now };
+
+      onSend(trimmed);
       chatAudio.playSentSound();
     },
     [onSend],
@@ -538,11 +563,13 @@ export function ChatInputArea({
           <ChatEmojiPicker ref={emojiPickerRef} onSelectEmoji={insertEmoji} />
         )}
 
-        {/* ERP Utility Menu Popover */}
+        {/* ERP Action Menu Popover (＋) */}
         {showUtilityMenu && (
           <ChatUtilityMenu
             ref={utilityMenuRef}
             onSelectUtility={handleSelectUtility}
+            onSelectImage={handleAttachClick}
+            onSelectFile={handleAttachClick}
             onClose={() => setShowUtilityMenu(false)}
           />
         )}
@@ -580,7 +607,7 @@ export function ChatInputArea({
           />
         </div>
 
-        {/* Toolbar Right: Quick Actions (idle) vs Send Button (typing) */}
+        {/* Toolbar Right: Plus Action Menu (idle) vs Send Button (typing) */}
         <div className="chat-composer-right">
           {text.trim().length > 0 ? (
             <button
@@ -595,31 +622,6 @@ export function ChatInputArea({
             </button>
           ) : (
             <>
-              {onSendImage && roomId && (
-                <>
-                  <button
-                    type="button"
-                    className="chat-composer-btn"
-                    onClick={handleAttachClick}
-                    disabled={isInputDisabled}
-                    aria-label={CHAT_LABELS.ATTACH_IMAGE_QUICK}
-                    title={CHAT_LABELS.UPLOAD_ATTACHMENT_TOOLTIP}
-                  >
-                    <Icon name="Image" size={20} />
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    onChange={(e) => void handleFileSelect(e)}
-                    className="chat-file-input-hidden"
-                    aria-hidden="true"
-                    tabIndex={-1}
-                  />
-                </>
-              )}
-
-              {/* ERP Utility Menu (•••) */}
               <button
                 ref={utilityToggleBtnRef}
                 type="button"
@@ -629,8 +631,17 @@ export function ChatInputArea({
                 aria-label={CHAT_LABELS.UTILITIES_MENU}
                 title={CHAT_LABELS.UTILITIES_MENU}
               >
-                <Icon name="MoreHorizontal" size={20} />
+                <Icon name="Plus" size={20} />
               </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={(e) => void handleFileSelect(e)}
+                className="chat-file-input-hidden"
+                aria-hidden="true"
+                tabIndex={-1}
+              />
             </>
           )}
         </div>

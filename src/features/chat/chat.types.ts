@@ -1,4 +1,10 @@
 import type { ChatMessage } from '@/schema/chat.schema';
+import type {
+  ChatParticipantParty,
+  ChatMessageSide,
+} from '@/domain/chat/chat.party';
+
+export type { ChatParticipantParty, ChatMessageSide };
 
 export type MessagePresence =
   | 'online'
@@ -31,9 +37,12 @@ export interface ChatMessageViewModel {
   senderName: string;
   senderInitials: string;
   senderAvatarUrl?: string;
+  party: ChatParticipantParty;
+  side: ChatMessageSide;
   isMine: boolean;
   timeFormatted: string;
   status: MessageStatus;
+  isEmojiOnly?: boolean;
 }
 
 export interface MessageCluster {
@@ -42,6 +51,8 @@ export interface MessageCluster {
   senderName: string;
   senderInitials: string;
   senderAvatarUrl?: string;
+  party: ChatParticipantParty;
+  side: ChatMessageSide;
   isMine: boolean;
   timestamp: string;
   messages: ChatMessageViewModel[];

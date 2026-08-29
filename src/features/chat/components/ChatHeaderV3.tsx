@@ -108,15 +108,15 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
   return (
     <header className="chat-header-v3 flex items-center justify-between px-3.5 pb-2.5 pt-[calc(10px+env(safe-area-inset-top,0px))] bg-surface border-b border-border select-none relative shrink-0">
       {/* Left: Back/Close & Avatar & Meta */}
-      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
         <button
           type="button"
           onClick={onClose}
-          className="p-1 -ml-1 text-muted hover:text-foreground rounded-lg hover:bg-surface-secondary transition-colors cursor-pointer border-none bg-transparent"
+          className="w-10 h-10 flex items-center justify-center -ml-2 text-foreground hover:text-primary rounded-xl hover:bg-surface-secondary transition-colors cursor-pointer border-none bg-transparent shrink-0"
           aria-label={CHAT_LABELS.CLOSE}
           title={CHAT_LABELS.CLOSE}
         >
-          <Icon name="ChevronLeft" size={20} strokeWidth={2} />
+          <Icon name="ChevronLeft" size={22} strokeWidth={2.25} />
         </button>
 
         {/* Avatar with Status Dot */}
@@ -141,7 +141,7 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
         </div>
 
         {/* Name & Presence Info */}
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 ml-0.5">
           <h2 className="text-sm font-semibold text-foreground truncate m-0 leading-snug">
             {displayTitle}
           </h2>
@@ -154,20 +154,20 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
       </div>
 
       {/* Right Action Icons */}
-      <div className="flex items-center gap-1 shrink-0 ml-2">
+      <div className="flex items-center gap-0.5 shrink-0 ml-2">
         {onToggleSearch && (
           <button
             type="button"
             onClick={onToggleSearch}
-            className={`p-2 rounded-lg transition-colors cursor-pointer border-none bg-transparent ${
+            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors cursor-pointer border-none bg-transparent ${
               isSearchActive
                 ? 'text-primary bg-primary/10'
-                : 'text-muted hover:text-foreground hover:bg-surface-secondary'
+                : 'text-muted-foreground hover:text-foreground hover:bg-surface-secondary'
             }`}
             aria-label="Tìm kiếm"
             title="Tìm kiếm tin nhắn"
           >
-            <Icon name="Search" size={17} strokeWidth={1.75} />
+            <Icon name="Search" size={18} strokeWidth={1.75} />
           </button>
         )}
 
@@ -176,11 +176,11 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
           <button
             type="button"
             onClick={() => setShowMenu((v) => !v)}
-            className="p-2 text-muted hover:text-foreground hover:bg-surface-secondary rounded-lg transition-colors cursor-pointer border-none bg-transparent"
+            className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface-secondary rounded-xl transition-colors cursor-pointer border-none bg-transparent"
             aria-label={CHAT_LABELS.MORE_OPTIONS}
             title={CHAT_LABELS.MORE_OPTIONS}
           >
-            <Icon name="MoreVertical" size={17} strokeWidth={1.75} />
+            <Icon name="MoreVertical" size={18} strokeWidth={1.75} />
           </button>
 
           {showMenu && (

@@ -7,12 +7,17 @@ export type ChatUtilityType = 'order' | 'shipment' | 'quotation';
 
 interface ChatUtilityMenuProps {
   onSelectUtility: (type: ChatUtilityType) => void;
+  onSelectImage?: () => void;
+  onSelectFile?: () => void;
   onClose: () => void;
 }
 
 export const ChatUtilityMenu = forwardRef<HTMLDivElement, ChatUtilityMenuProps>(
-  function ChatUtilityMenu({ onSelectUtility, onClose }, ref) {
-    const items: Array<{
+  function ChatUtilityMenu(
+    { onSelectUtility, onSelectImage, onSelectFile, onClose },
+    ref,
+  ) {
+    const utilityItems: Array<{
       type: ChatUtilityType;
       title: string;
       desc: string;
@@ -67,8 +72,44 @@ export const ChatUtilityMenu = forwardRef<HTMLDivElement, ChatUtilityMenuProps>(
           </button>
         </div>
 
+        {/* Media Attachments */}
+        {(onSelectImage || onSelectFile) && (
+          <div className="grid grid-cols-2 gap-1.5 p-1 mb-1 border-b border-border/40">
+            {onSelectImage && (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectImage();
+                  onClose();
+                }}
+                className="flex items-center gap-2 p-2 rounded-xl bg-surface-secondary hover:bg-primary/10 hover:text-primary transition-colors border-none cursor-pointer text-left"
+              >
+                <Icon name="Image" size={16} className="text-primary" />
+                <span className="text-xs font-medium text-foreground">
+                  Gửi ảnh
+                </span>
+              </button>
+            )}
+            {onSelectFile && (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectFile();
+                  onClose();
+                }}
+                className="flex items-center gap-2 p-2 rounded-xl bg-surface-secondary hover:bg-info/10 hover:text-info transition-colors border-none cursor-pointer text-left"
+              >
+                <Icon name="Paperclip" size={16} className="text-info" />
+                <span className="text-xs font-medium text-foreground">
+                  Đính kèm tệp
+                </span>
+              </button>
+            )}
+          </div>
+        )}
+
         <div className="space-y-1">
-          {items.map((item) => (
+          {utilityItems.map((item) => (
             <button
               key={item.type}
               type="button"
