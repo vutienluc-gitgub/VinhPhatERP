@@ -35,6 +35,8 @@ interface ChatMessageListProps {
   isLoading: boolean;
   onRetry?: (message: ChatMessage) => void;
   onQuoteReply?: (message: ChatMessage) => void;
+  partnerName?: string;
+  entityType?: string;
 }
 
 export const ChatMessageList = React.memo(function ChatMessageList({
@@ -45,9 +47,11 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   isLoading,
   onRetry,
   onQuoteReply,
+  partnerName,
+  entityType,
 }: ChatMessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [unreadNewCount, setUnreadNewCount] = useState(0);
@@ -60,8 +64,14 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   }, [pages]);
 
   const messageGroups = useMemo(
-    () => buildMessageGroups(chronologicalMessages, user?.id),
-    [chronologicalMessages, user?.id],
+    () =>
+      buildMessageGroups(chronologicalMessages, user?.id, {
+        currentUserId: user?.id,
+        currentUserRole: profile?.role,
+        partnerName,
+        entityType,
+      }),
+    [chronologicalMessages, user?.id, profile?.role, partnerName, entityType],
   );
 
   // Flatten groups into renderable items for virtualization when message history is long
@@ -123,7 +133,14 @@ export const ChatMessageList = React.memo(function ChatMessageList({
 
     if (currentCount > prevCount && prevCount > 0) {
       const newestMsg = chronologicalMessages[chronologicalMessages.length - 1];
-      const isMine = newestMsg?.sender_id === user?.id;
+      const isMine = Boolean(
+        (user?.id && newestMsg?.sender_id === user?.id) ||
+        (!newestMsg?.sender_id && newestMsg?.status === 'pending') ||
+        (profile?.role !== 'customer' &&
+          (newestMsg?.sender_role === 'admin' ||
+            newestMsg?.sender_role === 'manager' ||
+            newestMsg?.sender_role === 'staff')),
+      );
 
       if (isMine || isNearBottom) {
         scrollToBottom(true);
@@ -133,7 +150,13 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     }
 
     lastMessageCountRef.current = currentCount;
-  }, [chronologicalMessages, isNearBottom, user?.id, scrollToBottom]);
+  }, [
+    chronologicalMessages,
+    isNearBottom,
+    user?.id,
+    profile?.role,
+    scrollToBottom,
+  ]);
 
   // Initial load scroll to bottom
   useEffect(() => {

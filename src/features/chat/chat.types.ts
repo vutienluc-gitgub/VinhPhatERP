@@ -16,6 +16,14 @@ export type MessageStatus =
 
 export type MessagePosition = 'single' | 'first' | 'middle' | 'last';
 
+export interface ChatRoomContext {
+  currentUserId?: string;
+  currentUserRole?: string;
+  partnerName?: string;
+  partnerRole?: 'customer' | 'driver' | 'staff';
+  entityType?: string;
+}
+
 export interface ChatMessageViewModel {
   message: ChatMessage;
   position: MessagePosition;
