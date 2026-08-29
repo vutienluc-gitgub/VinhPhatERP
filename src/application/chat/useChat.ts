@@ -114,7 +114,7 @@ export function useChatRoom(entityType: string, entityId: string | undefined) {
     queryKey: CHAT_KEYS.room(entityType, entityId ?? ''),
     enabled: !!entityId,
     queryFn: () => fetchChatRoomByEntity(entityType, entityId!),
-    staleTime: Infinity,
+    staleTime: 60 * 1000,
     gcTime: 60 * 60 * 1000, // 1 hour
   });
 }
@@ -195,9 +195,10 @@ export function useChatMessages(roomId: string | undefined) {
       const last = lastPage[lastPage.length - 1];
       return last ? last.created_at : undefined;
     },
-    // Realtime handles new messages — no polling needed.
-    // Cache survives 30 min so close→reopen is instant.
-    staleTime: Infinity,
+    // Revalidate on mount to catch any messages sent while drawer was closed.
+    // Stale time 0 ensures instant cached render + automatic background refresh.
+    staleTime: 0,
+    refetchOnMount: true,
     gcTime: 30 * 60 * 1000,
   });
 }
@@ -769,38 +770,31 @@ export function useChatRealtime(roomId: string | undefined) {
         if (channelRef.current !== channel) return;
 
         if (status === 'SUBSCRIBED') {
-          // If we recovered from a disconnect, delta sync only missed messages
-          if (retryCountRef.current > 0) {
-            const cached = queryClient.getQueryData(
-              CHAT_KEYS.messages(roomId),
-            ) as InfiniteData | undefined;
-            const allMessages = cached?.pages.flat() ?? [];
-            const latestMsg = allMessages[0]; // Newest is at index 0 of page 0
+          // Delta sync any missed messages since the latest cached message
+          const cached = queryClient.getQueryData(
+            CHAT_KEYS.messages(roomId),
+          ) as InfiniteData | undefined;
+          const allMessages = cached?.pages.flat() ?? [];
+          const latestMsg = allMessages[0]; // Newest is at index 0 of page 0
 
-            if (latestMsg?.created_at) {
-              void supabase
-                .from('chat_messages')
-                .select('*')
-                .eq('room_id', roomId)
-                .is('deleted_at', null)
-                .gt('created_at', latestMsg.created_at)
-                .order('created_at', { ascending: true })
-                .then(({ data: missed }) => {
-                  if (missed && missed.length > 0) {
-                    for (const msg of missed) {
-                      queryClient.setQueryData(
-                        CHAT_KEYS.messages(roomId),
-                        (old: unknown) =>
-                          appendMessage(old, msg as ChatMessage),
-                      );
-                    }
+          if (latestMsg?.created_at) {
+            void supabase
+              .from('chat_messages')
+              .select('*')
+              .eq('room_id', roomId)
+              .is('deleted_at', null)
+              .gt('created_at', latestMsg.created_at)
+              .order('created_at', { ascending: true })
+              .then(({ data: missed }) => {
+                if (missed && missed.length > 0) {
+                  for (const msg of missed) {
+                    queryClient.setQueryData(
+                      CHAT_KEYS.messages(roomId),
+                      (old: unknown) => appendMessage(old, msg as ChatMessage),
+                    );
                   }
-                });
-            } else {
-              void queryClient.invalidateQueries({
-                queryKey: CHAT_KEYS.messages(roomId),
+                }
               });
-            }
           }
           retryCountRef.current = 0;
           setConnectionStatus('connected');
