@@ -72,7 +72,7 @@ export function LoginForm({
 
   /* ── Handlers ──────────────────────────────────────────── */
   const onSubmit = async (values: AuthFormValues) => {
-    if (!captchaToken && !import.meta.env.DEV) {
+    if (!captchaToken) {
       setServerError(AUTH_MESSAGES.captchaRequired);
       triggerShake();
       return;
@@ -282,14 +282,12 @@ export function LoginForm({
         {AUTH_MESSAGES.continueWithGoogle}
       </button>
 
-      {/* ── Turnstile (Lazy Load in Prod only) ───────────── */}
-      {!import.meta.env.DEV && (
-        <div className="flex justify-center min-h-[65px]">
-          {isInteracting && (
-            <Turnstile onVerify={setCaptchaToken} options={{ theme: 'dark' }} />
-          )}
-        </div>
-      )}
+      {/* ── Turnstile (Lazy Load) ──────────────────────────── */}
+      <div className="flex justify-center min-h-[65px]">
+        {isInteracting && (
+          <Turnstile onVerify={setCaptchaToken} options={{ theme: 'dark' }} />
+        )}
+      </div>
 
       {/* ── Submit Button ──────────────────────────────────── */}
       <button

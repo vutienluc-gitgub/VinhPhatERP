@@ -28,20 +28,11 @@ export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
       if (window.turnstile && containerRef.current && !widgetIdRef.current) {
         console.info('Rendering Turnstile widget...');
         const sitekey =
-          import.meta.env.VITE_TURNSTILE_SITE_KEY ||
-          (import.meta.env.DEV
-            ? '1x00000000000000000000AA'
-            : '1x00000000000000000000AA');
+          import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAAC8ajj8quYdxkuYv';
 
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey,
           callback: onVerify,
-          'error-callback': () => {
-            if (import.meta.env.DEV) {
-              console.info('[Dev] Turnstile error fallback -> auto verify');
-              onVerify('dev-turnstile-token');
-            }
-          },
           theme: options?.theme || 'light',
           size: options?.size || 'normal',
         });
