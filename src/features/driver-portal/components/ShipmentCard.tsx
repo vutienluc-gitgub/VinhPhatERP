@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { Icon } from '@/shared/components';
@@ -18,9 +18,25 @@ import {
   type DriverShipment,
   type JourneyStatus,
 } from '@/domain/logistics/driver-portal.types';
+import type { DeliveryAttemptState } from '@/domain/logistics';
 import { DRIVER_PORTAL_MESSAGES } from '@/features/driver-portal/constants';
 
 import { JourneyStepButton } from './JourneyStepButton';
+import { JourneyTimeline } from './JourneyTimeline';
+import { EvidenceCamera } from './EvidenceCamera';
+import { ReportExceptionModal } from './ReportExceptionModal';
+
+function mapJourneyToAttemptState(
+  status?: JourneyStatus | null,
+): DeliveryAttemptState {
+  if (!status) return 'assigned';
+  if (status === 'pending_pickup') return 'pending_pickup';
+  if (status === 'picked_up') return 'picked_up';
+  if (status === 'in_transit') return 'in_transit';
+  if (status === 'arrived') return 'arrived';
+  if (status === 'delivered_confirmed') return 'delivered';
+  return 'assigned';
+}
 
 export function ShipmentCard({
   shipment,
@@ -33,12 +49,11 @@ export function ShipmentCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [notesInput, setNotesInput] = useState('');
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const [showExceptionModal, setShowExceptionModal] = useState(false);
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
-  const photoInputRef = useRef<HTMLInputElement>(null);
   const { data: logs = [] } = useJourneyLogs(
     expanded ? shipment.id : undefined,
   );
@@ -50,13 +65,6 @@ export function ShipmentCard({
 
   const nextStatus = JOURNEY_STATUS_ORDER[currentJourneyIdx + 1];
 
-  function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
-  }
-
   async function handleSignatureConfirm(dataUrl: string) {
     setSignatureDataUrl(dataUrl);
     setShowSignaturePad(false);
@@ -67,7 +75,7 @@ export function ShipmentCard({
       if (
         targetStatus === 'delivered_confirmed' &&
         !signatureDataUrl &&
-        !photoFile
+        photoFiles.length === 0
       ) {
         toast.error(DRIVER_PORTAL_MESSAGES.ERROR.PROOF_REQUIRED);
         return;
@@ -84,8 +92,8 @@ export function ShipmentCard({
           );
           await saveDeliverySignature(shipment.id, sigUrl);
           photoUrl = sigUrl;
-        } else if (photoFile) {
-          photoUrl = await uploadDeliveryPhoto(photoFile, shipment.id);
+        } else if (photoFiles.length > 0 && photoFiles[0]) {
+          photoUrl = await uploadDeliveryPhoto(photoFiles[0], shipment.id);
         }
       }
 
@@ -97,8 +105,7 @@ export function ShipmentCard({
         photoUrl,
       });
       setNotesInput('');
-      setPhotoFile(null);
-      setPhotoPreview(null);
+      setPhotoFiles([]);
       setSignatureDataUrl(null);
       toast.success(`Đã cập nhật: ${JOURNEY_STATUS_LABELS[targetStatus]}`);
     } catch (err) {
@@ -164,6 +171,12 @@ export function ShipmentCard({
       {/* Details */}
       {expanded && (
         <div className="px-4 pb-4">
+          {/* Journey Timeline */}
+          <JourneyTimeline
+            currentState={mapJourneyToAttemptState(shipment.journey_status)}
+            className="mb-3 px-1"
+          />
+
           {/* Info row */}
           <div className="grid grid-cols-2 gap-2 p-3 bg-[var(--surface-subtle)] rounded-xl mb-4 text-sm">
             <div>
@@ -260,7 +273,7 @@ export function ShipmentCard({
               </div>
 
               {nextStatus === 'delivered_confirmed' && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                   <label className="text-sm font-semibold text-[var(--surface-subtle)] block">
                     {DRIVER_PORTAL_MESSAGES.CARD.PROOF_LABEL}
                     <span className="text-[var(--danger)] font-bold ml-1">
@@ -270,7 +283,7 @@ export function ShipmentCard({
 
                   {/* Signature */}
                   {signatureDataUrl ? (
-                    <div className="relative rounded-xl border border-[var(--border)] bg-surface overflow-hidden">
+                    <div className="relative rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
                       <img
                         src={signatureDataUrl}
                         alt={DRIVER_PORTAL_MESSAGES.CARD.SIGNATURE_ALT}
@@ -282,7 +295,7 @@ export function ShipmentCard({
                       <button
                         type="button"
                         onClick={() => setSignatureDataUrl(null)}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-foreground/50 flex items-center justify-center text-inverse-foreground hover:bg-black/70"
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-[var(--foreground)]/50 flex items-center justify-center text-[var(--inverse-foreground)] hover:bg-[var(--foreground)]/70"
                       >
                         <Icon name="X" size={12} />
                       </button>
@@ -298,46 +311,12 @@ export function ShipmentCard({
                     </button>
                   )}
 
-                  {/* Photo proof */}
-                  <input
-                    ref={photoInputRef}
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    className="hidden"
-                    onChange={handlePhotoSelect}
+                  {/* Multi-Photo Evidence Camera */}
+                  <EvidenceCamera
+                    photos={photoFiles}
+                    onChange={setPhotoFiles}
+                    maxPhotos={4}
                   />
-                  {photoPreview ? (
-                    <div className="relative w-full rounded-xl overflow-hidden border border-[var(--border)]">
-                      <img
-                        src={photoPreview}
-                        alt={DRIVER_PORTAL_MESSAGES.CARD.PHOTO_ALT}
-                        className="w-full max-h-32 object-cover"
-                      />
-                      <div className="absolute top-1 left-2 text-[10px] text-[var(--muted-foreground)] font-semibold uppercase drop-shadow-md">
-                        {DRIVER_PORTAL_MESSAGES.CARD.PHOTO_TAG}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPhotoFile(null);
-                          setPhotoPreview(null);
-                        }}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-foreground/50 flex items-center justify-center text-inverse-foreground hover:bg-black/70"
-                      >
-                        <Icon name="X" size={12} />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => photoInputRef.current?.click()}
-                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--surface-subtle)] text-sm hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
-                    >
-                      <Icon name="Camera" size={16} />
-                      {DRIVER_PORTAL_MESSAGES.CARD.TAKE_PHOTO}
-                    </button>
-                  )}
                 </div>
               )}
 
@@ -395,15 +374,35 @@ export function ShipmentCard({
             </div>
           )}
 
-          {/* Chat button */}
-          <button
-            type="button"
-            className="flex items-center justify-center gap-2 w-full py-3 mt-3 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-semibold text-sm bg-transparent cursor-pointer hover:bg-[var(--surface-selected)] transition-colors"
-            onClick={() => onOpenChat(shipment)}
-          >
-            <Icon name="MessageCircle" size={18} />
-            {DRIVER_PORTAL_MESSAGES.ACTIONS.CONTACT_DISPATCH}
-          </button>
+          {/* Bottom Actions: Exception reporting and Chat button */}
+          <div className="flex items-center gap-2 mt-3">
+            <button
+              type="button"
+              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-[var(--destructive)] text-[var(--destructive)] font-semibold text-xs bg-transparent cursor-pointer hover:bg-[var(--destructive-subtle)] transition-colors shrink-0"
+              onClick={() => setShowExceptionModal(true)}
+            >
+              <Icon name="AlertTriangle" size={15} />
+              <span>{DRIVER_PORTAL_MESSAGES.ACTIONS.REPORT_EXCEPTION}</span>
+            </button>
+
+            <button
+              type="button"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-semibold text-sm bg-transparent cursor-pointer hover:bg-[var(--surface-selected)] transition-colors"
+              onClick={() => onOpenChat(shipment)}
+            >
+              <Icon name="MessageCircle" size={18} />
+              <span>{DRIVER_PORTAL_MESSAGES.ACTIONS.CONTACT_DISPATCH}</span>
+            </button>
+          </div>
+
+          {/* Report Exception Modal */}
+          {showExceptionModal && (
+            <ReportExceptionModal
+              open={showExceptionModal}
+              onClose={() => setShowExceptionModal(false)}
+              attemptId={shipment.id}
+            />
+          )}
         </div>
       )}
     </div>
