@@ -12,6 +12,7 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { Icon } from '@/shared/components/Icon';
 import { buildMessageGroups } from '@/features/chat/chat.utils';
 import type { MessageCluster as MessageClusterType } from '@/features/chat/chat.types';
+import type { ChatTimelineState } from '@/domain/chat';
 
 import { MessageCluster } from './MessageCluster';
 
@@ -29,10 +30,11 @@ type RenderItem =
 
 interface ChatMessageListProps {
   pages: ChatMessage[][] | undefined;
-  hasNextPage: boolean;
-  isFetchingNextPage: boolean;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
   onLoadMore: () => void;
-  isLoading: boolean;
+  isLoading?: boolean;
+  timelineState?: ChatTimelineState;
   onRetry?: (message: ChatMessage) => void;
   onQuoteReply?: (message: ChatMessage) => void;
   partnerName?: string;
@@ -41,10 +43,11 @@ interface ChatMessageListProps {
 
 export const ChatMessageList = React.memo(function ChatMessageList({
   pages,
-  hasNextPage,
-  isFetchingNextPage,
+  hasNextPage = false,
+  isFetchingNextPage = false,
   onLoadMore,
-  isLoading,
+  isLoading = false,
+  timelineState,
   onRetry,
   onQuoteReply,
   partnerName,
@@ -59,9 +62,12 @@ export const ChatMessageList = React.memo(function ChatMessageList({
 
   // Convert pages (which come with newest-first per page) to a single chronological list (oldest-first)
   const chronologicalMessages = useMemo(() => {
+    if (timelineState && timelineState.status === 'ready') {
+      return timelineState.messages;
+    }
     if (!pages || pages.length === 0) return [];
     return [...pages].reverse().flatMap((page) => [...page].reverse());
-  }, [pages]);
+  }, [pages, timelineState]);
 
   const messageGroups = useMemo(
     () =>
@@ -100,13 +106,12 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     enabled: isVirtualized,
   });
 
-  // Scroll handler to detect position
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
 
-    const threshold = 120; // px from bottom
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const threshold = 100;
     const nearBottom = distanceFromBottom < threshold;
 
     setIsNearBottom(nearBottom);
@@ -159,11 +164,18 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   ]);
 
   // Initial load scroll to bottom
+  const isCurrentlyLoading =
+    Boolean(isLoading) ||
+    (timelineState &&
+      (timelineState.status === 'loading' ||
+        timelineState.status === 'initializing' ||
+        timelineState.status === 'resolving-room'));
+
   useEffect(() => {
-    if (!isLoading && chronologicalMessages.length > 0) {
+    if (!isCurrentlyLoading && chronologicalMessages.length > 0) {
       scrollToBottom(false);
     }
-  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isCurrentlyLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Scroll anchor when fetching older messages
   const handleLoadMore = useCallback(() => {
@@ -183,7 +195,10 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     }
   }, [isFetchingNextPage, hasNextPage, onLoadMore]);
 
-  if (isLoading) {
+  // ── Render Normalized States ──
+
+  // 1. Initializing / Resolving Room / Loading Messages
+  if (isCurrentlyLoading) {
     return (
       <div className="chat-message-list">
         <div className="chat-empty">{CHAT_LABELS.LOADING}</div>
@@ -191,7 +206,36 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     );
   }
 
-  if (chronologicalMessages.length === 0) {
+  // 2. Error State (Forbidden / RLS / Not Found / Network)
+  if (timelineState && timelineState.status === 'error') {
+    return (
+      <div className="chat-message-list">
+        <div className="chat-empty-state">
+          <Icon
+            name="AlertCircle"
+            size={48}
+            strokeWidth={1.5}
+            className="text-danger mb-2"
+          />
+          <p className="chat-empty-text font-semibold text-danger">
+            {timelineState.code === 'FORBIDDEN'
+              ? 'Bạn không có quyền truy cập cuộc trò chuyện này'
+              : timelineState.code === 'NOT_FOUND'
+                ? 'Phòng chat không tồn tại hoặc đã bị xóa'
+                : CHAT_LABELS.SEND_ERROR}
+          </p>
+          <p className="chat-empty-hint">{timelineState.error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Normalized Empty State (Strictly only when query resolved 0 messages)
+  const isStrictlyEmpty = timelineState
+    ? timelineState.status === 'empty'
+    : chronologicalMessages.length === 0 && !isCurrentlyLoading;
+
+  if (isStrictlyEmpty) {
     return (
       <div className="chat-message-list">
         <div className="chat-empty-state">
@@ -238,7 +282,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
           </div>
         )}
 
-        {/* Virtualized or Direct render */}
+        {/* Timeline Clusters with Virtualization support */}
         {isVirtualized ? (
           <div
             style={{
@@ -247,20 +291,21 @@ export const ChatMessageList = React.memo(function ChatMessageList({
               position: 'relative',
             }}
           >
-            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-              const item = flatItems[virtualItem.index];
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const item = flatItems[virtualRow.index];
               if (!item) return null;
+
               return (
                 <div
-                  key={item.key}
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
                   ref={rowVirtualizer.measureElement}
-                  data-index={virtualItem.index}
                   style={{
                     position: 'absolute',
                     top: 0,
                     left: 0,
                     width: '100%',
-                    transform: `translateY(${virtualItem.start}px)`,
+                    transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
                   {item.type === 'date' ? (
@@ -277,38 +322,34 @@ export const ChatMessageList = React.memo(function ChatMessageList({
             })}
           </div>
         ) : (
-          <div className="chat-messages-container">
-            {messageGroups.map((group) => (
-              <React.Fragment key={group.date}>
-                <DateDivider label={group.label} />
-                {group.clusters.map((cluster) => (
-                  <MessageCluster
-                    key={cluster.id}
-                    cluster={cluster}
-                    onRetry={onRetry}
-                    onQuoteReply={onQuoteReply}
-                  />
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
+          messageGroups.map((group) => (
+            <React.Fragment key={`group-${group.date}`}>
+              <DateDivider label={group.label} />
+              {group.clusters.map((cluster) => (
+                <MessageCluster
+                  key={cluster.id}
+                  cluster={cluster}
+                  onRetry={onRetry}
+                  onQuoteReply={onQuoteReply}
+                />
+              ))}
+            </React.Fragment>
+          ))
         )}
       </div>
 
-      {/* Floating Action Button (FAB): New Messages / Scroll to Bottom */}
-      {(!isNearBottom || unreadNewCount > 0) && (
+      {/* Floating "New Messages" Badge Button when scrolled up */}
+      {unreadNewCount > 0 && (
         <button
           type="button"
-          className="chat-scroll-bottom-fab"
           onClick={() => scrollToBottom(true)}
+          className="chat-scroll-bottom-pill"
           aria-label={CHAT_LABELS.SCROLL_TO_BOTTOM}
         >
-          <Icon name="ChevronDown" size={16} />
-          {unreadNewCount > 0 && (
-            <span className="chat-scroll-bottom-badge">
-              {unreadNewCount} {CHAT_LABELS.NEW_MESSAGES_COUNT_SUFFIX}
-            </span>
-          )}
+          <Icon name="ArrowDown" size={13} strokeWidth={2.5} />
+          <span>
+            {unreadNewCount} {CHAT_LABELS.NEW_MESSAGES_COUNT_SUFFIX}
+          </span>
         </button>
       )}
     </div>

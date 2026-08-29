@@ -106,13 +106,13 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
   }
 
   return (
-    <header className="chat-header-v3 flex items-center justify-between px-3.5 pb-2.5 pt-[calc(10px+env(safe-area-inset-top,0px))] bg-surface border-b border-border select-none relative shrink-0">
+    <header className="chat-header-v3 flex items-center justify-between px-2.5 sm:px-3.5 pb-2.5 pt-[calc(10px+env(safe-area-inset-top,0px))] bg-surface border-b border-border select-none relative shrink-0">
       {/* Left: Back/Close & Avatar & Meta */}
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <button
           type="button"
           onClick={onClose}
-          className="w-10 h-10 flex items-center justify-center -ml-2 text-foreground hover:text-primary rounded-xl hover:bg-surface-secondary transition-colors cursor-pointer border-none bg-transparent shrink-0"
+          className="w-10 h-10 flex items-center justify-center -ml-1.5 text-foreground hover:text-primary rounded-xl hover:bg-surface-secondary transition-colors cursor-pointer border-none bg-transparent shrink-0"
           aria-label={CHAT_LABELS.CLOSE}
           title={CHAT_LABELS.CLOSE}
         >
@@ -154,7 +154,7 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
       </div>
 
       {/* Right Action Icons */}
-      <div className="flex items-center gap-0.5 shrink-0 ml-2">
+      <div className="flex items-center gap-0.5 shrink-0 ml-1">
         {onToggleSearch && (
           <button
             type="button"
@@ -164,8 +164,8 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
                 ? 'text-primary bg-primary/10'
                 : 'text-muted-foreground hover:text-foreground hover:bg-surface-secondary'
             }`}
-            aria-label="Tìm kiếm"
-            title="Tìm kiếm tin nhắn"
+            aria-label={CHAT_LABELS.SEARCH}
+            title={CHAT_LABELS.SEARCH_MESSAGES}
           >
             <Icon name="Search" size={18} strokeWidth={1.75} />
           </button>

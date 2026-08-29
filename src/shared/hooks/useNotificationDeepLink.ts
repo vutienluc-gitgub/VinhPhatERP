@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { resolveDeepLink } from '@/shared/notifications/deepLinkResolver';
+import { chatNavigationStore } from '@/features/chat/controllers/chatNavigationStore';
 
 /**
  * Hook to listen for Notification Clicks (from Service Worker message or PWA launch query params)
@@ -13,6 +14,24 @@ export function useNotificationDeepLink() {
 
   // 1. Handle URL Query Params (when app opened fresh from notification click)
   useEffect(() => {
+    // 1A. Chat Notification Deep Link
+    if (searchParams.get('chatOpen') === '1') {
+      const intent =
+        chatNavigationStore.parseChatNavigationFromUrl(searchParams);
+      if (intent) {
+        chatNavigationStore.openChat(intent);
+      }
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('chatOpen');
+      newParams.delete('roomId');
+      newParams.delete('messageId');
+      newParams.delete('entityType');
+      newParams.delete('entityId');
+      setSearchParams(newParams, { replace: true });
+      return;
+    }
+
+    // 1B. Standard ERP Notification Deep Link
     const entityType = searchParams.get('notif_entity');
     const entityId = searchParams.get('notif_id');
     const action = searchParams.get('notif_action') || undefined;
@@ -44,12 +63,14 @@ export function useNotificationDeepLink() {
 
     function handleServiceWorkerMessage(event: MessageEvent) {
       if (event.data?.type === 'NAVIGATE_TO_CHAT') {
-        // Dispatch custom event that PortalLayout listens for to open ChatDrawer
-        window.dispatchEvent(
-          new CustomEvent('navigate-to-chat', {
-            detail: { roomId: event.data.payload?.roomId },
-          }),
-        );
+        const payload = event.data.payload || {};
+        if (payload.roomId) {
+          chatNavigationStore.openChat({
+            roomId: payload.roomId,
+            messageId: payload.messageId,
+            source: 'notification',
+          });
+        }
         return;
       }
 
