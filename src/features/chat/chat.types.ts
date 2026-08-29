@@ -14,13 +14,29 @@ export type MessageStatus =
   | 'read'
   | 'failed';
 
+export type MessagePosition = 'single' | 'first' | 'middle' | 'last';
+
+export interface ChatMessageViewModel {
+  message: ChatMessage;
+  position: MessagePosition;
+  senderId: string | null;
+  senderName: string;
+  senderInitials: string;
+  senderAvatarUrl?: string;
+  isMine: boolean;
+  timeFormatted: string;
+  status: MessageStatus;
+}
+
 export interface MessageCluster {
   id: string;
   senderId: string | null;
-  senderName?: string;
+  senderName: string;
+  senderInitials: string;
+  senderAvatarUrl?: string;
   isMine: boolean;
   timestamp: string;
-  messages: ChatMessage[];
+  messages: ChatMessageViewModel[];
 }
 
 export interface DateMessageGroup {

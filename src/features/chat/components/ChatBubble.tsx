@@ -1,6 +1,7 @@
 import { memo, useCallback, useState, type MouseEvent } from 'react';
 
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
+import type { ChatMessageViewModel } from '@/features/chat/chat.types';
 import { useAuth } from '@/shared/hooks/useAuth';
 import {
   useTogglePin,
@@ -15,33 +16,22 @@ import { ChatMentionContent } from './ChatMentionContent';
 import { ChatQuickActions } from './ChatQuickActions';
 import { ChatReactions } from './ChatReactions';
 import { ChatQuoteBox } from './ChatQuoteBox';
-
-function formatTime(iso: string): string {
-  try {
-    return new Intl.DateTimeFormat('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(new Date(iso));
-  } catch {
-    return '';
-  }
-}
+import { ChatMessageMeta } from './ChatMessageMeta';
 
 interface ChatBubbleProps {
-  message: ChatMessage;
-  isMine: boolean;
+  viewModel: ChatMessageViewModel;
   isOptimistic?: boolean;
   onRetry?: (message: ChatMessage) => void;
   onQuoteReply?: (message: ChatMessage) => void;
 }
 
 export const ChatBubble = memo(function ChatBubble({
-  message,
-  isMine,
+  viewModel,
   isOptimistic,
   onRetry,
   onQuoteReply,
 }: ChatBubbleProps) {
+  const { message, position, isMine, timeFormatted, status } = viewModel;
   const { profile, user } = useAuth();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [showContextMenu, setShowContextMenu] = useState(false);
@@ -131,9 +121,7 @@ export const ChatBubble = memo(function ChatBubble({
     return (
       <div className="chat-system-epod">
         <div className="chat-system-epod-content">{message.content}</div>
-        <div className="chat-system-epod-time">
-          {formatTime(message.created_at)}
-        </div>
+        <div className="chat-system-epod-time">{timeFormatted}</div>
       </div>
     );
   }
@@ -159,6 +147,13 @@ export const ChatBubble = memo(function ChatBubble({
     !message.reply_to_message &&
     !legacyQuoteSnippet;
 
+  const isShortText =
+    typeof displayContent === 'string' &&
+    displayContent.length <= 35 &&
+    !displayContent.includes('\n') &&
+    !message.reply_to_message &&
+    !legacyQuoteSnippet;
+
   return (
     <>
       <div
@@ -178,7 +173,9 @@ export const ChatBubble = memo(function ChatBubble({
         )}
 
         <div
-          className={`chat-bubble ${isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'} ${statusClass} ${isImageOnly ? 'chat-bubble--image-only' : ''}`}
+          className={`chat-bubble chat-bubble--pos-${position} ${
+            isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'
+          } ${statusClass} ${isImageOnly ? 'chat-bubble--image-only' : ''}`}
         >
           {/* Pin indicator */}
           {message.is_pinned ? (
@@ -235,6 +232,12 @@ export const ChatBubble = memo(function ChatBubble({
                 loading="lazy"
                 onClick={() => setPreviewImage(message.image_url)}
               />
+              <ChatMessageMeta
+                time={timeFormatted}
+                status={status}
+                isMine={isMine}
+                layoutMode="overlay"
+              />
             </div>
           ) : null}
 
@@ -257,15 +260,48 @@ export const ChatBubble = memo(function ChatBubble({
                   {message.file_type || 'File'}
                 </span>
               </div>
+              <ChatMessageMeta
+                time={timeFormatted}
+                status={status}
+                isMine={isMine}
+                layoutMode="side"
+              />
             </a>
           ) : null}
 
           {/* Text content with Mention / Quote parsing */}
           {displayContent ? (
-            <ChatMentionContent
-              content={displayContent}
-              mentions={message.mentions}
-            />
+            isShortText ? (
+              <div className="chat-bubble-compact-row">
+                <span className="chat-bubble-text-content">
+                  <ChatMentionContent
+                    content={displayContent}
+                    mentions={message.mentions}
+                  />
+                </span>
+                <ChatMessageMeta
+                  time={timeFormatted}
+                  status={status}
+                  isMine={isMine}
+                  layoutMode="side"
+                />
+              </div>
+            ) : (
+              <div className="chat-bubble-standard-flow">
+                <span className="chat-bubble-text-content">
+                  <ChatMentionContent
+                    content={displayContent}
+                    mentions={message.mentions}
+                  />
+                </span>
+                <ChatMessageMeta
+                  time={timeFormatted}
+                  status={status}
+                  isMine={isMine}
+                  layoutMode="inline"
+                />
+              </div>
+            )
           ) : null}
 
           {/* Error: Retry */}

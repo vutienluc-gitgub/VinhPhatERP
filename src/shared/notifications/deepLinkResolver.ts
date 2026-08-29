@@ -16,6 +16,11 @@ export function resolveDeepLink(ref: NotificationPayloadRef): string {
   switch (entityType) {
     case 'order':
     case 'sales_order':
+      if (action === 'order_progress') {
+        return entityId
+          ? `/portal/orders/${encodeURIComponent(entityId)}`
+          : '/portal/orders';
+      }
       return entityId
         ? `/orders?highlight=${encodeURIComponent(entityId)}`
         : '/orders';
