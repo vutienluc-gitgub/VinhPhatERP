@@ -2,7 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import type { NavigationItem } from '@/app/router/routes';
-import { ChatInboxDrawer } from '@/features/chat/ChatInboxDrawer';
+import {
+  ChatDrawer,
+  ChatInboxDrawer,
+  useChatNavigation,
+  useChatNavigationSync,
+} from '@/features/chat';
 import { Icon } from '@/shared/components/Icon';
 import { APP_SHELL_LABELS, USER_ROLE_LABELS } from '@/shared/constants/layout';
 import { GROUP_LABELS } from '@/shared/constants/navigation';
@@ -39,6 +44,10 @@ export const TopBar = React.memo(function TopBar({
   const [showChatInbox, setShowChatInbox] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
+  // Centralized Chat Navigation Controller
+  const { isOpen, activeIntent, closeChat } = useChatNavigation();
+  useChatNavigationSync();
+
   // Close user menu on click outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -54,15 +63,6 @@ export const TopBar = React.memo(function TopBar({
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showUserMenu]);
-
-  // Open Chat Inbox when navigate-to-chat event is dispatched (e.g. from notification click)
-  useEffect(() => {
-    const handleNavigate = () => {
-      setShowChatInbox(true);
-    };
-    window.addEventListener('navigate-to-chat', handleNavigate);
-    return () => window.removeEventListener('navigate-to-chat', handleNavigate);
-  }, []);
 
   return (
     <header className="topbar">
@@ -199,10 +199,24 @@ export const TopBar = React.memo(function TopBar({
           </>
         )}
 
-        <ChatInboxDrawer
-          open={showChatInbox}
-          onClose={() => setShowChatInbox(false)}
-        />
+        {/* Direct Room Chat Drawer (when opened via Push Notification or Deep link intent) */}
+        {isOpen && activeIntent?.roomId ? (
+          <ChatDrawer
+            open={isOpen}
+            onClose={closeChat}
+            roomId={activeIntent.roomId}
+            messageId={activeIntent.messageId}
+            entityType={activeIntent.entityType}
+            entityId={activeIntent.entityId}
+            title={activeIntent.title}
+            subtitle={activeIntent.subtitle}
+          />
+        ) : (
+          <ChatInboxDrawer
+            open={showChatInbox}
+            onClose={() => setShowChatInbox(false)}
+          />
+        )}
 
         {profile && (
           <button

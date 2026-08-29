@@ -235,6 +235,8 @@ export const CHAT_LABELS = {
   UTILITY_QUOTATION_DESC: 'Gửi bảng giá sợi và vải mộc',
   MORE_OPTIONS: 'Tùy chọn khác',
   VIEW_PARTNER_INFO: 'Xem thông tin đối tác',
+  SEARCH: 'Tìm kiếm',
+  SEARCH_MESSAGES: 'Tìm kiếm tin nhắn',
 } as const;
 
 export const AVAILABLE_ROLES = [

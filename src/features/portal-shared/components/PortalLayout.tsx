@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react';
-import { NavLink, useSearchParams } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 // eslint-disable-next-line boundaries/dependencies
-import { ChatDrawer } from '@/features/chat/ChatDrawer';
+import {
+  ChatDrawer,
+  useChatNavigation,
+  useChatNavigationSync,
+} from '@/features/chat';
 import { Icon } from '@/shared/components';
 
 import { PushNotificationBanner } from './PushNotificationBanner';
@@ -60,31 +63,17 @@ export function PortalLayout({
   headerRightActions,
 }: PortalLayoutProps) {
   const { profile, signOut } = useAuth();
-  const [chatOpen, setChatOpen] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Listen for 'navigate-to-chat' custom event (dispatched by useNotificationDeepLink
-  // when Service Worker sends NAVIGATE_TO_CHAT postMessage)
-  useEffect(() => {
-    const handleNavigate = () => {
-      setChatOpen(true);
-    };
-    window.addEventListener('navigate-to-chat', handleNavigate);
-    return () => window.removeEventListener('navigate-to-chat', handleNavigate);
-  }, []);
+  // Centralized Chat Navigation Controller (Single source of truth)
+  const { isOpen, activeIntent, openChatByEntity, closeChat } =
+    useChatNavigation();
+  useChatNavigationSync();
 
-  // Auto-open ChatDrawer when opened fresh from push notification click
-  // (URL contains ?chatOpen=1&roomId=...)
-  useEffect(() => {
-    if (searchParams.get('chatOpen') === '1') {
-      setChatOpen(true);
-      // Clean up query params from URL
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete('chatOpen');
-      newParams.delete('roomId');
-      setSearchParams(newParams, { replace: true });
+  const handleOpenChat = () => {
+    if (entityType && entityId) {
+      openChatByEntity(entityType, entityId, chatTitle, chatSubtitle);
     }
-  }, [searchParams, setSearchParams]);
+  };
 
   return (
     <div className="portal-shell">
@@ -144,7 +133,7 @@ export function PortalLayout({
       {entityId && (
         <button
           type="button"
-          onClick={() => setChatOpen(true)}
+          onClick={handleOpenChat}
           className="portal-chat-fab"
           aria-label="Nhắn tin với nhân viên"
           title="Nhắn tin"
@@ -158,14 +147,21 @@ export function PortalLayout({
         </button>
       )}
 
-      {entityId && entityType && (
+      {/* Unified Chat Drawer Container */}
+      {(isOpen || activeIntent) && (
         <ChatDrawer
-          open={chatOpen}
-          onClose={() => setChatOpen(false)}
-          entityType={entityType}
-          entityId={entityId}
-          title={chatTitle ?? 'Hỗ trợ'}
-          subtitle={chatSubtitle ?? 'Chat trực tiếp với nhân viên'}
+          open={isOpen}
+          onClose={closeChat}
+          roomId={activeIntent?.roomId}
+          messageId={activeIntent?.messageId}
+          entityType={activeIntent?.entityType || entityType}
+          entityId={activeIntent?.entityId || entityId}
+          title={activeIntent?.title || chatTitle || 'Hỗ trợ'}
+          subtitle={
+            activeIntent?.subtitle ||
+            chatSubtitle ||
+            'Chat trực tiếp với nhân viên'
+          }
         />
       )}
     </div>

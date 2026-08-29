@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import {
@@ -22,6 +28,8 @@ import {
   type ChatMention,
 } from '@/schema/chat.schema';
 import { Icon } from '@/shared/components/Icon';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { deriveChatTimelineState } from '@/domain/chat';
 
 import { ChatContextBar } from './components/ChatContextBar';
 import { ChatInputArea } from './components/ChatInputArea';
@@ -34,11 +42,12 @@ import './chat.css';
 interface ChatDrawerProps {
   open: boolean;
   onClose: () => void;
-  entityType: string;
-  entityId: string;
+  entityType?: string;
+  entityId?: string;
   title?: string;
   subtitle?: string;
   roomId?: string;
+  messageId?: string;
 }
 
 export const ChatDrawer = React.memo(function ChatDrawer({
@@ -47,43 +56,61 @@ export const ChatDrawer = React.memo(function ChatDrawer({
   entityType,
   entityId,
   roomId: propRoomId,
+  messageId: propMessageId,
   title,
   subtitle,
 }: ChatDrawerProps) {
-  const { data: cachedRoom } = useChatRoom(
-    entityType,
-    open ? entityId : undefined,
+  const { user, loading: authLoading } = useAuth();
+  const isAuthReady = !authLoading && Boolean(user);
+
+  // Invariant 1: If canonical roomId is provided, NEVER re-resolve via entity/customerId
+  const hasDirectRoomId = Boolean(propRoomId && propRoomId.trim() !== '');
+
+  const { data: cachedRoom, isLoading: isFetchingCachedRoom } = useChatRoom(
+    entityType ?? '',
+    open && !hasDirectRoomId ? entityId : undefined,
   );
   const createRoomMutation = useGetOrCreateRoom();
 
-  // Get or create room on open, unless roomId is provided via props or memory cache
-  const roomId = propRoomId ?? cachedRoom?.id ?? createRoomMutation.data;
+  const resolvedRoomId =
+    propRoomId || cachedRoom?.id || createRoomMutation.data;
+
+  const isResolvingRoom =
+    !hasDirectRoomId &&
+    (isFetchingCachedRoom ||
+      createRoomMutation.isPending ||
+      (!resolvedRoomId && Boolean(entityType && entityId)));
 
   const {
     data,
     isLoading: messagesLoading,
+    isError: messagesError,
+    error: messagesErrObj,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useChatMessages(roomId);
+  } = useChatMessages(resolvedRoomId);
 
-  const sendMutation = useSendMessage(roomId);
+  const sendMutation = useSendMessage(resolvedRoomId);
 
   // Subscribe to realtime (with reconnection + multi-tab sync)
-  const { connectionStatus } = useChatRealtime(open ? roomId : undefined);
+  const { connectionStatus } = useChatRealtime(
+    open ? resolvedRoomId : undefined,
+  );
 
   // Auto-flush offline queue when online
-  const { pendingCount } = useChatOfflineSync(open ? roomId : undefined);
+  const { pendingCount } = useChatOfflineSync(
+    open ? resolvedRoomId : undefined,
+  );
 
   /**
-   * Track which entity key has been triggered to prevent duplicate room
-   * creation. The ref is immune to stale closures.
+   * Track which entity key has been triggered to prevent duplicate room creation.
    */
   const triggeredEntityKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Skip mutation if we already have the roomId via props or cache
-    if (propRoomId || cachedRoom?.id) return;
+    // Invariant: Skip fallback room creation if canonical roomId is already given
+    if (hasDirectRoomId || cachedRoom?.id || !entityType || !entityId) return;
 
     const entityKey = `${entityType}:${entityId}`;
     if (open && triggeredEntityKeyRef.current !== entityKey) {
@@ -93,30 +120,78 @@ export const ChatDrawer = React.memo(function ChatDrawer({
     if (!open) {
       triggeredEntityKeyRef.current = null;
     }
-  }, [open, entityType, entityId, propRoomId, cachedRoom?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, entityType, entityId, hasDirectRoomId, cachedRoom?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Mark room as read when drawer is open
-  const markAsRead = useMarkAsRead(roomId);
+  const markAsRead = useMarkAsRead(resolvedRoomId);
   useEffect(() => {
-    if (open && roomId) {
+    if (open && resolvedRoomId) {
       markAsRead();
     }
-  }, [open, roomId, markAsRead, data]);
+  }, [open, resolvedRoomId, markAsRead, data]);
 
   // Register room globally so notifications are muted for this active room
   useEffect(() => {
-    if (!open || !roomId) return;
-    registerOpenRoom(roomId);
+    if (!open || !resolvedRoomId) return;
+    registerOpenRoom(resolvedRoomId);
     return () => {
-      unregisterOpenRoom(roomId);
+      unregisterOpenRoom(resolvedRoomId);
     };
-  }, [open, roomId]);
+  }, [open, resolvedRoomId]);
+
+  // Derive deterministic ChatTimelineState
+  const flattenedMessages = useMemo(() => {
+    if (!data?.pages || data.pages.length === 0) return [];
+    return [...data.pages].reverse().flatMap((page) => [...page].reverse());
+  }, [data?.pages]);
+
+  const timelineState = useMemo(() => {
+    return deriveChatTimelineState({
+      isAuthReady,
+      isResolvingRoom,
+      roomId: resolvedRoomId,
+      isLoadingMessages: messagesLoading,
+      isError: Boolean(createRoomMutation.isError || messagesError),
+      error: createRoomMutation.error || messagesErrObj,
+      messages: flattenedMessages,
+      hasNextPage,
+    });
+  }, [
+    isAuthReady,
+    isResolvingRoom,
+    resolvedRoomId,
+    messagesLoading,
+    createRoomMutation.isError,
+    createRoomMutation.error,
+    messagesError,
+    messagesErrObj,
+    flattenedMessages,
+    hasNextPage,
+  ]);
+
+  // Deep link direct message jump / highlight
+  useEffect(() => {
+    if (propMessageId && timelineState.status === 'ready') {
+      const el = document.querySelector(`[data-message-id="${propMessageId}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('chat-message-highlight');
+        const timeout = setTimeout(() => {
+          el.classList.remove('chat-message-highlight');
+        }, 2500);
+        return () => clearTimeout(timeout);
+      }
+    }
+    return undefined;
+  }, [propMessageId, timelineState.status]);
 
   // Retry handler for error state
   const handleRetryRoom = useCallback(() => {
-    createRoomMutation.reset();
-    triggeredEntityKeyRef.current = null;
-    createRoomMutation.mutate({ entityType, entityId });
+    if (entityType && entityId) {
+      createRoomMutation.reset();
+      triggeredEntityKeyRef.current = null;
+      createRoomMutation.mutate({ entityType, entityId });
+    }
   }, [createRoomMutation, entityType, entityId]);
 
   const handleSend = useCallback(
@@ -128,7 +203,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
         replyToMessage?: ChatMessage | null;
       },
     ) => {
-      if (!roomId) return;
+      if (!resolvedRoomId) return;
       sendMutation.mutate({
         clientId: crypto.randomUUID(),
         content,
@@ -144,12 +219,12 @@ export const ChatDrawer = React.memo(function ChatDrawer({
           : null,
       });
     },
-    [roomId, sendMutation],
+    [resolvedRoomId, sendMutation],
   );
 
   const handleSendImage = useCallback(
     (url: string) => {
-      if (!roomId) return;
+      if (!resolvedRoomId) return;
       sendMutation.mutate({
         clientId: crypto.randomUUID(),
         content: '',
@@ -157,12 +232,12 @@ export const ChatDrawer = React.memo(function ChatDrawer({
         imageUrl: url,
       });
     },
-    [roomId, sendMutation],
+    [resolvedRoomId, sendMutation],
   );
 
   const handleSendFile = useCallback(
     (url: string, fileName: string, fileType: string) => {
-      if (!roomId) return;
+      if (!resolvedRoomId) return;
       sendMutation.mutate({
         clientId: crypto.randomUUID(),
         content: '',
@@ -172,30 +247,31 @@ export const ChatDrawer = React.memo(function ChatDrawer({
         fileType,
       });
     },
-    [roomId, sendMutation],
+    [resolvedRoomId, sendMutation],
   );
 
   const [searchQuery, setSearchQuery] = useState('');
   const [replyingToMessage, setReplyingToMessage] =
     useState<ChatMessage | null>(null);
-  const { data: searchResults } = useSearchMessages(roomId, searchQuery);
-  const { typingUsers, startTyping, stopTyping } = useTypingIndicator(roomId);
+  const { data: searchResults } = useSearchMessages(
+    resolvedRoomId,
+    searchQuery,
+  );
+  const { typingUsers, startTyping, stopTyping } =
+    useTypingIndicator(resolvedRoomId);
   const messageListRef = useRef<HTMLDivElement>(null);
 
-  const handleSearchResultClick = useCallback((messageId: string) => {
-    // Scroll to message in the message list
+  const handleSearchResultClick = useCallback((msgId: string) => {
     const messageElement = document.querySelector(
-      `[data-message-id="${messageId}"]`,
+      `[data-message-id="${msgId}"]`,
     );
     if (messageElement) {
       messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Highlight the message briefly
       messageElement.classList.add('chat-message-highlight');
       setTimeout(() => {
         messageElement.classList.remove('chat-message-highlight');
       }, 2000);
     }
-    // Close search after clicking
     setSearchQuery('');
   }, []);
 
@@ -203,8 +279,6 @@ export const ChatDrawer = React.memo(function ChatDrawer({
 
   const mount = document.getElementById('modal-root');
   if (!mount) return null;
-
-  const isLoading = createRoomMutation.isPending || messagesLoading;
 
   return createPortal(
     <>
@@ -231,8 +305,10 @@ export const ChatDrawer = React.memo(function ChatDrawer({
           isSearchActive={searchQuery !== ''}
         />
 
-        {/* ERP Context Bar (Phase 2) */}
-        <ChatContextBar entityType={entityType} entityId={entityId} />
+        {/* ERP Context Bar (When entity context is provided) */}
+        {entityType && entityId && (
+          <ChatContextBar entityType={entityType} entityId={entityId} />
+        )}
 
         {/* Search Input */}
         {searchQuery !== '' && (
@@ -297,10 +373,10 @@ export const ChatDrawer = React.memo(function ChatDrawer({
         )}
 
         {/* Pinned Messages */}
-        {roomId ? <PinnedMessagesBar roomId={roomId} /> : null}
+        {resolvedRoomId ? <PinnedMessagesBar roomId={resolvedRoomId} /> : null}
 
         {/* Connection Status Banner */}
-        {roomId && connectionStatus === 'reconnecting' ? (
+        {resolvedRoomId && connectionStatus === 'reconnecting' ? (
           <div className="chat-connection-banner chat-connection-banner--warning">
             {CHAT_LABELS.CONNECTION_LOST}
           </div>
@@ -313,7 +389,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
           </div>
         ) : null}
 
-        {/* Room Creation Error — full error state with retry */}
+        {/* Room Creation Fallback Error */}
         {createRoomMutation.isError ? (
           <div className="chat-message-list">
             <div className="chat-error-state">
@@ -332,15 +408,15 @@ export const ChatDrawer = React.memo(function ChatDrawer({
           </div>
         ) : null}
 
-        {/* Messages (only when room creation succeeded or is in progress) */}
+        {/* Normalized Messages Timeline */}
         {!createRoomMutation.isError ? (
           <div ref={messageListRef} className="chat-body-viewport">
             <ChatMessageList
               pages={data?.pages}
+              timelineState={timelineState}
               hasNextPage={hasNextPage}
               isFetchingNextPage={isFetchingNextPage}
               onLoadMore={() => void fetchNextPage()}
-              isLoading={isLoading}
               onQuoteReply={setReplyingToMessage}
               partnerName={title}
               entityType={entityType}
@@ -348,20 +424,20 @@ export const ChatDrawer = React.memo(function ChatDrawer({
           </div>
         ) : null}
 
-        {/* Input */}
+        {/* Composer Input */}
         <ChatInputArea
           onSend={handleSend}
           onSendImage={handleSendImage}
           onSendFile={handleSendFile}
-          roomId={roomId}
+          roomId={resolvedRoomId}
           onTypingStart={startTyping}
           onTypingStop={stopTyping}
           replyingToMessage={replyingToMessage}
           onCancelReply={() => setReplyingToMessage(null)}
           disabled={
-            !roomId ||
-            createRoomMutation.isPending ||
-            createRoomMutation.isError
+            !resolvedRoomId ||
+            isResolvingRoom ||
+            timelineState.status === 'error'
           }
         />
       </div>

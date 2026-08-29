@@ -25,6 +25,7 @@ self.addEventListener('push', (event) => {
     // ── CHAT MESSAGE LOGIC ──
     if (payload.action === 'chat' && payload.roomId) {
       const roomId = payload.roomId;
+      const messageId = payload.messageId || payload.message_id;
       const messageBody = payload.body;
       const senderName = payload.senderName || payload.title;
       const unreadCount = payload.unreadCount || 1;
@@ -40,13 +41,17 @@ self.addEventListener('push', (event) => {
         return;
       }
 
+      const url = messageId
+        ? `/?chatOpen=1&roomId=${roomId}&messageId=${messageId}`
+        : `/?chatOpen=1&roomId=${roomId}`;
+
       // 3. Otherwise show push notification
       await self.registration.showNotification(senderName, {
         body: messageBody,
         icon: '/icon-192.png', // Fallback to main app icon
         badge: '/icon-192.png',
         tag: `chat-${roomId}-${Date.now()}`, // Unique timestamp tag so iOS alerts on Lock Screen for each message
-        data: { url: `/?chatOpen=1&roomId=${roomId}`, action: 'chat', roomId },
+        data: { url, action: 'chat', roomId, messageId },
         vibrate: [100, 50, 100],
       });
 
@@ -103,8 +108,13 @@ self.addEventListener('notificationclick', (event) => {
         if ('focus' in client) {
           // If it's a chat notification, navigate to chat
           if (notifData.action === 'chat' && notifData.roomId) {
-             client.postMessage({ type: 'NAVIGATE_TO_CHAT', payload: { roomId: notifData.roomId } });
-             // If url already has chat, you might just focus it
+            client.postMessage({
+              type: 'NAVIGATE_TO_CHAT',
+              payload: {
+                roomId: notifData.roomId,
+                messageId: notifData.messageId,
+              },
+            });
           } else {
             client.postMessage({
               type: 'NAVIGATE_FROM_NOTIFICATION',
