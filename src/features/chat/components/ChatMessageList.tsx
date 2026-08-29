@@ -222,7 +222,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
               ? 'Bạn không có quyền truy cập cuộc trò chuyện này'
               : timelineState.code === 'NOT_FOUND'
                 ? 'Phòng chat không tồn tại hoặc đã bị xóa'
-                : CHAT_LABELS.SEND_ERROR}
+                : CHAT_LABELS.LOAD_ERROR}
           </p>
           <p className="chat-empty-hint">{timelineState.error.message}</p>
         </div>

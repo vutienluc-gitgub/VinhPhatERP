@@ -320,9 +320,23 @@ export function useSendMessage(roomId: string | undefined) {
         appendMessage(old, confirmedMsg as ChatMessage),
       );
     },
-    onError: (_err, _vars, context) => {
-      if (context?.previous && roomId) {
-        queryClient.setQueryData(CHAT_KEYS.messages(roomId), context.previous);
+    onError: (err, variables) => {
+      console.error('[Chat] Failed to send message:', err);
+      if (roomId) {
+        queryClient.setQueryData(CHAT_KEYS.messages(roomId), (old: unknown) => {
+          const data = old as InfiniteData | undefined;
+          if (!data) return data;
+          return {
+            ...data,
+            pages: data.pages.map((page) =>
+              page.map((m) =>
+                m.client_id === variables.clientId
+                  ? { ...m, status: 'failed' as const, _optimistic: false }
+                  : m,
+              ),
+            ),
+          };
+        });
       }
     },
   });
