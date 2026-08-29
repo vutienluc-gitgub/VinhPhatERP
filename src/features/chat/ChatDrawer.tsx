@@ -342,6 +342,8 @@ export const ChatDrawer = React.memo(function ChatDrawer({
               onLoadMore={() => void fetchNextPage()}
               isLoading={isLoading}
               onQuoteReply={setReplyingToMessage}
+              partnerName={title}
+              entityType={entityType}
             />
           </div>
         ) : null}
