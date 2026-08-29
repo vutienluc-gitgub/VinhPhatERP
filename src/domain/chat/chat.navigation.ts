@@ -67,8 +67,24 @@ export function deriveChatTimelineState(params: {
   }
 
   if (isError) {
-    const errObj = error instanceof Error ? error : new Error(String(error));
-    const msgLower = errObj.message.toLowerCase();
+    let errorMessage = '';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (error && typeof error === 'object') {
+      const errRecord = error as Record<string, unknown>;
+      errorMessage =
+        (typeof errRecord.message === 'string' && errRecord.message) ||
+        (typeof errRecord.error_description === 'string' &&
+          errRecord.error_description) ||
+        (typeof errRecord.details === 'string' && errRecord.details) ||
+        (typeof errRecord.hint === 'string' && errRecord.hint) ||
+        'Không thể tải dữ liệu cuộc trò chuyện';
+    } else {
+      errorMessage = String(error || 'Không thể tải dữ liệu cuộc trò chuyện');
+    }
+
+    const errObj = new Error(errorMessage);
+    const msgLower = errorMessage.toLowerCase();
     let code: ChatErrorCode = 'UNKNOWN';
 
     if (

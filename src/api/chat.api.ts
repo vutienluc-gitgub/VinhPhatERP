@@ -11,6 +11,20 @@ import type {
   UnifiedTimelineItem,
 } from '@/schema/chat.schema';
 
+function toError(error: unknown, fallbackMessage: string): Error {
+  if (error instanceof Error) return error;
+  if (error && typeof error === 'object') {
+    const errRecord = error as Record<string, unknown>;
+    const msg =
+      (typeof errRecord.message === 'string' && errRecord.message) ||
+      (typeof errRecord.details === 'string' && errRecord.details) ||
+      (typeof errRecord.hint === 'string' && errRecord.hint) ||
+      fallbackMessage;
+    return new Error(msg);
+  }
+  return new Error(String(error || fallbackMessage));
+}
+
 // ── Get or Create Room (Atomic) ──
 
 export async function getOrCreateChatRoom(
@@ -39,7 +53,7 @@ export async function getOrCreateChatRoom(
       error.code,
       error.details,
     );
-    throw error;
+    throw toError(error, 'Không thể tạo hoặc lấy thông tin phòng chat');
   }
   return data as string;
 }
@@ -65,7 +79,7 @@ export async function fetchChatRoomByEntity(
       error.code,
       error.details,
     );
-    throw error;
+    throw toError(error, 'Không thể tìm phòng chat theo đối tượng');
   }
   return data as ChatRoom | null;
 }
@@ -90,7 +104,7 @@ export async function fetchChatMessages(
       error.code,
       error.details,
     );
-    throw error;
+    throw toError(error, 'Không thể tải danh sách tin nhắn');
   }
 
   return (data as ChatMessage[]) ?? [];
@@ -108,6 +122,8 @@ export async function sendChatMessage(params: {
   fileName?: string;
   fileType?: string;
   mentions?: ChatMention[];
+  replyToId?: string | null;
+  replyToMessage?: ChatMessage['reply_to_message'];
 }): Promise<ChatMessage> {
   const { data, error } = await untypedDb.rpc('rpc_send_chat_message', {
     p_client_id: params.clientId,
@@ -121,6 +137,10 @@ export async function sendChatMessage(params: {
     p_file_url: params.fileUrl ?? undefined,
     p_file_name: params.fileName ?? undefined,
     p_file_type: params.fileType ?? undefined,
+    p_reply_to_id: params.replyToId ?? undefined,
+    p_reply_to_message: params.replyToMessage
+      ? (params.replyToMessage as unknown as Json)
+      : undefined,
   });
 
   if (error) {
@@ -131,27 +151,54 @@ export async function sendChatMessage(params: {
       error.code,
       error.details,
     );
-    throw error;
+    throw toError(error, 'Không thể gửi tin nhắn');
   }
 
-  // RPC returns message ID — fetch full row for cache reconciliation
   const messageId = data as string;
-  const { data: msg, error: fetchErr } = await supabase
+
+  // 1. Attempt non-blocking DB read for triggers/timestamps
+  const { data: msg } = await supabase
     .from('chat_messages')
     .select('*')
     .eq('id', messageId)
-    .single();
+    .maybeSingle();
 
-  if (fetchErr) {
-    console.error(
-      '[Chat] fetchMessage after send error:',
-      fetchErr.message,
-      fetchErr.hint,
-    );
-    throw fetchErr;
+  if (msg) {
+    return msg as ChatMessage;
   }
 
-  return msg as ChatMessage;
+  // 2. Authoritative client construction (never reject when RPC insert succeeded)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return {
+    id: messageId,
+    client_id: params.clientId,
+    tenant_id: '',
+    room_id: params.roomId,
+    sender_id: user?.id ?? null,
+    message_type: (params.messageType ?? 'text') as
+      | 'text'
+      | 'image'
+      | 'file'
+      | 'system',
+    content: params.content || '',
+    image_url: params.imageUrl ?? null,
+    file_url: params.fileUrl ?? null,
+    file_name: params.fileName ?? null,
+    file_type: params.fileType ?? null,
+    reply_to_id: params.replyToId ?? null,
+    reply_to_message: params.replyToMessage ?? null,
+    status: 'sent',
+    is_pinned: false,
+    pinned_at: null,
+    pinned_by: null,
+    mentions: params.mentions ?? [],
+    reactions: [],
+    created_at: new Date().toISOString(),
+    deleted_at: null,
+  };
 }
 
 // ── Update Read Receipt ──
@@ -187,7 +234,7 @@ export async function updateReadReceipt(
 
   if (error) {
     console.error('[Chat] updateReadReceipt error:', error);
-    throw error;
+    throw toError(error, 'Không thể cập nhật trạng thái đã đọc');
   }
 }
 
@@ -209,7 +256,9 @@ export type MyChatRoomSummary = {
 export async function fetchMyChatRooms(): Promise<MyChatRoomSummary[]> {
   const { data, error } = await supabase.rpc('rpc_get_my_chat_rooms');
 
-  if (error) throw error;
+  if (error) {
+    throw toError(error, 'Không thể tải danh sách phòng chat');
+  }
   if (!data || data.length === 0) return [];
 
   // Data contains basic info, we need to fetch entity details
@@ -362,7 +411,7 @@ export async function togglePinMessage(messageId: string): Promise<boolean> {
   const { data, error } = await supabase.rpc('rpc_toggle_pin_message', {
     p_message_id: messageId,
   });
-  if (error) throw error;
+  if (error) throw toError(error, 'Không thể ghim tin nhắn');
   return data as boolean;
 }
 
@@ -372,7 +421,7 @@ export async function fetchPinnedMessages(
   const { data, error } = await supabase.rpc('rpc_get_pinned_messages', {
     p_room_id: roomId,
   });
-  if (error) throw error;
+  if (error) throw toError(error, 'Không thể tải tin nhắn đã ghim');
 
   const parsed = chatMessageResponseSchema
     .array()
@@ -388,7 +437,7 @@ export async function softDeleteMessage(messageId: string): Promise<void> {
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', messageId);
 
-  if (error) throw error;
+  if (error) throw toError(error, 'Không thể xóa tin nhắn');
 }
 
 // ── Fetch Unread Count for a Room ──
@@ -410,7 +459,7 @@ export async function fetchUnreadCount(roomId: string): Promise<number> {
 
   if (pErr) {
     console.error('[Chat] fetchUnreadCount participant query error:', pErr);
-    throw pErr;
+    throw toError(pErr, 'Không thể tải số tin nhắn chưa đọc');
   }
 
   return participant?.unread_count ?? 0;
@@ -431,7 +480,7 @@ export async function fetchUnifiedTimeline(params: {
   });
 
   if (error) {
-    throw error;
+    throw toError(error, 'Không thể tải bảng tin thống nhất');
   }
 
   return (data as unknown as UnifiedTimelineItem[]) || [];
@@ -455,7 +504,7 @@ export async function addReaction(
       { onConflict: 'message_id,user_id,emoji', ignoreDuplicates: true },
     );
 
-  if (error) throw new Error(error.message);
+  if (error) throw toError(error, 'Không thể thêm cảm xúc');
 }
 
 export async function removeReaction(
@@ -474,7 +523,7 @@ export async function removeReaction(
     .eq('user_id', user.id)
     .eq('emoji', emoji);
 
-  if (error) throw new Error(error.message);
+  if (error) throw toError(error, 'Không thể gỡ cảm xúc');
 }
 
 type ReactionRow = { emoji: string; user_id: string };
@@ -487,7 +536,7 @@ export async function fetchReactions(
     .select('emoji, user_id')
     .eq('message_id', messageId);
 
-  if (error) throw new Error(error.message);
+  if (error) throw toError(error, 'Không thể tải cảm xúc');
 
   // Group by emoji
   const grouped = new Map<
@@ -527,6 +576,6 @@ export async function searchMessages(params: {
     .order('created_at', { ascending: false })
     .limit(50);
 
-  if (error) throw error;
+  if (error) throw toError(error, 'Không thể tìm kiếm tin nhắn');
   return (data as ChatMessage[]) ?? [];
 }

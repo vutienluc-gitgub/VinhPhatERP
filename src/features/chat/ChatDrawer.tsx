@@ -146,13 +146,21 @@ export const ChatDrawer = React.memo(function ChatDrawer({
   }, [data?.pages]);
 
   const timelineState = useMemo(() => {
+    const hasError = Boolean(
+      (resolvedRoomId && messagesError) ||
+      (!resolvedRoomId && createRoomMutation.isError),
+    );
+    const activeError = resolvedRoomId
+      ? messagesErrObj
+      : createRoomMutation.error;
+
     return deriveChatTimelineState({
       isAuthReady,
       isResolvingRoom,
       roomId: resolvedRoomId,
       isLoadingMessages: messagesLoading,
-      isError: Boolean(createRoomMutation.isError || messagesError),
-      error: createRoomMutation.error || messagesErrObj,
+      isError: hasError,
+      error: activeError,
       messages: flattenedMessages,
       hasNextPage,
     });
