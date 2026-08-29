@@ -46,6 +46,7 @@ export const DRIVER_PORTAL_MESSAGES = {
     OPEN_MAP: 'Bản đồ',
     CONTACT_DISPATCH: 'Liên hệ điều phối',
     CLICK_TO_UPDATE: 'Nhấn để cập nhật',
+    REPORT_EXCEPTION: 'Báo sự cố',
   },
   ERROR: {
     GENERIC: 'Có lỗi xảy ra',

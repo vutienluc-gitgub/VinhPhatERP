@@ -36,6 +36,7 @@
     "prepare": "husky",
     "rpc:check": "tsx scripts/rpc-sync.ts",
     "rpc:fix": "tsx scripts/rpc-sync.ts --fix",
+    "logistics:reconcile": "tsx scripts/logistics-reconciliation.ts",
     "theme:check": "node scripts/check-theme-contract.cjs"
   },
   "dependencies": {

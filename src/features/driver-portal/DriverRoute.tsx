@@ -18,7 +18,7 @@ export function DriverRoute() {
     return <Navigate to="/auth" replace />;
   }
 
-  if (profile?.role !== 'driver') {
+  if (profile?.role !== 'driver' && profile?.role !== 'admin') {
     return <Navigate to="/unauthorized" replace />;
   }
 
