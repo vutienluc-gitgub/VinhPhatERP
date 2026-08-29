@@ -347,11 +347,40 @@ export function useTogglePin(roomId: string | undefined) {
 
   return useMutation({
     mutationFn: (messageId: string) => togglePinMessage(messageId),
+    onMutate: async (messageId: string) => {
+      if (!roomId) return;
+      const queryKey = CHAT_KEYS.messages(roomId);
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(queryKey, (old: unknown) => {
+        const data = old as InfiniteData | undefined;
+        if (!data) return data;
+        return {
+          ...data,
+          pages: data.pages.map((page) =>
+            page.map((m) =>
+              m.id === messageId
+                ? {
+                    ...m,
+                    is_pinned: !m.is_pinned,
+                    pinned_at: !m.is_pinned ? new Date().toISOString() : null,
+                  }
+                : m,
+            ),
+          ),
+        };
+      });
+
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous && roomId) {
+        queryClient.setQueryData(CHAT_KEYS.messages(roomId), context.previous);
+      }
+    },
     onSuccess: () => {
       if (roomId) {
-        void queryClient.invalidateQueries({
-          queryKey: CHAT_KEYS.messages(roomId),
-        });
         void queryClient.invalidateQueries({
           queryKey: CHAT_KEYS.pinnedMessages(roomId),
         });
@@ -360,19 +389,58 @@ export function useTogglePin(roomId: string | undefined) {
   });
 }
 
-// ── Message Reactions ──
+// ── Message Reactions (In-memory Local Patch) ──
 
 export function useAddReaction(roomId: string | undefined) {
   const queryClient = useQueryClient();
+  const { user, profile } = useAuth();
 
   return useMutation({
     mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) =>
       addReaction(messageId, emoji),
-    onSuccess: () => {
-      if (roomId) {
-        void queryClient.invalidateQueries({
-          queryKey: CHAT_KEYS.messages(roomId),
-        });
+    onMutate: async ({ messageId, emoji }) => {
+      if (!roomId || !user?.id) return;
+      const queryKey = CHAT_KEYS.messages(roomId);
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(queryKey, (old: unknown) => {
+        const data = old as InfiniteData | undefined;
+        if (!data) return data;
+        return {
+          ...data,
+          pages: data.pages.map((page) =>
+            page.map((m) => {
+              if (m.id !== messageId) return m;
+              const current = m.reactions || [];
+              const exists = current.some(
+                (r) => r.emoji === emoji && r.user_id === user.id,
+              );
+              if (exists) return m;
+              return {
+                ...m,
+                reactions: [
+                  ...current,
+                  {
+                    id: `opt-${Date.now()}`,
+                    message_id: messageId,
+                    user_id: user.id,
+                    user_name: profile?.full_name || 'Bạn',
+                    emoji,
+                    created_at: new Date().toISOString(),
+                  },
+                ],
+              };
+            }),
+          ),
+        };
+      });
+
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous && roomId) {
+        queryClient.setQueryData(CHAT_KEYS.messages(roomId), context.previous);
       }
     },
   });
@@ -380,15 +448,41 @@ export function useAddReaction(roomId: string | undefined) {
 
 export function useRemoveReaction(roomId: string | undefined) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: ({ messageId, emoji }: { messageId: string; emoji: string }) =>
       removeReaction(messageId, emoji),
-    onSuccess: () => {
-      if (roomId) {
-        void queryClient.invalidateQueries({
-          queryKey: CHAT_KEYS.messages(roomId),
-        });
+    onMutate: async ({ messageId, emoji }) => {
+      if (!roomId || !user?.id) return;
+      const queryKey = CHAT_KEYS.messages(roomId);
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(queryKey, (old: unknown) => {
+        const data = old as InfiniteData | undefined;
+        if (!data) return data;
+        return {
+          ...data,
+          pages: data.pages.map((page) =>
+            page.map((m) => {
+              if (m.id !== messageId) return m;
+              return {
+                ...m,
+                reactions: (m.reactions || []).filter(
+                  (r) => !(r.emoji === emoji && r.user_id === user.id),
+                ),
+              };
+            }),
+          ),
+        };
+      });
+
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous && roomId) {
+        queryClient.setQueryData(CHAT_KEYS.messages(roomId), context.previous);
       }
     },
   });
@@ -553,14 +647,23 @@ export function useChatRealtime(roomId: string | undefined) {
           table: 'chat_messages',
           filter: `room_id=eq.${roomId}`,
         },
-        () => {
-          // Invalidate messages on update (like pinned changes or soft deletes)
-          void queryClient.invalidateQueries({
-            queryKey: CHAT_KEYS.messages(roomId),
-          });
-          void queryClient.invalidateQueries({
-            queryKey: CHAT_KEYS.pinnedMessages(roomId),
-          });
+        (payload) => {
+          const updatedMsg = payload.new as ChatMessage;
+          queryClient.setQueryData(
+            CHAT_KEYS.messages(roomId),
+            (old: unknown) => {
+              const data = old as InfiniteData | undefined;
+              if (!data) return data;
+              return {
+                ...data,
+                pages: data.pages.map((page) =>
+                  page.map((m) =>
+                    m.id === updatedMsg.id ? { ...m, ...updatedMsg } : m,
+                  ),
+                ),
+              };
+            },
+          );
         },
       )
       .on(
@@ -571,11 +674,68 @@ export function useChatRealtime(roomId: string | undefined) {
           table: 'chat_message_reactions',
           filter: `room_id=eq.${roomId}`,
         },
-        () => {
-          // Invalidate messages when reactions are added/removed in realtime for this room
-          void queryClient.invalidateQueries({
-            queryKey: CHAT_KEYS.messages(roomId),
-          });
+        (payload) => {
+          const record = (payload.new || payload.old) as {
+            id?: string;
+            message_id?: string;
+            emoji?: string;
+            user_id?: string;
+            user_name?: string;
+            created_at?: string;
+          };
+          if (!record?.message_id) return;
+          const isInsert = payload.eventType === 'INSERT';
+
+          queryClient.setQueryData(
+            CHAT_KEYS.messages(roomId),
+            (old: unknown) => {
+              const data = old as InfiniteData | undefined;
+              if (!data) return data;
+              return {
+                ...data,
+                pages: data.pages.map((page) =>
+                  page.map((m) => {
+                    if (m.id !== record.message_id) return m;
+                    const currentReactions = m.reactions || [];
+                    if (isInsert && record.emoji && record.user_id) {
+                      const exists = currentReactions.some(
+                        (r) =>
+                          r.emoji === record.emoji &&
+                          r.user_id === record.user_id,
+                      );
+                      if (exists) return m;
+                      return {
+                        ...m,
+                        reactions: [
+                          ...currentReactions,
+                          {
+                            id: record.id || `rxn-${Date.now()}`,
+                            message_id: record.message_id,
+                            user_id: record.user_id,
+                            user_name: record.user_name || 'Người dùng',
+                            emoji: record.emoji,
+                            created_at:
+                              record.created_at || new Date().toISOString(),
+                          },
+                        ],
+                      };
+                    } else {
+                      return {
+                        ...m,
+                        reactions: currentReactions.filter(
+                          (r) =>
+                            !(
+                              r.emoji === record.emoji &&
+                              r.user_id === record.user_id
+                            ),
+                        ),
+                      };
+                    }
+                  }),
+                ),
+              };
+            },
+          );
         },
       )
       .subscribe((status) => {

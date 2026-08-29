@@ -11,29 +11,33 @@ trigger: always_on
 Must follow:
 agents/rules/refactor-checklist.md
 
-## ESLint Architecture Guard
+## ESLint & Stylelint Architecture Guard
 
-VinhPhatERP sử dụng ESLint không chỉ để bắt lỗi cú pháp, mà còn hoạt động như một **Architecture Guard** với cơ chế bảo vệ 3 tầng:
+VinhPhatERP sử dụng ESLint & Stylelint không chỉ để bắt lỗi cú pháp, mà còn hoạt động như một **Architecture Guard** với cơ chế bảo vệ 3 tầng:
 
 ```text
 Developer
    │
    ▼
-ESLint Architecture Guard
-   ├── no-emoji                  (ERROR) - Cấm hoàn toàn Emoji (kể cả sequence, ZWJ, modifiers).
-   ├── no-hardcoded-colors       (ERROR) - Bắt buộc dùng Design Tokens (text-muted, bg-surface).
-   ├── no-raw-select             (ERROR) - Cấm thẻ <select> native (phải dùng <VPSelect>).
-   ├── no-legacy-combobox        (ERROR) - Cấm import <Combobox> cũ (chỉ cho phép trong migration boundary).
-   ├── no-cross-feature-import   (ERROR) - Cấm feature import chéo nhau.
-   └── no-business-logic-in-ui   (ERROR) - Cấm dùng `reduce` trong UI components.
+Architecture Guard
+   ├── ESLint
+   │   ├── no-emoji                  (ERROR) - Cấm hoàn toàn Emoji (kể cả sequence, ZWJ, modifiers).
+   │   ├── no-hardcoded-colors       (ERROR) - Bắt buộc dùng Design Tokens (text-muted, bg-surface).
+   │   ├── no-raw-select             (ERROR) - Cấm thẻ <select> native (phải dùng <VPSelect>).
+   │   ├── no-legacy-combobox        (ERROR) - Cấm import <Combobox> cũ (chỉ cho phép trong migration boundary).
+   │   ├── no-cross-feature-import   (ERROR) - Cấm feature import chéo nhau.
+   │   └── no-business-logic-in-ui   (ERROR) - Cấm dùng `reduce` trong UI components.
+   │
+   └── Stylelint (CSS)
+       └── no-hardcoded-colors       (ERROR) - Cấm mã màu tĩnh (#fff, rgba, rgb) trong .css. Bắt buộc dùng var(--surface), var(--inverse-foreground), etc.
    │
    ▼
-Pre-push
-   └── npm run lint -- --max-warnings=0 (Chặn ngay tại máy Dev nếu vi phạm)
+Pre-push / Pre-commit
+   └── npm run lint -- --max-warnings=0 && npm run lint:css (Chặn ngay tại máy Dev nếu vi phạm)
    │
    ▼
 CI / GitHub
-   └── lint + typecheck + test (Lá chắn cuối trước khi merge)
+   └── lint + lint:css + typecheck + test (Lá chắn cuối trước khi merge)
 ```
 
 _Ghi chú:_ Việc tuân thủ Architecture Guard là **BẮT BUỘC**.
@@ -229,11 +233,12 @@ npm run rpc:check                  # 0 issues
 npm run typecheck                  # 0 errors
 npm run lint -- --fix
 npm run lint -- --max-warnings=0   # 0 warnings
+npm run lint:css                   # 0 CSS errors (MANDATORY)
 ```
 
 ### Rules
 
-- Task is NOT complete until all 3 commands pass with 0 problems
+- Task is NOT complete until all 4 commands pass with 0 problems
 - If errors are outside current task scope, report immediately — do not self-fix unrelated code
 - Pre-push hook enforces: `rpc:check` -> `ai:audit` -> `test:e2e`
 
@@ -256,6 +261,7 @@ Quick self-check:
 - [ ] No flash of default values before real data loads
 - [ ] Inline styles repeated ≥ 2 times extracted to CSS class
 - [ ] `typecheck` and `lint` pass clean — 0 errors, 0 warnings
+- [ ] `lint:css` passes clean — 0 stylelint errors
 - [ ] `rpc:check` passes — 0 issues
 
 ---

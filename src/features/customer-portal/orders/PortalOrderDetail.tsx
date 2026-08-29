@@ -40,13 +40,13 @@ export function PortalOrderDetail() {
             <div className="portal-detail-item">
               <label>Tổng tiền</label>
               <p style={{ fontWeight: 600 }}>
-                <MoneyText value={order.total_amount} suffix=" ₫" />
+                <MoneyText value={order.total_amount} />
               </p>
             </div>
             <div className="portal-detail-item">
               <label>Đã thanh toán</label>
               <p>
-                <MoneyText value={order.paid_amount} suffix=" ₫" />
+                <MoneyText value={order.paid_amount} />
               </p>
             </div>
           </div>
@@ -75,10 +75,10 @@ export function PortalOrderDetail() {
                     <td>{item.color ?? '—'}</td>
                     <td className="right">{item.quantity}</td>
                     <td className="right">
-                      <MoneyText value={item.unit_price} suffix=" ₫" />
+                      <MoneyText value={item.unit_price} />
                     </td>
                     <td className="right" style={{ fontWeight: 500 }}>
-                      <MoneyText value={item.amount} suffix=" ₫" />
+                      <MoneyText value={item.amount} />
                     </td>
                   </tr>
                 ))}
@@ -92,7 +92,10 @@ export function PortalOrderDetail() {
       <div className="portal-table-wrap">
         <div className="portal-card-header">Tiến độ sản xuất</div>
         <div className="portal-card-body">
-          <PortalProgressTimeline stages={stages} />
+          <PortalProgressTimeline
+            stages={stages}
+            orderNumber={order.order_number}
+          />
         </div>
       </div>
     </div>

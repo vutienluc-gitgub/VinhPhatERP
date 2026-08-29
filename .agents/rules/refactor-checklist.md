@@ -249,12 +249,15 @@ trigger: always_on
   - URL
   - config
   - magic number
+  - Mã màu tĩnh (`#ffffff`, `rgba()`, `rgb()`) trong file `.css`?
 
 ✅ Action:
 
 - đưa vào config/constants
+- Dùng Semantic Design Tokens (`var(--surface)`, `var(--inverse-foreground)`, `var(--primary)`) trong CSS
+- Chạy `npm run lint:css` đạt 0 lỗi
 
-❌ INVALID nếu hardcode
+❌ INVALID nếu hardcode hoặc `lint:css` có lỗi
 
 ---
 

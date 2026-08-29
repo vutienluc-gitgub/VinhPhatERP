@@ -17,7 +17,7 @@ trigger: always_on
 Before writing code:
 
 1. Analyze business logic (`.test.ts` or `docs/`).
-2. Run `npm run typecheck` and `npm run lint` to ensure the codebase is currently error-free.
+2. Run `npm run typecheck`, `npm run lint`, and `npm run lint:css` to ensure the codebase is currently error-free.
 3. Check for duplicated logic or existing components that can be reused.
 
 ## 3. The Refactor Checklist (Mandatory)
@@ -30,15 +30,17 @@ You MUST verify the following before claiming a task is done.
 - [ ] No business logic (math, reduce, derivations) inside UI components.
 - [ ] Zod schema used for all validation (no manual `if (!val)`).
 - [ ] Database Safety: `safeUpsert` used instead of raw `insert`. Idempotent operations.
+- [ ] Stylelint Guard: No hardcoded colors in `.css` (must pass `npm run lint:css`).
 
 ## 4. Verification Loop
 
-Code is NOT complete until all 3 commands pass:
+Code is NOT complete until all 4 commands pass with 0 errors:
 
 ```bash
 npm run rpc:check
 npm run typecheck
 npm run lint -- --fix && npm run lint -- --max-warnings=0
+npm run lint:css
 ```
 
 If errors occur, fix them immediately. DO NOT end your turn if the build is failing.
