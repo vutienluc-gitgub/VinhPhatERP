@@ -175,7 +175,9 @@ export const ChatBubble = memo(function ChatBubble({
         <div
           className={`chat-bubble chat-bubble--pos-${position} ${
             isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'
-          } ${statusClass} ${isImageOnly ? 'chat-bubble--image-only' : ''}`}
+          } ${statusClass} ${isImageOnly ? 'chat-bubble--image-only' : ''} ${
+            viewModel.isEmojiOnly ? 'chat-bubble--emoji-only' : ''
+          }`}
         >
           {/* Pin indicator */}
           {message.is_pinned ? (

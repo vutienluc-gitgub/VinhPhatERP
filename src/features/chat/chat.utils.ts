@@ -1,4 +1,10 @@
 import type { ChatMessage } from '@/schema/chat.schema';
+import {
+  resolveParticipantParty,
+  resolveMessageSide,
+  type ChatParticipantParty,
+  type ChatMessageSide,
+} from '@/domain/chat';
 import type {
   ChatMessageViewModel,
   ChatRoomContext,
@@ -42,6 +48,18 @@ export function formatTime(iso: string): string {
   } catch {
     return '';
   }
+}
+
+export function isEmojiOnly(content?: string | null): boolean {
+  if (!content) return false;
+  const trimmed = content.trim();
+  if (!trimmed) return false;
+  // Matches 1-3 emojis without standard alphanumeric text
+  const emojiRegex =
+    /^(\p{Extended_Pictographic}|\p{Emoji_Presentation}|\s)+$/u;
+  if (!emojiRegex.test(trimmed)) return false;
+  const codePoints = Array.from(trimmed).filter((c) => c.trim().length > 0);
+  return codePoints.length >= 1 && codePoints.length <= 4;
 }
 
 export function deriveMessageStatus(
@@ -134,6 +152,8 @@ export function buildMessageGroups(
     senderId: string | null;
     senderNameRaw?: string | null;
     senderRole?: string | null;
+    party: ChatParticipantParty;
+    side: ChatMessageSide;
     isMine: boolean;
     timestamp: string;
     rawMessages: ChatMessage[];
@@ -150,6 +170,8 @@ export function buildMessageGroups(
       senderId,
       senderNameRaw,
       senderRole,
+      party,
+      side,
       isMine,
       timestamp,
       id,
@@ -175,9 +197,12 @@ export function buildMessageGroups(
         senderId,
         senderName: identity.name,
         senderInitials: identity.initials,
+        party,
+        side,
         isMine,
         timeFormatted: formatTime(msg.created_at),
         status: deriveMessageStatus(msg, isMine),
+        isEmojiOnly: isEmojiOnly(msg.content),
       };
     });
 
@@ -186,6 +211,8 @@ export function buildMessageGroups(
       senderId,
       senderName: identity.name,
       senderInitials: identity.initials,
+      party,
+      side,
       isMine,
       timestamp,
       messages: viewModels,
@@ -199,26 +226,15 @@ export function buildMessageGroups(
     const dateLabel = formatDateLabel(msg.created_at);
     const dateKey = msg.created_at.split('T')[0] ?? '';
 
-    // Determine isMine:
-    // 1. Direct match with current user ID or local optimistic pending message
     const isDirectSender = Boolean(
       (currentUserId && msg.sender_id === currentUserId) ||
       (!msg.sender_id && msg.status === 'pending'),
     );
 
-    let isMine = isDirectSender;
-
-    // 2. In Admin Portal (Backoffice):
-    // If message is sent by an internal team member (Admin/Manager/Staff), align to the RIGHT side (outbound)
-    if (!isDirectSender && !isCustomerPortal) {
-      if (
-        msg.sender_role === 'admin' ||
-        msg.sender_role === 'manager' ||
-        msg.sender_role === 'staff'
-      ) {
-        isMine = true;
-      }
-    }
+    const party = resolveParticipantParty(msg.sender_role);
+    const perspective = isCustomerPortal ? 'external' : 'internal';
+    const side = resolveMessageSide(party, perspective, isDirectSender);
+    const isMine = side === 'right';
 
     const msgTime = new Date(msg.created_at).getTime();
 
@@ -241,6 +257,8 @@ export function buildMessageGroups(
         senderId: null,
         senderName: 'Hệ thống',
         senderInitials: 'HT',
+        party: 'internal',
+        side: 'left',
         isMine: false,
         timestamp: msg.created_at,
         messages: [
@@ -250,6 +268,8 @@ export function buildMessageGroups(
             senderId: null,
             senderName: 'Hệ thống',
             senderInitials: 'HT',
+            party: 'internal',
+            side: 'left',
             isMine: false,
             timeFormatted: formatTime(msg.created_at),
             status: 'sent',
@@ -264,7 +284,7 @@ export function buildMessageGroups(
     const canCluster =
       currentRawCluster &&
       currentRawCluster.senderId === msg.sender_id &&
-      currentRawCluster.isMine === isMine &&
+      currentRawCluster.side === side &&
       msgTime - new Date(currentRawCluster.timestamp).getTime() <=
         CLUSTER_TIME_THRESHOLD_MS;
 
@@ -284,6 +304,8 @@ export function buildMessageGroups(
         senderId: msg.sender_id,
         senderNameRaw: msg.sender_name,
         senderRole: msg.sender_role,
+        party,
+        side,
         isMine,
         timestamp: msg.created_at,
         rawMessages: [msg],
