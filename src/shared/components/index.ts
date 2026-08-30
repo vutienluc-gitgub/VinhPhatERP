@@ -4,6 +4,7 @@
 export { Icon } from './Icon';
 export type { IconName } from './Icon';
 export { FAB } from './FAB';
+export { Avatar, type AvatarProps, type AvatarSize } from './avatar';
 
 export { AdaptiveSheet } from './AdaptiveSheet';
 export { Badge } from './Badge';

@@ -2,6 +2,7 @@ import { memo } from 'react';
 
 import type { ChatMessage } from '@/schema/chat.schema';
 import type { MessageCluster as MessageClusterType } from '@/features/chat/chat.types';
+import { Avatar } from '@/shared/components';
 
 import { ChatBubble } from './ChatBubble';
 
@@ -16,7 +17,7 @@ export const MessageCluster = memo(function MessageCluster({
   onRetry,
   onQuoteReply,
 }: MessageClusterProps) {
-  const { isMine, senderName, senderInitials, messages } = cluster;
+  const { isMine, senderId, senderName, senderAvatarUrl, messages } = cluster;
 
   return (
     <div
@@ -25,9 +26,13 @@ export const MessageCluster = memo(function MessageCluster({
       }`}
     >
       {!isMine && (
-        <div className="chat-cluster-avatar" title={senderName}>
-          <span>{senderInitials}</span>
-        </div>
+        <Avatar
+          userId={senderId}
+          name={senderName}
+          src={senderAvatarUrl}
+          size="sm"
+          className="chat-cluster-avatar"
+        />
       )}
 
       <div className="chat-cluster-content">
@@ -40,7 +45,7 @@ export const MessageCluster = memo(function MessageCluster({
         <div className="chat-cluster-messages">
           {messages.map((vm) => (
             <ChatBubble
-              key={vm.message.id}
+              key={vm.message.id || vm.message.client_id}
               viewModel={vm}
               isOptimistic={vm.message.status === 'pending'}
               onRetry={onRetry}
