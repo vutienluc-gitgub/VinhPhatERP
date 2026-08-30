@@ -116,3 +116,29 @@ describe('chat.utils - buildMessageGroups', () => {
     expect(cluster?.messages[0]?.status).toBe('sending');
   });
 });
+
+describe('chat.schema - getQuickRepliesByRole', () => {
+  it('returns customer-oriented quick replies for customer role', async () => {
+    const { getQuickRepliesByRole, CUSTOMER_QUICK_REPLIES } =
+      await import('@/schema/chat.schema');
+    const replies = getQuickRepliesByRole('customer');
+    expect(replies).toEqual(CUSTOMER_QUICK_REPLIES);
+    expect(replies[0]).toBe('Kiểm tra tiến độ đơn hàng giúp tôi');
+  });
+
+  it('returns driver-oriented quick replies for driver role', async () => {
+    const { getQuickRepliesByRole, DRIVER_QUICK_REPLIES } =
+      await import('@/schema/chat.schema');
+    const replies = getQuickRepliesByRole('driver');
+    expect(replies).toEqual(DRIVER_QUICK_REPLIES);
+    expect(replies[0]).toBe('Tôi đã nhận hàng và đang bắt đầu giao');
+  });
+
+  it('returns staff CSKH quick replies for internal staff/admin/manager role', async () => {
+    const { getQuickRepliesByRole, STAFF_QUICK_REPLIES } =
+      await import('@/schema/chat.schema');
+    expect(getQuickRepliesByRole('admin')).toEqual(STAFF_QUICK_REPLIES);
+    expect(getQuickRepliesByRole('staff')).toEqual(STAFF_QUICK_REPLIES);
+    expect(getQuickRepliesByRole(null)).toEqual(STAFF_QUICK_REPLIES);
+  });
+});

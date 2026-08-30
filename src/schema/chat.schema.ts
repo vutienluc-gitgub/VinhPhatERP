@@ -240,6 +240,22 @@ export const CHAT_LABELS = {
   SEARCH_MESSAGES: 'Tìm kiếm tin nhắn',
 } as const;
 
+export const CHAT_CONTEXT_LABELS = {
+  CUSTOMER_SUPPORT_BADGE: 'Tư vấn viên / CSKH',
+  DRIVER_SUPPORT_BADGE: 'Điều phối Vận tải',
+  SUPPLIER_SUPPORT_BADGE: 'Bộ phận Thu mua',
+  COMPANY_NAME: 'Dệt may Vĩnh Phát',
+  COMPANY_HOTLINE: '0989072670',
+  CHANNEL_LABEL: 'Kênh hỗ trợ:',
+  CHANNEL_VALUE_CUSTOMER: 'Tư vấn kỹ thuật & Tiến độ đơn hàng',
+  CHANNEL_VALUE_DRIVER: 'Điều phối Kho & Giao vận',
+  CHANNEL_VALUE_SUPPLIER: 'Trao đổi Vật tư & Công nợ',
+  TARGET_LABEL: 'Đối tượng:',
+  SYSTEM_CODE_LABEL: 'Mã hệ thống:',
+  VIEW_DETAIL: 'Chi tiết',
+  EXPAND_INFO: 'Mở rộng thông tin',
+} as const;
+
 export const AVAILABLE_ROLES = [
   'admin',
   'manager',
@@ -249,13 +265,37 @@ export const AVAILABLE_ROLES = [
   'kho',
 ] as const;
 
-export const CANNED_RESPONSES = [
+export const CUSTOMER_QUICK_REPLIES = [
+  'Kiểm tra tiến độ đơn hàng giúp tôi',
+  'Cho tôi xin báo giá mới nhất',
+  'Thời gian giao hàng dự kiến khi nào?',
+  'Tôi muốn đặt thêm hàng',
+  'Hỗ trợ kiểm tra công nợ giúp tôi',
+] as const;
+
+export const DRIVER_QUICK_REPLIES = [
+  'Tôi đã nhận hàng và đang bắt đầu giao',
+  'Đã tới địa chỉ giao hàng',
+  'Khách chưa nghe máy, đang chờ',
+  'Đã giao hàng thành công',
+  'Có sự cố giao hàng cần hỗ trợ',
+] as const;
+
+export const STAFF_QUICK_REPLIES = [
   'Dạ em đã nhận được thông tin ạ',
   'Dạ đơn hàng đang được xử lý',
   'Dạ tài xế đang trên đường giao hàng',
   'Dạ đã chuẩn bị xong hàng',
   'Dạ vâng ạ, cảm ơn quý khách!',
 ] as const;
+
+export const CANNED_RESPONSES = STAFF_QUICK_REPLIES;
+
+export function getQuickRepliesByRole(role?: string | null): readonly string[] {
+  if (role === 'customer') return CUSTOMER_QUICK_REPLIES;
+  if (role === 'driver') return DRIVER_QUICK_REPLIES;
+  return STAFF_QUICK_REPLIES;
+}
 
 export const CHAT_INBOX_LABELS = {
   TITLE: 'Hộp thư hệ thống',
