@@ -4,6 +4,7 @@ import {
   resolveMessageSide,
   type ChatParticipantParty,
   type ChatMessageSide,
+  type ChatTimelineState,
 } from '@/domain/chat';
 import type {
   ChatMessageViewModel,
@@ -316,4 +317,45 @@ export function buildMessageGroups(
   flushCluster();
 
   return groups;
+}
+
+/**
+ * Extract and normalize raw paginated messages or timelineState into a chronological list (oldest-first).
+ */
+export function extractChronologicalMessages(
+  pages: unknown,
+  timelineState?: ChatTimelineState,
+): ChatMessage[] {
+  if (timelineState && timelineState.status === 'ready') {
+    return timelineState.messages;
+  }
+
+  const rawPages: unknown = Array.isArray(pages)
+    ? pages
+    : pages &&
+        typeof pages === 'object' &&
+        'pages' in pages &&
+        Array.isArray((pages as { pages: unknown }).pages)
+      ? (pages as { pages: unknown[] }).pages
+      : [];
+
+  if (!Array.isArray(rawPages) || rawPages.length === 0) return [];
+
+  return [...rawPages].reverse().flatMap((page) => {
+    if (Array.isArray(page)) {
+      return [...page].reverse();
+    }
+    if (
+      page &&
+      typeof page === 'object' &&
+      'messages' in page &&
+      Array.isArray((page as { messages: unknown }).messages)
+    ) {
+      return [...(page as { messages: ChatMessage[] }).messages].reverse();
+    }
+    if (page && typeof page === 'object' && 'id' in page) {
+      return [page as unknown as ChatMessage];
+    }
+    return [];
+  });
 }

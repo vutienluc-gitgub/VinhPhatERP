@@ -186,6 +186,8 @@ export const CHAT_LABELS = {
   ROOM_CLOSED: 'Phòng chat đã đóng',
   SEND_ERROR: 'Không gửi được tin nhắn',
   LOAD_ERROR: 'Không thể tải tin nhắn',
+  FORBIDDEN: 'Bạn không có quyền truy cập cuộc trò chuyện này',
+  ROOM_NOT_FOUND: 'Phòng chat không tồn tại hoặc đã bị xóa',
   IMAGE_TOO_LARGE: 'Hình ảnh không được vượt quá 5MB',
   CONNECTION_LOST: 'Mất kết nối, đang thử kết nối lại...',
   RECONNECTED: 'Đã kết nối lại',

@@ -10,7 +10,10 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Icon } from '@/shared/components/Icon';
-import { buildMessageGroups } from '@/features/chat/chat.utils';
+import {
+  buildMessageGroups,
+  extractChronologicalMessages,
+} from '@/features/chat/chat.utils';
 import type { MessageCluster as MessageClusterType } from '@/features/chat/chat.types';
 import type { ChatTimelineState } from '@/domain/chat';
 
@@ -60,14 +63,11 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   const [unreadNewCount, setUnreadNewCount] = useState(0);
   const lastMessageCountRef = useRef(0);
 
-  // Convert pages (which come with newest-first per page) to a single chronological list (oldest-first)
-  const chronologicalMessages = useMemo(() => {
-    if (timelineState && timelineState.status === 'ready') {
-      return timelineState.messages;
-    }
-    if (!pages || pages.length === 0) return [];
-    return [...pages].reverse().flatMap((page) => [...page].reverse());
-  }, [pages, timelineState]);
+  // Extract chronological list (oldest-first) using pure helper
+  const chronologicalMessages = useMemo(
+    () => extractChronologicalMessages(pages, timelineState),
+    [pages, timelineState],
+  );
 
   const messageGroups = useMemo(
     () =>
@@ -219,12 +219,16 @@ export const ChatMessageList = React.memo(function ChatMessageList({
           />
           <p className="chat-empty-text font-semibold text-danger">
             {timelineState.code === 'FORBIDDEN'
-              ? 'Bạn không có quyền truy cập cuộc trò chuyện này'
+              ? CHAT_LABELS.FORBIDDEN
               : timelineState.code === 'NOT_FOUND'
-                ? 'Phòng chat không tồn tại hoặc đã bị xóa'
+                ? CHAT_LABELS.ROOM_NOT_FOUND
                 : CHAT_LABELS.LOAD_ERROR}
           </p>
-          <p className="chat-empty-hint">{timelineState.error.message}</p>
+          <p className="chat-empty-hint">
+            {timelineState.error instanceof Error
+              ? timelineState.error.message
+              : String(timelineState.error)}
+          </p>
         </div>
       </div>
     );

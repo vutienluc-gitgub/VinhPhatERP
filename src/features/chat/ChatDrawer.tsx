@@ -30,6 +30,7 @@ import {
 import { Icon } from '@/shared/components/Icon';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { deriveChatTimelineState } from '@/domain/chat';
+import { extractChronologicalMessages } from '@/features/chat/chat.utils';
 
 import { ChatContextBar } from './components/ChatContextBar';
 import { ChatInputArea } from './components/ChatInputArea';
@@ -140,10 +141,10 @@ export const ChatDrawer = React.memo(function ChatDrawer({
   }, [open, resolvedRoomId]);
 
   // Derive deterministic ChatTimelineState
-  const flattenedMessages = useMemo(() => {
-    if (!data?.pages || data.pages.length === 0) return [];
-    return [...data.pages].reverse().flatMap((page) => [...page].reverse());
-  }, [data?.pages]);
+  const flattenedMessages = useMemo(
+    () => extractChronologicalMessages(data?.pages),
+    [data?.pages],
+  );
 
   const timelineState = useMemo(() => {
     const hasError = Boolean(
