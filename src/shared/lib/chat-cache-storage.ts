@@ -40,10 +40,20 @@ export async function saveCachedMessages(
   messages: ChatMessage[],
 ): Promise<void> {
   try {
+    const list = Array.isArray(messages)
+      ? messages
+      : messages &&
+          typeof messages === 'object' &&
+          'messages' in messages &&
+          Array.isArray((messages as { messages: unknown }).messages)
+        ? (messages as { messages: ChatMessage[] }).messages
+        : [];
+    if (list.length === 0) return;
+
     const db = await openDb();
     const payload: CachedRoomMessages = {
       roomId,
-      messages: messages.slice(0, 50), // keep latest 50 for fast startup
+      messages: list.slice(0, 50), // keep latest 50 for fast startup
       cachedAt: Date.now(),
     };
 
@@ -71,7 +81,22 @@ export async function getCachedMessages(
       const request = tx.objectStore(STORE_NAME).get(roomId);
       request.onsuccess = () => {
         const result = request.result as CachedRoomMessages | undefined;
-        resolve(result?.messages ?? null);
+        if (!result || !result.messages) {
+          resolve(null);
+          return;
+        }
+        if (Array.isArray(result.messages)) {
+          resolve(result.messages);
+        } else if (
+          result.messages &&
+          typeof result.messages === 'object' &&
+          'messages' in result.messages &&
+          Array.isArray((result.messages as { messages: unknown }).messages)
+        ) {
+          resolve((result.messages as { messages: ChatMessage[] }).messages);
+        } else {
+          resolve(null);
+        }
       };
       request.onerror = () => reject(request.error);
     });

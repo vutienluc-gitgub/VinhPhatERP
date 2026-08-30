@@ -71,9 +71,20 @@ type InfiniteData = { pages: ChatMessage[][]; pageParams: unknown[] };
 
 function appendMessage(old: unknown, newMsg: ChatMessage): unknown {
   const data = old as InfiniteData | undefined;
-  if (!data) return data;
+  if (!data || !Array.isArray(data.pages)) return data;
 
-  const allMessages = data.pages.flat();
+  const normalizedPages = data.pages.map((p) =>
+    Array.isArray(p)
+      ? p
+      : p &&
+          typeof p === 'object' &&
+          'messages' in p &&
+          Array.isArray((p as { messages: unknown }).messages)
+        ? (p as { messages: ChatMessage[] }).messages
+        : [],
+  );
+
+  const allMessages = normalizedPages.flat();
   const existing = allMessages.find(
     (m) =>
       (Boolean(newMsg.client_id) && m.client_id === newMsg.client_id) ||
@@ -90,7 +101,7 @@ function appendMessage(old: unknown, newMsg: ChatMessage): unknown {
     // Replace optimistic / pending message with the confirmed real message
     return {
       ...data,
-      pages: data.pages.map((page) =>
+      pages: normalizedPages.map((page) =>
         page.map((m) =>
           (Boolean(newMsg.client_id) && m.client_id === newMsg.client_id) ||
           m.id === newMsg.id
@@ -101,9 +112,11 @@ function appendMessage(old: unknown, newMsg: ChatMessage): unknown {
     };
   }
 
+  const firstPage = normalizedPages[0] ?? [];
+
   return {
     ...data,
-    pages: [[newMsg, ...(data.pages[0] ?? [])], ...data.pages.slice(1)],
+    pages: [[newMsg, ...firstPage], ...normalizedPages.slice(1)],
   };
 }
 
@@ -302,13 +315,21 @@ export function useSendMessage(roomId: string | undefined) {
 
       queryClient.setQueryData(queryKey, (old: unknown) => {
         const data = old as InfiniteData | undefined;
-        if (!data) return data;
+        if (!data || !Array.isArray(data.pages)) return data;
+        const normalizedPages = data.pages.map((p) =>
+          Array.isArray(p)
+            ? p
+            : p &&
+                typeof p === 'object' &&
+                'messages' in p &&
+                Array.isArray((p as { messages: unknown }).messages)
+              ? (p as { messages: ChatMessage[] }).messages
+              : [],
+        );
+        const firstPage = normalizedPages[0] ?? [];
         return {
           ...data,
-          pages: [
-            [optimisticMsg, ...(data.pages[0] ?? [])],
-            ...data.pages.slice(1),
-          ],
+          pages: [[optimisticMsg, ...firstPage], ...normalizedPages.slice(1)],
         };
       });
 
@@ -325,15 +346,17 @@ export function useSendMessage(roomId: string | undefined) {
       if (roomId) {
         queryClient.setQueryData(CHAT_KEYS.messages(roomId), (old: unknown) => {
           const data = old as InfiniteData | undefined;
-          if (!data) return data;
+          if (!data || !Array.isArray(data.pages)) return data;
           return {
             ...data,
             pages: data.pages.map((page) =>
-              page.map((m) =>
-                m.client_id === variables.clientId
-                  ? { ...m, status: 'failed' as const, _optimistic: false }
-                  : m,
-              ),
+              Array.isArray(page)
+                ? page.map((m) =>
+                    m.client_id === variables.clientId
+                      ? { ...m, status: 'failed' as const, _optimistic: false }
+                      : m,
+                  )
+                : [],
             ),
           };
         });
@@ -396,19 +419,23 @@ export function useTogglePin(roomId: string | undefined) {
 
       queryClient.setQueryData(queryKey, (old: unknown) => {
         const data = old as InfiniteData | undefined;
-        if (!data) return data;
+        if (!data || !Array.isArray(data.pages)) return data;
         return {
           ...data,
           pages: data.pages.map((page) =>
-            page.map((m) =>
-              m.id === messageId
-                ? {
-                    ...m,
-                    is_pinned: !m.is_pinned,
-                    pinned_at: !m.is_pinned ? new Date().toISOString() : null,
-                  }
-                : m,
-            ),
+            Array.isArray(page)
+              ? page.map((m) =>
+                  m.id === messageId
+                    ? {
+                        ...m,
+                        is_pinned: !m.is_pinned,
+                        pinned_at: !m.is_pinned
+                          ? new Date().toISOString()
+                          : null,
+                      }
+                    : m,
+                )
+              : [],
           ),
         };
       });
@@ -447,32 +474,34 @@ export function useAddReaction(roomId: string | undefined) {
 
       queryClient.setQueryData(queryKey, (old: unknown) => {
         const data = old as InfiniteData | undefined;
-        if (!data) return data;
+        if (!data || !Array.isArray(data.pages)) return data;
         return {
           ...data,
           pages: data.pages.map((page) =>
-            page.map((m) => {
-              if (m.id !== messageId) return m;
-              const current = m.reactions || [];
-              const exists = current.some(
-                (r) => r.emoji === emoji && r.user_id === user.id,
-              );
-              if (exists) return m;
-              return {
-                ...m,
-                reactions: [
-                  ...current,
-                  {
-                    id: `opt-${Date.now()}`,
-                    message_id: messageId,
-                    user_id: user.id,
-                    user_name: profile?.full_name || 'Bạn',
-                    emoji,
-                    created_at: new Date().toISOString(),
-                  },
-                ],
-              };
-            }),
+            Array.isArray(page)
+              ? page.map((m) => {
+                  if (m.id !== messageId) return m;
+                  const current = m.reactions || [];
+                  const exists = current.some(
+                    (r) => r.emoji === emoji && r.user_id === user.id,
+                  );
+                  if (exists) return m;
+                  return {
+                    ...m,
+                    reactions: [
+                      ...current,
+                      {
+                        id: `opt-${Date.now()}`,
+                        message_id: messageId,
+                        user_id: user.id,
+                        user_name: profile?.full_name || 'Bạn',
+                        emoji,
+                        created_at: new Date().toISOString(),
+                      },
+                    ],
+                  };
+                })
+              : [],
           ),
         };
       });
@@ -502,19 +531,21 @@ export function useRemoveReaction(roomId: string | undefined) {
 
       queryClient.setQueryData(queryKey, (old: unknown) => {
         const data = old as InfiniteData | undefined;
-        if (!data) return data;
+        if (!data || !Array.isArray(data.pages)) return data;
         return {
           ...data,
           pages: data.pages.map((page) =>
-            page.map((m) => {
-              if (m.id !== messageId) return m;
-              return {
-                ...m,
-                reactions: (m.reactions || []).filter(
-                  (r) => !(r.emoji === emoji && r.user_id === user.id),
-                ),
-              };
-            }),
+            Array.isArray(page)
+              ? page.map((m) => {
+                  if (m.id !== messageId) return m;
+                  return {
+                    ...m,
+                    reactions: (m.reactions || []).filter(
+                      (r) => !(r.emoji === emoji && r.user_id === user.id),
+                    ),
+                  };
+                })
+              : [],
           ),
         };
       });
@@ -694,13 +725,15 @@ export function useChatRealtime(roomId: string | undefined) {
             CHAT_KEYS.messages(roomId),
             (old: unknown) => {
               const data = old as InfiniteData | undefined;
-              if (!data) return data;
+              if (!data || !Array.isArray(data.pages)) return data;
               return {
                 ...data,
                 pages: data.pages.map((page) =>
-                  page.map((m) =>
-                    m.id === updatedMsg.id ? { ...m, ...updatedMsg } : m,
-                  ),
+                  Array.isArray(page)
+                    ? page.map((m) =>
+                        m.id === updatedMsg.id ? { ...m, ...updatedMsg } : m,
+                      )
+                    : [],
                 ),
               };
             },
@@ -731,48 +764,50 @@ export function useChatRealtime(roomId: string | undefined) {
             CHAT_KEYS.messages(roomId),
             (old: unknown) => {
               const data = old as InfiniteData | undefined;
-              if (!data) return data;
+              if (!data || !Array.isArray(data.pages)) return data;
               return {
                 ...data,
                 pages: data.pages.map((page) =>
-                  page.map((m) => {
-                    if (m.id !== record.message_id) return m;
-                    const currentReactions = m.reactions || [];
-                    if (isInsert && record.emoji && record.user_id) {
-                      const exists = currentReactions.some(
-                        (r) =>
-                          r.emoji === record.emoji &&
-                          r.user_id === record.user_id,
-                      );
-                      if (exists) return m;
-                      return {
-                        ...m,
-                        reactions: [
-                          ...currentReactions,
-                          {
-                            id: record.id || `rxn-${Date.now()}`,
-                            message_id: record.message_id,
-                            user_id: record.user_id,
-                            user_name: record.user_name || 'Người dùng',
-                            emoji: record.emoji,
-                            created_at:
-                              record.created_at || new Date().toISOString(),
-                          },
-                        ],
-                      };
-                    } else {
-                      return {
-                        ...m,
-                        reactions: currentReactions.filter(
-                          (r) =>
-                            !(
+                  Array.isArray(page)
+                    ? page.map((m) => {
+                        if (m.id !== record.message_id) return m;
+                        const currentReactions = m.reactions || [];
+                        if (isInsert && record.emoji && record.user_id) {
+                          const exists = currentReactions.some(
+                            (r) =>
                               r.emoji === record.emoji &&
-                              r.user_id === record.user_id
+                              r.user_id === record.user_id,
+                          );
+                          if (exists) return m;
+                          return {
+                            ...m,
+                            reactions: [
+                              ...currentReactions,
+                              {
+                                id: record.id || `rxn-${Date.now()}`,
+                                message_id: record.message_id,
+                                user_id: record.user_id,
+                                user_name: record.user_name || 'Người dùng',
+                                emoji: record.emoji,
+                                created_at:
+                                  record.created_at || new Date().toISOString(),
+                              },
+                            ],
+                          };
+                        } else {
+                          return {
+                            ...m,
+                            reactions: currentReactions.filter(
+                              (r) =>
+                                !(
+                                  r.emoji === record.emoji &&
+                                  r.user_id === record.user_id
+                                ),
                             ),
-                        ),
-                      };
-                    }
-                  }),
+                          };
+                        }
+                      })
+                    : [],
                 ),
               };
             },

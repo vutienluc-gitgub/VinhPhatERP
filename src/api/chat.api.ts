@@ -107,7 +107,20 @@ export async function fetchChatMessages(
     throw toError(error, 'Không thể tải danh sách tin nhắn');
   }
 
-  return (data as ChatMessage[]) ?? [];
+  if (Array.isArray(data)) {
+    return data as ChatMessage[];
+  }
+
+  if (
+    data &&
+    typeof data === 'object' &&
+    'messages' in data &&
+    Array.isArray((data as { messages: unknown }).messages)
+  ) {
+    return (data as { messages: ChatMessage[] }).messages;
+  }
+
+  return [];
 }
 
 // ── Send Message (via RPC — uses same tenant resolution as RLS) ──

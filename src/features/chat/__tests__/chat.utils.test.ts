@@ -142,3 +142,33 @@ describe('chat.schema - getQuickRepliesByRole', () => {
     expect(getQuickRepliesByRole(null)).toEqual(STAFF_QUICK_REPLIES);
   });
 });
+
+describe('chat.utils - extractChronologicalMessages', () => {
+  it('unwraps array of pages (newest-first per page) to chronological list (oldest-first)', async () => {
+    const { extractChronologicalMessages } =
+      await import('@/features/chat/chat.utils');
+    const page1 = [
+      { id: 'm2', created_at: '2026-08-30T10:02:00Z' } as ChatMessage,
+      { id: 'm1', created_at: '2026-08-30T10:01:00Z' } as ChatMessage,
+    ];
+    const page2 = [
+      { id: 'm4', created_at: '2026-08-30T10:04:00Z' } as ChatMessage,
+      { id: 'm3', created_at: '2026-08-30T10:03:00Z' } as ChatMessage,
+    ];
+
+    // pages is [page2 (newer), page1 (older)]
+    const result = extractChronologicalMessages([page2, page1]);
+    expect(result.map((m) => m.id)).toEqual(['m1', 'm2', 'm3', 'm4']);
+  });
+
+  it('safely handles envelope objects and malformed pages without throwing', async () => {
+    const { extractChronologicalMessages } =
+      await import('@/features/chat/chat.utils');
+    expect(extractChronologicalMessages(null)).toEqual([]);
+    expect(extractChronologicalMessages(undefined)).toEqual([]);
+    expect(extractChronologicalMessages({})).toEqual([]);
+    expect(extractChronologicalMessages({ pages: [{ id: 'm1' }] })).toEqual([
+      { id: 'm1' },
+    ]);
+  });
+});

@@ -338,7 +338,7 @@ BEGIN
         )
         ORDER BY r.created_at ASC
       ) AS reactions
-    FROM public.chat_reactions r
+    FROM public.chat_message_reactions r
     JOIN msg_page mp ON r.message_id = mp.id
     LEFT JOIN public.profiles p ON r.user_id = p.id
     GROUP BY r.message_id
