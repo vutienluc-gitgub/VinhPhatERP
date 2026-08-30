@@ -5,6 +5,7 @@ import { Icon } from '@/shared/components/Icon';
 import { type ChatMessage } from '@/schema/chat.schema';
 import { CHAT_TOAST_LABELS } from '@/shared/constants/notifications';
 import { supabase } from '@/services/supabase/client';
+import { chatNavigationStore } from '@/features/chat/controllers/chatNavigationStore';
 
 const GROUPING_WINDOW_MS = 3000;
 const TOAST_DURATION_MS = 5000;
@@ -82,9 +83,7 @@ function renderRichToast(
       className: 'chat-toast-rich',
       onClick: () => {
         toast.dismiss(toastId);
-        window.dispatchEvent(
-          new CustomEvent('navigate-to-chat', { detail: { roomId } }),
-        );
+        chatNavigationStore.openChatByRoomId(roomId, undefined, 'notification');
       },
       role: 'button',
       tabIndex: 0,

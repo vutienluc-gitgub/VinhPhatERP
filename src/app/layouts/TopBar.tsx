@@ -199,12 +199,12 @@ export const TopBar = React.memo(function TopBar({
           </>
         )}
 
-        {/* Direct Room Chat Drawer (when opened via Push Notification or Deep link intent) */}
-        {isOpen && activeIntent?.roomId ? (
+        {/* Direct Room Chat Drawer (when opened via Push Notification, Deep link, or Entity intent) */}
+        {isOpen && activeIntent ? (
           <ChatDrawer
             open={isOpen}
             onClose={closeChat}
-            roomId={activeIntent.roomId}
+            roomId={activeIntent.roomId || undefined}
             messageId={activeIntent.messageId}
             entityType={activeIntent.entityType}
             entityId={activeIntent.entityId}

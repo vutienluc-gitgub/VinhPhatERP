@@ -2,36 +2,20 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { resolveDeepLink } from '@/shared/notifications/deepLinkResolver';
-import { chatNavigationStore } from '@/features/chat/controllers/chatNavigationStore';
 
 /**
- * Hook to listen for Notification Clicks (from Service Worker message or PWA launch query params)
+ * Hook to listen for non-chat Notification Clicks (from Service Worker message or PWA launch query params)
  * and route to the corresponding business screen.
+ *
+ * NOTE: Chat-specific deep links (chatOpen=1, NAVIGATE_TO_CHAT) are handled exclusively
+ * by useChatNavigationSync() in the TopBar/PortalLayout to avoid duplicate handlers.
  */
 export function useNotificationDeepLink() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // 1. Handle URL Query Params (when app opened fresh from notification click)
+  // 1. Handle URL Query Params for standard ERP notifications (when app opened fresh from notification click)
   useEffect(() => {
-    // 1A. Chat Notification Deep Link
-    if (searchParams.get('chatOpen') === '1') {
-      const intent =
-        chatNavigationStore.parseChatNavigationFromUrl(searchParams);
-      if (intent) {
-        chatNavigationStore.openChat(intent);
-      }
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete('chatOpen');
-      newParams.delete('roomId');
-      newParams.delete('messageId');
-      newParams.delete('entityType');
-      newParams.delete('entityId');
-      setSearchParams(newParams, { replace: true });
-      return;
-    }
-
-    // 1B. Standard ERP Notification Deep Link
     const entityType = searchParams.get('notif_entity');
     const entityId = searchParams.get('notif_id');
     const action = searchParams.get('notif_action') || undefined;
@@ -55,25 +39,13 @@ export function useNotificationDeepLink() {
     }
   }, [searchParams, setSearchParams, navigate]);
 
-  // 2. Handle Service Worker postMessage (when app was already open in a tab)
+  // 2. Handle Service Worker postMessage for non-chat notifications (when app was already open in a tab)
   useEffect(() => {
     if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
       return;
     }
 
     function handleServiceWorkerMessage(event: MessageEvent) {
-      if (event.data?.type === 'NAVIGATE_TO_CHAT') {
-        const payload = event.data.payload || {};
-        if (payload.roomId) {
-          chatNavigationStore.openChat({
-            roomId: payload.roomId,
-            messageId: payload.messageId,
-            source: 'notification',
-          });
-        }
-        return;
-      }
-
       if (event.data?.type === 'NAVIGATE_FROM_NOTIFICATION') {
         const payload = event.data.payload || {};
         if (payload.entity_type && payload.entity_id) {
