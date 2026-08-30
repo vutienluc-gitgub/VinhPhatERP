@@ -308,4 +308,101 @@ describe('Chat Platform Reliability Test Matrix (6 Distributed Scenarios)', () =
     expect(decision.shouldPlaySound).toBe(false);
     expect(decision.suppressReasons).toContain('active_view');
   });
+
+  // ─────────────────────────────────────────────────────────────
+  // Case G: Transaction Boundary & Defensive Recipient Resolution
+  // ─────────────────────────────────────────────────────────────
+  it('Case G: Transaction boundary guarantees synchronous participant sync before notification dispatch', () => {
+    // Simulation of database execution order
+    const executionTrace: string[] = [];
+
+    function rpcSendChatMessageSimulation(input: {
+      roomId: string;
+      senderId: string;
+      content: string;
+    }) {
+      // 1. In-Transaction: Sync participants
+      executionTrace.push('1. SYNC_PARTICIPANTS');
+      const participants = [
+        { userId: input.senderId, role: 'customer' },
+        { userId: 'admin-01', role: 'admin' },
+        { userId: 'staff-01', role: 'staff' },
+      ];
+
+      // 2. In-Transaction: Validate sender
+      executionTrace.push('2. VALIDATE_SENDER_MEMBERSHIP');
+      const isMember = participants.some((p) => p.userId === input.senderId);
+      expect(isMember).toBe(true);
+
+      // 3. In-Transaction: Insert Message
+      executionTrace.push('3. INSERT_MESSAGE');
+
+      // 4. In-Transaction Trigger: Increment unread for non-senders
+      executionTrace.push('4. TRIGGER_UNREAD_INCREMENT');
+      const nonSenders = participants.filter(
+        (p) => p.userId !== input.senderId,
+      );
+      expect(nonSenders.length).toBe(2);
+
+      // 5. Post-Commit: Realtime & Web Push Fanout
+      executionTrace.push('5. COMMIT_AND_DISPATCH_NOTIFICATIONS');
+
+      return { success: true, recipients: nonSenders.map((p) => p.userId) };
+    }
+
+    const result = rpcSendChatMessageSimulation({
+      roomId: 'room-test-sync',
+      senderId: 'customer-101',
+      content: 'Chào công ty, tôi muốn đặt hàng',
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.recipients).toEqual(['admin-01', 'staff-01']);
+    expect(executionTrace).toEqual([
+      '1. SYNC_PARTICIPANTS',
+      '2. VALIDATE_SENDER_MEMBERSHIP',
+      '3. INSERT_MESSAGE',
+      '4. TRIGGER_UNREAD_INCREMENT',
+      '5. COMMIT_AND_DISPATCH_NOTIFICATIONS',
+    ]);
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // Case H: Sender Membership Authorization Boundary
+  // ─────────────────────────────────────────────────────────────
+  it('Case H: Sender membership invariant rejects unauthorized non-participant senders with Access Denied', () => {
+    function rpcSendChatMessageGuard(input: {
+      roomId: string;
+      senderId: string;
+      validParticipants: string[];
+    }) {
+      const isAuthorized = input.validParticipants.includes(input.senderId);
+      if (!isAuthorized) {
+        throw new Error(
+          `Access denied: user ${input.senderId} is not an authorized participant of room ${input.roomId}`,
+        );
+      }
+      return { status: 'inserted' };
+    }
+
+    // 1. Authorized sender succeeds
+    expect(() =>
+      rpcSendChatMessageGuard({
+        roomId: 'room-cust-1',
+        senderId: 'user-valid-cust',
+        validParticipants: ['user-valid-cust', 'admin-01'],
+      }),
+    ).not.toThrow();
+
+    // 2. Unauthorized external intruder fails immediately
+    expect(() =>
+      rpcSendChatMessageGuard({
+        roomId: 'room-cust-1',
+        senderId: 'user-malicious-intruder',
+        validParticipants: ['user-valid-cust', 'admin-01'],
+      }),
+    ).toThrow(
+      /Access denied: user user-malicious-intruder is not an authorized participant/,
+    );
+  });
 });

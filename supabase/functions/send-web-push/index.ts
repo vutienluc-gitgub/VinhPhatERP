@@ -131,11 +131,55 @@ serve(async (req: Request) => {
       if (!message) return new Response('OK', { status: 200 }); // Fail silently
 
       // 2. Fetch all participants of this room EXCEPT sender
-      const { data: participants } = await supabase
+      let { data: participants } = await supabase
         .from('chat_room_participants')
         .select('user_id, unread_count')
         .eq('room_id', message.room_id)
         .neq('user_id', message.sender_id);
+
+      // DEFENSIVE RESOLUTION: Self-healing fallback if participants not found
+      if (!participants || participants.length === 0) {
+        const { data: room } = await supabase
+          .from('chat_rooms')
+          .select('entity_type, entity_id, tenant_id')
+          .eq('id', message.room_id)
+          .maybeSingle();
+
+        if (room) {
+          // If sender is customer/supplier, notify internal staff; if sender is staff, notify customer/supplier
+          let recipientQuery = supabase.from('profiles').select('id');
+          if (room.entity_type === 'customer') {
+            recipientQuery = recipientQuery.or(
+              `customer_id.eq.${room.entity_id},and(tenant_id.eq.${room.tenant_id},role.in.(admin,manager,staff,kho,warehouse,sale,operator,accountant))`,
+            );
+          } else if (room.entity_type === 'supplier') {
+            recipientQuery = recipientQuery.or(
+              `supplier_id.eq.${room.entity_id},and(tenant_id.eq.${room.tenant_id},role.in.(admin,manager,staff,kho,warehouse,sale,operator,accountant))`,
+            );
+          } else {
+            recipientQuery = recipientQuery
+              .eq('tenant_id', room.tenant_id)
+              .in('role', ['admin', 'manager', 'staff', 'kho', 'sale']);
+          }
+
+          const { data: fallbackProfiles } = await recipientQuery;
+          if (fallbackProfiles && fallbackProfiles.length > 0) {
+            participants = fallbackProfiles
+              .filter((p) => p.id !== message.sender_id)
+              .map((p) => ({ user_id: p.id, unread_count: 1 }));
+
+            // Async backfill to chat_room_participants
+            for (const p of fallbackProfiles) {
+              void supabase.from('chat_room_participants').insert({
+                room_id: message.room_id,
+                user_id: p.id,
+                role: 'member',
+                unread_count: p.id !== message.sender_id ? 1 : 0,
+              });
+            }
+          }
+        }
+      }
 
       if (!participants || participants.length === 0) {
         return new Response('OK', { status: 200 });
