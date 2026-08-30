@@ -1,17 +1,28 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
-import { CANNED_RESPONSES } from '@/schema/chat.schema';
+import { getQuickRepliesByRole } from '@/schema/chat.schema';
 import { Icon } from '@/shared/components/Icon';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 interface Props {
   onSelectReply: (reply: string) => void;
   disabled?: boolean;
+  role?: string | null;
 }
 
 export const ChatQuickReplies = memo(function ChatQuickReplies({
   onSelectReply,
   disabled,
+  role: propRole,
 }: Props) {
+  const { profile } = useAuth();
+  const effectiveRole = propRole ?? profile?.role;
+
+  const quickReplies = useMemo(
+    () => getQuickRepliesByRole(effectiveRole),
+    [effectiveRole],
+  );
+
   return (
     <div
       className="chat-quick-replies"
@@ -23,7 +34,7 @@ export const ChatQuickReplies = memo(function ChatQuickReplies({
           <Icon name="Zap" size={11} />
           <span>Gợi ý:</span>
         </span>
-        {CANNED_RESPONSES.map((reply) => (
+        {quickReplies.map((reply) => (
           <button
             key={reply}
             type="button"
