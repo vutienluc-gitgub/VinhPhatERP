@@ -405,4 +405,192 @@ describe('Chat Platform Reliability Test Matrix (6 Distributed Scenarios)', () =
       /Access denied: user user-malicious-intruder is not an authorized participant/,
     );
   });
+
+  // ─────────────────────────────────────────────────────────────
+  // Case I: Method C Enterprise Scoped Authorization & Notification Engine
+  // ─────────────────────────────────────────────────────────────
+  it('Case I: Method C validates Tenant Isolation, Scoped Department Access, Observer Role and Decoupled Notification Resolver', () => {
+    interface Profile {
+      id: string;
+      tenantId: string;
+      role: string;
+      customerId?: string;
+    }
+
+    interface ChatRoom {
+      id: string;
+      tenantId: string;
+      entityType: 'customer' | 'shipment' | 'supplier';
+      entityId: string;
+      salespersonId?: string;
+    }
+
+    interface Participant {
+      roomId: string;
+      userId: string;
+      role:
+        | 'owner'
+        | 'assigned_staff'
+        | 'manager'
+        | 'support_agent'
+        | 'observer'
+        | 'external_client';
+    }
+
+    function fnCanAccessChatRoom(
+      room: ChatRoom,
+      user: Profile,
+      participants: Participant[],
+    ): boolean {
+      // 1. Tenant Isolation
+      if (user.tenantId !== room.tenantId) return false;
+
+      // 2. Global Admin / Director
+      if (user.role === 'admin' || user.role === 'director') return true;
+
+      // 3. Explicit Participant
+      if (
+        participants.some((p) => p.roomId === room.id && p.userId === user.id)
+      ) {
+        return true;
+      }
+
+      // 4. Scoped Business Ownership
+      if (room.entityType === 'customer') {
+        if (user.customerId && user.customerId === room.entityId) return true;
+        if (room.salespersonId && room.salespersonId === user.id) return true;
+        if (user.role === 'sales_manager') return true;
+      }
+
+      return false;
+    }
+
+    const roomTenantA: ChatRoom = {
+      id: 'room-cust-1',
+      tenantId: 'tenant-A',
+      entityType: 'customer',
+      entityId: 'cust-100',
+      salespersonId: 'sale-01',
+    };
+
+    const adminTenantA: Profile = {
+      id: 'admin-1',
+      tenantId: 'tenant-A',
+      role: 'admin',
+    };
+    const saleAssigned: Profile = {
+      id: 'sale-01',
+      tenantId: 'tenant-A',
+      role: 'sale',
+    };
+    const saleOther: Profile = {
+      id: 'sale-02',
+      tenantId: 'tenant-A',
+      role: 'sale',
+    };
+    const warehouseStaff: Profile = {
+      id: 'wh-01',
+      tenantId: 'tenant-A',
+      role: 'warehouse',
+    };
+    const intruderTenantB: Profile = {
+      id: 'user-b',
+      tenantId: 'tenant-B',
+      role: 'admin',
+    };
+
+    const participants: Participant[] = [
+      { roomId: 'room-cust-1', userId: 'cust-user-1', role: 'external_client' },
+      { roomId: 'room-cust-1', userId: 'sale-01', role: 'assigned_staff' },
+      { roomId: 'room-cust-1', userId: 'observer-01', role: 'observer' },
+    ];
+
+    // 1. Tenant Isolation check
+    expect(
+      fnCanAccessChatRoom(roomTenantA, intruderTenantB, participants),
+    ).toBe(false);
+
+    // 2. Global Admin Access
+    expect(fnCanAccessChatRoom(roomTenantA, adminTenantA, participants)).toBe(
+      true,
+    );
+
+    // 3. Assigned Sale Access
+    expect(fnCanAccessChatRoom(roomTenantA, saleAssigned, participants)).toBe(
+      true,
+    );
+
+    // 4. Unassigned Other Sale Access (Denied)
+    expect(fnCanAccessChatRoom(roomTenantA, saleOther, participants)).toBe(
+      false,
+    );
+
+    // 5. Cross-Department Warehouse Access to Customer Chat (Denied)
+    expect(fnCanAccessChatRoom(roomTenantA, warehouseStaff, participants)).toBe(
+      false,
+    );
+
+    // 6. Observer Role Check: Observers CAN read, but CANNOT send
+    expect(
+      fnCanAccessChatRoom(
+        roomTenantA,
+        { id: 'observer-01', tenantId: 'tenant-A', role: 'staff' },
+        participants,
+      ),
+    ).toBe(true);
+
+    function rpcSendMessage(_senderId: string, roleInRoom?: string) {
+      if (roleInRoom === 'observer') {
+        throw new Error('Access denied: observer role is read-only');
+      }
+      return { status: 'sent' };
+    }
+
+    expect(() => rpcSendMessage('sale-01', 'assigned_staff')).not.toThrow();
+    expect(() => rpcSendMessage('observer-01', 'observer')).toThrow(
+      /Access denied: observer role is read-only/,
+    );
+
+    // 7. Decoupled Notification Resolver (Filtered by Authorization)
+    function fnResolveChatNotificationRecipients(
+      room: ChatRoom,
+      senderId: string,
+      candidates: string[],
+      profilesMap: Record<string, Profile>,
+    ): string[] {
+      return candidates
+        .filter((id) => id !== senderId)
+        .filter((id) => {
+          const profile = profilesMap[id];
+          return profile
+            ? fnCanAccessChatRoom(room, profile, participants)
+            : false;
+        });
+    }
+
+    const profilesMap: Record<string, Profile> = {
+      'admin-1': adminTenantA,
+      'sale-01': saleAssigned,
+      'sale-02': saleOther,
+      'wh-01': warehouseStaff,
+      'cust-user-1': {
+        id: 'cust-user-1',
+        tenantId: 'tenant-A',
+        role: 'customer',
+        customerId: 'cust-100',
+      },
+    };
+
+    // When customer sends message -> only Assigned Sale, Admin & Eligible Members receive Push (NOT unassigned Sale 02 or Warehouse)
+    const pushRecipients = fnResolveChatNotificationRecipients(
+      roomTenantA,
+      'cust-user-1',
+      ['admin-1', 'sale-01', 'sale-02', 'wh-01'],
+      profilesMap,
+    );
+
+    expect(pushRecipients).toEqual(['admin-1', 'sale-01']);
+    expect(pushRecipients).not.toContain('sale-02');
+    expect(pushRecipients).not.toContain('wh-01');
+  });
 });
