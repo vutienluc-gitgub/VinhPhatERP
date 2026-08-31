@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { supabase } from '@/services/supabase/client';
+import { useAuth } from '@/shared/hooks/useAuth';
 import type { PortalQuotation } from '@/domain/portal/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPCs chưa được sync vào database.types.ts
@@ -12,6 +13,7 @@ const rpc = supabase.rpc.bind(supabase) as (
 const PAGE_SIZE = 10;
 
 export function usePortalQuotations() {
+  const { profile } = useAuth();
   const [quotations, setQuotations] = useState<PortalQuotation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,8 @@ export function usePortalQuotations() {
     try {
       setLoading(true);
       setError(null);
-      const { data, error: fetchError } = await supabase
+
+      let query = supabase
         .from('quotations')
         .select(
           `
@@ -45,7 +48,18 @@ export function usePortalQuotations() {
           )
         `,
         )
-        .neq('status', 'draft') // Khách hàng không xem được bản nháp
+        .neq('status', 'draft'); // Khách hàng không xem được bản nháp
+
+      if (profile?.role === 'customer') {
+        if (!profile.customer_id) {
+          setQuotations([]);
+          setLoading(false);
+          return;
+        }
+        query = query.eq('customer_id', profile.customer_id);
+      }
+
+      const { data, error: fetchError } = await query
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
@@ -58,7 +72,7 @@ export function usePortalQuotations() {
     } finally {
       setLoading(false);
     }
-  }, [page]);
+  }, [page, profile?.customer_id, profile?.role]);
 
   useEffect(() => {
     fetchQuotations();

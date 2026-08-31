@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
+import { useAuth } from '@/shared/hooks/useAuth';
 import { computeDebtSummary } from '@/domain/portal/portal.utils';
 import type { PortalOrder, PortalDebtSummary } from '@/domain/portal/types';
 
 export function usePortalDebt() {
+  const { profile } = useAuth();
   const [summary, setSummary] = useState<PortalDebtSummary>({
     total_amount: 0,
     paid_amount: 0,
@@ -16,18 +18,36 @@ export function usePortalDebt() {
 
   useEffect(() => {
     fetchDebt();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.customer_id]);
 
   async function fetchDebt() {
     setLoading(true);
     setError(null);
 
-    const { data, error: err } = await supabase
+    let query = supabase
       .from('orders')
       .select(
         'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id',
-      )
-      .order('delivery_date', { ascending: true });
+      );
+
+    if (profile?.role === 'customer') {
+      if (!profile.customer_id) {
+        setSummary({
+          total_amount: 0,
+          paid_amount: 0,
+          remaining_debt: 0,
+          overdue_orders: [],
+        });
+        setLoading(false);
+        return;
+      }
+      query = query.eq('customer_id', profile.customer_id);
+    }
+
+    const { data, error: err } = await query.order('delivery_date', {
+      ascending: true,
+    });
 
     if (err) {
       setError(err.message);
