@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
+import { useAuth } from '@/shared/hooks/useAuth';
 import type { PortalShipment } from '@/domain/portal/types';
 
 export function usePortalShipments(shipmentId?: string) {
+  const { profile } = useAuth();
   const [shipments, setShipments] = useState<PortalShipment[]>([]);
   const [shipment, setShipment] = useState<PortalShipment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -16,18 +18,30 @@ export function usePortalShipments(shipmentId?: string) {
       fetchShipments();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shipmentId]);
+  }, [shipmentId, profile?.customer_id]);
 
   async function fetchShipments() {
     setLoading(true);
     setError(null);
 
-    const { data, error: err } = await supabase
+    let query = supabase
       .from('shipments')
       .select(
         'id, shipment_number, shipment_date, order_id, status, delivery_address, customer_id, orders(order_number)',
-      )
-      .order('shipment_date', { ascending: false });
+      );
+
+    if (profile?.role === 'customer') {
+      if (!profile.customer_id) {
+        setShipments([]);
+        setLoading(false);
+        return;
+      }
+      query = query.eq('customer_id', profile.customer_id);
+    }
+
+    const { data, error: err } = await query.order('shipment_date', {
+      ascending: false,
+    });
 
     if (err) {
       setError(err.message);
