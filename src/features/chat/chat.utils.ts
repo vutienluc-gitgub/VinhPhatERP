@@ -341,9 +341,9 @@ export function extractChronologicalMessages(
 
   if (!Array.isArray(rawPages) || rawPages.length === 0) return [];
 
-  return [...rawPages].reverse().flatMap((page) => {
+  const unrolled = [...rawPages].reverse().flatMap((page) => {
     if (Array.isArray(page)) {
-      return [...page].reverse();
+      return page;
     }
     if (
       page &&
@@ -351,11 +351,17 @@ export function extractChronologicalMessages(
       'messages' in page &&
       Array.isArray((page as { messages: unknown }).messages)
     ) {
-      return [...(page as { messages: ChatMessage[] }).messages].reverse();
+      return (page as { messages: ChatMessage[] }).messages;
     }
     if (page && typeof page === 'object' && 'id' in page) {
       return [page as unknown as ChatMessage];
     }
     return [];
+  });
+
+  return unrolled.sort((a, b) => {
+    const timeA = new Date(a.created_at || 0).getTime();
+    const timeB = new Date(b.created_at || 0).getTime();
+    return timeA - timeB;
   });
 }

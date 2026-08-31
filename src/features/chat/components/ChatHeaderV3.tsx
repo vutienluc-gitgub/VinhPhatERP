@@ -112,7 +112,7 @@ export const ChatHeaderV3 = React.memo(function ChatHeaderV3({
         <button
           type="button"
           onClick={onClose}
-          className="w-10 h-10 flex items-center justify-center -ml-1.5 text-foreground hover:text-primary rounded-xl hover:bg-surface-secondary transition-colors cursor-pointer border-none bg-transparent shrink-0"
+          className="chat-header-close-btn w-10 h-10 flex items-center justify-center -ml-1.5 text-foreground hover:text-primary rounded-xl hover:bg-surface-secondary transition-colors cursor-pointer border-none bg-transparent shrink-0"
           aria-label={CHAT_LABELS.CLOSE}
           title={CHAT_LABELS.CLOSE}
         >

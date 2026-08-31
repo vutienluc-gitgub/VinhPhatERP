@@ -311,9 +311,16 @@
 .chat-bubble-compact-row {
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
   min-height: 20px;
+}
+
+.chat-bubble-compact-row .chat-bubble-text-content {
+  white-space: nowrap;
+  flex-shrink: 0;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .chat-bubble-standard-flow {
