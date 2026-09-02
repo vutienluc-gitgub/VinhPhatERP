@@ -1,12 +1,28 @@
 /* ============================================================
    Chat Module — Master CSS Entry Point (Modular Architecture)
+   ============================================================
+   Import Order:
+   1. Design Tokens (contract)
+   2. CSS Primitives (reusable across all portals)
+   3. Component Styles (feature-specific styling)
    ============================================================ */
 
+/* ── 1. Design Tokens ── */
 @import './tokens.css';
+
+/* ── 2. CSS Primitives ── */
+@import './primitives/cluster.css';
+@import './primitives/bubble.css';
+@import './primitives/meta.css';
+@import './primitives/timeline.css';
+
+/* ── 3. Base & Animations ── */
 @import './base.css';
-@import './chat-drawer.css';
+
+/* ── 4. Component Styles ── */
 @import './chat-bubble.css';
 @import './chat-input.css';
+@import './chat-drawer.css';
 @import './chat-reactions.css';
 @import './chat-context.css';
 @import './chat-search.css';

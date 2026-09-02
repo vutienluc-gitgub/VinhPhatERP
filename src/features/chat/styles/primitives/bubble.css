@@ -1,0 +1,175 @@
+/* ============================================================
+   Chat Primitive — Bubble Layout & Shape
+   ============================================================
+   Contract: mine | theirs, pos-first | pos-middle | pos-last | pos-single
+   Knows: background, text color, border-radius matrix, content layouts
+   Does NOT know: user roles, portal type
+   ============================================================ */
+
+/* ── Bubble Row ── */
+
+.chat-bubble-row {
+  display: flex;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.chat-bubble-row--mine {
+  justify-content: flex-end;
+}
+
+.chat-bubble-row--theirs {
+  justify-content: flex-start;
+}
+
+.chat-bubble-row:has(.chat-reactions) {
+  margin-bottom: 14px;
+}
+
+/* ── Bubble Base ── */
+
+.chat-bubble {
+  width: fit-content;
+  max-width: var(--chat-bubble-max-width);
+  min-width: var(--chat-bubble-min-width);
+  min-height: 34px;
+  padding: var(--chat-bubble-padding-y) var(--chat-bubble-padding-x);
+  font-size: var(--chat-message-font-size);
+  line-height: var(--chat-message-line-height);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  position: relative;
+  box-shadow: var(--chat-bubble-shadow);
+  transition:
+    background-color var(--chat-transition-fast),
+    border-color var(--chat-transition-fast);
+}
+
+.chat-bubble:has(.chat-reactions) {
+  padding-bottom: 8px;
+}
+
+/* ── Semantic 2x4 Border Radius Matrix ── */
+
+/* Outgoing (Mine) */
+.chat-bubble--mine {
+  background: var(--chat-bubble-mine-bg);
+  color: var(--chat-bubble-mine-fg);
+}
+
+.chat-bubble--mine.chat-bubble--pos-single {
+  border-radius: var(--chat-bubble-radius);
+}
+
+.chat-bubble--mine.chat-bubble--pos-first {
+  border-radius: var(--chat-bubble-radius) var(--chat-bubble-radius)
+    var(--chat-bubble-radius-tight);
+}
+
+.chat-bubble--mine.chat-bubble--pos-middle {
+  border-radius: var(--chat-bubble-radius) var(--chat-bubble-radius-tight)
+    var(--chat-bubble-radius-tight) var(--chat-bubble-radius);
+}
+
+.chat-bubble--mine.chat-bubble--pos-last {
+  border-radius: var(--chat-bubble-radius) var(--chat-bubble-radius-tight)
+    var(--chat-bubble-radius) var(--chat-bubble-radius);
+}
+
+/* Incoming (Theirs) */
+.chat-bubble--theirs {
+  background: var(--chat-bubble-theirs-bg);
+  color: var(--chat-bubble-theirs-fg);
+  border: 1px solid var(--chat-bubble-theirs-border);
+}
+
+.chat-bubble--theirs.chat-bubble--pos-single {
+  border-radius: var(--chat-bubble-radius);
+}
+
+.chat-bubble--theirs.chat-bubble--pos-first {
+  border-radius: var(--chat-bubble-radius) var(--chat-bubble-radius)
+    var(--chat-bubble-radius) var(--chat-bubble-radius-tight);
+}
+
+.chat-bubble--theirs.chat-bubble--pos-middle {
+  border-radius: var(--chat-bubble-radius-tight) var(--chat-bubble-radius)
+    var(--chat-bubble-radius) var(--chat-bubble-radius-tight);
+}
+
+.chat-bubble--theirs.chat-bubble--pos-last {
+  border-radius: var(--chat-bubble-radius-tight) var(--chat-bubble-radius)
+    var(--chat-bubble-radius);
+}
+
+/* ── State Modifiers ── */
+
+.chat-bubble--pending {
+  opacity: 0.75;
+}
+
+.chat-bubble--error {
+  border: 1px solid var(--chat-status-failed);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.chat-bubble--image-only {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  border-radius: var(--chat-bubble-radius-image);
+  overflow: hidden;
+  max-width: min(260px, 72vw);
+}
+
+.chat-bubble--emoji-only {
+  padding: 2px 4px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-width: auto !important;
+}
+
+.chat-bubble--emoji-only .chat-bubble-text-content {
+  font-size: 2.25rem !important;
+  line-height: 1.15 !important;
+}
+
+.chat-bubble--emoji-only.chat-bubble--mine .chat-message-meta--mine {
+  color: var(--chat-meta-theirs-fg) !important;
+}
+
+/* ── Bubble Content Layouts ── */
+
+.chat-bubble-compact-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 20px;
+}
+
+.chat-bubble-compact-row .chat-bubble-text-content {
+  white-space: nowrap;
+  flex-shrink: 0;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.chat-bubble-text-only-row {
+  display: block;
+  min-height: auto;
+}
+
+.chat-bubble-standard-flow {
+  display: block;
+}
+
+.chat-bubble-text-content {
+  display: inline;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}

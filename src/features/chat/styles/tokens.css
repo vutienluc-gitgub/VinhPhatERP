@@ -1,47 +1,105 @@
 /* ============================================================
-   Chat Module — Design Tokens Contract
+   Chat Module — Design Tokens Contract (Chat Design Contract)
+   ============================================================
+   All tokens derive from Global Semantic Tokens in
+   src/styles/theme/tokens.css. Light/Dark mode works
+   automatically — Chat never needs to know its theme.
+
+   Groups: Layout | Shape | Typography | Color | Interaction
    ============================================================ */
 
 :root {
-  /* Dimensions & Spacing */
-  --chat-radius: var(--radius-lg, 16px);
-  --chat-radius-sm: var(--radius-sm, 8px);
-  --chat-radius-bubble: 14px;
-  --chat-radius-control: 20px;
-  --chat-gap: 6px;
-  --chat-avatar-size: 36px;
-  --chat-bubble-max-w: 75%;
-  --chat-bubble-min-w: 80px;
-  --chat-date-gap: 20px;
-  --chat-cluster-gap: 16px;
+  /* ── Layout ─────────────────────────────────────────────── */
+  --chat-cluster-gap: 12px;
+  --chat-message-gap: 3px;
+  --chat-bubble-max-width: min(480px, 86%);
+  --chat-bubble-min-width: 44px;
+  --chat-bubble-padding-x: 12px;
+  --chat-bubble-padding-y: 7px;
+  --chat-date-divider-margin: 12px 0 10px;
 
-  /* Semantic Theme Tokens Bridge */
-  --color-primary: var(--primary);
+  /* ── Shape ──────────────────────────────────────────────── */
+  --chat-bubble-radius: 16px;
+  --chat-bubble-radius-tight: 4px;
+  --chat-bubble-radius-image: var(--radius-sm, 12px);
+  --chat-avatar-size: 32px;
+  --chat-date-pill-radius: 9999px;
 
-  /* @architecture-exception: soft cyan outgoing bubble token */
-  --chat-bg-mine: #d9f1ff;
-  --chat-text-mine: #0f172a;
+  /* ── Typography ─────────────────────────────────────────── */
+  --chat-message-font-size: 0.875rem;
+  --chat-message-line-height: 1.45;
+  --chat-meta-font-size: 0.7rem;
+  --chat-sender-font-size: 0.6875rem;
+  --chat-date-pill-font-size: 0.6875rem;
+  --chat-system-font-size: 0.75rem;
 
-  /* @architecture-exception: pure white incoming bubble token */
-  --chat-bg-theirs: #ffffff;
-  --chat-text-theirs: var(--foreground);
-  --chat-typing-dot: var(--primary);
+  /* ── Color: Mine (Outgoing) ─────────────────────────────── */
+  --chat-bubble-mine-bg: var(--primary);
+  --chat-bubble-mine-fg: var(--inverse-foreground);
+  --chat-meta-mine-fg: rgba(
+    255,
+    255,
+    255,
+    0.95
+  ); /* @architecture-exception: high contrast time on primary */
+  --chat-bubble-mine-quote-bg: rgba(
+    255,
+    255,
+    255,
+    0.18
+  ); /* @architecture-exception: translucent quote overlay on primary */
+  --chat-bubble-mine-quote-border: var(--inverse-foreground);
+  --chat-bubble-mine-quote-fg: rgba(
+    255,
+    255,
+    255,
+    0.85
+  ); /* @architecture-exception: translucent quote text on primary */
+  --chat-bubble-mine-mention-bg: rgba(
+    255,
+    255,
+    255,
+    0.24
+  ); /* @architecture-exception: translucent mention on primary */
+  --chat-bubble-mine-mention-fg: var(--inverse-foreground);
 
-  /* Quote / Reply Tokens */
-  /* @architecture-exception: quote border brand color */
-  --chat-quote-border: var(--primary, #0f6fff);
-  /* @architecture-exception: quote translucent background */
-  --chat-quote-bg: rgba(0, 0, 0, 0.04);
-  /* @architecture-exception: quote hover translucent background */
-  --chat-quote-bg-hover: rgba(0, 0, 0, 0.08);
-  /* @architecture-exception: quote mine translucent background */
-  --chat-quote-bg-mine: rgba(15, 111, 255, 0.08);
-  /* @architecture-exception: quote mine hover translucent background */
-  --chat-quote-bg-mine-hover: rgba(15, 111, 255, 0.14);
+  /* ── Color: Theirs (Incoming) ───────────────────────────── */
+  --chat-bubble-theirs-bg: var(--surface-secondary);
+  --chat-bubble-theirs-fg: var(--foreground);
+  --chat-bubble-theirs-border: var(--border);
+  --chat-meta-theirs-fg: var(--muted-foreground);
 
-  /* Date Pill Tokens */
-  /* @architecture-exception: date pill translucent background */
-  --chat-date-pill-bg: rgba(0, 0, 0, 0.22);
-  /* @architecture-exception: date pill text color */
-  --chat-date-pill-text: #ffffff;
+  /* ── Color: Delivery Status ─────────────────────────────── */
+  --chat-status-read: #93c5fd; /* @architecture-exception: blue read tick */
+  --chat-status-failed: var(--danger);
+
+  /* ── Color: Shared / Surfaces ───────────────────────────── */
+  --chat-date-pill-bg: var(--surface-secondary);
+  --chat-date-pill-fg: var(--muted-foreground);
+  --chat-date-pill-border: var(--border);
+  --chat-system-bg: var(--surface-secondary);
+  --chat-system-fg: var(--muted-foreground);
+  --chat-system-border: var(--border);
+  --chat-avatar-bg: var(--primary);
+  --chat-avatar-fg: var(--inverse-foreground);
+  --chat-sender-fg: var(--muted-foreground);
+  --chat-mention-bg: rgba(var(--brand-rgb), 0.12);
+  --chat-mention-fg: var(--primary);
+  --chat-quote-border: var(--primary);
+  --chat-quote-bg: var(--surface-secondary);
+  --chat-quote-author-fg: var(--primary);
+  --chat-quote-text-fg: var(--muted-foreground);
+  --chat-meta-overlay-bg: rgba(
+    0,
+    0,
+    0,
+    0.55
+  ); /* @architecture-exception: image overlay glass */
+
+  /* ── Interaction ────────────────────────────────────────── */
+  --chat-transition-fast: 0.15s ease;
+  --chat-bubble-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* @architecture-exception: subtle bubble depth */
+  --chat-avatar-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* @architecture-exception: subtle avatar depth */
+  --chat-fab-shadow: 0 4px 14px rgba(0, 0, 0, 0.12); /* @architecture-exception: FAB elevation */
+  --chat-fab-shadow-hover: 0 6px 18px rgba(0, 0, 0, 0.16); /* @architecture-exception: FAB hover elevation */
 }

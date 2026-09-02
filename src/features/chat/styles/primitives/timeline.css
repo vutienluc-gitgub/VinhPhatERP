@@ -1,0 +1,194 @@
+/* ============================================================
+   Chat Primitive — Timeline (Date Dividers, Scroll Viewport, FAB)
+   ============================================================
+   Contract: date-divider, scroll viewport, scroll-to-bottom FAB
+   Does NOT know: user roles, portal type
+   ============================================================ */
+
+/* ── Message List Viewport Container ── */
+
+.chat-body-viewport,
+.chat-message-list-viewport {
+  flex: 1 1 0%;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-message-list {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--chat-cluster-gap);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  contain: layout style paint;
+  will-change: scroll-position;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.chat-message-list::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.chat-message-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-message-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--chat-date-pill-radius);
+  transition: background-color var(--chat-transition-fast);
+}
+
+.chat-message-list::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* ── Date Dividers ── */
+
+.chat-date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--chat-date-divider-margin);
+  position: relative;
+}
+
+.chat-date-label {
+  background: var(--chat-date-pill-bg);
+  color: var(--chat-date-pill-fg);
+  font-size: var(--chat-date-pill-font-size);
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: var(--chat-date-pill-radius);
+  border: 1px solid var(--chat-date-pill-border);
+  box-shadow: var(--chat-bubble-shadow);
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.01em;
+}
+
+/* ── Load Older Messages ── */
+
+.chat-load-more {
+  text-align: center;
+  padding: 4px 0 12px;
+}
+
+.chat-load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--chat-system-font-size);
+  font-weight: 500;
+  color: var(--chat-meta-theirs-fg);
+  background: var(--chat-date-pill-bg);
+  border: 1px solid var(--chat-date-pill-border);
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: var(--chat-date-pill-radius);
+  transition:
+    background var(--chat-transition-fast),
+    color var(--chat-transition-fast);
+}
+
+.chat-load-more-btn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+/* ── Scroll-to-Bottom FAB ── */
+
+.chat-scroll-bottom-fab {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 20;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  box-shadow: var(--chat-fab-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    transform var(--chat-transition-fast),
+    background-color var(--chat-transition-fast),
+    box-shadow var(--chat-transition-fast);
+}
+
+.chat-scroll-bottom-fab:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--chat-fab-shadow-hover);
+}
+
+.chat-scroll-bottom-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--danger);
+  color: var(--inverse-foreground);
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--chat-date-pill-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+}
+
+/* ── System Messages ── */
+
+.chat-system-msg {
+  text-align: center;
+  margin: 8px 0;
+}
+
+.chat-system-msg-text {
+  display: inline-block;
+  background: var(--chat-system-bg);
+  color: var(--chat-system-fg);
+  font-size: var(--chat-system-font-size);
+  padding: 4px 12px;
+  border-radius: var(--chat-date-pill-radius);
+  border: 1px solid var(--chat-system-border);
+}
+
+.chat-system-epod {
+  margin: 8px auto;
+  padding: 8px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 8px);
+  max-width: 90%;
+  text-align: center;
+}
+
+.chat-system-epod-content {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.chat-system-epod-time {
+  font-size: var(--chat-sender-font-size);
+  color: var(--chat-meta-theirs-fg);
+  margin-top: 2px;
+}

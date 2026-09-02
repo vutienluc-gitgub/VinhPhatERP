@@ -22,6 +22,15 @@ export type MessageStatus =
 
 export type MessagePosition = 'single' | 'first' | 'middle' | 'last';
 
+export interface MessagePresentation {
+  position: MessagePosition;
+  showAvatar: boolean;
+  showSenderName: boolean;
+  showTimestamp: boolean;
+  showDeliveryStatus: boolean;
+  fullTimestampTooltip: string;
+}
+
 export interface ChatRoomContext {
   currentUserId?: string;
   currentUserRole?: string;
@@ -33,6 +42,7 @@ export interface ChatRoomContext {
 export interface ChatMessageViewModel {
   message: ChatMessage;
   position: MessagePosition;
+  presentation?: MessagePresentation;
   senderId: string | null;
   senderName: string;
   senderInitials: string;

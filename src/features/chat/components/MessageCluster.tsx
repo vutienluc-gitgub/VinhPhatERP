@@ -1,7 +1,11 @@
 import { memo } from 'react';
 
 import type { ChatMessage } from '@/schema/chat.schema';
-import type { MessageCluster as MessageClusterType } from '@/features/chat/chat.types';
+import type {
+  MessageCluster as MessageClusterType,
+  MessagePresentation,
+} from '@/features/chat/chat.types';
+import { formatFullAuditTime } from '@/features/chat/chat.utils';
 import { Avatar } from '@/shared/components';
 
 import { ChatBubble } from './ChatBubble';
@@ -18,6 +22,7 @@ export const MessageCluster = memo(function MessageCluster({
   onQuoteReply,
 }: MessageClusterProps) {
   const { isMine, senderId, senderName, senderAvatarUrl, messages } = cluster;
+  const count = messages.length;
 
   return (
     <div
@@ -43,15 +48,43 @@ export const MessageCluster = memo(function MessageCluster({
         )}
 
         <div className="chat-cluster-messages">
-          {messages.map((vm) => (
-            <ChatBubble
-              key={vm.message.id || vm.message.client_id}
-              viewModel={vm}
-              isOptimistic={vm.message.status === 'pending'}
-              onRetry={onRetry}
-              onQuoteReply={onQuoteReply}
-            />
-          ))}
+          {messages.map((vm, index) => {
+            const isFirst = index === 0;
+            const isLast = index === count - 1;
+            const prevVm = index > 0 ? messages[index - 1] : null;
+
+            const hasMinuteBoundary = prevVm
+              ? vm.timeFormatted !== prevVm.timeFormatted
+              : false;
+
+            const showTimestamp =
+              vm.position === 'single' || isLast || hasMinuteBoundary;
+            const showDeliveryStatus =
+              isMine && (vm.position === 'single' || isLast);
+
+            const presentation: MessagePresentation = {
+              position: vm.position,
+              showAvatar: !isMine && (vm.position === 'single' || isFirst),
+              showSenderName:
+                !isMine &&
+                (vm.position === 'single' || isFirst) &&
+                Boolean(senderName),
+              showTimestamp,
+              showDeliveryStatus,
+              fullTimestampTooltip: formatFullAuditTime(vm.message.created_at),
+            };
+
+            return (
+              <ChatBubble
+                key={vm.message.id || vm.message.client_id}
+                viewModel={vm}
+                presentation={presentation}
+                isOptimistic={vm.message.status === 'pending'}
+                onRetry={onRetry}
+                onQuoteReply={onQuoteReply}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

@@ -51,6 +51,22 @@ export function formatTime(iso: string): string {
   }
 }
 
+export function formatFullAuditTime(iso: string): string {
+  try {
+    const d = new Date(iso);
+    return new Intl.DateTimeFormat('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(d);
+  } catch {
+    return iso;
+  }
+}
+
 export function isEmojiOnly(content?: string | null): boolean {
   if (!content) return false;
   const trimmed = content.trim();
@@ -100,41 +116,51 @@ function extractInitials(name: string): string {
 export function resolveSenderIdentity(
   senderNameRaw?: string | null,
   isMine?: boolean,
-  context?: {
+  options?: {
     partnerName?: string;
     isCustomerPortal?: boolean;
     senderRole?: string | null;
   },
 ): { name: string; initials: string } {
   if (isMine) {
-    return { name: 'Bạn', initials: 'ME' };
+    return { name: 'Tôi', initials: 'ME' };
   }
 
-  // 1. If explicit sender name exists and isn't generic placeholder
-  let cleanName = senderNameRaw?.trim();
-
-  // 2. If cleanName is missing or generic, resolve based on portal context & role
-  if (!cleanName || cleanName === 'Người dùng' || cleanName === 'Thành viên') {
-    if (context?.isCustomerPortal) {
-      // In customer portal, inbound messages from admin/factory
-      cleanName = 'Xưởng Vĩnh Phát';
-    } else if (context?.partnerName) {
-      // In admin portal, inbound messages from customer/partner
-      cleanName = context.partnerName.trim();
-    } else if (
-      context?.senderRole === 'admin' ||
-      context?.senderRole === 'manager'
-    ) {
-      cleanName = 'Xưởng Vĩnh Phát';
-    } else {
-      cleanName = 'Khách hàng';
-    }
+  const raw = senderNameRaw?.trim();
+  if (raw && raw !== 'Người dùng' && raw !== 'User' && raw !== 'U') {
+    return {
+      name: raw,
+      initials: extractInitials(raw),
+    };
   }
 
-  const initials = extractInitials(cleanName);
+  const role = options?.senderRole;
+  if (role === 'customer' && options?.partnerName) {
+    return {
+      name: options.partnerName,
+      initials: extractInitials(options.partnerName),
+    };
+  }
 
-  return { name: cleanName, initials };
+  if (role === 'customer') {
+    return { name: 'Khách hàng', initials: 'KH' };
+  }
+  if (role === 'driver') {
+    return { name: 'Tài xế giao hàng', initials: 'TX' };
+  }
+  if (role === 'admin' || role === 'manager' || role === 'staff') {
+    return { name: 'Nhân viên Vinh Phát', initials: 'VP' };
+  }
+
+  if (options?.isCustomerPortal) {
+    return { name: 'Vinh Phát ERP', initials: 'VP' };
+  }
+
+  return { name: 'Thành viên', initials: 'TV' };
 }
+
+export const MESSAGE_CLUSTER_GAP_MS = 5 * 60 * 1000; // 5 minutes max gap between messages
+export const MESSAGE_CLUSTER_MAX_DURATION_MS = 5 * 60 * 1000; // 5 minutes max total duration from first message
 
 /**
  * Transforms raw messages into structured DateMessageGroups and MessageClusters
@@ -156,11 +182,11 @@ export function buildMessageGroups(
     party: ChatParticipantParty;
     side: ChatMessageSide;
     isMine: boolean;
-    timestamp: string;
+    startTime: number;
+    lastTime: number;
     rawMessages: ChatMessage[];
   } | null = null;
 
-  const CLUSTER_TIME_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes configurable threshold
   const isCustomerPortal = context?.currentUserRole === 'customer';
 
   const flushCluster = () => {
@@ -174,7 +200,7 @@ export function buildMessageGroups(
       party,
       side,
       isMine,
-      timestamp,
+      lastTime,
       id,
     } = currentRawCluster;
     const count = rawMessages.length;
@@ -215,7 +241,7 @@ export function buildMessageGroups(
       party,
       side,
       isMine,
-      timestamp,
+      timestamp: new Date(lastTime).toISOString(),
       messages: viewModels,
     };
 
@@ -281,17 +307,17 @@ export function buildMessageGroups(
       continue;
     }
 
-    // 3. Cluster grouping (same sender AND same alignment side)
+    // 3. Cluster grouping (same sender AND same alignment side AND double-bounded by gap & duration)
     const canCluster =
       currentRawCluster &&
       currentRawCluster.senderId === msg.sender_id &&
       currentRawCluster.side === side &&
-      msgTime - new Date(currentRawCluster.timestamp).getTime() <=
-        CLUSTER_TIME_THRESHOLD_MS;
+      msgTime - currentRawCluster.lastTime <= MESSAGE_CLUSTER_GAP_MS &&
+      msgTime - currentRawCluster.startTime <= MESSAGE_CLUSTER_MAX_DURATION_MS;
 
     if (canCluster && currentRawCluster) {
       currentRawCluster.rawMessages.push(msg);
-      currentRawCluster.timestamp = msg.created_at;
+      currentRawCluster.lastTime = msgTime;
       if (!currentRawCluster.senderNameRaw && msg.sender_name) {
         currentRawCluster.senderNameRaw = msg.sender_name;
       }
@@ -308,7 +334,8 @@ export function buildMessageGroups(
         party,
         side,
         isMine,
-        timestamp: msg.created_at,
+        startTime: msgTime,
+        lastTime: msgTime,
         rawMessages: [msg],
       };
     }

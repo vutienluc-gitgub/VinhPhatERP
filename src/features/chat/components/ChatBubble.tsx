@@ -1,7 +1,10 @@
 import { memo, useCallback, useState, type MouseEvent } from 'react';
 
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
-import type { ChatMessageViewModel } from '@/features/chat/chat.types';
+import type {
+  ChatMessageViewModel,
+  MessagePresentation,
+} from '@/features/chat/chat.types';
 import { useAuth } from '@/shared/hooks/useAuth';
 import {
   useTogglePin,
@@ -20,6 +23,7 @@ import { ChatMessageMeta } from './ChatMessageMeta';
 
 interface ChatBubbleProps {
   viewModel: ChatMessageViewModel;
+  presentation?: MessagePresentation;
   isOptimistic?: boolean;
   onRetry?: (message: ChatMessage) => void;
   onQuoteReply?: (message: ChatMessage) => void;
@@ -27,6 +31,7 @@ interface ChatBubbleProps {
 
 export const ChatBubble = memo(function ChatBubble({
   viewModel,
+  presentation,
   isOptimistic,
   onRetry,
   onQuoteReply,
@@ -39,6 +44,15 @@ export const ChatBubble = memo(function ChatBubble({
   const togglePinMutation = useTogglePin(message.room_id);
   const addReactionMutation = useAddReaction(message.room_id);
   const removeReactionMutation = useRemoveReaction(message.room_id);
+
+  const showTimestamp = presentation ? presentation.showTimestamp : true;
+  const showDeliveryStatus = presentation
+    ? presentation.showDeliveryStatus
+    : isMine;
+  const fullTimestamp = presentation?.fullTimestampTooltip || timeFormatted;
+  const resolvedTime = showTimestamp ? timeFormatted : undefined;
+  const resolvedStatus = showDeliveryStatus ? status : undefined;
+  const hasMeta = Boolean(resolvedTime || (isMine && resolvedStatus));
 
   const canPin = profile?.role === 'admin' || profile?.role === 'manager';
 
@@ -110,7 +124,7 @@ export const ChatBubble = memo(function ChatBubble({
   // System message (journey updates)
   if (message.message_type === 'system') {
     return (
-      <div className="chat-system-msg">
+      <div className="chat-system-msg" title={fullTimestamp}>
         <span className="chat-system-msg-text">{message.content}</span>
       </div>
     );
@@ -119,7 +133,7 @@ export const ChatBubble = memo(function ChatBubble({
   // ePOD important events (signature confirmation, delivery complete)
   if (message.message_type === 'system_epod') {
     return (
-      <div className="chat-system-epod">
+      <div className="chat-system-epod" title={fullTimestamp}>
         <div className="chat-system-epod-content">{message.content}</div>
         <div className="chat-system-epod-time">{timeFormatted}</div>
       </div>
@@ -178,6 +192,7 @@ export const ChatBubble = memo(function ChatBubble({
           } ${statusClass} ${isImageOnly ? 'chat-bubble--image-only' : ''} ${
             viewModel.isEmojiOnly ? 'chat-bubble--emoji-only' : ''
           }`}
+          title={fullTimestamp}
         >
           {/* Pin indicator */}
           {message.is_pinned ? (
@@ -235,8 +250,8 @@ export const ChatBubble = memo(function ChatBubble({
                 onClick={() => setPreviewImage(message.image_url)}
               />
               <ChatMessageMeta
-                time={timeFormatted}
-                status={status}
+                time={resolvedTime}
+                status={resolvedStatus}
                 isMine={isMine}
                 layoutMode="overlay"
               />
@@ -263,8 +278,8 @@ export const ChatBubble = memo(function ChatBubble({
                 </span>
               </div>
               <ChatMessageMeta
-                time={timeFormatted}
-                status={status}
+                time={resolvedTime}
+                status={resolvedStatus}
                 isMine={isMine}
                 layoutMode="side"
               />
@@ -274,19 +289,27 @@ export const ChatBubble = memo(function ChatBubble({
           {/* Text content with Mention / Quote parsing */}
           {displayContent ? (
             isShortText ? (
-              <div className="chat-bubble-compact-row">
+              <div
+                className={
+                  hasMeta
+                    ? 'chat-bubble-compact-row'
+                    : 'chat-bubble-text-only-row'
+                }
+              >
                 <span className="chat-bubble-text-content">
                   <ChatMentionContent
                     content={displayContent}
                     mentions={message.mentions}
                   />
                 </span>
-                <ChatMessageMeta
-                  time={timeFormatted}
-                  status={status}
-                  isMine={isMine}
-                  layoutMode="side"
-                />
+                {hasMeta && (
+                  <ChatMessageMeta
+                    time={resolvedTime}
+                    status={resolvedStatus}
+                    isMine={isMine}
+                    layoutMode="side"
+                  />
+                )}
               </div>
             ) : (
               <div className="chat-bubble-standard-flow">
@@ -296,12 +319,14 @@ export const ChatBubble = memo(function ChatBubble({
                     mentions={message.mentions}
                   />
                 </span>
-                <ChatMessageMeta
-                  time={timeFormatted}
-                  status={status}
-                  isMine={isMine}
-                  layoutMode="inline"
-                />
+                {hasMeta && (
+                  <ChatMessageMeta
+                    time={resolvedTime}
+                    status={resolvedStatus}
+                    isMine={isMine}
+                    layoutMode="inline"
+                  />
+                )}
               </div>
             )
           ) : null}
