@@ -3,8 +3,8 @@ import React from 'react';
 import type { MessageStatus } from '@/features/chat/chat.types';
 
 interface ChatMessageMetaProps {
-  time: string;
-  status: MessageStatus;
+  time?: string;
+  status?: MessageStatus;
   isMine: boolean;
   layoutMode?: 'inline' | 'side' | 'overlay';
 }
@@ -15,7 +15,7 @@ export const ChatMessageMeta = React.memo(function ChatMessageMeta({
   isMine,
   layoutMode = 'side',
 }: ChatMessageMetaProps) {
-  if (!time && !isMine) return null;
+  if (!time && (!isMine || !status)) return null;
 
   return (
     <span
@@ -23,9 +23,9 @@ export const ChatMessageMeta = React.memo(function ChatMessageMeta({
         isMine ? 'chat-message-meta--mine' : 'chat-message-meta--theirs'
       }`}
     >
-      <span className="chat-meta-time">{time}</span>
+      {time ? <span className="chat-meta-time">{time}</span> : null}
 
-      {isMine && (
+      {isMine && status && (
         <span
           className={`chat-meta-status chat-meta-status--${status}`}
           aria-label={status}

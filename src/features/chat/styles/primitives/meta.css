@@ -1,0 +1,82 @@
+/* ============================================================
+   Chat Primitive — Meta (Timestamp + Delivery Status)
+   ============================================================
+   Contract: mine | theirs, inline | side | overlay
+   Status: sending | sent | delivered | read | failed
+   Does NOT know: user roles, portal type
+   ============================================================ */
+
+.chat-message-meta {
+  font-size: var(--chat-meta-font-size);
+  line-height: 1;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+/* ── Placement Variants ── */
+
+.chat-message-meta--inline {
+  float: right;
+  margin-left: 8px;
+  margin-top: 4px;
+  position: relative;
+  top: 2px;
+}
+
+.chat-message-meta--side {
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.chat-message-meta--overlay {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: var(--chat-meta-overlay-bg);
+  color: var(--inverse-foreground);
+  padding: 2px 6px;
+  border-radius: var(--chat-date-pill-radius);
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+/* ── Ownership Color ── */
+
+.chat-message-meta--mine {
+  color: var(--chat-meta-mine-fg);
+}
+
+.chat-message-meta--theirs {
+  color: var(--chat-meta-theirs-fg);
+}
+
+/* ── Timestamp ── */
+
+.chat-meta-time {
+  font-size: var(--chat-meta-font-size);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Delivery Status ── */
+
+.chat-meta-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.chat-meta-status--read {
+  color: var(--chat-status-read);
+  font-weight: 700;
+}
+
+.chat-meta-status--failed {
+  color: var(--chat-status-failed);
+  font-weight: 700;
+}

@@ -1,0 +1,75 @@
+/* ============================================================
+   Chat Primitive — Cluster Layout
+   ============================================================
+   Contract: mine | theirs
+   Knows: avatar position, sender header, message stack direction
+   Does NOT know: user roles, portal type
+   ============================================================ */
+
+.chat-cluster {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.chat-cluster--mine {
+  justify-content: flex-end;
+}
+
+.chat-cluster--theirs {
+  justify-content: flex-start;
+}
+
+.chat-cluster-avatar {
+  width: var(--chat-avatar-size);
+  height: var(--chat-avatar-size);
+  border-radius: 50%;
+  background: var(--chat-avatar-bg);
+  color: var(--chat-avatar-fg);
+  font-weight: 700;
+  font-size: var(--chat-sender-font-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  box-shadow: var(--chat-avatar-shadow);
+  user-select: none;
+}
+
+.chat-cluster-content {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 40px);
+}
+
+.chat-cluster--mine .chat-cluster-content {
+  align-items: flex-end;
+  max-width: 85%;
+}
+
+.chat-cluster-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--chat-message-gap);
+  padding-left: 2px;
+}
+
+.chat-cluster-sender {
+  font-size: var(--chat-sender-font-size);
+  font-weight: 600;
+  color: var(--chat-sender-fg);
+}
+
+.chat-cluster-messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--chat-message-gap);
+  width: 100%;
+}
+
+.chat-cluster--mine .chat-cluster-messages {
+  align-items: flex-end;
+}
