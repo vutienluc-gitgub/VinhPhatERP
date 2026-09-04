@@ -168,6 +168,11 @@ export const ChatBubble = memo(function ChatBubble({
     !message.reply_to_message &&
     !legacyQuoteSnippet;
 
+  const isMicroText =
+    isShortText &&
+    typeof displayContent === 'string' &&
+    displayContent.length <= 6;
+
   return (
     <>
       <div
@@ -191,7 +196,7 @@ export const ChatBubble = memo(function ChatBubble({
             isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'
           } ${statusClass} ${isImageOnly ? 'chat-bubble--image-only' : ''} ${
             viewModel.isEmojiOnly ? 'chat-bubble--emoji-only' : ''
-          }`}
+          } ${isMicroText ? 'chat-bubble--micro' : ''}`}
           title={fullTimestamp}
         >
           {/* Pin indicator */}
@@ -292,7 +297,7 @@ export const ChatBubble = memo(function ChatBubble({
               <div
                 className={
                   hasMeta
-                    ? 'chat-bubble-compact-row'
+                    ? 'chat-bubble-compact-flow'
                     : 'chat-bubble-text-only-row'
                 }
               >

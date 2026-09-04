@@ -12,9 +12,11 @@
   /* ── Layout ─────────────────────────────────────────────── */
   --chat-cluster-gap: 12px;
   --chat-message-gap: 3px;
+  --chat-meta-inline-gap: 6px;
   --chat-bubble-max-width: min(480px, 86%);
   --chat-bubble-min-width: 44px;
   --chat-bubble-padding-x: 12px;
+  --chat-bubble-compact-padding-x: 9px;
   --chat-bubble-padding-y: 7px;
   --chat-date-divider-margin: 12px 0 10px;
 
@@ -42,12 +44,14 @@
     255,
     0.95
   ); /* @architecture-exception: high contrast time on primary */
+
   --chat-bubble-mine-quote-bg: rgba(
     255,
     255,
     255,
     0.18
   ); /* @architecture-exception: translucent quote overlay on primary */
+
   --chat-bubble-mine-quote-border: var(--inverse-foreground);
   --chat-bubble-mine-quote-fg: rgba(
     255,
@@ -55,12 +59,14 @@
     255,
     0.85
   ); /* @architecture-exception: translucent quote text on primary */
+
   --chat-bubble-mine-mention-bg: rgba(
     255,
     255,
     255,
     0.24
   ); /* @architecture-exception: translucent mention on primary */
+
   --chat-bubble-mine-mention-fg: var(--inverse-foreground);
 
   /* ── Color: Theirs (Incoming) ───────────────────────────── */
