@@ -141,17 +141,24 @@
   color: var(--chat-meta-theirs-fg) !important;
 }
 
+.chat-bubble--micro {
+  padding-left: var(--chat-bubble-compact-padding-x);
+  padding-right: var(--chat-bubble-compact-padding-x);
+}
+
 /* ── Bubble Content Layouts ── */
 
-.chat-bubble-compact-row {
+.chat-bubble-compact-row,
+.chat-bubble-compact-flow {
   display: flex;
   align-items: flex-end;
   justify-content: flex-start;
-  gap: 8px;
+  gap: var(--chat-meta-inline-gap, 6px);
   min-height: 20px;
 }
 
-.chat-bubble-compact-row .chat-bubble-text-content {
+.chat-bubble-compact-row .chat-bubble-text-content,
+.chat-bubble-compact-flow .chat-bubble-text-content {
   white-space: nowrap;
   flex-shrink: 0;
   word-break: normal;
