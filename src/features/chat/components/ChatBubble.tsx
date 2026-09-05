@@ -1,4 +1,4 @@
-import { memo, useCallback, useState, type MouseEvent } from 'react';
+import { memo, useCallback, useMemo, useState, type MouseEvent } from 'react';
 
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import type {
@@ -27,6 +27,7 @@ interface ChatBubbleProps {
   isOptimistic?: boolean;
   onRetry?: (message: ChatMessage) => void;
   onQuoteReply?: (message: ChatMessage) => void;
+  onScrollToMessage?: (messageId: string) => void;
 }
 
 export const ChatBubble = memo(function ChatBubble({
@@ -35,6 +36,7 @@ export const ChatBubble = memo(function ChatBubble({
   isOptimistic,
   onRetry,
   onQuoteReply,
+  onScrollToMessage,
 }: ChatBubbleProps) {
   const { message, position, isMine, timeFormatted, status } = viewModel;
   const { profile, user } = useAuth();
@@ -107,19 +109,42 @@ export const ChatBubble = memo(function ChatBubble({
     [message.reactions, user?.id, handleAddReaction, handleRemoveReaction],
   );
 
-  const handleScrollToMessage = useCallback((targetMessageId?: string) => {
-    if (!targetMessageId) return;
-    const targetElement = document.querySelector(
-      `[data-message-id="${targetMessageId}"]`,
-    );
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      targetElement.classList.add('chat-message-highlight');
-      setTimeout(() => {
-        targetElement.classList.remove('chat-message-highlight');
-      }, 2000);
+  const handleScrollToMessage = useCallback(
+    (targetMessageId?: string) => {
+      if (!targetMessageId) return;
+      if (onScrollToMessage) {
+        onScrollToMessage(targetMessageId);
+        return;
+      }
+      const targetElement = document.querySelector(
+        `[data-message-id="${targetMessageId}"]`,
+      );
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetElement.classList.add('chat-message-highlight');
+        setTimeout(() => {
+          targetElement.classList.remove('chat-message-highlight');
+        }, 2000);
+      }
+    },
+    [onScrollToMessage],
+  );
+
+  // Media geometry reservation (GOV-003): reserve intrinsic dimensions, 4:3 is fallback only
+  const imageAspectRatio = useMemo(() => {
+    if (!message.image_url) return '4 / 3';
+    try {
+      const url = new URL(message.image_url, 'https://dummy.local');
+      const w = url.searchParams.get('w') || url.searchParams.get('width');
+      const h = url.searchParams.get('h') || url.searchParams.get('height');
+      if (w && h && !isNaN(Number(w)) && !isNaN(Number(h)) && Number(h) > 0) {
+        return `${Number(w)} / ${Number(h)}`;
+      }
+    } catch {
+      // Fallback below
     }
-  }, []);
+    return '4 / 3';
+  }, [message.image_url]);
 
   // System message (journey updates)
   if (message.message_type === 'system') {
@@ -246,7 +271,10 @@ export const ChatBubble = memo(function ChatBubble({
 
           {/* Image */}
           {message.message_type === 'image' && message.image_url ? (
-            <div className="chat-bubble-image-container">
+            <div
+              className="chat-bubble-image-container"
+              style={{ aspectRatio: imageAspectRatio }}
+            >
               <img
                 src={getChatThumbnailUrl(message.image_url, 400, 400)}
                 alt={CHAT_LABELS.IMAGE}

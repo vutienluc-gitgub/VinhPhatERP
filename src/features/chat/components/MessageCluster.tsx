@@ -14,12 +14,14 @@ interface MessageClusterProps {
   cluster: MessageClusterType;
   onRetry?: (message: ChatMessage) => void;
   onQuoteReply?: (message: ChatMessage) => void;
+  onScrollToMessage?: (messageId: string) => void;
 }
 
 export const MessageCluster = memo(function MessageCluster({
   cluster,
   onRetry,
   onQuoteReply,
+  onScrollToMessage,
 }: MessageClusterProps) {
   const { isMine, senderId, senderName, senderAvatarUrl, messages } = cluster;
   const count = messages.length;
@@ -82,6 +84,7 @@ export const MessageCluster = memo(function MessageCluster({
                 isOptimistic={vm.message.status === 'pending'}
                 onRetry={onRetry}
                 onQuoteReply={onQuoteReply}
+                onScrollToMessage={onScrollToMessage}
               />
             );
           })}

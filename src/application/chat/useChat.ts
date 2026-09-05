@@ -870,10 +870,14 @@ export function useChatRealtime(roomId: string | undefined) {
     retryCountRef.current = 0;
   }, []);
 
-  // Subscribe on mount, unsubscribe on unmount
+  // Subscribe on mount with 150ms debounce to prevent channel thrashing on rapid room switching
   useEffect(() => {
-    subscribe();
+    const debounceTimer = setTimeout(() => {
+      subscribe();
+    }, 150);
+
     return () => {
+      clearTimeout(debounceTimer);
       unsubscribe();
     };
   }, [subscribe, unsubscribe]);
