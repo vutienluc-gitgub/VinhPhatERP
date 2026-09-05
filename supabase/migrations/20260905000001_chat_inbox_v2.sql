@@ -73,8 +73,16 @@ BEGIN
   LEFT JOIN work_orders w ON r.entity_type = 'work_order' AND r.entity_id = w.id
   LEFT JOIN yarn_receipts yr ON r.entity_type = 'yarn_receipt' AND r.entity_id = yr.id
   LEFT JOIN raw_fabric_rolls rfr ON r.entity_type = 'raw_fabric' AND r.entity_id = rfr.id
+  LEFT JOIN LATERAL (
+    SELECT cm.content, cm.created_at, cm.message_type
+    FROM chat_messages cm
+    WHERE cm.room_id = r.id
+      AND cm.deleted_at IS NULL
+    ORDER BY cm.created_at DESC
+    LIMIT 1
+  ) lm ON TRUE
   WHERE p.user_id = auth.uid()
-    AND r.tenant_id = (SELECT current_tenant_id())
+    AND (r.tenant_id = (SELECT current_tenant_id()) OR (SELECT current_tenant_id()) IS NULL)
     AND (
       p_cursor_updated_at IS NULL OR
       COALESCE(lm.created_at, r.updated_at) < p_cursor_updated_at OR
