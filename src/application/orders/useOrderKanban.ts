@@ -1,31 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { updateOrderStatus, fetchOrders } from '@/api/orders.api';
-import type { Database } from '@/services/supabase/database.types';
 import type {
   OrderKanbanItem,
   OrderKanbanStatus,
 } from '@/domain/orders/kanban.types';
-
-type DbOrderStatus = Database['public']['Enums']['order_status'];
-
-const KANBAN_TO_DB: Record<OrderKanbanStatus, DbOrderStatus> = {
-  draft: 'draft',
-  confirmed: 'confirmed',
-  delivering: 'in_progress',
-  completed: 'completed',
-};
-
-function mapDbStatusToKanban(status: string): OrderKanbanStatus {
-  const map: Record<string, OrderKanbanStatus> = {
-    draft: 'draft',
-    confirmed: 'confirmed',
-    in_progress: 'delivering',
-    completed: 'completed',
-    cancelled: 'completed',
-  };
-  return map[status] ?? 'draft';
-}
 
 export function useOrderKanban() {
   return useQuery<OrderKanbanItem[]>({
@@ -36,10 +15,12 @@ export function useOrderKanban() {
         id: o.id,
         order_number: o.order_number,
         customer_name: o.customers?.name ?? '—',
+        customer_code: o.customers?.code ?? undefined,
         total_amount: parseFloat(String(o.total_amount ?? '0')),
         delivery_date: o.delivery_date ?? '',
-        status: mapDbStatusToKanban(o.status),
-        warning: undefined,
+        status: (o.status ?? 'draft') as OrderKanbanStatus,
+        notes: o.notes ?? undefined,
+        created_at: o.created_at ?? undefined,
       }));
     },
   });
@@ -55,10 +36,14 @@ export function useUpdateOrderStatus() {
       id: string;
       status: OrderKanbanStatus;
     }) => {
-      await updateOrderStatus(id, KANBAN_TO_DB[status] ?? 'draft');
+      await updateOrderStatus({
+        id,
+        status,
+      });
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['order-kanban'] });
+      void queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 }
