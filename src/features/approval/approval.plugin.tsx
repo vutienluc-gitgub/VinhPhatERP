@@ -9,6 +9,7 @@ export const approvalPlugin: FeaturePlugin = {
   requiredRoles: ['admin', 'manager'],
   group: 'system',
   order: 95,
+  entryPath: '/system/approval/workflows',
   routes: [
     {
       path: 'system/approval/poc',

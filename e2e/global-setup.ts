@@ -28,7 +28,7 @@ dotenv.config({ path: path.resolve(thisDir, '../.env') });
  *
  * Có thể đặt trong `.env.test.local` và source trước khi chạy, hoặc
  * set trực tiếp:
- *   $env:E2E_EMAIL="test@vinhphat.vn"; $env:E2E_PASSWORD="..." ; npm run test:e2e
+ *   $env:E2E_EMAIL="1081991@gmail.com"; $env:E2E_PASSWORD="Vinhphat@2026" ; npm run test:e2e
  *
  * Nếu không có credentials → skip (test sẽ chạy không-auth như bình thường).
  */

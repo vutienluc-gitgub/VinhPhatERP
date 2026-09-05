@@ -49,6 +49,6 @@ export const AUTH_LABELS = {
   confirmPassword: 'Xác nhận mật khẩu',
   rememberMe: 'Ghi nhớ',
   forgotPassword: 'Quên mật khẩu?',
-  emailPlaceholder: 'admin@vinhphat.vn',
+  emailPlaceholder: '1081991@gmail.com',
   passwordPlaceholder: '••••••••',
 };

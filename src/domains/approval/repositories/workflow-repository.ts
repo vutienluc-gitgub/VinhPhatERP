@@ -100,4 +100,114 @@ export class WorkflowRepository {
       });
     }
   }
+
+  static async seedDefaultWorkflowsIfEmpty(): Promise<ApprovalWorkflow[]> {
+    const existing = await this.getAllWorkflows();
+    if (existing.length > 0) return existing;
+
+    const defaultDefs = [
+      {
+        workflow_key: 'PO_STANDARD',
+        name: 'Quy trình duyệt Đơn mua hàng (PO)',
+        description: 'Phê duyệt đơn đặt hàng mua sợi, phụ liệu và hóa chất',
+        steps: [
+          {
+            role: 'manager',
+            step_order: 1,
+            description: 'Trưởng bộ phận Thu mua / Quản lý xưởng xác nhận',
+            sla_hours: 24,
+            escalation_action: 'notify',
+            escalation_role: 'admin',
+          },
+          {
+            role: 'admin',
+            step_order: 2,
+            description: 'Ban Giám đốc phê duyệt thanh toán & cam kết hợp đồng',
+            sla_hours: 48,
+            escalation_action: 'notify',
+            escalation_role: 'admin',
+          },
+        ],
+      },
+      {
+        workflow_key: 'PR_STANDARD',
+        name: 'Quy trình duyệt Yêu cầu mua vật tư (PR)',
+        description: 'Phê duyệt phiếu đề xuất mua sắm vật tư từ các phân xưởng',
+        steps: [
+          {
+            role: 'manager',
+            step_order: 1,
+            description: 'Quản đốc xưởng dệt/nhuộm duyệt nhu cầu thực tế',
+            sla_hours: 12,
+            escalation_action: 'notify',
+            escalation_role: 'admin',
+          },
+          {
+            role: 'staff',
+            step_order: 2,
+            description: 'Chuyên viên Mua hàng tiếp nhận và lập RFQ',
+            sla_hours: 24,
+            escalation_action: 'notify',
+            escalation_role: 'manager',
+          },
+        ],
+      },
+      {
+        workflow_key: 'EXPENSE_STANDARD',
+        name: 'Quy trình duyệt Chi tiêu & Tạm ứng',
+        description:
+          'Phê duyệt các khoản đề xuất chi tiêu nội bộ và thanh toán công tác phí',
+        steps: [
+          {
+            role: 'manager',
+            step_order: 1,
+            description: 'Trưởng phòng ban ký duyệt dự toán',
+            sla_hours: 24,
+            escalation_action: 'notify',
+            escalation_role: 'admin',
+          },
+          {
+            role: 'admin',
+            step_order: 2,
+            description:
+              'Kế toán trưởng / Giám đốc phê duyệt xuất quỹ tiền mặt',
+            sla_hours: 48,
+            escalation_action: 'notify',
+            escalation_role: 'admin',
+          },
+        ],
+      },
+    ];
+
+    const created: ApprovalWorkflow[] = [];
+    for (const def of defaultDefs) {
+      const wfId = crypto.randomUUID();
+      const savedWf = await this.saveWorkflow({
+        id: wfId,
+        workflow_key: def.workflow_key,
+        version: 1,
+        name: def.name,
+        description: def.description,
+        is_active: true,
+      });
+
+      const stepsPayload = def.steps.map((s) => ({
+        id: crypto.randomUUID(),
+        workflow_id: savedWf.id,
+        role: s.role,
+        step_order: s.step_order,
+        description: s.description,
+        is_parallel: false,
+        conditions: {},
+        sla_hours: s.sla_hours,
+        escalation_action: s.escalation_action as 'notify',
+        escalation_role: s.escalation_role,
+      }));
+
+      await this.saveWorkflowSteps(savedWf.id, stepsPayload);
+      created.push(savedWf);
+    }
+
+    return created;
+  }
 }
