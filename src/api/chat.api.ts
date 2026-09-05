@@ -4,6 +4,7 @@ import {
   CHAT_MESSAGES_PAGE_SIZE,
   chatMessageResponseSchema,
 } from '@/schema/chat.schema';
+import { resolveEntityDisplayMetadata } from '@/features/chat/chat.utils';
 import type {
   ChatMessage,
   ChatRoom,
@@ -266,142 +267,42 @@ export type MyChatRoomSummary = {
   entityCode?: string;
 };
 
-export async function fetchMyChatRooms(): Promise<MyChatRoomSummary[]> {
-  const { data, error } = await supabase.rpc('rpc_get_my_chat_rooms');
+export interface FetchMyChatRoomsParams {
+  limit?: number;
+  cursorUpdatedAt?: string | null;
+  cursorRoomId?: string | null;
+}
+
+export async function fetchMyChatRooms(
+  params?: FetchMyChatRoomsParams,
+): Promise<MyChatRoomSummary[]> {
+  const { data, error } = await untypedDb.rpc('rpc_get_my_chat_rooms_v2', {
+    p_limit: params?.limit ?? 20,
+    p_cursor_updated_at: params?.cursorUpdatedAt ?? null,
+    p_cursor_room_id: params?.cursorRoomId ?? null,
+  });
 
   if (error) {
     throw toError(error, 'Không thể tải danh sách phòng chat');
   }
   if (!data || data.length === 0) return [];
 
-  // Data contains basic info, we need to fetch entity details
-  // Collect IDs by type
-  const entityMap = new Map<string, Set<string>>();
-  for (const row of data) {
-    if (!entityMap.has(row.entity_type)) {
-      entityMap.set(row.entity_type, new Set());
-    }
-    entityMap.get(row.entity_type)!.add(row.entity_id);
+  interface RpcRoomRowV2 {
+    room_id: string;
+    entity_type: string;
+    entity_id: string;
+    entity_name: string | null;
+    entity_code: string | null;
+    room_status: string;
+    updated_at: string;
+    unread_count: number | string;
+    last_message: string | null;
+    last_message_at: string | null;
+    last_message_type: string | null;
   }
 
-  // Fetch details for each type
-  const detailsMap = new Map<string, { name: string; code: string }>();
-
-  await Promise.all(
-    Array.from(entityMap.entries()).map(async ([type, ids]) => {
-      const idArray = Array.from(ids);
-      if (type === 'customer') {
-        const { data: customers } = await supabase
-          .from('customers')
-          .select('id, name, code')
-          .in('id', idArray);
-        customers?.forEach((c) => {
-          detailsMap.set(c.id, { name: c.name, code: c.code });
-        });
-      } else if (type === 'shipment') {
-        const { data: shipments } = await supabase
-          .from('shipments')
-          .select('id, shipment_number')
-          .in('id', idArray);
-        shipments?.forEach((s) => {
-          detailsMap.set(s.id, {
-            name: `Lô hàng ${s.shipment_number}`,
-            code: s.shipment_number,
-          });
-        });
-      } else if (type === 'order') {
-        const { data: orders } = await supabase
-          .from('orders')
-          .select('id, order_number')
-          .in('id', idArray);
-        orders?.forEach((o) => {
-          detailsMap.set(o.id, {
-            name: `Đơn hàng ${o.order_number}`,
-            code: o.order_number,
-          });
-        });
-      } else if (type === 'work_order') {
-        const { data: wos } = await supabase
-          .from('work_orders')
-          .select('id, work_order_number')
-          .in('id', idArray);
-        wos?.forEach((w) => {
-          detailsMap.set(w.id, {
-            name: `Lệnh sản xuất ${w.work_order_number}`,
-            code: w.work_order_number,
-          });
-        });
-      } else if (type === 'yarn_receipt') {
-        const { data: receipts } = await supabase
-          .from('yarn_receipts')
-          .select('id, receipt_number')
-          .in('id', idArray);
-        receipts?.forEach((r) => {
-          detailsMap.set(r.id, {
-            name: `Phiếu nhập sợi ${r.receipt_number}`,
-            code: r.receipt_number,
-          });
-        });
-      } else if (type === 'raw_fabric') {
-        const { data: rolls } = await supabase
-          .from('raw_fabric_rolls')
-          .select('id, roll_number')
-          .in('id', idArray);
-        rolls?.forEach((r) => {
-          detailsMap.set(r.id, {
-            name: `Vải thô ${r.roll_number}`,
-            code: r.roll_number,
-          });
-        });
-      } else if (type === 'finished_fabric') {
-        const { data: fabrics } = await supabase
-          .from('finished_fabric_rolls')
-          .select('id, roll_number')
-          .in('id', idArray);
-        fabrics?.forEach((f) => {
-          detailsMap.set(f.id, {
-            name: `Vải thành phẩm ${f.roll_number}`,
-            code: f.roll_number,
-          });
-        });
-      } else if (type === 'purchase_order') {
-        const { data: pos } = await supabase
-          .from('purchase_orders')
-          .select('id, po_code')
-          .in('id', idArray);
-        pos?.forEach((p) => {
-          detailsMap.set(p.id, {
-            name: `PO ${p.po_code}`,
-            code: p.po_code,
-          });
-        });
-      } else if (type === 'supplier') {
-        const { data: suppliers } = await supabase
-          .from('suppliers')
-          .select('id, name, code')
-          .in('id', idArray);
-        suppliers?.forEach((s) => {
-          detailsMap.set(s.id, {
-            name: s.name,
-            code: s.code,
-          });
-        });
-      }
-    }),
-  );
-
-  return data.map((row) => {
-    const details = detailsMap.get(row.entity_id);
-    const typeLabel =
-      row.entity_type === 'shipment'
-        ? 'Lô hàng'
-        : row.entity_type === 'order'
-          ? 'Đơn hàng'
-          : row.entity_type === 'customer'
-            ? 'Khách hàng'
-            : row.entity_type === 'supplier'
-              ? 'Nhà cung cấp'
-              : row.entity_type;
+  return (data as RpcRoomRowV2[]).map((row) => {
+    const fallbackMeta = resolveEntityDisplayMetadata(row.entity_type, null);
     return {
       roomId: row.room_id,
       entityType: row.entity_type,
@@ -412,8 +313,10 @@ export async function fetchMyChatRooms(): Promise<MyChatRoomSummary[]> {
       lastMessage: row.last_message,
       lastMessageAt: row.last_message_at,
       lastMessageType: row.last_message_type,
-      entityName: details?.name || `${typeLabel} #${row.entity_id.slice(0, 8)}`,
-      entityCode: details?.code || '',
+      entityName:
+        row.entity_name ||
+        `${fallbackMeta.displayName} #${row.entity_id.slice(0, 8)}`,
+      entityCode: row.entity_code || '',
     };
   });
 }

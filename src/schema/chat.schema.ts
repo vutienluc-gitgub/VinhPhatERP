@@ -314,4 +314,6 @@ export const CHAT_INBOX_LABELS = {
   MINS_AGO: 'phút',
   HOURS_AGO: 'giờ',
   DAYS_AGO: 'ngày',
+  LOAD_MORE: 'Tải thêm',
+  LOADING_MORE: 'Đang tải...',
 } as const;

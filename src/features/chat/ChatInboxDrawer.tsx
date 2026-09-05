@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
 import { fetchMyChatRooms, type MyChatRoomSummary } from '@/api/chat.api';
 import { Icon } from '@/shared/components/Icon';
@@ -160,13 +160,36 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const queryClient = useQueryClient();
 
-  const { data: rooms = [], isLoading } = useQuery({
-    queryKey: ['chat-inbox-rooms'],
-    queryFn: fetchMyChatRooms,
-    enabled: open,
-    staleTime: 15_000,
-    refetchInterval: open ? 30_000 : false,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ['chat-inbox-rooms'],
+      queryFn: ({ pageParam }) =>
+        fetchMyChatRooms({
+          limit: 20,
+          cursorUpdatedAt: pageParam?.cursorUpdatedAt ?? null,
+          cursorRoomId: pageParam?.cursorRoomId ?? null,
+        }),
+      initialPageParam: null as {
+        cursorUpdatedAt: string;
+        cursorRoomId: string;
+      } | null,
+      getNextPageParam: (lastPage) => {
+        if (!lastPage || lastPage.length < 20) return undefined;
+        const lastItem = lastPage[lastPage.length - 1];
+        if (!lastItem) return undefined;
+        return {
+          cursorUpdatedAt: lastItem.updatedAt,
+          cursorRoomId: lastItem.roomId,
+        };
+      },
+      enabled: open,
+      staleTime: 15_000,
+      refetchInterval: open ? 30_000 : false,
+    });
+
+  const rooms = useMemo(() => {
+    return data?.pages.flatMap((page) => page) ?? [];
+  }, [data]);
 
   const filteredRooms = useMemo(() => {
     let result = rooms;
@@ -343,6 +366,20 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
               onClick={() => handleOpen(room)}
             />
           ))}
+          {hasNextPage && (
+            <div className="p-3 text-center">
+              <button
+                type="button"
+                onClick={() => void fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className="px-4 py-1.5 text-xs font-medium text-primary bg-surface-secondary border border-border rounded-lg hover:bg-surface transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isFetchingNextPage
+                  ? CHAT_INBOX_LABELS.LOADING_MORE
+                  : CHAT_INBOX_LABELS.LOAD_MORE}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>,

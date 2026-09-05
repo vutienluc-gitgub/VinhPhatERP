@@ -166,14 +166,23 @@ export const MESSAGE_CLUSTER_MAX_DURATION_MS = 5 * 60 * 1000; // 5 minutes max t
  * Transforms raw messages into structured DateMessageGroups and MessageClusters
  * with intelligent Admin vs Customer side alignment and derived ChatMessageViewModel.
  */
-export function buildMessageGroups(
-  chronologicalMessages: ChatMessage[],
+// Cache for immutable past date groups (bounded to 100 date groups)
+const pastDateGroupCache = new Map<string, DateMessageGroup>();
+
+function clusterSingleDate(
+  dateKey: string,
+  dateLabel: string,
+  messages: ChatMessage[],
   currentUserId?: string,
   context?: ChatRoomContext,
-): DateMessageGroup[] {
-  const groups: DateMessageGroup[] = [];
+): DateMessageGroup {
+  const isCustomerPortal = context?.currentUserRole === 'customer';
+  const group: DateMessageGroup = {
+    date: dateKey,
+    label: dateLabel,
+    clusters: [],
+  };
 
-  let currentGroup: DateMessageGroup | null = null;
   let currentRawCluster: {
     id: string;
     senderId: string | null;
@@ -187,10 +196,8 @@ export function buildMessageGroups(
     rawMessages: ChatMessage[];
   } | null = null;
 
-  const isCustomerPortal = context?.currentUserRole === 'customer';
-
   const flushCluster = () => {
-    if (!currentRawCluster || !currentGroup) return;
+    if (!currentRawCluster) return;
 
     const {
       rawMessages,
@@ -245,14 +252,11 @@ export function buildMessageGroups(
       messages: viewModels,
     };
 
-    currentGroup.clusters.push(cluster);
+    group.clusters.push(cluster);
     currentRawCluster = null;
   };
 
-  for (const msg of chronologicalMessages) {
-    const dateLabel = formatDateLabel(msg.created_at);
-    const dateKey = msg.created_at.split('T')[0] ?? '';
-
+  for (const msg of messages) {
     const isDirectSender = Boolean(
       (currentUserId && msg.sender_id === currentUserId) ||
       (!msg.sender_id && msg.status === 'pending'),
@@ -265,18 +269,7 @@ export function buildMessageGroups(
 
     const msgTime = new Date(msg.created_at).getTime();
 
-    // 1. Date Group boundary
-    if (!currentGroup || currentGroup.date !== dateKey) {
-      flushCluster();
-      currentGroup = {
-        date: dateKey,
-        label: dateLabel,
-        clusters: [],
-      };
-      groups.push(currentGroup);
-    }
-
-    // 2. System message boundary
+    // System message boundary
     if (msg.message_type === 'system' || msg.message_type === 'system_epod') {
       flushCluster();
       const systemCluster: MessageCluster = {
@@ -303,11 +296,11 @@ export function buildMessageGroups(
           },
         ],
       };
-      currentGroup.clusters.push(systemCluster);
+      group.clusters.push(systemCluster);
       continue;
     }
 
-    // 3. Cluster grouping (same sender AND same alignment side AND double-bounded by gap & duration)
+    // Cluster grouping
     const canCluster =
       currentRawCluster &&
       currentRawCluster.senderId === msg.sender_id &&
@@ -342,6 +335,88 @@ export function buildMessageGroups(
   }
 
   flushCluster();
+  return group;
+}
+
+/**
+ * Transforms raw messages into structured DateMessageGroups and MessageClusters
+ * with intelligent Admin vs Customer side alignment, derived ChatMessageViewModel,
+ * and incremental caching for immutable past date groups.
+ */
+export function buildMessageGroups(
+  chronologicalMessages: ChatMessage[],
+  currentUserId?: string,
+  context?: ChatRoomContext,
+): DateMessageGroup[] {
+  if (!chronologicalMessages || chronologicalMessages.length === 0) {
+    return [];
+  }
+
+  // 1. Group messages by dateKey (preserving chronological order)
+  const dateBuckets = new Map<
+    string,
+    { dateLabel: string; msgs: ChatMessage[] }
+  >();
+  for (const msg of chronologicalMessages) {
+    const dateKey = msg.created_at.split('T')[0] ?? '';
+    let bucket = dateBuckets.get(dateKey);
+    if (!bucket) {
+      bucket = {
+        dateLabel: formatDateLabel(msg.created_at),
+        msgs: [],
+      };
+      dateBuckets.set(dateKey, bucket);
+    }
+    bucket.msgs.push(msg);
+  }
+
+  const dateKeys = Array.from(dateBuckets.keys());
+  const lastDateKey = dateKeys[dateKeys.length - 1];
+  const groups: DateMessageGroup[] = [];
+
+  // 2. Process each date group (cache past dates, re-compute active latest date)
+  for (const dateKey of dateKeys) {
+    const bucket = dateBuckets.get(dateKey);
+    if (!bucket) continue;
+
+    const isPastDate = dateKey !== lastDateKey;
+    if (isPastDate) {
+      const firstMsg = bucket.msgs[0];
+      const lastMsg = bucket.msgs[bucket.msgs.length - 1];
+      const cacheKey = `${dateKey}:${currentUserId ?? ''}:${context?.currentUserRole ?? ''}:${context?.partnerName ?? ''}:${firstMsg?.id ?? ''}:${lastMsg?.id ?? ''}:${bucket.msgs.length}`;
+
+      const cached = pastDateGroupCache.get(cacheKey);
+      if (cached) {
+        groups.push(cached);
+        continue;
+      }
+
+      const computed = clusterSingleDate(
+        dateKey,
+        bucket.dateLabel,
+        bucket.msgs,
+        currentUserId,
+        context,
+      );
+
+      if (pastDateGroupCache.size > 200) {
+        pastDateGroupCache.clear();
+      }
+      pastDateGroupCache.set(cacheKey, computed);
+      groups.push(computed);
+    } else {
+      // Latest active date: compute dynamically
+      groups.push(
+        clusterSingleDate(
+          dateKey,
+          bucket.dateLabel,
+          bucket.msgs,
+          currentUserId,
+          context,
+        ),
+      );
+    }
+  }
 
   return groups;
 }
@@ -391,4 +466,67 @@ export function extractChronologicalMessages(
     const timeB = new Date(b.created_at || 0).getTime();
     return timeA - timeB;
   });
+}
+
+/**
+ * Entity Display Resolver (GOV-002)
+ * Pure domain resolver to ensure every supported entity_type resolves correctly
+ * without unexpected fallback.
+ */
+export function resolveEntityDisplayMetadata(
+  entityType: string,
+  record?: {
+    name?: string | null;
+    code?: string | null;
+    shipment_number?: string | null;
+    order_number?: string | null;
+    work_order_number?: string | null;
+    receipt_number?: string | null;
+    roll_number?: string | null;
+  } | null,
+): { displayName: string; displayCode: string } {
+  if (!record) {
+    return {
+      displayName: `Phòng ${entityType}`,
+      displayCode: '',
+    };
+  }
+
+  switch (entityType) {
+    case 'customer':
+      return {
+        displayName: record.name || 'Khách hàng',
+        displayCode: record.code || '',
+      };
+    case 'shipment':
+      return {
+        displayName: `Lô hàng ${record.shipment_number || ''}`.trim(),
+        displayCode: record.shipment_number || '',
+      };
+    case 'order':
+      return {
+        displayName: `Đơn hàng ${record.order_number || ''}`.trim(),
+        displayCode: record.order_number || '',
+      };
+    case 'work_order':
+      return {
+        displayName: `Lệnh SX ${record.work_order_number || ''}`.trim(),
+        displayCode: record.work_order_number || '',
+      };
+    case 'yarn_receipt':
+      return {
+        displayName: `Phiếu nhập sợi ${record.receipt_number || ''}`.trim(),
+        displayCode: record.receipt_number || '',
+      };
+    case 'raw_fabric':
+      return {
+        displayName: `Cuộn mộc ${record.roll_number || ''}`.trim(),
+        displayCode: record.roll_number || '',
+      };
+    default:
+      return {
+        displayName: `Phòng ${entityType}`,
+        displayCode: '',
+      };
+  }
 }

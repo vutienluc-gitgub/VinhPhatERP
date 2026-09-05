@@ -54,6 +54,7 @@
   border-radius: var(--chat-bubble-radius-image);
   box-shadow: var(--chat-bubble-shadow);
   max-width: min(260px, 72vw);
+  min-height: 160px;
   background: var(--chat-bubble-theirs-bg);
 }
 

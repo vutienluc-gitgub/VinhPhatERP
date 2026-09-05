@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import toast from 'react-hot-toast';
 
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -130,6 +131,56 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     });
     setUnreadNewCount(0);
   }, []);
+
+  const handleScrollToMessageId = useCallback(
+    (targetMessageId?: string) => {
+      if (!targetMessageId) return;
+
+      const targetIndex = flatItems.findIndex(
+        (item) =>
+          item.type === 'cluster' &&
+          item.cluster.messages.some(
+            (vm) =>
+              vm.message.id === targetMessageId ||
+              vm.message.client_id === targetMessageId,
+          ),
+      );
+
+      if (targetIndex !== -1) {
+        if (isVirtualized) {
+          rowVirtualizer.scrollToIndex(targetIndex, {
+            align: 'center',
+            behavior: 'smooth',
+          });
+        }
+        setTimeout(() => {
+          const el = document.querySelector(
+            `[data-message-id="${targetMessageId}"]`,
+          );
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.classList.add('chat-message-highlight');
+            setTimeout(() => {
+              el.classList.remove('chat-message-highlight');
+            }, 2000);
+          }
+        }, 120);
+      } else {
+        if (hasNextPage && !isFetchingNextPage) {
+          toast(CHAT_LABELS.LOADING_OLDER_MESSAGES);
+          onLoadMore();
+        }
+      }
+    },
+    [
+      flatItems,
+      isVirtualized,
+      rowVirtualizer,
+      hasNextPage,
+      isFetchingNextPage,
+      onLoadMore,
+    ],
+  );
 
   // Handle incoming new messages & auto-scroll
   useEffect(() => {
@@ -319,6 +370,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
                       cluster={item.cluster}
                       onRetry={onRetry}
                       onQuoteReply={onQuoteReply}
+                      onScrollToMessage={handleScrollToMessageId}
                     />
                   )}
                 </div>
@@ -335,6 +387,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
                   cluster={cluster}
                   onRetry={onRetry}
                   onQuoteReply={onQuoteReply}
+                  onScrollToMessage={handleScrollToMessageId}
                 />
               ))}
             </React.Fragment>
