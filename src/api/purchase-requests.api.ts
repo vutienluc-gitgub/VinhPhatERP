@@ -1,6 +1,4 @@
 import { untypedDb } from '@/services/supabase/client';
-import { getTenantId } from '@/services/supabase/tenant';
-import { safeUpsert } from '@/lib/db-guard';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
 import type { PrHeaderFormValues } from '@/schema/purchase-request.schema';
@@ -108,46 +106,38 @@ export async function fetchNextPrNo(): Promise<string> {
 export async function createPurchaseRequest(
   values: PrHeaderFormValues,
 ): Promise<PurchaseRequest> {
-  const tenantId = await getTenantId();
-  const prNo = await fetchNextPrNo();
-  const prId = crypto.randomUUID();
-
-  // 1. Upsert header
-  const headerResult = await safeUpsert({
-    table: 'purchase_requests',
-    data: {
-      id: prId,
-      tenant_id: tenantId,
-      pr_no: prNo,
-      requester_dept: values.requester_dept.trim(),
-      priority: values.priority,
-      status: 'draft',
-      notes: values.notes?.trim() || null,
+  const { data: prId, error: rpcError } = await untypedDb.rpc(
+    'rpc_create_purchase_request',
+    {
+      p_requester_dept: values.requester_dept.trim(),
+      p_priority: values.priority,
+      p_notes: values.notes?.trim() || null,
+      p_items: values.items.map((item) => ({
+        material_name: item.material_name.trim(),
+        material_specs: item.material_specs?.trim() || null,
+        qty_required: item.qty_required,
+        uom: item.uom.trim(),
+        expected_date: item.expected_date || null,
+        purpose: item.purpose?.trim() || null,
+      })),
     },
-    conflictKey: 'id',
-  });
+  );
 
-  // 2. Upsert items
-  const itemRows = values.items.map((item) => ({
-    id: crypto.randomUUID(),
-    tenant_id: tenantId,
-    pr_id: prId,
-    material_name: item.material_name.trim(),
-    material_specs: item.material_specs?.trim() || null,
-    qty_required: item.qty_required,
-    uom: item.uom.trim(),
-    expected_date: item.expected_date || null,
-    purpose: item.purpose?.trim() || null,
-  }));
+  if (rpcError) {
+    throw rpcError;
+  }
 
-  await safeUpsert({
-    table: 'purchase_request_items',
-    data: itemRows,
-    conflictKey: 'id',
-  });
+  const { data: pr, error: fetchError } = await untypedDb
+    .from('purchase_requests')
+    .select('*')
+    .eq('id', prId)
+    .single();
 
-  const header = Array.isArray(headerResult) ? headerResult[0] : headerResult;
-  return header as unknown as PurchaseRequest;
+  if (fetchError) {
+    throw fetchError;
+  }
+
+  return pr as PurchaseRequest;
 }
 
 export async function deletePurchaseRequest(id: string): Promise<void> {

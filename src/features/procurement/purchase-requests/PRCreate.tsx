@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
 
 import { Button, Icon } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
@@ -42,7 +43,13 @@ export function PRCreate() {
   const onSubmit = useCallback(
     (values: PrHeaderFormValues) => {
       createMutation.mutate(values, {
-        onSuccess: () => navigate('/purchase-requests'),
+        onSuccess: (data) => {
+          toast.success(`Tạo yêu cầu mua hàng ${data.pr_no} thành công!`);
+          navigate('/purchase-requests');
+        },
+        onError: (err) => {
+          toast.error(`Lỗi tạo yêu cầu mua hàng: ${getErrorMessage(err)}`);
+        },
       });
     },
     [createMutation, navigate],
