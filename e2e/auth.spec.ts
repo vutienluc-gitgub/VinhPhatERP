@@ -30,8 +30,8 @@ test.describe('Luồng Đăng Nhập', () => {
       const postData = JSON.parse(request.postData() || '{}');
 
       if (
-        postData.email === 'admin@vinhphat.vn' &&
-        postData.password === 'password123'
+        postData.email === '1081991@gmail.com' &&
+        postData.password === 'Vinhphat@2026'
       ) {
         await route.fulfill({
           status: 200,
@@ -45,7 +45,7 @@ test.describe('Luồng Đăng Nhập', () => {
               id: 'user-123',
               aud: 'authenticated',
               role: 'authenticated',
-              email: 'admin@vinhphat.vn',
+              email: '1081991@gmail.com',
               app_metadata: {},
               user_metadata: {},
             },
@@ -70,8 +70,8 @@ test.describe('Luồng Đăng Nhập', () => {
     await page.goto('/');
 
     // Điền thông tin đăng nhập
-    await page.fill('input[id="email"]', 'admin@vinhphat.vn');
-    await page.fill('input[id="password"]', 'password123');
+    await page.fill('input[id="email"]', '1081991@gmail.com');
+    await page.fill('input[id="password"]', 'Vinhphat@2026');
 
     // Chờ Turnstile mock tự động xác thực xong, nút đăng nhập sẽ hết disable
     const loginBtn = page.getByRole('button', {

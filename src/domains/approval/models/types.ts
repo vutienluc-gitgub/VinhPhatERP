@@ -10,6 +10,7 @@ export interface ApproverSnapshot {
   id: string;
   name: string;
   role: string;
+  email?: string;
 }
 
 export interface ApprovalSnapshotData {
