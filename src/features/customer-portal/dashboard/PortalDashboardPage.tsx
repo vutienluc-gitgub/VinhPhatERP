@@ -143,10 +143,13 @@ export function PortalDashboardPage() {
           </div>
 
           {/* Mobile cards */}
-          <div className="portal-order-cards p-3">
+          <div className="p-3 flex flex-col gap-3">
             {orders.slice(0, 5).map((o) => (
-              <div key={o.id} className="portal-order-card">
-                <div className="portal-order-card-row">
+              <div
+                key={o.id}
+                className="p-3 rounded-xl border border-border bg-surface flex flex-col gap-2 shadow-xs"
+              >
+                <div className="flex items-center justify-between gap-2">
                   <Link
                     to={`/portal/orders/${o.id}`}
                     className="portal-link text-[0.9rem]"
@@ -159,9 +162,9 @@ export function PortalDashboardPage() {
                     {ORDER_STATUS_LABELS[o.status] ?? o.status}
                   </span>
                 </div>
-                <div className="portal-order-card-row">
-                  <span className="portal-order-card-meta">{o.order_date}</span>
-                  <span className="portal-order-card-amount">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{o.order_date}</span>
+                  <span className="font-semibold text-foreground">
                     <MoneyText value={o.total_amount} suffix=" đ" />
                   </span>
                 </div>

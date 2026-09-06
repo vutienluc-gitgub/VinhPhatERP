@@ -242,28 +242,13 @@ export function SupplierDashboardPage() {
                 }) => (
                   <div
                     key={po.id}
-                    className="portal-product-item"
-                    style={{ padding: '0.75rem 1.25rem' }}
+                    className="flex items-center justify-between gap-2 px-5 py-3 border-b border-dashed border-border last:border-none"
                   >
-                    <div
-                      className="portal-product-info"
-                      style={{
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        gap: '0.125rem',
-                      }}
-                    >
-                      <span
-                        className="portal-product-fabric"
-                        style={{
-                          maxWidth: 'none',
-                          fontWeight: 600,
-                          fontSize: '0.875rem',
-                        }}
-                      >
+                    <div className="flex flex-col items-start gap-0.5 min-w-0">
+                      <span className="font-semibold text-sm text-foreground">
                         {po.po_code}
                       </span>
-                      <span style={{ fontSize: '0.75rem', color: '#647284' }}>
+                      <span className="text-xs text-muted-foreground">
                         {dayjs(po.order_date).format('DD/MM/YYYY')} —{' '}
                         <MoneyText value={po.total_amount ?? 0} />
                       </span>
@@ -308,35 +293,13 @@ export function SupplierDashboardPage() {
                   <Link
                     key={rfq.id}
                     to={`/portal/supplier/quotations/${rfq.id}`}
-                    className="portal-product-item"
-                    style={{
-                      padding: '0.75rem 1.25rem',
-                      textDecoration: 'none',
-                      color: 'inherit',
-                    }}
+                    className="flex items-center justify-between gap-2 px-5 py-3 border-b border-dashed border-border last:border-none no-underline text-foreground hover:bg-surface-subtle transition-colors"
                   >
-                    <div
-                      className="portal-product-info"
-                      style={{
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        gap: '0.125rem',
-                      }}
-                    >
-                      <span
-                        className="portal-product-fabric"
-                        style={{
-                          maxWidth: 'none',
-                          fontWeight: 600,
-                          fontSize: '0.875rem',
-                        }}
-                      >
+                    <div className="flex flex-col items-start gap-0.5 min-w-0">
+                      <span className="font-semibold text-sm text-foreground">
                         {rfq.rfq_code}
                       </span>
-                      <span
-                        style={{ fontSize: '0.75rem', color: '#647284' }}
-                        className="truncate max-w-[200px]"
-                      >
+                      <span className="text-xs text-muted-foreground truncate max-w-[200px]">
                         {rfq.title}
                       </span>
                     </div>
