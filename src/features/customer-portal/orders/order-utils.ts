@@ -68,3 +68,11 @@ export function getMobileStatusLabel(order: PortalOrder): string {
   }
   return ORDER_STATUS_LABELS[order.status] ?? order.status;
 }
+
+export function calculateProgressPercent(steps: readonly string[]): number {
+  if (steps.length <= 1) return 0;
+  const lastCompleted = steps.lastIndexOf('completed');
+  const activeIdx = steps.indexOf('active');
+  const furthest = activeIdx >= 0 ? activeIdx : lastCompleted;
+  return furthest >= 0 ? (furthest / (steps.length - 1)) * 100 : 0;
+}
