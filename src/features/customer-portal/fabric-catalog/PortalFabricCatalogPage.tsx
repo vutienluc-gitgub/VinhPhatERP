@@ -1,17 +1,35 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import { useFabricCatalogList } from '@/application/settings';
-import { Icon, Badge, DataTable, ClearFilterButton } from '@/shared/components';
-import { Button } from '@/shared/components';
+import {
+  Icon,
+  Badge,
+  DataTable,
+  ClearFilterButton,
+  Button,
+} from '@/shared/components';
 import { OrderRequestModal } from '@/features/customer-portal/orders/OrderRequestModal';
+import type { FabricCatalog } from '@/domain/settings/fabric-catalog.types';
+
+import {
+  FABRIC_CATALOG_TEXT,
+  getPrimaryComposition,
+  formatSpecValue,
+} from './constants';
+
+interface FabricCatalogFilterState {
+  search?: string;
+  status: 'active';
+}
 
 export function PortalFabricCatalogPage() {
   const [searchInput, setSearchInput] = useState('');
-  const [filters, setFilters] = useState({
-    search: undefined as string | undefined,
-    status: 'active' as const,
+  const [filters, setFilters] = useState<FabricCatalogFilterState>({
+    search: undefined,
+    status: 'active',
   });
   const [page, setPage] = useState(1);
+  const [selectedFabric, setSelectedFabric] = useState<string | null>(null);
 
   const { data, isLoading, error } = useFabricCatalogList(
     {
@@ -21,9 +39,7 @@ export function PortalFabricCatalogPage() {
     page,
   );
 
-  const [selectedFabric, setSelectedFabric] = useState<string | null>(null);
-
-  const catalogs = data?.data ?? [];
+  const catalogs = useMemo(() => data?.data ?? [], [data?.data]);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -34,14 +50,103 @@ export function PortalFabricCatalogPage() {
     }));
   }
 
+  function handleClearSearch() {
+    setSearchInput('');
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      search: undefined,
+    }));
+  }
+
+  const columns = useMemo(
+    () => [
+      {
+        header: FABRIC_CATALOG_TEXT.COL_CODE,
+        cell: (fabric: FabricCatalog) => (
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-foreground">
+              <Icon name="Layers" size={20} />
+            </div>
+            <span className="font-bold text-foreground">{fabric.code}</span>
+          </div>
+        ),
+      },
+      {
+        header: FABRIC_CATALOG_TEXT.COL_NAME,
+        cell: (fabric: FabricCatalog) => (
+          <div className="flex flex-col">
+            <span className="font-bold text-base">{fabric.name}</span>
+            <span className="text-xs text-muted-foreground italic line-clamp-1">
+              {fabric.composition ||
+                FABRIC_CATALOG_TEXT.LABEL_UPDATING_COMPOSITION}
+            </span>
+          </div>
+        ),
+      },
+      {
+        header: FABRIC_CATALOG_TEXT.COL_SPEC,
+        cell: (fabric: FabricCatalog) => (
+          <div className="flex flex-col gap-0.5">
+            <span className="text-sm">
+              {FABRIC_CATALOG_TEXT.LABEL_WIDTH_PREFIX}{' '}
+              <span className="font-medium">
+                {formatSpecValue(fabric.target_width_cm, 'cm')}
+              </span>
+            </span>
+            <span className="text-sm">
+              {FABRIC_CATALOG_TEXT.LABEL_GSM_PREFIX}{' '}
+              <span className="font-medium">
+                {formatSpecValue(fabric.target_gsm, 'gsm')}
+              </span>
+            </span>
+          </div>
+        ),
+      },
+      {
+        header: FABRIC_CATALOG_TEXT.COL_UNIT,
+        cell: (fabric: FabricCatalog) => (
+          <Badge variant="gray">{fabric.unit}</Badge>
+        ),
+      },
+      {
+        header: FABRIC_CATALOG_TEXT.COL_FEATURES,
+        cell: (fabric: FabricCatalog) => (
+          <div className="flex gap-1.5 flex-wrap">
+            {fabric.composition && (
+              <Badge variant="gray">
+                {getPrimaryComposition(fabric.composition)}
+              </Badge>
+            )}
+            <Badge variant="primary">{FABRIC_CATALOG_TEXT.LABEL_PREMIUM}</Badge>
+          </div>
+        ),
+      },
+      {
+        header: FABRIC_CATALOG_TEXT.COL_ACTIONS,
+        className: 'text-right',
+        cell: (fabric: FabricCatalog) => (
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedFabric(fabric.name)}
+            >
+              {FABRIC_CATALOG_TEXT.LABEL_REQUEST_ORDER}
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
+
   return (
     <div className="portal-page">
       <div className="portal-page-header">
         <div className="portal-header-info">
-          <h2 className="portal-title">Danh mục sản phẩm</h2>
-          <p className="portal-subtitle">
-            Khám phá các loại vải và mã hàng Vĩnh Phát đang cung cấp
-          </p>
+          <h2 className="portal-title">{FABRIC_CATALOG_TEXT.PAGE_TITLE}</h2>
+          <p className="portal-subtitle">{FABRIC_CATALOG_TEXT.PAGE_SUBTITLE}</p>
         </div>
       </div>
 
@@ -56,7 +161,7 @@ export function PortalFabricCatalogPage() {
               <input
                 className="field-input"
                 type="text"
-                placeholder="Tìm sản phẩm, thành phần..."
+                placeholder={FABRIC_CATALOG_TEXT.SEARCH_PLACEHOLDER}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onBlur={handleSearch}
@@ -64,22 +169,14 @@ export function PortalFabricCatalogPage() {
               <Icon name="Search" size={16} className="search-input-icon" />
             </form>
             {filters.search && (
-              <ClearFilterButton
-                onClick={() => {
-                  setSearchInput('');
-                  setFilters({
-                    ...filters,
-                    search: undefined,
-                  });
-                }}
-              />
+              <ClearFilterButton onClick={handleClearSearch} />
             )}
           </div>
         </div>
 
         {error && (
           <p className="p-4 text-danger">
-            Lỗi tải danh mục:{' '}
+            {FABRIC_CATALOG_TEXT.ERROR_LOAD_FAILED}{' '}
             {error instanceof Error ? error.message : String(error)}
           </p>
         )}
@@ -87,136 +184,63 @@ export function PortalFabricCatalogPage() {
         <DataTable
           data={catalogs}
           isLoading={isLoading}
-          rowKey={(c) => c.id}
-          emptyStateTitle="Không tìm thấy loại vải nào"
-          emptyStateDescription="Vui lòng thử tìm kiếm với các từ khóa khác."
+          rowKey={(fabric) => fabric.id}
+          emptyStateTitle={FABRIC_CATALOG_TEXT.EMPTY_STATE_TITLE}
+          emptyStateDescription={FABRIC_CATALOG_TEXT.EMPTY_STATE_DESC}
           emptyStateIcon="Layers"
-          columns={[
-            {
-              header: 'Mã vải',
-              cell: (c) => (
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-foreground">
-                    <Icon name="Layers" size={20} />
-                  </div>
-                  <span className="font-bold text-foreground">{c.code}</span>
-                </div>
-              ),
-            },
-            {
-              header: 'Tên loại vải',
-              cell: (c) => (
-                <div className="flex flex-col">
-                  <span className="font-bold text-base">{c.name}</span>
-                  <span className="text-xs text-muted-foreground italic line-clamp-1">
-                    {c.composition || 'Đang cập nhật thành phần...'}
-                  </span>
-                </div>
-              ),
-            },
-            {
-              header: 'Quy cách (chuẩn)',
-              cell: (c) => (
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-sm">
-                    Khổ:{' '}
-                    <span className="font-medium">
-                      {c.target_width_cm ? `${c.target_width_cm} cm` : '—'}
-                    </span>
-                  </span>
-                  <span className="text-sm">
-                    K/L:{' '}
-                    <span className="font-medium">
-                      {c.target_gsm ? `${c.target_gsm} gsm` : '—'}
-                    </span>
-                  </span>
-                </div>
-              ),
-            },
-            {
-              header: 'Đơn vị',
-              cell: (c) => <Badge variant="gray">{c.unit}</Badge>,
-            },
-            {
-              header: 'Đặc tính',
-              cell: (c) => (
-                <div className="flex gap-1 flex-wrap">
-                  {c.composition && (
-                    <span className="px-2 py-0.5 rounded-lg bg-surface text-[0.65rem] font-bold border border-border shadow-sm">
-                      {c.composition.split('/')[0]}
-                    </span>
-                  )}
-                  <span className="px-2 py-0.5 rounded-lg bg-surface text-[0.65rem] font-bold border border-border shadow-sm uppercase">
-                    Premium
-                  </span>
-                </div>
-              ),
-            },
-            {
-              header: 'Thao tác',
-              className: 'text-right',
-              cell: (c) => (
-                <div className="flex justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedFabric(c.name)}
-                  >
-                    Yêu cầu đặt
-                  </Button>
-                </div>
-              ),
-            },
-          ]}
-          renderMobileCard={(c) => (
-            <div className="portal-mobile-card">
+          columns={columns}
+          renderMobileCard={(fabric) => (
+            <div className="portal-mobile-card p-4 rounded-xl border border-border bg-surface-strong">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-foreground">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
                   <Icon name="Layers" size={20} />
                 </div>
                 <div>
                   <h4 className="font-bold text-foreground leading-tight">
-                    {c.code}
+                    {fabric.code}
                   </h4>
-                  <p className="text-xs text-muted-foreground">{c.unit}</p>
+                  <p className="text-xs text-muted-foreground">{fabric.unit}</p>
                 </div>
               </div>
-              <h3 className="font-bold text-base mb-1">{c.name}</h3>
-              <p className="text-sm text-muted-foreground italic mb-2">
-                {c.composition || 'Chưa rõ thành phần'}
+              <h3 className="font-bold text-base mb-1 text-foreground">
+                {fabric.name}
+              </h3>
+              <p className="text-sm text-muted-foreground italic mb-3">
+                {fabric.composition ||
+                  FABRIC_CATALOG_TEXT.LABEL_UNKNOWN_COMPOSITION}
               </p>
-              <div className="grid grid-cols-2 gap-2 mb-3 bg-surface border border-border rounded-lg p-2">
+              <div className="grid grid-cols-2 gap-2 mb-3 bg-surface-subtle border border-border rounded-lg p-2.5">
                 <div>
                   <span className="block text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
-                    Khổ chuẩn
+                    {FABRIC_CATALOG_TEXT.LABEL_WIDTH_STD}
                   </span>
-                  <span className="text-sm font-medium">
-                    {c.target_width_cm ? `${c.target_width_cm} cm` : '—'}
+                  <span className="text-sm font-medium text-foreground">
+                    {formatSpecValue(fabric.target_width_cm, 'cm')}
                   </span>
                 </div>
                 <div>
                   <span className="block text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
-                    K/L chuẩn
+                    {FABRIC_CATALOG_TEXT.LABEL_GSM_STD}
                   </span>
-                  <span className="text-sm font-medium">
-                    {c.target_gsm ? `${c.target_gsm} gsm` : '—'}
+                  <span className="text-sm font-medium text-foreground">
+                    {formatSpecValue(fabric.target_gsm, 'gsm')}
                   </span>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <span className="px-2 py-1 rounded-lg bg-surface-subtle text-[10px] font-bold border border-border">
-                  {c.composition?.split('/')[0] || 'Fabric'}
-                </span>
-                <span className="px-2 py-1 rounded-lg bg-primary/5 text-foreground text-[10px] font-bold border border-primary/10 uppercase">
-                  Có sẵn
-                </span>
+              <div className="flex items-center gap-2">
+                <Badge variant="gray">
+                  {getPrimaryComposition(fabric.composition)}
+                </Badge>
+                <Badge variant="success">
+                  {FABRIC_CATALOG_TEXT.LABEL_AVAILABLE}
+                </Badge>
                 <div className="ml-auto flex items-center justify-end">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setSelectedFabric(c.name)}
+                    onClick={() => setSelectedFabric(fabric.name)}
                   >
-                    Yêu cầu
+                    {FABRIC_CATALOG_TEXT.LABEL_REQUEST}
                   </Button>
                 </div>
               </div>
@@ -225,7 +249,7 @@ export function PortalFabricCatalogPage() {
           pagination={{
             result: data,
             onPageChange: setPage,
-            itemLabel: 'sản phẩm',
+            itemLabel: FABRIC_CATALOG_TEXT.ITEM_LABEL,
           }}
         />
       </div>
@@ -236,12 +260,10 @@ export function PortalFabricCatalogPage() {
         </div>
         <div className="flex-1">
           <h4 className="font-bold text-primary-strong mb-1">
-            Yêu cầu báo giá đặc biệt?
+            {FABRIC_CATALOG_TEXT.BANNER_TITLE}
           </h4>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Nếu bạn không tìm thấy mã vải mong muốn hoặc cần đặt sản xuất theo
-            yêu cầu, vui lòng liên hệ trực tiếp với nhân viên kinh doanh của
-            Vĩnh Phát để được hỗ trợ.
+            {FABRIC_CATALOG_TEXT.BANNER_DESC}
           </p>
         </div>
         <button
@@ -249,7 +271,7 @@ export function PortalFabricCatalogPage() {
           type="button"
           onClick={() => setSelectedFabric('')}
         >
-          Liên hệ ngay
+          {FABRIC_CATALOG_TEXT.BANNER_BUTTON}
         </button>
       </div>
 
