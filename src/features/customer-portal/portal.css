@@ -126,6 +126,33 @@
   color: #fff;
 }
 
+/* ── Notification Bell Button ── */
+.portal-notif-btn {
+  /* @architecture-exception: legacy color migration */
+  color: rgb(255, 255, 255, 0.75);
+
+  /* @architecture-exception: legacy color migration */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.45rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.portal-notif-btn:hover {
+  /* @architecture-exception: legacy color migration */
+  background: rgb(255, 255, 255, 0.14);
+
+  /* @architecture-exception: legacy color migration */
+  color: #fff;
+}
+
 /* ── User Avatar Badge ── */
 .portal-user-avatar {
   width: 32px;
@@ -263,6 +290,7 @@
 @media (width <= 640px) {
   .portal-content {
     padding: 1rem;
+    padding-bottom: 5.5rem;
   }
 }
 
@@ -1336,7 +1364,7 @@
 /* ── Floating Chat Button ── */
 .portal-chat-fab {
   position: fixed;
-  bottom: 1.5rem;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
   right: 1.5rem;
   width: 56px;
   height: 56px;
