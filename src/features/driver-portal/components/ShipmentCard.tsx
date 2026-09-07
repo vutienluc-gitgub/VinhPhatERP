@@ -2,9 +2,6 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { Icon } from '@/shared/components';
-import { toTelHref, normalizePhone } from '@/shared/utils/phone';
-import { SignaturePad } from '@/shared/components/SignaturePad';
-import { MoneyText } from '@/shared/value';
 import {
   useJourneyLogs,
   useUpdateJourneyStatus,
@@ -23,8 +20,11 @@ import { DRIVER_PORTAL_MESSAGES } from '@/features/driver-portal/constants';
 
 import { JourneyStepButton } from './JourneyStepButton';
 import { JourneyTimeline } from './JourneyTimeline';
-import { EvidenceCamera } from './EvidenceCamera';
 import { ReportExceptionModal } from './ReportExceptionModal';
+import { ShipmentCardHeader } from './ShipmentCardHeader';
+import { ShipmentCardInfo } from './ShipmentCardInfo';
+import { ShipmentProofSection } from './ShipmentProofSection';
+import { ShipmentJourneyLogs } from './ShipmentJourneyLogs';
 
 function mapJourneyToAttemptState(
   status?: JourneyStatus | null,
@@ -54,6 +54,7 @@ export function ShipmentCard({
   const [showSignaturePad, setShowSignaturePad] = useState(false);
   const [showExceptionModal, setShowExceptionModal] = useState(false);
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
+
   const { data: logs = [] } = useJourneyLogs(
     expanded ? shipment.id : undefined,
   );
@@ -64,11 +65,7 @@ export function ShipmentCard({
     : -1;
 
   const nextStatus = JOURNEY_STATUS_ORDER[currentJourneyIdx + 1];
-
-  async function handleSignatureConfirm(dataUrl: string) {
-    setSignatureDataUrl(dataUrl);
-    setShowSignaturePad(false);
-  }
+  const totalCost = (shipment.shipping_cost ?? 0) + (shipment.loading_fee ?? 0);
 
   async function handleAdvance(targetStatus: JourneyStatus) {
     try {
@@ -119,56 +116,19 @@ export function ShipmentCard({
     }
   }
 
-  const totalCost = (shipment.shipping_cost ?? 0) + (shipment.loading_fee ?? 0);
-
   return (
     <div className="bg-[var(--surface)] rounded-xl border-2 border-[var(--border)] overflow-hidden mb-4">
       {/* Card header */}
-      <div
-        onClick={() => setExpanded((v) => !v)}
-        className="flex items-center justify-between w-full p-4 bg-transparent cursor-pointer gap-3 hover:bg-[var(--surface-hover)] transition-colors"
-      >
-        <div className="flex items-start gap-3 w-full">
-          <div className="w-10 h-10 rounded-xl bg-[var(--surface-selected)] flex items-center justify-center shrink-0">
-            <Icon name="Truck" size={20} className="text-[var(--primary)]" />
-          </div>
-          <div className="text-left flex-1">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="font-bold text-base text-[var(--foreground)]">
-                  {shipment.shipment_number}
-                </p>
-                <p className="text-sm text-[var(--surface-subtle)] mt-0.5">
-                  {shipment.customers?.name ??
-                    DRIVER_PORTAL_MESSAGES.CARD.DEFAULT_CUSTOMER}
-                </p>
-              </div>
-              {shipment.customers?.phone && (
-                <a
-                  href={toTelHref(normalizePhone(shipment.customers.phone))}
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-[rgba(var(--success-rgb),0.1)] text-[var(--success)] hover:bg-[rgba(var(--success-rgb),0.2)] transition-colors shrink-0"
-                  aria-label={`Gọi ${shipment.customers.phone}`}
-                >
-                  <Icon name="Phone" size={18} />
-                </a>
-              )}
-            </div>
-            {shipment.journey_status && (
-              <span className="inline-block mt-1 text-xs font-semibold text-[var(--primary)] bg-[var(--surface-selected)] px-2 py-0.5 rounded-full">
-                {JOURNEY_STATUS_LABELS[shipment.journey_status]}
-              </span>
-            )}
-          </div>
-        </div>
-        <Icon
-          name={expanded ? 'ChevronUp' : 'ChevronDown'}
-          size={18}
-          className="text-[var(--muted-foreground)] shrink-0"
-        />
-      </div>
+      <ShipmentCardHeader
+        shipmentNumber={shipment.shipment_number}
+        customerName={shipment.customers?.name}
+        customerPhone={shipment.customers?.phone}
+        journeyStatus={shipment.journey_status}
+        expanded={expanded}
+        onToggle={() => setExpanded((v) => !v)}
+      />
 
-      {/* Details */}
+      {/* Expanded details */}
       {expanded && (
         <div className="px-4 pb-4">
           {/* Journey Timeline */}
@@ -178,56 +138,12 @@ export function ShipmentCard({
           />
 
           {/* Info row */}
-          <div className="grid grid-cols-2 gap-2 p-3 bg-[var(--surface-subtle)] rounded-xl mb-4 text-sm">
-            <div>
-              <p className="text-[var(--muted-foreground)]">
-                {DRIVER_PORTAL_MESSAGES.CARD.DELIVERY_DATE}
-              </p>
-              <p className="font-semibold">{shipment.shipment_date}</p>
-            </div>
-            <div>
-              <p className="text-[var(--muted-foreground)]">
-                {DRIVER_PORTAL_MESSAGES.CARD.SHIPPING_COST}
-              </p>
-              <p className="font-semibold text-foreground">
-                {totalCost ? (
-                  <MoneyText value={totalCost} suffix="đ" />
-                ) : (
-                  DRIVER_PORTAL_MESSAGES.CARD.FREE_SHIPPING
-                )}
-              </p>
-            </div>
-            {shipment.delivery_address && (
-              <div className="col-span-full mt-2">
-                <p className="text-[var(--muted-foreground)]">
-                  {DRIVER_PORTAL_MESSAGES.CARD.DELIVERY_ADDRESS}
-                </p>
-                <div className="flex items-start justify-between gap-2 mt-0.5">
-                  <p className="font-medium flex-1">
-                    {shipment.delivery_address}
-                  </p>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shipment.delivery_address)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--surface-selected)] text-[var(--primary)] text-xs font-semibold hover:bg-[var(--surface-hover)] transition-colors shrink-0"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Icon name="MapPin" size={14} />
-                    {DRIVER_PORTAL_MESSAGES.ACTIONS.OPEN_MAP}
-                  </a>
-                </div>
-              </div>
-            )}
-            {shipment.vehicle_info && (
-              <div>
-                <p className="text-[var(--muted-foreground)]">
-                  {DRIVER_PORTAL_MESSAGES.CARD.VEHICLE}
-                </p>
-                <p className="font-medium">{shipment.vehicle_info}</p>
-              </div>
-            )}
-          </div>
+          <ShipmentCardInfo
+            shipmentDate={shipment.shipment_date}
+            totalCost={totalCost}
+            deliveryAddress={shipment.delivery_address}
+            vehicleInfo={shipment.vehicle_info}
+          />
 
           {/* Journey steps */}
           <p className="text-xs font-bold uppercase text-[var(--muted-foreground)] tracking-[0.06em] mb-2">
@@ -258,136 +174,42 @@ export function ShipmentCard({
             })}
           </div>
 
+          {/* Proof & Notes section */}
           {nextStatus && shipment.status !== 'delivered' && (
-            <div className="mb-3 flex flex-col gap-2">
-              <div>
-                <label className="text-sm text-[var(--surface-subtle)] block mb-1">
-                  {DRIVER_PORTAL_MESSAGES.CARD.NOTES_LABEL}
-                </label>
-                <input
-                  className="field-input w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--foreground)] text-sm focus:border-[var(--primary)] outline-none"
-                  value={notesInput}
-                  onChange={(e) => setNotesInput(e.target.value)}
-                  placeholder={DRIVER_PORTAL_MESSAGES.CARD.NOTES_PLACEHOLDER}
-                />
-              </div>
-
-              {nextStatus === 'delivered_confirmed' && (
-                <div className="flex flex-col gap-3">
-                  <label className="text-sm font-semibold text-[var(--surface-subtle)] block">
-                    {DRIVER_PORTAL_MESSAGES.CARD.PROOF_LABEL}
-                    <span className="text-[var(--danger)] font-bold ml-1">
-                      (*)
-                    </span>
-                  </label>
-
-                  {/* Signature */}
-                  {signatureDataUrl ? (
-                    <div className="relative rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
-                      <img
-                        src={signatureDataUrl}
-                        alt={DRIVER_PORTAL_MESSAGES.CARD.SIGNATURE_ALT}
-                        className="w-full max-h-24 object-contain"
-                      />
-                      <div className="absolute top-1 left-2 text-[10px] text-[var(--muted-foreground)] font-semibold uppercase">
-                        {DRIVER_PORTAL_MESSAGES.CARD.SIGNATURE_TAG}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setSignatureDataUrl(null)}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-[var(--foreground)]/50 flex items-center justify-center text-[var(--inverse-foreground)] hover:bg-[var(--foreground)]/70"
-                      >
-                        <Icon name="X" size={12} />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setShowSignaturePad(true)}
-                      className="flex items-center gap-2 w-full py-2.5 px-4 rounded-xl border-2 border-dashed border-[var(--border)] text-[var(--surface-subtle)] text-sm hover:border-[var(--primary)] hover:text-[var(--primary)] transition-colors"
-                    >
-                      <Icon name="PenLine" size={16} />
-                      {DRIVER_PORTAL_MESSAGES.CARD.GET_SIGNATURE}
-                    </button>
-                  )}
-
-                  {/* Multi-Photo Evidence Camera */}
-                  <EvidenceCamera
-                    photos={photoFiles}
-                    onChange={setPhotoFiles}
-                    maxPhotos={4}
-                  />
-                </div>
-              )}
-
-              {showSignaturePad && (
-                <SignaturePad
-                  onConfirm={handleSignatureConfirm}
-                  onCancel={() => setShowSignaturePad(false)}
-                />
-              )}
-            </div>
+            <ShipmentProofSection
+              notesInput={notesInput}
+              onNotesChange={setNotesInput}
+              isDeliveredStep={nextStatus === 'delivered_confirmed'}
+              signatureDataUrl={signatureDataUrl}
+              showSignaturePad={showSignaturePad}
+              onShowSignaturePad={setShowSignaturePad}
+              onSignatureConfirm={(dataUrl) => {
+                setSignatureDataUrl(dataUrl);
+                setShowSignaturePad(false);
+              }}
+              onSignatureRemove={() => setSignatureDataUrl(null)}
+              photoFiles={photoFiles}
+              onPhotosChange={setPhotoFiles}
+            />
           )}
 
           {/* Journey log */}
-          {logs.length > 0 && (
-            <div>
-              <p className="text-xs font-bold uppercase text-[var(--muted-foreground)] tracking-[0.06em] mb-2">
-                {DRIVER_PORTAL_MESSAGES.CARD.JOURNEY_LOG}
-              </p>
-              <div className="flex flex-col gap-1">
-                {logs.map((log) => (
-                  <div
-                    key={log.id}
-                    className="flex gap-2 text-xs text-[var(--surface-subtle)]"
-                  >
-                    <Icon name="Clock" size={13} className="shrink-0 mt-0.5" />
-                    <div className="flex-1 min-w-0">
-                      <span className="font-semibold text-[var(--foreground)]">
-                        {JOURNEY_STATUS_LABELS[log.journey_status]}
-                      </span>
-                      {log.notes && <span> — {log.notes}</span>}
-                      <span className="text-[var(--muted-foreground)] ml-1">
-                        {new Date(log.created_at).toLocaleTimeString('vi-VN', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                      {log.photo_url && (
-                        <a
-                          href={log.photo_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block mt-1"
-                        >
-                          <img
-                            src={log.photo_url}
-                            alt={DRIVER_PORTAL_MESSAGES.CARD.PHOTO_ALT}
-                            className="rounded-lg max-h-28 object-cover border border-[var(--border)]"
-                          />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <ShipmentJourneyLogs logs={logs} />
 
           {/* Bottom Actions: Exception reporting and Chat button */}
-          <div className="flex items-center gap-2 mt-3">
+          <div className="flex items-center gap-2 mt-4">
             <button
               type="button"
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-[var(--destructive)] text-[var(--destructive)] font-semibold text-xs bg-transparent cursor-pointer hover:bg-[var(--destructive-subtle)] transition-colors shrink-0"
+              className="flex items-center justify-center gap-1.5 py-3 px-3.5 rounded-xl border border-[var(--destructive)] text-[var(--destructive)] font-semibold text-xs bg-transparent cursor-pointer hover:bg-[var(--destructive-subtle)] transition-colors shrink-0 min-h-[44px] touch-manipulation"
               onClick={() => setShowExceptionModal(true)}
             >
-              <Icon name="AlertTriangle" size={15} />
+              <Icon name="AlertTriangle" size={16} />
               <span>{DRIVER_PORTAL_MESSAGES.ACTIONS.REPORT_EXCEPTION}</span>
             </button>
 
             <button
               type="button"
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-semibold text-sm bg-transparent cursor-pointer hover:bg-[var(--surface-selected)] transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-[var(--primary)] text-[var(--primary)] font-semibold text-sm bg-transparent cursor-pointer hover:bg-[var(--surface-selected)] transition-colors min-h-[44px] touch-manipulation"
               onClick={() => onOpenChat(shipment)}
             >
               <Icon name="MessageCircle" size={18} />

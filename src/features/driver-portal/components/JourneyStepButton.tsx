@@ -22,7 +22,7 @@ export function JourneyStepButton({
       type="button"
       onClick={onClick}
       disabled={disabled || isDone}
-      className={`flex items-center gap-3 w-full py-3.5 px-4 rounded-xl text-left transition-colors ${
+      className={`flex items-center gap-3 w-full py-3.5 px-4 rounded-xl text-left transition-colors min-h-[48px] touch-manipulation ${
         isActive
           ? 'border-2 border-[var(--primary)] bg-[var(--surface-selected)]'
           : isDone
@@ -36,7 +36,7 @@ export function JourneyStepButton({
             ? 'bg-[var(--success)]'
             : isActive
               ? 'bg-[var(--primary)]'
-              : 'bg-[var(--surface-subtle)]'
+              : 'bg-[var(--surface-secondary)]'
         }`}
       >
         {isDone ? (
@@ -57,7 +57,7 @@ export function JourneyStepButton({
             ? 'text-[var(--success)]'
             : isActive
               ? 'text-[var(--primary)]'
-              : 'text-[var(--surface-subtle)]'
+              : 'text-[var(--muted-foreground)]'
         }`}
       >
         {label}
