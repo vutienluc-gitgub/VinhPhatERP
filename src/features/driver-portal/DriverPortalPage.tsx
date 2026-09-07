@@ -27,35 +27,18 @@ export function DriverPortalPage() {
   } = useDriverShipments(employeeId);
   const [chatShipment, setChatShipment] = useState<DriverShipment | null>(null);
 
-  if (loadingEmployee || (!myEmployee && !employeeId)) {
-    if (loadingEmployee) {
-      return (
-        <div className="text-center p-12 text-[var(--muted-foreground)]">
-          <Icon name="Loader2" size={32} className="animate-spin mx-auto" />
-          <p className="mt-2 text-sm">
-            {DRIVER_PORTAL_MESSAGES.PAGE.LOADING_DRIVER}
-          </p>
-        </div>
-      );
-    }
+  if (loadingEmployee) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-8 text-center">
-        <Icon
-          name="UserX"
-          size={48}
-          className="text-[var(--muted-foreground)]"
-        />
-        <p className="font-bold text-base text-[var(--foreground)]">
-          {DRIVER_PORTAL_MESSAGES.EMPTY_STATE.NO_LINKED_ACCOUNT_TITLE}
-        </p>
-        <p className="text-sm text-[var(--surface-subtle)]">
-          {DRIVER_PORTAL_MESSAGES.EMPTY_STATE.NO_LINKED_ACCOUNT_DESC}
+      <div className="text-center p-12 text-[var(--muted-foreground)]">
+        <Icon name="Loader2" size={32} className="animate-spin mx-auto" />
+        <p className="mt-2 text-sm">
+          {DRIVER_PORTAL_MESSAGES.PAGE.LOADING_DRIVER}
         </p>
       </div>
     );
   }
 
-  if (!employeeId) {
+  if (!myEmployee || !employeeId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-8 text-center">
         <Icon
@@ -66,7 +49,7 @@ export function DriverPortalPage() {
         <p className="font-bold text-base text-[var(--foreground)]">
           {DRIVER_PORTAL_MESSAGES.EMPTY_STATE.NO_LINKED_ACCOUNT_TITLE}
         </p>
-        <p className="text-sm text-[var(--surface-subtle)]">
+        <p className="text-sm text-[var(--muted-foreground)]">
           {DRIVER_PORTAL_MESSAGES.EMPTY_STATE.NO_LINKED_ACCOUNT_DESC}
         </p>
       </div>
@@ -83,7 +66,7 @@ export function DriverPortalPage() {
         <h1 className="text-2xl font-extrabold text-[var(--foreground)] mt-1 mb-0.5 mx-0">
           {DRIVER_PORTAL_MESSAGES.PAGE.HEADING}
         </h1>
-        <p className="text-sm text-[var(--surface-subtle)]">
+        <p className="text-sm text-[var(--muted-foreground)]">
           {DRIVER_PORTAL_MESSAGES.PAGE.GREETING},{' '}
           {profile?.full_name ?? DRIVER_PORTAL_MESSAGES.PAGE.DEFAULT_NAME}
         </p>
@@ -106,7 +89,7 @@ export function DriverPortalPage() {
           <p className="font-bold mt-3 text-[var(--foreground)]">
             {DRIVER_PORTAL_MESSAGES.EMPTY_STATE.NO_SHIPMENTS_TITLE}
           </p>
-          <p className="text-sm mt-1 text-[var(--surface-subtle)]">
+          <p className="text-sm mt-1 text-[var(--muted-foreground)]">
             {DRIVER_PORTAL_MESSAGES.EMPTY_STATE.NO_SHIPMENTS_DESC}
           </p>
         </div>

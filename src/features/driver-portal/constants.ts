@@ -36,10 +36,8 @@ export const DRIVER_PORTAL_MESSAGES = {
     TAKE_PHOTO: 'Chụp ảnh hiện trường',
     SIGNATURE_ALT: 'Chữ ký',
     PHOTO_ALT: 'Ảnh xác nhận giao hàng',
-    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
-    SIGNATURE_TAG: '✒ Chữ ký',
-    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
-    PHOTO_TAG: '📸 Ảnh hiện trường',
+    SIGNATURE_TAG: 'Chữ ký xác nhận',
+    PHOTO_TAG: 'Ảnh hiện trường',
   },
   ACTIONS: {
     CALL_CUSTOMER: 'Gọi khách',

@@ -36,7 +36,7 @@ export function DriverPortalLayout() {
         <button
           type="button"
           onClick={() => void signOut()}
-          className="text-sm text-[var(--surface-subtle)] bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 cursor-pointer hover:bg-[var(--surface-hover)]"
+          className="text-sm text-[var(--foreground)] bg-transparent border border-[var(--border)] rounded-md px-3 py-1.5 cursor-pointer hover:bg-[var(--surface-hover)] transition-colors min-h-[36px] touch-manipulation"
         >
           {DRIVER_PORTAL_MESSAGES.LAYOUT.LOGOUT}
         </button>

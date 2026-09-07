@@ -11,7 +11,7 @@ export function ShipmentSkeleton() {
           size={24}
           className="animate-spin text-[var(--primary)]"
         />
-        <p className="text-sm font-medium text-[var(--surface-subtle)]">
+        <p className="text-sm font-medium text-[var(--muted-foreground)]">
           {DRIVER_PORTAL_MESSAGES.PAGE.LOADING_SHIPMENTS}
         </p>
       </div>
