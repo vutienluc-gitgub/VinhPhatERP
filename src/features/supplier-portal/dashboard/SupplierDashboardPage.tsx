@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import dayjs from 'dayjs';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { untypedDb } from '@/services/supabase/client';
 import { MoneyText } from '@/shared/value';
-import { Icon, StatCard } from '@/shared/components';
+import { StatCard } from '@/shared/components';
 import { SUPPLIER_PORTAL_LABELS } from '@/features/supplier-portal/supplier-portal.constants';
+
+import { SupplierRecentPOsCard } from './SupplierRecentPOsCard';
+import { SupplierRecentRFQsCard } from './SupplierRecentRFQsCard';
 
 const TEXT = SUPPLIER_PORTAL_LABELS;
 
@@ -143,8 +144,8 @@ export function SupplierDashboardPage() {
 
   return (
     <div className="portal-section">
-      {/* ── Welcome Banner (Premium gradient - same as Customer Portal) ── */}
-      <div className="bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-inverse-foreground flex items-center justify-between gap-4 flex-wrap">
+      {/* ── Welcome Banner ── */}
+      <div className="bg-gradient-to-br from-primary-strong to-primary rounded-[14px] px-6 py-5 text-inverse-foreground flex items-center justify-between gap-4 flex-wrap">
         <div>
           <p className="m-0 text-[0.78rem] text-inverse-foreground/55 uppercase tracking-[0.06em] font-semibold">
             {getGreeting()}
@@ -161,7 +162,7 @@ export function SupplierDashboardPage() {
         </div>
       </div>
 
-      {/* ── Stat Cards (4-column grid with StatCard component) ── */}
+      {/* ── Stat Cards ── */}
       <div
         className="portal-summary-grid"
         style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}
@@ -210,108 +211,11 @@ export function SupplierDashboardPage() {
       <div
         style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}
       >
-        {/* Recent POs */}
-        <div className="portal-card">
-          <div className="portal-card-header">
-            <span>{TEXT.DASHBOARD_RECENT_PO}</span>
-            <Link to="/portal/supplier/orders" className="portal-stat-link">
-              {TEXT.DASHBOARD_VIEW_ALL} &rarr;
-            </Link>
-          </div>
-          <div className="portal-card-body" style={{ padding: 0 }}>
-            {recentPos?.length === 0 ? (
-              <div className="portal-empty">
-                <div className="portal-empty-icon">
-                  <Icon name="Inbox" size={40} />
-                </div>
-                <p style={{ margin: '0 0 0.25rem', fontWeight: 600 }}>
-                  {TEXT.DASHBOARD_RECENT_PO_EMPTY}
-                </p>
-                <p style={{ margin: 0, fontSize: '0.78rem' }}>
-                  {TEXT.DASHBOARD_RECENT_PO_EMPTY_DESC}
-                </p>
-              </div>
-            ) : (
-              recentPos?.map(
-                (po: {
-                  id: string;
-                  po_code: string;
-                  order_date: string;
-                  total_amount: number;
-                  status: string;
-                }) => (
-                  <div
-                    key={po.id}
-                    className="flex items-center justify-between gap-2 px-5 py-3 border-b border-dashed border-border last:border-none"
-                  >
-                    <div className="flex flex-col items-start gap-0.5 min-w-0">
-                      <span className="font-semibold text-sm text-foreground">
-                        {po.po_code}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {dayjs(po.order_date).format('DD/MM/YYYY')} —{' '}
-                        <MoneyText value={po.total_amount ?? 0} />
-                      </span>
-                    </div>
-                    {getPoStatusBadge(po.status)}
-                  </div>
-                ),
-              )
-            )}
-          </div>
-        </div>
-
-        {/* Recent RFQs */}
-        <div className="portal-card">
-          <div className="portal-card-header">
-            <span>{TEXT.DASHBOARD_RECENT_RFQ}</span>
-            <Link to="/portal/supplier/quotations" className="portal-stat-link">
-              {TEXT.DASHBOARD_VIEW_ALL} &rarr;
-            </Link>
-          </div>
-          <div className="portal-card-body" style={{ padding: 0 }}>
-            {recentRfqs?.length === 0 ? (
-              <div className="portal-empty">
-                <div className="portal-empty-icon">
-                  <Icon name="FileSearch" size={40} />
-                </div>
-                <p style={{ margin: '0 0 0.25rem', fontWeight: 600 }}>
-                  {TEXT.DASHBOARD_RECENT_RFQ_EMPTY}
-                </p>
-                <p style={{ margin: 0, fontSize: '0.78rem' }}>
-                  {TEXT.DASHBOARD_RECENT_RFQ_EMPTY_DESC}
-                </p>
-              </div>
-            ) : (
-              recentRfqs?.map(
-                (rfq: {
-                  id: string;
-                  rfq_code: string;
-                  title: string;
-                  deadline_date: string;
-                }) => (
-                  <Link
-                    key={rfq.id}
-                    to={`/portal/supplier/quotations/${rfq.id}`}
-                    className="flex items-center justify-between gap-2 px-5 py-3 border-b border-dashed border-border last:border-none no-underline text-foreground hover:bg-surface-subtle transition-colors"
-                  >
-                    <div className="flex flex-col items-start gap-0.5 min-w-0">
-                      <span className="font-semibold text-sm text-foreground">
-                        {rfq.rfq_code}
-                      </span>
-                      <span className="text-xs text-muted-foreground truncate max-w-[200px]">
-                        {rfq.title}
-                      </span>
-                    </div>
-                    <span className="portal-badge portal-badge--info">
-                      {TEXT.DASHBOARD_STATUS_NEW}
-                    </span>
-                  </Link>
-                ),
-              )
-            )}
-          </div>
-        </div>
+        <SupplierRecentPOsCard
+          recentPos={recentPos}
+          getPoStatusBadge={getPoStatusBadge}
+        />
+        <SupplierRecentRFQsCard recentRfqs={recentRfqs} />
       </div>
     </div>
   );
