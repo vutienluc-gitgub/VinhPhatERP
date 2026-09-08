@@ -116,16 +116,20 @@ export function SupplierInvoicesPage() {
                   </tr>
                 ) : (
                   filteredInvoices?.map(
-                    (inv: {
-                      document_id: string;
-                      document_number: string;
-                      document_type: string;
-                      document_date: string;
-                      total_amount: number;
-                      remaining_amount: number;
-                    }) => (
+                    (
+                      inv: {
+                        document_id?: string;
+                        id?: string;
+                        document_number: string;
+                        document_type: string;
+                        document_date: string;
+                        total_amount: number;
+                        remaining_amount: number;
+                      },
+                      idx: number,
+                    ) => (
                       <tr
-                        key={inv.document_id}
+                        key={inv.document_id ?? inv.id ?? `inv-${idx}`}
                         className="border-b border-default hover:bg-surface-secondary"
                       >
                         <td className="px-6 py-4 font-medium">
