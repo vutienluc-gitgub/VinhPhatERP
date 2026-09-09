@@ -1,0 +1,68 @@
+name: Deploy to Vion Cloud (VPS)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vioncloud-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy Fullstack App to Vion Cloud VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute SSH commands on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VION_VPS_HOST }}
+          username: ${{ secrets.VION_VPS_USERNAME }}
+          key: ${{ secrets.VION_VPS_SSH_KEY }}
+          port: ${{ secrets.VION_VPS_PORT || '22' }}
+          script: |
+            set -e
+            echo "🚀 Starting Deployment on Vion Cloud VPS..."
+
+            # 1. Di chuyển vào thư mục dự án
+            APP_DIR="/var/www/vinhphaterp"
+            if [ ! -d "$APP_DIR" ]; then
+              echo "❌ Directory $APP_DIR does not exist. Please clone repository first."
+              exit 1
+            fi
+            cd "$APP_DIR"
+
+            # 2. Pull code mới từ GitHub
+            echo "📥 Fetching latest code from main branch..."
+            git fetch --all
+            git reset --hard origin/main
+
+            # 3. Build Frontend React
+            echo "📦 Building Frontend..."
+            npm install --production=false
+            npm run build
+
+            # 4. Build Backend Hono API
+            echo "⚙️ Building Backend Server..."
+            cd server
+            npm install --production=false
+            npm run build
+            cd ..
+
+            # 5. Khởi chạy / Reload PM2 Backend
+            echo "🔄 Reloading PM2 Service..."
+            if pm2 describe vinhphat-api > /dev/null 2>&1; then
+              pm2 reload vinhphat-api
+            else
+              pm2 start server/dist/index.js --name "vinhphat-api"
+            fi
+            pm2 save
+
+            # 6. Reload Nginx
+            echo "🌐 Reloading Nginx..."
+            sudo systemctl reload nginx
+
+            echo "✅ Deployment finished successfully!"

@@ -28,7 +28,7 @@
   gap: var(--chat-cluster-gap);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  contain: layout style paint;
+  contain: content;
   will-change: scroll-position;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
