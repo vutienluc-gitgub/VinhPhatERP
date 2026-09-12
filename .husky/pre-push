@@ -8,6 +8,9 @@ npm run audit:full || exit 1
 echo "🚀 Running AI Audit before push..."
 npm run ai:audit || exit 1
 
+echo "⚡ Running Unit & Integration Tests (Vitest)..."
+npm test || exit 1
+
 echo "🧪 Running E2E Tests before push..."
 npm run test:e2e || exit 1
 

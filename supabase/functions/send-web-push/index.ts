@@ -5,6 +5,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import webpush from 'https://esm.sh/web-push@3.6.7';
+import { WebhookReliability } from '../_shared/webhook-reliability.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -27,38 +28,14 @@ interface PushNotificationPayload {
   message_id?: string;
 }
 
-// Configure VAPID details from environment
-const vapidPublicKey =
-  Deno.env.get('VAPID_PUBLIC_KEY') ||
-  'BFjNvul1vaXsyiw-wJBxXh11Q-zfKO5BIpZqNKmHrQIRMtmRfq71y_nJ7_chvZhxmrkEK3mFkxuiYbmP9Fv9hbU';
-const vapidPrivateKey =
-  Deno.env.get('VAPID_PRIVATE_KEY') ||
-  'Tc3cDQM-dHqPmfoX-YYxb3yWhywpBBsjXNnPCyWLRUI';
+// Configure VAPID details from environment (Fail Closed: No Hardcoded Secret Fallback)
+const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
 const vapidSubject =
   Deno.env.get('VAPID_SUBJECT') || 'mailto:admin@detmayvinhphat.com';
 
 if (vapidPrivateKey && vapidPublicKey) {
   webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
-}
-
-// In-memory deduplication set to avoid duplicate pushes from dual-trigger mechanisms
-const processedMessageIds = new Map<string, number>();
-
-function isDuplicateChatMessage(messageId: string): boolean {
-  const now = Date.now();
-  // Cleanup entries older than 30s
-  for (const [id, timestamp] of processedMessageIds.entries()) {
-    if (now - timestamp > 30_000) {
-      processedMessageIds.delete(id);
-    }
-  }
-
-  if (processedMessageIds.has(messageId)) {
-    return true;
-  }
-
-  processedMessageIds.set(messageId, now);
-  return false;
 }
 
 /**
@@ -78,22 +55,83 @@ serve(async (req: Request) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  // 1. Fail Closed if VAPID credentials are unconfigured
+  if (!vapidPublicKey || !vapidPrivateKey) {
+    return new Response(
+      JSON.stringify({
+        error:
+          'Fail Closed: VAPID private/public credentials unconfigured in environment',
+      }),
+      {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
+    );
+  }
+
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
+    // 2. Caller Authentication Guard
+    const authHeader = req.headers.get('Authorization');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: Missing Authorization header' }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        },
+      );
+    }
+
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    const isServiceRole = serviceRoleKey && token === serviceRoleKey;
+    const isAnon = anonKey && token === anonKey;
+
+    if (!isServiceRole && !isAnon) {
+      const { data: userAuth, error: authErr } =
+        await supabase.auth.getUser(token);
+      if (authErr || !userAuth?.user) {
+        return new Response(
+          JSON.stringify({
+            error: 'Unauthorized: Invalid authentication token',
+          }),
+          {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          },
+        );
+      }
+    }
+
     const payload: PushNotificationPayload = await req.json();
 
-    // ── CHAT MESSAGE FAN-OUT ──
-    if (payload.type === 'CHAT_MESSAGE' && payload.message_id) {
-      // Idempotency check: Skip if already processed within the sliding window
-      if (isDuplicateChatMessage(payload.message_id)) {
+    // 3. Database-backed Idempotency Deduplication Guard
+    const dedupEventId =
+      payload.message_id || payload.notification_id || payload.entity_id;
+    if (dedupEventId) {
+      const { data: dedupRes } = await supabase.rpc(
+        'rpc_record_inbound_webhook_event',
+        {
+          p_source: 'send-web-push',
+          p_event_id: dedupEventId,
+          p_event_type: payload.type || payload.action || 'web_push',
+          p_payload: { user_id: payload.user_id, domain: payload.domain },
+        },
+      );
+
+      if (dedupRes?.is_duplicate) {
         return new Response(
           JSON.stringify({
             status: 'skipped_duplicate',
-            message_id: payload.message_id,
+            event_id: dedupEventId,
+            message: 'Notification already dispatched',
           }),
           {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -101,6 +139,10 @@ serve(async (req: Request) => {
           },
         );
       }
+    }
+
+    // ── CHAT MESSAGE FAN-OUT ──
+    if (payload.type === 'CHAT_MESSAGE' && payload.message_id) {
       // 1. Fetch message with retry logic to avoid race condition
       let message: {
         id: string;
@@ -458,6 +500,19 @@ serve(async (req: Request) => {
       }
     }
 
+    if (dedupEventId) {
+      await supabase.rpc('rpc_complete_inbound_webhook_event', {
+        p_source: 'send-web-push',
+        p_event_id: dedupEventId,
+        p_status: 'processed',
+      });
+    }
+
+    WebhookReliability.logInfo('Web push dispatch completed', {
+      devicesTargeted: subscriptions.length,
+      eventId: dedupEventId,
+    });
+
     return new Response(
       JSON.stringify({
         ok: true,
@@ -470,6 +525,7 @@ serve(async (req: Request) => {
       },
     );
   } catch (err) {
+    WebhookReliability.logError('Unhandled error in send-web-push', err);
     return new Response(
       JSON.stringify({
         error: err instanceof Error ? err.message : String(err),

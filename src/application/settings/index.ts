@@ -5,3 +5,4 @@ export * from './useFabricVariant';
 export * from './useYarnCatalog';
 export * from './useLooms';
 export * from './useSyncMonitor';
+export * from './useWebhookDLQ';

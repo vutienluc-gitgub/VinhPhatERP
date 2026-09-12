@@ -11,6 +11,10 @@ import {
   useTestConnection,
   useTriggerInboundImport,
   useTriggerReconciliation,
+  useWebhookMetrics,
+  useDeadLetterEvents,
+  useReplayWebhookEvent,
+  useReplayAllDeadLetterEvents,
 } from '@/application/settings';
 import { Button, Icon } from '@/shared/components';
 import {
@@ -19,11 +23,14 @@ import {
 } from '@/features/settings/sync-monitor.constants';
 import { calculateTotalFailed } from '@/features/settings/sync-monitor.utils';
 import type { ReconciliationReport } from '@/integration/sync';
+import type { DeadLetterEvent } from '@/api/webhook-dlq.api';
 import { SyncOverviewCard } from '@/features/settings/components/sync-monitor/SyncOverviewCard';
 import { SyncMetricsGrid } from '@/features/settings/components/sync-monitor/SyncMetricsGrid';
 import { SyncJobsTable } from '@/features/settings/components/sync-monitor/SyncJobsTable';
 import { SyncJobLogsDrawer } from '@/features/settings/components/sync-monitor/SyncJobLogsDrawer';
 import { ReconciliationModal } from '@/features/settings/components/sync-monitor/ReconciliationModal';
+import { WebhookMetricsCards } from '@/features/settings/components/webhook-dlq/WebhookMetricsCards';
+import { DeadLetterQueueTable } from '@/features/settings/components/webhook-dlq/DeadLetterQueueTable';
 
 export function SyncMonitorPage() {
   const navigate = useNavigate();
@@ -170,6 +177,51 @@ export function SyncMonitorPage() {
     }
   }
 
+  const [activeTab, setActiveTab] = useState<'sheets' | 'webhook'>('sheets');
+  const { data: webhookMetrics, isLoading: isLoadingMetrics } =
+    useWebhookMetrics(24);
+  const { data: dlqEvents = [], isLoading: isLoadingDlq } = useDeadLetterEvents(
+    50,
+    0,
+  );
+  const replayWebhookMutation = useReplayWebhookEvent();
+  const replayAllDlqMutation = useReplayAllDeadLetterEvents();
+
+  async function handleReplaySingleDlq(ev: DeadLetterEvent) {
+    setNotification(null);
+    try {
+      await replayWebhookMutation.mutateAsync({
+        eventId: ev.event_id,
+        source: ev.source,
+      });
+      setNotification({
+        type: 'success',
+        message: `Đã đưa sự kiện ${ev.event_id} vào hàng đợi xử lý lại thành công!`,
+      });
+    } catch (err) {
+      setNotification({
+        type: 'error',
+        message: `Lỗi khi đưa sự kiện vào xử lý lại: ${err instanceof Error ? err.message : String(err)}`,
+      });
+    }
+  }
+
+  async function handleReplayAllDlq() {
+    setNotification(null);
+    try {
+      const res = await replayAllDlqMutation.mutateAsync();
+      setNotification({
+        type: 'success',
+        message: `Đã khôi phục thành công ${res.replayed_count} sự kiện Dead Letter!`,
+      });
+    } catch (err) {
+      setNotification({
+        type: 'error',
+        message: `Lỗi khi thử lại hàng loạt: ${err instanceof Error ? err.message : String(err)}`,
+      });
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
       {/* Top Header */}
@@ -222,35 +274,86 @@ export function SyncMonitorPage() {
         </div>
       )}
 
-      {/* Connection & Configuration Overview */}
-      <SyncOverviewCard
-        connection={connection}
-        isLoadingConn={isLoadingConn}
-        totalFailed={totalFailed}
-        isTesting={testMutation.isPending}
-        isRetryingAll={retryAllMutation.isPending}
-        isPullingImport={pullImportMutation.isPending}
-        isReconciling={reconcileMutation.isPending}
-        onTestConn={handleTestConn}
-        onRetryAll={handleRetryAll}
-        onRefresh={handleRefresh}
-        onPullImport={handlePullImport}
-        onReconcile={handleReconcile}
-      />
+      {/* Navigation Tabs */}
+      <div className="flex items-center gap-2 border-b border-default pb-2">
+        <Button
+          variant={activeTab === 'sheets' ? 'primary' : 'ghost'}
+          size="sm"
+          type="button"
+          onClick={() => setActiveTab('sheets')}
+          className="flex items-center gap-2"
+        >
+          <Icon name="FileSpreadsheet" size={16} />
+          <span>Đồng bộ Google Sheets</span>
+        </Button>
+        <Button
+          variant={activeTab === 'webhook' ? 'primary' : 'ghost'}
+          size="sm"
+          type="button"
+          onClick={() => setActiveTab('webhook')}
+          className="flex items-center gap-2"
+        >
+          <Icon name="Activity" size={16} />
+          <span>Giám sát Webhook & Dead Letter Queue</span>
+          {webhookMetrics && webhookMetrics.dead_letter_events > 0 && (
+            <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-semibold bg-danger-soft text-danger">
+              {webhookMetrics.dead_letter_events}
+            </span>
+          )}
+        </Button>
+      </div>
 
-      {/* 4 Metric Counters */}
-      <SyncMetricsGrid stats={stats} />
+      {activeTab === 'sheets' ? (
+        <>
+          {/* Connection & Configuration Overview */}
+          <SyncOverviewCard
+            connection={connection}
+            isLoadingConn={isLoadingConn}
+            totalFailed={totalFailed}
+            isTesting={testMutation.isPending}
+            isRetryingAll={retryAllMutation.isPending}
+            isPullingImport={pullImportMutation.isPending}
+            isReconciling={reconcileMutation.isPending}
+            onTestConn={handleTestConn}
+            onRetryAll={handleRetryAll}
+            onRefresh={handleRefresh}
+            onPullImport={handlePullImport}
+            onReconcile={handleReconcile}
+          />
 
-      {/* Jobs Table */}
-      <SyncJobsTable
-        jobs={jobs}
-        isLoadingJobs={isLoadingJobs}
-        jobsError={jobsError}
-        selectedJobId={selectedJobId}
-        isRetryingSingle={retrySingleMutation.isPending}
-        onSelectJob={setSelectedJobId}
-        onRetrySingle={handleRetrySingle}
-      />
+          {/* 4 Metric Counters */}
+          <SyncMetricsGrid stats={stats} />
+
+          {/* Jobs Table */}
+          <SyncJobsTable
+            jobs={jobs}
+            isLoadingJobs={isLoadingJobs}
+            jobsError={jobsError}
+            selectedJobId={selectedJobId}
+            isRetryingSingle={retrySingleMutation.isPending}
+            onSelectJob={setSelectedJobId}
+            onRetrySingle={handleRetrySingle}
+          />
+        </>
+      ) : (
+        <>
+          {/* Webhook Metrics Cards */}
+          <WebhookMetricsCards
+            metrics={webhookMetrics}
+            isLoading={isLoadingMetrics}
+          />
+
+          {/* Dead Letter Queue Table */}
+          <DeadLetterQueueTable
+            events={dlqEvents}
+            isLoading={isLoadingDlq}
+            isReplayingSingle={replayWebhookMutation.isPending}
+            isReplayingAll={replayAllDlqMutation.isPending}
+            onReplaySingle={handleReplaySingleDlq}
+            onReplayAll={handleReplayAllDlq}
+          />
+        </>
+      )}
 
       {/* Audit Logs Drawer / Modal */}
       <SyncJobLogsDrawer
