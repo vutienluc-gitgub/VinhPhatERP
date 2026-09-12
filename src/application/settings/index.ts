@@ -4,3 +4,4 @@ export * from './useFabricCatalog';
 export * from './useFabricVariant';
 export * from './useYarnCatalog';
 export * from './useLooms';
+export * from './useSyncMonitor';
