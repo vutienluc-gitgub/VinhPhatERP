@@ -70,7 +70,7 @@ export function ProgressDashboard() {
             {ORDERS_PROG_LABELS.PROG_IN_PROGRESS}
           </span>
         </div>
-        <div className="dashboard-stat-card border-[#9ca3af44] bg-[rgba(156,163,175,0.05)]">
+        <div className="dashboard-stat-card">
           <span className="dashboard-stat-number">{waitingToStart.length}</span>
           <span className="dashboard-stat-label">
             {ORDERS_PROG_LABELS.PROG_WAITING}

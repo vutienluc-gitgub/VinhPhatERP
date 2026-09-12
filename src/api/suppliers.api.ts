@@ -2,6 +2,7 @@ import type {
   Supplier,
   SupplierInsert,
   SupplierUpdate,
+  SupplierCapabilityCode,
 } from '@/domain/crm/suppliers.types';
 import { supabase, untypedDb } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
@@ -22,7 +23,8 @@ export type SupplierPrice = {
 
 export type SupplierFilter = {
   status?: string;
-  category?: string;
+  category?: string | string[];
+  categories?: string[];
   search?: string;
 };
 
@@ -39,7 +41,14 @@ export async function fetchSuppliersPaginated(
     .order('created_at', { ascending: false })
     .range(from, to);
 
-  if (filters.category) query = query.eq('category', filters.category as never);
+  if (Array.isArray(filters.category)) {
+    query = query.in('category', filters.category as never);
+  } else if (filters.category) {
+    query = query.eq('category', filters.category as never);
+  }
+  if (filters.categories && filters.categories.length > 0) {
+    query = query.in('category', filters.categories as never);
+  }
   if (filters.status) query = query.eq('status', filters.status as never);
   if (filters.search) {
     query = query.or(
@@ -60,14 +69,26 @@ export async function fetchSuppliersPaginated(
 }
 
 export async function fetchSuppliers(
-  filters: { status?: string; category?: string; search?: string } = {},
+  filters: {
+    status?: string;
+    category?: string | string[];
+    categories?: string[];
+    search?: string;
+  } = {},
 ): Promise<Supplier[]> {
   let query = untypedDb
     .from('v_supplier_full')
     .select('*')
     .order('name', { ascending: true });
   if (filters.status) query = query.eq('status', filters.status as never);
-  if (filters.category) query = query.eq('category', filters.category as never);
+  if (Array.isArray(filters.category)) {
+    query = query.in('category', filters.category as never);
+  } else if (filters.category) {
+    query = query.eq('category', filters.category as never);
+  }
+  if (filters.categories && filters.categories.length > 0) {
+    query = query.in('category', filters.categories as never);
+  }
   if (filters.search?.trim()) {
     const q = filters.search.trim();
     query = query.or(`name.ilike.%${q}%,code.ilike.%${q}%,phone.ilike.%${q}%`);
@@ -328,4 +349,32 @@ export async function fetchSupplierStats(): Promise<{
   if (err1 || err2) throw err1 || err2;
 
   return { total: total ?? 0, active: active ?? 0 };
+}
+
+export async function fetchSuppliersByCapability(
+  capability: SupplierCapabilityCode,
+): Promise<Supplier[]> {
+  const { data, error } = await untypedDb
+    .from('suppliers')
+    .select('*, supplier_capabilities!inner(capability_code)')
+    .eq('status', 'active')
+    .eq('supplier_capabilities.capability_code', capability)
+    .order('name');
+
+  if (error) throw error;
+  return (data ?? []) as Supplier[];
+}
+
+export async function fetchSupplierCapabilities(
+  supplierId: string,
+): Promise<SupplierCapabilityCode[]> {
+  const { data, error } = await untypedDb
+    .from('supplier_capabilities')
+    .select('capability_code')
+    .eq('supplier_id', supplierId);
+
+  if (error) throw error;
+  return ((data ?? []) as { capability_code: SupplierCapabilityCode }[]).map(
+    (item) => item.capability_code,
+  );
 }

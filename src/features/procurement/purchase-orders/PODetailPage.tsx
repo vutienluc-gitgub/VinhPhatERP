@@ -284,7 +284,7 @@ export function PODetailPage() {
 
   if (poLoading || receiptsLoading || auditLogsLoading) {
     return (
-      <div className="page-container w-full max-w-[1680px] px-6 py-8 md:px-8 mx-auto space-y-8 animate-pulse">
+      <div className="page-container space-y-8 animate-pulse">
         <div className="flex items-center justify-between">
           <div className="h-8 bg-surface-secondary rounded w-1/3"></div>
           <div className="h-10 bg-surface-secondary rounded w-24"></div>
@@ -308,7 +308,7 @@ export function PODetailPage() {
   }
 
   return (
-    <div className="page-container w-full max-w-[1680px] px-6 py-8 md:px-8 mx-auto space-y-8">
+    <div className="page-container space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold m-0 flex items-center gap-3">

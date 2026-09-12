@@ -4,7 +4,7 @@ import type {
   RawFabricRollUpdate,
   RawFabricFilter,
 } from '@/domain/inventory/raw-fabric.types';
-import { supabase } from '@/services/supabase/client';
+import { supabase, untypedDb } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -181,10 +181,10 @@ export async function createRawFabricBulk(
 }
 
 export async function fetchWeavingPartners(): Promise<SupplierOption[]> {
-  const { data, error } = await supabase
+  const { data, error } = await untypedDb
     .from('suppliers')
-    .select('id, code, name')
-    .eq('category', 'GREIGE') // Changed from 'weaving' to 'GREIGE'
+    .select('id, code, name, supplier_capabilities!inner(capability_code)')
+    .eq('supplier_capabilities.capability_code', 'WEAVING')
     .eq('status', 'active')
     .order('name');
   if (error) throw error;

@@ -4,11 +4,8 @@ import toast from 'react-hot-toast';
 import type { UseFormWatch } from 'react-hook-form';
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 
-import {
-  useBomList,
-  useOrderList,
-  useAllSuppliers,
-} from '@/shared/hooks/useFormOptions';
+import { useBomList, useOrderList } from '@/shared/hooks/useFormOptions';
+import { useSuppliersByCapability } from '@/application/crm';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 import { StepperFooter } from '@/shared/components/StepperFooter';
 import { Combobox } from '@/shared/components/Combobox';
@@ -74,10 +71,7 @@ export function WorkOrderForm({
 
   const { data: boms } = useBomList({ status: 'approved' });
   const { data: orders } = useOrderList({ status: 'confirmed' }, 1);
-  const { data: suppliersData } = useAllSuppliers({
-    category: 'GREIGE',
-    status: 'active',
-  });
+  const { data: suppliersData } = useSuppliersByCapability('WEAVING');
 
   const { data: looms = [] } = useLoomOptions();
 

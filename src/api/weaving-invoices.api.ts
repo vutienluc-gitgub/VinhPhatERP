@@ -3,7 +3,7 @@ import type {
   WeavingInvoiceFilter,
 } from '@/domain/production/weaving-invoices.types';
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
-import { supabase } from '@/services/supabase/client';
+import { supabase, untypedDb } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -96,10 +96,10 @@ export async function fetchNextWeavingInvoiceNumber(): Promise<string> {
 export async function fetchWeavingSuppliers(): Promise<
   { id: string; code: string; name: string }[]
 > {
-  const { data, error } = await supabase
+  const { data, error } = await untypedDb
     .from('suppliers')
-    .select('id, code, name')
-    .eq('category', 'GREIGE') // Changed from 'weaving' to 'GREIGE' based on new categories
+    .select('id, code, name, supplier_capabilities!inner(capability_code)')
+    .eq('supplier_capabilities.capability_code', 'WEAVING')
     .eq('status', 'active')
     .order('name');
   if (error) throw error;

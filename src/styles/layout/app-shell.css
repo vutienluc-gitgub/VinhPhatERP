@@ -212,20 +212,14 @@ html.fluid .content-shell {
 }
 
 .summary-card {
-  /* @architecture-exception: legacy color migration */
   background: linear-gradient(
     180deg,
-    rgb(255, 255, 255, 0.95),
-    rgb(242, 248, 255, 0.95)
+    var(--surface-strong),
+    var(--surface-secondary)
   );
 }
 
-.summary-label {
-  font-size: 0.8rem;
-  color: var(--muted-foreground);
-}
-
-.summary-value {
+.summary-card .summary-value {
   margin-top: 0.35rem;
   font-size: clamp(1.6rem, 2vw, 2rem);
   font-weight: 800;

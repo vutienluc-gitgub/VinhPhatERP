@@ -137,7 +137,7 @@ function PublicFabricDetailPageInner() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pb-28 font-sans relative">
+    <div className="h-screen min-h-[100dvh] max-h-[100dvh] overflow-y-auto overflow-x-hidden bg-slate-50 flex flex-col pb-28 font-sans relative">
       {/* Header Actions */}
       <FabricHeaderActions
         canViewWholesale={viewer.permissions.canViewWholesale}
