@@ -5,8 +5,11 @@ import { prettyJSON } from 'hono/pretty-json';
 import { secureHeaders } from 'hono/secure-headers';
 
 import customersRouter from './routes/customers.js';
+import notificationsRouter from './routes/notifications.js';
 import ordersRouter from './routes/orders.js';
 import suppliersRouter from './routes/suppliers.js';
+import webhooksRouter from './routes/webhooks.js';
+import { startWebhookRetryWorker } from './workers/webhook-retry.worker.js';
 
 const app = new Hono();
 
@@ -49,6 +52,8 @@ const api = new Hono();
 api.route('/customers', customersRouter);
 api.route('/suppliers', suppliersRouter);
 api.route('/orders', ordersRouter);
+api.route('/webhooks', webhooksRouter);
+api.route('/notifications', notificationsRouter);
 
 app.route('/api/v1', api);
 
@@ -62,7 +67,12 @@ app.onError((err, c) => {
 });
 
 // ──────────────────────────────────────────────
-// Start
+// Start Background Daemons
+// ──────────────────────────────────────────────
+startWebhookRetryWorker();
+
+// ──────────────────────────────────────────────
+// Start Server
 // ──────────────────────────────────────────────
 const port = Number(process.env.PORT ?? 3000);
 // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
