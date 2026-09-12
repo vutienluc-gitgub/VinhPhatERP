@@ -46,6 +46,7 @@ const COMPATIBLE_CASTS = new Set([
   'text -> date', // date string sent as text, DB accepts date
   'text -> timestamptz', // ISO string sent as text, DB accepts timestamptz
   'text -> uuid', // uuid string sent as text, DB accepts uuid
+  'uuid -> text', // uuid/id string sent as text, DB accepts text
   'numeric -> int', // JS number sent, DB accepts int
   'text -> int', // number/string sent, DB accepts int
   'text -> uuid[]', // uuid array sent as text, DB accepts uuid[]

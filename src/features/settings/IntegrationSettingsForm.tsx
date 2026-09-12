@@ -92,22 +92,29 @@ export function IntegrationSettingsForm() {
               </p>
             )}
 
-            <div className="form-field">
-              <label
-                htmlFor="ig-webhook"
-                className="text-xs font-bold text-muted uppercase tracking-wider mb-1.5 block"
-              >
-                {SETTINGS_LABELS.WEBHOOK_URL}
-              </label>
+            <div className="form-field opacity-75">
+              <div className="flex items-center gap-2 mb-1.5">
+                <label
+                  htmlFor="ig-webhook"
+                  className="text-xs font-bold text-muted uppercase tracking-wider block"
+                >
+                  {SETTINGS_LABELS.WEBHOOK_URL}
+                </label>
+                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-surface-secondary text-muted border border-default">
+                  Chưa kích hoạt
+                </span>
+              </div>
               <input
                 id="ig-webhook"
-                className={`field-input w-full${errors.webhook_url ? ' border-danger ring-1 ring-danger' : ''}`}
+                disabled
+                className={`field-input w-full bg-surface-secondary cursor-not-allowed${errors.webhook_url ? ' border-danger ring-1 ring-danger' : ''}`}
                 type="text"
                 placeholder={SETTINGS_PLACEHOLDERS.WEBHOOK_URL}
                 {...register('webhook_url')}
               />
               <p className="text-xs text-muted mt-1 italic">
-                {SETTINGS_LABELS.WEBHOOK_URL_DESC}
+                {SETTINGS_LABELS.WEBHOOK_URL_DESC} (Tính năng đang trong lộ
+                trình phát triển P1, hiện tại chưa gửi sự kiện tự động).
               </p>
               {errors.webhook_url && (
                 <span className="field-error text-xs text-danger mt-1 block">

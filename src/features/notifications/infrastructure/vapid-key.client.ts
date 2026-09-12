@@ -2,7 +2,7 @@ import { VapidKeyValidator } from '@/features/notifications/infrastructure/vapid
 
 export class VapidKeyClient {
   private static readonly DEFAULT_PUBLIC_KEY =
-    'BFjNvul1vaXsyiw-wJBxXh11Q-zfKO5BIpZqNKmHrQIRMtmRfq71y_nJ7_chvZhxmrkEK3mFkxuiYbmP9Fv9hbU';
+    'BElJS1biXMms_8auV6_QTwt4Dy0mI36FdcwAk7sR2Cw5h2PJ9Qv-lmeeMDRraW_VVpVCLH3DaMIAapuljw0QQTY';
 
   /**
    * Returns the raw base64url string from environment or verified fallback
