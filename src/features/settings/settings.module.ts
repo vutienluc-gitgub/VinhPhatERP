@@ -92,6 +92,13 @@ export const settingsPlugin: FeaturePlugin = {
               default: m.SystemSettingsPage,
             })),
         },
+        {
+          path: 'sync-monitor',
+          component: () =>
+            import('./pages/SyncMonitorPage').then((m) => ({
+              default: m.SyncMonitorPage,
+            })),
+        },
       ],
     },
   ],

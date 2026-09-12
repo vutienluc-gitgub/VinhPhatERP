@@ -132,6 +132,34 @@ export interface ReceivableDeletedEvent extends DomainEvent {
   payload: { entityId: string; customerId: string };
 }
 
+// ─── Integration Sync Events ──────────────────────────────────────────────────
+
+export interface SyncRequestedPayload {
+  entityType: string;
+  entityId: string;
+  version: number;
+  action: 'create' | 'update' | 'delete';
+  snapshot: Record<string, unknown>;
+}
+
+export interface SyncRequestedEvent extends DomainEvent {
+  eventName: 'SyncRequestedEvent';
+  payload: SyncRequestedPayload;
+}
+
+export interface SyncCompletedPayload {
+  jobId: string;
+  entityType: string;
+  entityId: string;
+  provider: string;
+  direction: string;
+}
+
+export interface SyncCompletedEvent extends DomainEvent {
+  eventName: 'SyncCompletedEvent';
+  payload: SyncCompletedPayload;
+}
+
 // ─── Event Type Union ─────────────────────────────────────────────────────────
 
 export type AppDomainEvent =
@@ -148,4 +176,6 @@ export type AppDomainEvent =
   | ExpenseDeletedEvent
   | ReceivableCreatedEvent
   | ReceivableUpdatedEvent
-  | ReceivableDeletedEvent;
+  | ReceivableDeletedEvent
+  | SyncRequestedEvent
+  | SyncCompletedEvent;

@@ -22,12 +22,16 @@ import type {
   ShipmentShippedEvent,
   FabricReceivedEvent,
 } from '@/domain/events/app.events';
-
 import {
   handleOrderConfirmedIntegration,
   handleShipmentShippedIntegration,
   handleFabricReceivedIntegration,
-} from './integration.service';
+} from '@/integration/integration.service';
+import {
+  handleShipmentSyncOutbound,
+  handleOrderSyncOutbound,
+} from '@/integration/sync/sync-outbox.service';
+import { logger } from '@/shared/utils/logger';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -129,6 +133,53 @@ export function initIntegration() {
         await handleFabricReceivedIntegration(event);
       } catch (err) {
         console.error('[Integration] Error in FabricReceived handler:', err);
+      }
+    },
+  );
+
+  // ─── Workflow 4: Shipment Posted → Google Sheets Outbound Sync ───────────
+
+  /**
+   * When a shipment is shipped (ShipmentShippedEvent):
+   * - Create an outbound sync job in integration_sync_jobs table
+   * - Edge Function worker will pick up the job and push to Google Sheets
+   * - Gracefully skips if no active Google Sheets connection is configured
+   */
+  registerHandler<ShipmentShippedEvent>(
+    'ShipmentShippedEvent',
+    'Shipment -> Google Sheets: Push shipment data to report sheet',
+    async (event) => {
+      try {
+        await handleShipmentSyncOutbound(event);
+      } catch (err) {
+        logger.error('Error in ShipmentSync handler', err, {
+          module: 'IntegrationLayer',
+          action: 'ShipmentShippedEvent',
+          eventId: event.eventId,
+        });
+      }
+    },
+  );
+
+  // ─── Workflow 5: Order Confirmed → Google Sheets Outbound Sync ──────────
+
+  /**
+   * When an order is confirmed (OrderConfirmedEvent):
+   * - Create an outbound sync job in integration_sync_jobs table
+   * - Edge Function worker will pick up the job and push to Google Sheets
+   */
+  registerHandler<OrderConfirmedEvent>(
+    'OrderConfirmedEvent',
+    'Order -> Google Sheets: Push confirmed order to report sheet',
+    async (event) => {
+      try {
+        await handleOrderSyncOutbound(event);
+      } catch (err) {
+        logger.error('Error in OrderSync handler', err, {
+          module: 'IntegrationLayer',
+          action: 'OrderConfirmedEvent',
+          eventId: event.eventId,
+        });
       }
     },
   );
