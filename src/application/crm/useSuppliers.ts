@@ -14,15 +14,18 @@ import {
   fetchSupplierCategories,
   fetchSupplierStats,
   fetchSupplierById,
+  fetchSuppliersByCapability,
+  fetchSupplierCapabilities,
 } from '@/api/suppliers.api';
 import type { SupplierFormValues } from '@/schema/supplier.schema';
 import type {
   Supplier,
   SupplierFilter,
   SupplierInsert,
+  SupplierCapabilityCode,
 } from '@/domain/crm/suppliers.types';
 
-export type { Supplier, SupplierFilter };
+export type { Supplier, SupplierFilter, SupplierCapabilityCode };
 
 const QUERY_KEY = ['suppliers'] as const;
 
@@ -191,5 +194,21 @@ export function useSupplierStats() {
     queryKey: [...QUERY_KEY, 'stats'],
     queryFn: fetchSupplierStats,
     staleTime: 5 * 60 * 1000, // Cache 5 phút
+  });
+}
+
+export function useSuppliersByCapability(capability: SupplierCapabilityCode) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'by-capability', capability],
+    queryFn: () => fetchSuppliersByCapability(capability),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useSupplierCapabilities(supplierId: string | null) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'capabilities', supplierId],
+    queryFn: () => (supplierId ? fetchSupplierCapabilities(supplierId) : []),
+    enabled: !!supplierId,
   });
 }

@@ -377,7 +377,7 @@ export function RawFabricForm({ roll, onClose }: RawFabricFormProps) {
             {showQuickSupplier && (
               <div className="mb-4">
                 <QuickSupplierForm
-                  defaultCategory="weaving"
+                  defaultCategory="GREIGE"
                   onCreated={(created) => {
                     setValue('weaving_partner_id', created.id);
                     setShowQuickSupplier(false);

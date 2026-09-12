@@ -139,7 +139,7 @@ export function POCreatePage() {
 
   if (isLoadingSuppliers || isLoadingEmployees) {
     return (
-      <div className="page-container p-4 max-w-7xl mx-auto">
+      <div className="page-container">
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-surface-secondary rounded w-1/3"></div>
           <div className="h-64 bg-surface-secondary rounded-xl"></div>
@@ -149,7 +149,7 @@ export function POCreatePage() {
   }
 
   return (
-    <div className="page-container p-4 max-w-7xl mx-auto">
+    <div className="page-container">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">

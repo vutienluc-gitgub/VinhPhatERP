@@ -187,7 +187,7 @@ export function FinishedFabricList({
 
       {/* KPI Dashboard */}
       {(stats || isStatsLoading) && (
-        <div className="kpi-section kpi-grid px-4 sm:px-6 lg:px-8 mt-4">
+        <div className="kpi-section kpi-grid mt-4">
           <KpiCard
             label={MSG.STAT_TOTAL_ROLLS}
             value={stats?.totalRolls ?? 0}
