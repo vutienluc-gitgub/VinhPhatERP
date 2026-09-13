@@ -8,6 +8,7 @@ import type { PaginatedResult } from '@/shared/types/pagination';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { assertSingleMutation } from '@/lib/db-mutation-guard';
 import { apiYarnReceiptInput } from '@/schema/api-validation.schema';
+import { FORM_MESSAGES } from '@/features/yarn-receipts/yarn-receipts.constants';
 
 const HEADER_TABLE = 'yarn_receipts';
 
@@ -342,4 +343,147 @@ export async function fetchLatestYarnPrices(
     }
   }
   return priceMap;
+}
+
+export interface YarnSlipScanResponse {
+  job_id: string;
+  status: string;
+  extraction: {
+    document: {
+      document_type: string;
+      supplier_raw_name: { value: string | null; confidence: number };
+      document_number: { value: string | null; confidence: number };
+      document_date: { value: string | null; confidence: number };
+      vehicle_plate: { value: string | null; confidence: number };
+      customer_name: { value: string | null; confidence: number };
+      notes: { value: string | null; confidence: number };
+    };
+    summary: {
+      yarn_type: { value: string | null; confidence: number };
+      yarn_lot: { value: string | null; confidence: number };
+      package_count: { value: number | null; confidence: number };
+      cone_count: { value: number | null; confidence: number };
+      gross_weight_kg: { value: number | null; confidence: number };
+      tare_weight_kg: { value: number | null; confidence: number };
+      declared_net_weight_kg: { value: number | null; confidence: number };
+      calculated_net_weight_kg?: number | null;
+    };
+    packages: Array<{
+      package_index: number;
+      package_code?: string | null;
+      item_type: string;
+      cone_count?: number | null;
+      gross_kg?: number | null;
+      tare_kg?: number | null;
+      net_kg: number;
+      confidence: number;
+      is_outlier: boolean;
+      notes?: string | null;
+    }>;
+    math_discrepancies: Array<{
+      level: string;
+      rule_name: string;
+      severity: 'ERROR' | 'WARNING';
+      expected: number;
+      actual: number;
+      diff: number;
+      tolerance: number;
+      message_vi: string;
+    }>;
+    needs_manual_review: boolean;
+    review_reasons: string[];
+  };
+  supplier_match: {
+    rawName: string;
+    matchedSupplierId: string | null;
+    matchedSupplierName: string | null;
+    matchedSupplierCode: string | null;
+    confidence: number;
+    ambiguous: boolean;
+    candidates: Array<{
+      id: string;
+      code: string;
+      name: string;
+      score: number;
+    }>;
+  };
+  duplicate_guard: {
+    isDuplicate: boolean;
+    imageHash: string;
+    duplicateType?: string;
+    existingReceiptId?: string;
+    warningMessage?: string;
+  };
+  suggested_receipt: {
+    supplier_id: string | null;
+    supplier_name: string | null;
+    receipt_number: string | null;
+    receipt_date: string | null;
+    vehicle_info: string | null;
+    notes: string | null;
+    yarn_type: string | null;
+    yarn_lot: string | null;
+    gross_weight_kg: number | null;
+    tare_weight_kg: number | null;
+    declared_net_weight_kg: number | null;
+    package_count: number | null;
+    cone_count: number | null;
+  };
+  validation: {
+    passed: boolean;
+    needs_manual_review: boolean;
+    reasons: string[];
+  };
+}
+
+/**
+ * Uploads yarn slip image to Hono BFF endpoint for OCR extraction,
+ * math integrity audit, supplier matching, and duplicate verification.
+ */
+export async function scanYarnSlip(
+  file: File,
+  correlationId?: string,
+): Promise<YarnSlipScanResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token;
+
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  if (correlationId) {
+    headers['X-Correlation-ID'] = correlationId;
+  }
+
+  const endpoint = '/api/v1/yarn-receipts/scan';
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let errorData: {
+      error?: string;
+      message?: string;
+      details?: Record<string, unknown>;
+    } = {};
+    try {
+      errorData = (await response.json()) as {
+        error?: string;
+        message?: string;
+        details?: Record<string, unknown>;
+      };
+    } catch {
+      errorData = { message: await response.text() };
+    }
+    const message =
+      errorData.message || FORM_MESSAGES.scanHttpError(response.status);
+    throw new Error(message);
+  }
+
+  return (await response.json()) as YarnSlipScanResponse;
 }

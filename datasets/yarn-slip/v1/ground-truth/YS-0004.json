@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "sample_id": "YS-0004",
+  "document_type": "DELIVERY_NOTE",
+  "category": "dot_matrix_clear",
+  "image_filename": "YS-0004.jpg",
+  "image_metadata": {
+    "original_resolution": "768x1024",
+    "orientation": "UPRIGHT_0",
+    "form_type": "CONTINUOUS_DOT_MATRIX_PREPRINTED_MULTI_COLUMN",
+    "lighting": "good",
+    "skew_angle_deg": 0.0,
+    "quality_gate_passed": true,
+    "visual_artifacts": [
+      "CIRCLED_ITEM_13",
+      "HANDWRITTEN_NOTE_PARTIAL_DELIVERY",
+      "MULTI_FABRIC_COLUMN_LAYOUT"
+    ]
+  },
+  "ground_truth": {
+    "supplier": {
+      "raw_text": "CTy TNHH dệt Khánh Phong",
+      "canonical_name": "CÔNG TY TNHH DỆT KHÁNH PHONG",
+      "short_name": "KHÁNH PHONG",
+      "address": "Số 5, Tỉnh Lộ 10, Xã Đức Hòa Đông, Đức Hòa, LA",
+      "phone": "028 3980 3265 - 028 3980 7399 - 0272 3779 219",
+      "website": "www.detkhanhphong.com"
+    },
+    "customer": {
+      "raw_text": "VINH PHÁT",
+      "canonical_name": "CÔNG TY TNHH SẢN XUẤT THƯƠNG MẠI DỆT MAY VĨNH PHÁT",
+      "short_name": "VĨNH PHÁT"
+    },
+    "document_title": "PHIẾU GIAO HÀNG",
+    "document_number": null,
+    "document_date": "2026-09-08",
+    "purchase_order_number": null,
+    "invoice_number": null,
+    "vehicle_plate": "50H 51670",
+    "receiver_name": "Hưởng",
+    "creator_name": "Dinh",
+    "creator_role": "Thủ kho xuất",
+    "fabric_columns": [
+      {
+        "column_index": 1,
+        "fabric_type": "VẢY CÁ CVC20+TC10",
+        "color": "NAVY",
+        "width": "1.88PB",
+        "width_unit": "m",
+        "lot": "VP NAVY",
+        "delivery_unit": "TN",
+        "weight_unit": "m/kg"
+      },
+      {
+        "column_index": 2,
+        "fabric_type": "VẢY CÁ CVC20+TC10",
+        "color": "NAVY",
+        "width": "1.88PB",
+        "width_unit": "m",
+        "lot": "VP NAVY.",
+        "delivery_unit": "TN",
+        "weight_unit": "m/kg"
+      }
+    ],
+    "summary": {
+      "column_1_roll_count": 20,
+      "column_1_total_kg": 408.3,
+      "column_2_roll_count": 13,
+      "column_2_total_kg": 268.6,
+      "grand_total_roll_count": 33,
+      "grand_total_kg": 676.9,
+      "grand_total_meters": 0,
+      "declared_summary_text": "TỔNG CỘNG 33 CÂY 676.9 KG 0 MÉT",
+      "partial_delivery_note": "Còn 12 cây NCC chưa giao"
+    },
+    "column_1_packages": [
+      { "stt": 1, "net_kg": 20.8 },
+      { "stt": 2, "net_kg": 20.9 },
+      { "stt": 3, "net_kg": 20.5 },
+      { "stt": 4, "net_kg": 20.4 },
+      { "stt": 5, "net_kg": 18.1 },
+      { "stt": 6, "net_kg": 20.6 },
+      { "stt": 7, "net_kg": 20.2 },
+      { "stt": 8, "net_kg": 20.9 },
+      { "stt": 9, "net_kg": 20.8 },
+      { "stt": 10, "net_kg": 20.9 },
+      { "stt": 11, "net_kg": 20.8 },
+      { "stt": 12, "net_kg": 19.1 },
+      { "stt": 13, "net_kg": 20.4 },
+      { "stt": 14, "net_kg": 20.8 },
+      { "stt": 15, "net_kg": 20.6 },
+      { "stt": 16, "net_kg": 20.3 },
+      { "stt": 17, "net_kg": 20.4 },
+      { "stt": 18, "net_kg": 20.8 },
+      { "stt": 19, "net_kg": 20.2 },
+      { "stt": 20, "net_kg": 20.8 }
+    ],
+    "column_2_packages": [
+      { "stt": 1, "net_kg": 20.3 },
+      { "stt": 2, "net_kg": 17.1 },
+      { "stt": 3, "net_kg": 20.1 },
+      { "stt": 4, "net_kg": 20.0 },
+      { "stt": 5, "net_kg": 20.2 },
+      { "stt": 6, "net_kg": 20.3 },
+      { "stt": 7, "net_kg": 20.7 },
+      { "stt": 8, "net_kg": 20.7 },
+      { "stt": 9, "net_kg": 20.9 },
+      { "stt": 10, "net_kg": 20.8 },
+      { "stt": 11, "net_kg": 20.8 },
+      { "stt": 12, "net_kg": 20.4 },
+      {
+        "stt": 13,
+        "net_kg": 26.3,
+        "note": "Đeo (circled - outlier weight, likely includes Bo/trim)"
+      }
+    ],
+    "math_verification": {
+      "col1_sum_check": "20.8+20.9+20.5+20.4+18.1+20.6+20.2+20.9+20.8+20.9+20.8+19.1+20.4+20.8+20.6+20.3+20.4+20.8+20.2+20.8 = 408.3 (EXACT)",
+      "col2_sum_check": "20.3+17.1+20.1+20.0+20.2+20.3+20.7+20.7+20.9+20.8+20.8+20.4+26.3 = 268.6 (EXACT)",
+      "grand_total_check": "408.3 + 268.6 = 676.9 (EXACT)",
+      "roll_count_check": "20 + 13 = 33 (EXACT)",
+      "is_math_valid": true
+    }
+  },
+  "verification": {
+    "verified_by": "Senior Architect & Solution Team",
+    "verified_at": "2026-09-12T16:48:00+07:00",
+    "verification_method": "HUMAN_PHYSICAL_CHECK",
+    "notes": "Phiếu giao hàng giấy vi tính liên tục đục lỗ của Khánh Phong (Long An). Dạng multi-column: 2 cột Vảy Cá CVC20+TC10 NAVY cùng loại, cùng lot VP NAVY. Cột 1: 20 cây (408.3 kg), Cột 2: 13 cây (268.6 kg). Tổng 33 cây 676.9 kg. STT 13 cột 2 bị khoanh tròn (26.3 kg - outlier, ghi chú 'Đeo'). Ghi chú viết tay: 'Còn 12 cây NCC chưa giao'. BSX 50H 51670. Toán học khớp tuyệt đối 0.0 kg sai lệch."
+  }
+}

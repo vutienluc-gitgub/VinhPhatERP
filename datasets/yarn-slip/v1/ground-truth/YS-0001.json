@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "sample_id": "YS-0001",
+  "document_type": "DELIVERY_NOTE",
+  "category": "handwritten_clear",
+  "image_filename": "YS-0001.png",
+  "image_metadata": {
+    "original_resolution": "1024x768",
+    "orientation": "UPSIDE_DOWN_180",
+    "form_type": "CONTINUOUS_DOT_MATRIX_PREPRINTED",
+    "lighting": "indoor_workshop_good",
+    "skew_angle_deg": 0.0,
+    "quality_gate_passed": true
+  },
+  "ground_truth": {
+    "issuer": {
+      "company_name": "CÔNG TY TNHH SX-TM DỆT MAY VINH PHÁT",
+      "address": "80A Trương Phước Phan, Phường Bình Trị Đông, TP Hồ Chí Minh",
+      "tax_code": "0318633735",
+      "phone": "0903602017",
+      "website": "detmayvinhphat.com"
+    },
+    "document_title": "PHIẾU XUẤT KHO",
+    "document_number": "096",
+    "document_date": "2026-09-12",
+    "buyer_name": "chị Như Ý",
+    "consignee_note": "Cua xam 420 ct",
+    "vehicle_plate": "50H 49102",
+    "creator_name": "Chung",
+    "summary": {
+      "fabric_rolls_weight_kg": 107.3,
+      "collar_cuff_rib_weight_kg": 21.0,
+      "total_weight_kg": 128.3,
+      "total_packages_count": 6,
+      "package_breakdown_note": "5 cây + 1 Bo = 6 cây",
+      "unit_price_k_vnd": 70,
+      "total_amount_k_vnd": 8981,
+      "total_amount_vnd": 8981000
+    },
+    "items": [
+      {
+        "item_index": 1,
+        "item_name": "Vải xám (5 cây)",
+        "unit": "kg",
+        "quantity": 107.3,
+        "unit_price": 70000,
+        "subtotal": 7511000,
+        "details_rolls_kg": [21.7, 21.8, 21.6, 21.8, 20.4],
+        "sum_rolls_kg": 107.3
+      },
+      {
+        "item_index": 2,
+        "item_name": "Bo xám (1 bo)",
+        "unit": "kg",
+        "quantity": 21.0,
+        "unit_price": 70000,
+        "subtotal": 1470000,
+        "details_rolls_kg": [21.0],
+        "sum_rolls_kg": 21.0
+      }
+    ],
+    "math_verification": {
+      "rolls_sum_check": "21.7 + 21.8 + 21.6 + 21.8 + 20.4 = 107.3 (EXACT)",
+      "rib_price_check": "21 * 70 = 1470 (EXACT)",
+      "fabric_price_check": "107.3 * 70 = 7511 (EXACT)",
+      "total_amount_check": "1470 + 7511 = 8981 (EXACT)",
+      "package_count_check": "5 + 1 = 6 (EXACT)"
+    }
+  },
+  "verification": {
+    "verified_by": "Senior Architect & Solution Team",
+    "verified_at": "2026-09-12T16:33:00+07:00",
+    "verification_method": "HUMAN_PHYSICAL_CHECK",
+    "notes": "Ảnh chụp thực tế phiếu xuất kho phôi giấy vi tính liên tục của Vĩnh Phát. Viết tay rõ nét, toán học kiểm tra khớp 100%."
+  }
+}

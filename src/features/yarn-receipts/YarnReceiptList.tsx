@@ -24,6 +24,7 @@ import {
   useActiveSuppliers,
 } from '@/application/inventory';
 import { LIST_LABELS as MSG } from '@/features/yarn-receipts/yarn-receipts.constants';
+import { SCAN_WORKSPACE_LABELS } from '@/features/yarn-receipts/yarn-slip-scan.constants';
 import type {
   YarnReceipt,
   YarnReceiptsFilter,
@@ -36,6 +37,7 @@ import { LotBarcodeModal } from './components/LotBarcodeModal';
 type YarnReceiptListProps = {
   onEdit: (receipt: YarnReceipt) => void;
   onNew: () => void;
+  onScan?: () => void;
   totalWeight: number;
   pendingCount: number;
   supplierCount: number;
@@ -44,6 +46,7 @@ type YarnReceiptListProps = {
 export function YarnReceiptList({
   onEdit,
   onNew,
+  onScan,
   totalWeight,
   pendingCount,
   supplierCount,
@@ -166,8 +169,20 @@ export function YarnReceiptList({
     <>
       <div className="panel-card card-flush">
         {/* Action bar */}
-        <div className="card-header-area">
-          <AddButton onClick={onNew} label="Tạo phiếu nhập" />
+        <div className="card-header-area flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <AddButton onClick={onNew} label="Tạo phiếu nhập" />
+            {onScan && (
+              <Button
+                variant="outline"
+                leftIcon="Camera"
+                onClick={onScan}
+                className="border-dashed border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary-light)]"
+              >
+                {SCAN_WORKSPACE_LABELS.BTN_SCAN_ACTION}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* KPI Dashboard */}

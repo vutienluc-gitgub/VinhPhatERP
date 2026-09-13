@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "sample_id": "YS-0003",
+  "document_type": "DELIVERY_NOTE",
+  "category": "handwritten_difficult",
+  "image_filename": "YS-0003.jpg",
+  "image_metadata": {
+    "original_resolution": "768x1024",
+    "orientation": "UPRIGHT_0",
+    "form_type": "PREPRINTED_CARBON_FORM_TT200_BTC",
+    "lighting": "indoor_workshop_ambient",
+    "skew_angle_deg": 0.0,
+    "quality_gate_passed": true,
+    "visual_artifacts": [
+      "TALLIED_GRID_ACROSS_COLUMNS",
+      "DIAGONAL_CANCELLATION_CROSSING_EMPTY_CELLS",
+      "IMPLICIT_DECIMAL_NOTATION"
+    ]
+  },
+  "ground_truth": {
+    "document_template": "Mẫu số 02 - VT (Thông tư 200/2014/TT-BTC)",
+    "document_title": "PHIẾU XUẤT KHO",
+    "document_number": null,
+    "document_date": "2026-08-29",
+    "receiver_name": "A LỰC",
+    "reason_for_issue": "CVC 20 + TC 10 Đen",
+    "vehicle_plate": "51C-76633",
+    "creator_signature": "Yên",
+    "summary": {
+      "package_count": 95,
+      "package_unit": "cây",
+      "declared_package_count_text": "95 cây",
+      "calculated_net_weight_kg": 2134.9,
+      "average_weight_per_roll_kg": 22.47
+    },
+    "grid_structure": {
+      "description": "Thủ kho tận dụng lưới in sẵn của Thông tư 200 để tạo ma trận đếm số cân 95 cây vải (Hàng 1-5 có 7 cột = 35 cây; Hàng 6-15 có 6 cột = 60 cây. Tổng 35 + 60 = 95 cây).",
+      "rows_1_to_5_7_cols": [
+        [21.0, 23.0, 23.0, 23.1, 22.7, 23.0, 22.9],
+        [22.8, 23.1, 22.9, 23.0, 22.8, 20.9, 20.0],
+        [23.2, 23.1, 23.0, 23.1, 22.7, 21.4, 22.9],
+        [22.9, 23.0, 22.8, 22.9, 20.9, 22.8, 23.3],
+        [20.9, 22.3, 22.8, 23.1, 23.0, 20.9, 23.0]
+      ],
+      "rows_6_to_15_6_cols": [
+        [21.0, 22.2, 22.6, 22.8, 22.8, 20.8],
+        [22.7, 23.1, 21.0, 23.0, 23.1, 21.0],
+        [17.2, 22.8, 28.3, 23.0, 23.1, 21.1],
+        [22.8, 23.0, 21.1, 23.0, 22.0, 21.0],
+        [23.0, 22.9, 22.3, 22.0, 23.0, 22.8],
+        [23.1, 22.8, 22.3, 22.8, 23.1, 21.0],
+        [22.8, 23.0, 22.9, 22.3, 23.0, 22.9],
+        [22.3, 23.1, 22.5, 23.0, 22.9, 22.0],
+        [22.7, 22.3, 23.0, 23.0, 21.0, 22.3],
+        [23.2, 23.3, 23.0, 20.8, 20.9, 22.9]
+      ]
+    },
+    "math_verification": {
+      "total_counted_rolls": 95,
+      "declared_rolls_text": "95 cây",
+      "count_is_exact_match": true,
+      "total_weight_sum_kg": 2134.9
+    }
+  },
+  "verification": {
+    "verified_by": "Senior Architect & Solution Team",
+    "verified_at": "2026-09-12T16:43:00+07:00",
+    "verification_method": "HUMAN_PHYSICAL_CHECK",
+    "notes": "Phiếu xuất kho theo mẫu Thông tư 200/2014/TT-BTC in sẵn, người viết tay tái định nghĩa lưới bảng thành ma trận 95 ô ghi số cân cây vải. Nét viết tay tắt không dấu phẩy (231 = 23.1kg). Đã kiểm tra toán học: 35 cây (5x7) + 60 cây (10x6) = đúng 95 cây."
+  }
+}

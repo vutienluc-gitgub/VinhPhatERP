@@ -5,6 +5,7 @@ import { Button } from '@/shared/components';
 import { Combobox } from '@/shared/components/Combobox';
 // eslint-disable-next-line boundaries/dependencies
 import { QuickSupplierForm } from '@/features/procurement/suppliers/QuickSupplierForm';
+import { SCAN_WORKSPACE_LABELS } from '@/features/yarn-receipts/yarn-slip-scan.constants';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 type StepGeneralInfoProps = {
@@ -12,6 +13,7 @@ type StepGeneralInfoProps = {
   isEditing: boolean;
   supplierOptions: { value: string; label: string; code?: string }[];
   formLabels: Record<string, string>;
+  onScanYarnSlip?: () => void;
 };
 
 export function StepGeneralInfo({
@@ -19,6 +21,7 @@ export function StepGeneralInfo({
   isEditing,
   supplierOptions,
   formLabels,
+  onScanYarnSlip,
 }: StepGeneralInfoProps) {
   const [showQuickSupplier, setShowQuickSupplier] = useState(false);
   const {
@@ -30,6 +33,28 @@ export function StepGeneralInfo({
 
   return (
     <div className={hidden ? 'hidden' : 'block'}>
+      {!isEditing && onScanYarnSlip && (
+        <div className="mb-4 p-3 rounded-lg border border-dashed border-[var(--primary)] bg-surface-secondary/40 flex items-center justify-between gap-3">
+          <div className="space-y-0.5">
+            <span className="text-xs font-semibold text-foreground block">
+              {SCAN_WORKSPACE_LABELS.BANNER_PROMPT_TITLE}
+            </span>
+            <span className="text-xs text-muted block">
+              {SCAN_WORKSPACE_LABELS.BANNER_PROMPT_DESC}
+            </span>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            leftIcon="Camera"
+            onClick={onScanYarnSlip}
+            className="shrink-0 border-[var(--primary)] text-[var(--primary)]"
+          >
+            {SCAN_WORKSPACE_LABELS.BTN_SCAN_AI}
+          </Button>
+        </div>
+      )}
       <div className="form-grid">
         <div className="form-grid form-grid-auto">
           <div className="form-field">

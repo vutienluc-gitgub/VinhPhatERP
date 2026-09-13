@@ -1,0 +1,32 @@
+services:
+  vision-service:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: vinhphat-vision-service
+    restart: unless-stopped
+    ports:
+      # Strictly bind to 127.0.0.1 so the service is never exposed to public internet
+      - "127.0.0.1:8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+      - INTERNAL_SERVICE_KEY=${INTERNAL_SERVICE_KEY:-dev-vinhphat-secret-key-change-in-prod}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - MAX_IMAGE_SIZE_MB=10
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2048M
+        reservations:
+          cpus: "0.5"
+          memory: 512M

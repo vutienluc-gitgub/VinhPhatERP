@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useRef, useEffect, useCallback } from 'react';
+import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useFieldArray, useForm, FormProvider } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import type { Control } from 'react-hook-form';
@@ -43,11 +43,14 @@ import type { YarnReceipt } from '@/domain/inventory/yarn-receipts.types';
 import { YarnReceiptItemRow } from './components/YarnReceiptItemRow';
 import { StepGeneralInfo } from './components/StepGeneralInfo';
 import { StepLogisticsInfo } from './components/StepLogisticsInfo';
+import { YarnSlipScanWorkspace } from './components/YarnSlipScanWorkspace';
 import { useYarnReceiptTotal } from './hooks/useYarnReceiptTotal';
+import { SCAN_WORKSPACE_LABELS } from './yarn-slip-scan.constants';
 
 export type YarnReceiptFormProps = {
   receipt: YarnReceipt | null;
   fromGoodsReceiptId?: string | null;
+  initialValues?: Partial<YarnReceiptsFormValues> | null;
   onClose: () => void;
 };
 
@@ -64,9 +67,11 @@ function LineTotals({ control }: { control: Control<YarnReceiptsFormValues> }) {
 export function YarnReceiptForm({
   receipt,
   fromGoodsReceiptId,
+  initialValues,
   onClose,
 }: YarnReceiptFormProps) {
   const isEditing = receipt !== null;
+  const [showScanWorkspace, setShowScanWorkspace] = useState(false);
   const createMutation = useCreateYarnReceipt();
   const updateMutation = useUpdateYarnReceipt();
   const { data: suppliers = [] } = useActiveSuppliers();
@@ -77,7 +82,14 @@ export function YarnReceiptForm({
     resolver: zodResolver(yarnReceiptsSchema),
     defaultValues: isEditing
       ? receiptToFormValues(receipt)
-      : yarnReceiptsDefaultValues,
+      : {
+          ...yarnReceiptsDefaultValues,
+          ...(initialValues || {}),
+          items:
+            initialValues?.items && initialValues.items.length > 0
+              ? initialValues.items
+              : yarnReceiptsDefaultValues.items,
+        },
   });
 
   const {
@@ -88,6 +100,21 @@ export function YarnReceiptForm({
     reset,
     formState: { errors, isSubmitting, isDirty },
   } = methods;
+
+  const handleApplyScan = useCallback(
+    (scannedValues: Partial<YarnReceiptsFormValues>) => {
+      reset((prev) => ({
+        ...prev,
+        ...scannedValues,
+        items:
+          scannedValues.items && scannedValues.items.length > 0
+            ? scannedValues.items
+            : prev.items,
+      }));
+      toast.success(SCAN_WORKSPACE_LABELS.MSG_PREFILL_SUCCESS);
+    },
+    [reset],
+  );
 
   const { data: goodsReceipt } = useGoodsReceipt(
     fromGoodsReceiptId ?? undefined,
@@ -298,6 +325,7 @@ export function YarnReceiptForm({
               isEditing={isEditing}
               supplierOptions={supplierOptions}
               formLabels={FORM_LABELS}
+              onScanYarnSlip={() => setShowScanWorkspace(true)}
             />
 
             {/* ── BƯỚC 2: CHI TIẾT HÀNG HÓA ── */}
@@ -372,6 +400,12 @@ export function YarnReceiptForm({
         open={showScanner}
         onClose={() => setShowScanner(false)}
         onScan={processBarcode}
+      />
+
+      <YarnSlipScanWorkspace
+        open={showScanWorkspace}
+        onClose={() => setShowScanWorkspace(false)}
+        onApply={handleApplyScan}
       />
     </AdaptiveSheet>
   );

@@ -4,6 +4,8 @@ export const YARN_UNIT_OPTIONS = [
   { value: 'tấn', label: 'tấn' },
 ];
 
+export const DEFAULT_YARN_TYPE = 'Sợi dệt';
+
 export const ITEM_ROW_LABELS = {
   YARN_TYPE: 'Loại sợi',
   YARN_TYPE_PLACEHOLDER: 'Chọn hoặc nhập loại sợi...',
@@ -69,6 +71,8 @@ export const FORM_MESSAGES = {
   genericError: 'Có lỗi xảy ra',
   scanError: 'Lỗi quét mã',
   scanSuccess: 'Bóc tách Barcode thành công!',
+  scanHttpError: (status: number) =>
+    `Quét phiếu thất bại với mã lỗi HTTP ${status}`,
   errorPrefix: 'Lỗi:',
   unsavedConfirm: 'Bạn có thông tin chưa lưu. Bạn có chắc chắn muốn đóng?',
 };

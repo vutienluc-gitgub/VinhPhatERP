@@ -4,9 +4,11 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useYarnReceipt, useYarnReceiptList } from '@/application/inventory';
 import { sumBy } from '@/shared/utils/array.util';
 import type { YarnReceipt } from '@/domain/inventory/yarn-receipts.types';
+import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 
 import { YarnReceiptForm } from './YarnReceiptForm';
 import { YarnReceiptList } from './YarnReceiptList';
+import { YarnSlipScanWorkspace } from './components/YarnSlipScanWorkspace';
 
 export function YarnReceiptsPage() {
   const [searchParams] = useSearchParams();
@@ -15,6 +17,9 @@ export function YarnReceiptsPage() {
 
   const [editId, setEditId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(!!fromGoodsReceiptId);
+  const [showScanWorkspace, setShowScanWorkspace] = useState(false);
+  const [initialFormValues, setInitialFormValues] =
+    useState<Partial<YarnReceiptsFormValues> | null>(null);
 
   useEffect(() => {
     if (fromGoodsReceiptId) {
@@ -44,17 +49,26 @@ export function YarnReceiptsPage() {
 
   function openCreate() {
     setEditId(null);
+    setInitialFormValues(null);
     setShowForm(true);
   }
 
   function openEdit(receipt: YarnReceipt) {
     setEditId(receipt.id);
+    setInitialFormValues(null);
+    setShowForm(true);
+  }
+
+  function handleScanApply(values: Partial<YarnReceiptsFormValues>) {
+    setInitialFormValues(values);
+    setEditId(null);
     setShowForm(true);
   }
 
   function closeForm() {
     setShowForm(false);
     setEditId(null);
+    setInitialFormValues(null);
     if (fromGoodsReceiptId) {
       // Remove query param without full reload
       navigate('/yarn-receipts', { replace: true });
@@ -66,6 +80,7 @@ export function YarnReceiptsPage() {
       <YarnReceiptList
         onEdit={openEdit}
         onNew={openCreate}
+        onScan={() => setShowScanWorkspace(true)}
         totalWeight={totalWeight}
         pendingCount={pendingCount}
         supplierCount={supplierCount}
@@ -78,9 +93,15 @@ export function YarnReceiptsPage() {
               : null
           }
           fromGoodsReceiptId={fromGoodsReceiptId}
+          initialValues={initialFormValues}
           onClose={closeForm}
         />
       )}
+      <YarnSlipScanWorkspace
+        open={showScanWorkspace}
+        onClose={() => setShowScanWorkspace(false)}
+        onApply={handleScanApply}
+      />
     </div>
   );
 }

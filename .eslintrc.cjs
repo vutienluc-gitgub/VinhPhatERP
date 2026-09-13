@@ -364,6 +364,8 @@ module.exports = {
         'no-await-in-loop': 'warn',
         // Unsafe any trong ORM query có thể xảy ra — warn thôi
         '@typescript-eslint/no-explicit-any': 'warn',
+        // Backend dùng ESM relative imports nội bộ
+        'no-restricted-imports': 'off',
       },
     },
 
