@@ -1,8 +1,20 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+import { db } from '../../db/client.js';
 import { DuplicateGuardService } from '../duplicate-guard.service.js';
 
 describe('DuplicateGuardService', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.spyOn(db, 'select').mockReturnValue({
+      from: () => ({
+        where: () => ({
+          limit: () => Promise.resolve([]),
+        }),
+      }),
+    } as never);
+  });
+
   const guard = new DuplicateGuardService();
 
   it('computes deterministic SHA-256 hash from image bytes', () => {
@@ -57,6 +69,36 @@ describe('DuplicateGuardService', () => {
 
     const check3 = await testGuard.checkDuplicate({ imageBytes });
     expect(check3.isDuplicate).toBe(false);
+  });
+
+  it('detects duplicate image hash from persistent database query', async () => {
+    const testGuard = new DuplicateGuardService();
+    const imageBytes = Buffer.from('persistent-db-test-image');
+    const imageHash = testGuard.computeImageHash(imageBytes);
+
+    // Mock db.select to simulate finding a persistent record in ocr_jobs
+    vi.spyOn(db, 'select').mockReturnValue({
+      from: () => ({
+        where: () => ({
+          limit: () =>
+            Promise.resolve([
+              {
+                id: 'job-uuid-999',
+                imageHash,
+                createdReceiptId: 'receipt-uuid-888',
+                createdAt: new Date(),
+              },
+            ]),
+        }),
+      }),
+    } as never);
+
+    const check = await testGuard.checkDuplicate({ imageBytes });
+    expect(check.isDuplicate).toBe(true);
+    expect(check.duplicateType).toBe('IMAGE_HASH');
+    expect(check.existingReceiptId).toBe('receipt-uuid-888');
+    // Ensure it was read-through cached into RAM
+    expect(testGuard.getImageHashCount()).toBe(1);
   });
 
   it('evicts expired image hashes based on retention window', async () => {

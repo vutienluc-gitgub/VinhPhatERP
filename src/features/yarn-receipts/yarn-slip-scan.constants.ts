@@ -113,9 +113,23 @@ export const SCAN_WORKSPACE_LABELS = {
     'Đã xác nhận nhập kho thành công! Tồn kho sợi đã được cập nhật.',
   MSG_SAVE_DRAFT_SUCCESS: 'Đã lưu phiếu nhập sợi ở trạng thái bản nháp.',
 
+  // Price & PO Linkage (Gap #2)
+  SECTION_PRICE_PO: 'Đơn giá & Đơn mua hàng (PO)',
+  FIELD_UNIT_PRICE: 'Đơn giá nhập (VNĐ/kg)',
+  HINT_LATEST_PRICE: 'Giá gần nhất',
+  HINT_PO_PRICE: 'Giá theo PO',
+  FIELD_LINK_PO: 'Liên kết Đơn mua hàng (PO)',
+  OPT_NO_PO: '— Không liên kết đơn mua —',
+  ESTIMATED_TOTAL_AMOUNT: 'Tổng tiền ước tính',
+  BTN_APPLY_PRICE: 'Dùng giá này',
+  STATUS_NO_PRICE_HISTORY: 'Chưa có lịch sử giá nhập cho loại sợi này',
+  HINT_LOOKING_UP_PRICE: 'Đang tra cứu giá...',
+
   // Formatters
   supplierConfidenceBadge: (percent: number) => `NCC: ${percent}% tin cậy`,
   catalogConfidenceBadge: (percent: number) => `Sợi: ${percent}% tương đồng`,
   discrepancyDetail: (actual: number, expected: number, diff: number) =>
     `Thực tế: ${actual}, Mong đợi: ${expected}, Lệch: ${diff}`,
+  latestPriceDocBadge: (receiptNo: string, date?: string | null) =>
+    `từ ${receiptNo}${date ? ` (${date})` : ''}`,
 } as const;

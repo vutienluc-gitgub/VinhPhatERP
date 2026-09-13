@@ -1,4 +1,9 @@
-import type { YarnSlipScanResponse } from '@/api/yarn-receipts.api';
+import type {
+  LatestYarnPriceResult,
+  OpenPurchaseOrderOption,
+  YarnSlipScanResponse,
+} from '@/api/yarn-receipts.api';
+import { ScanPricePoSection } from '@/features/yarn-receipts/components/scan/ScanPricePoSection';
 import type { YarnCatalogMatchResult } from '@/features/yarn-receipts/utils/yarn-slip-prefill';
 import { SCAN_WORKSPACE_LABELS } from '@/features/yarn-receipts/yarn-slip-scan.constants';
 import { Icon } from '@/shared/components/Icon';
@@ -10,6 +15,13 @@ export interface ScanAuditDetailsProps {
   catalogMatch?: YarnCatalogMatchResult | null;
   breakdownByPackages?: boolean;
   onToggleBreakdown?: (val: boolean) => void;
+  unitPrice?: number;
+  onPriceChange?: (price: number) => void;
+  selectedPoId?: string;
+  onSelectPo?: (poId: string) => void;
+  openPos?: OpenPurchaseOrderOption[];
+  latestPrice?: LatestYarnPriceResult | null;
+  isLoadingPrice?: boolean;
 }
 
 export function ScanAuditDetails({
@@ -18,6 +30,13 @@ export function ScanAuditDetails({
   catalogMatch,
   breakdownByPackages = false,
   onToggleBreakdown,
+  unitPrice = 0,
+  onPriceChange,
+  selectedPoId,
+  onSelectPo,
+  openPos,
+  latestPrice,
+  isLoadingPrice = false,
 }: ScanAuditDetailsProps) {
   const {
     suggested_receipt: suggested,
@@ -164,7 +183,21 @@ export function ScanAuditDetails({
         </div>
       </div>
 
-      {/* 3. Mathematical Discrepancies Alert */}
+      {/* 3. Unit Price & PO Linkage (Gap #2) */}
+      {onPriceChange && (
+        <ScanPricePoSection
+          unitPrice={unitPrice}
+          onPriceChange={onPriceChange}
+          selectedPoId={selectedPoId}
+          onSelectPo={onSelectPo}
+          openPos={openPos}
+          latestPrice={latestPrice}
+          isLoadingPrice={isLoadingPrice}
+          netWeightKg={suggested.declared_net_weight_kg}
+        />
+      )}
+
+      {/* 4. Mathematical Discrepancies Alert */}
       {extraction.math_discrepancies.length > 0 && (
         <div className="rounded-lg border border-danger bg-danger-soft p-3.5 space-y-2 text-xs text-danger">
           <h4 className="font-semibold uppercase tracking-wide flex items-center gap-1.5">

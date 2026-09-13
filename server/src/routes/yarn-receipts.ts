@@ -4,12 +4,16 @@
  * Deterministic Supplier Matcher, and Duplicate Document Guard.
  */
 
+import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 
 import { YARN_SLIP_SCAN_MESSAGES } from '../constants/yarn-receipts.constants.js';
+import { db } from '../db/client.js';
+import { ocrJobs } from '../db/schema/index.js';
 import { requireAuth } from '../middleware/auth.js';
 import { duplicateGuard } from '../services/duplicate-guard.service.js';
 import { ocrTelemetry } from '../services/ocr-telemetry.service.js';
+import { slipStorage } from '../services/slip-storage.service.js';
 import { supplierMatcher } from '../services/supplier-matcher.service.js';
 import {
   QualityGateError,
@@ -122,9 +126,21 @@ router.post('/scan', requireAuth, async (c) => {
       supplierMatch.ambiguous ||
       duplicateCheck.isDuplicate;
 
+    const jobId = crypto.randomUUID();
+
+    // 6. Upload Original Image to Cloud Storage (Supabase Storage)
+    const storageResult = await slipStorage.uploadSlipImage({
+      fileBytes: imageBuffer,
+      mimeType: file.type,
+      imageHash: duplicateCheck.imageHash,
+      fileName: file.name,
+    });
+    const originalImageUrl = storageResult?.publicUrl ?? null;
+
     const responsePayload = {
-      job_id: correlationId,
+      job_id: jobId,
       status: 'EXTRACTED',
+      original_image_url: originalImageUrl,
       extraction,
       supplier_match: supplierMatch,
       duplicate_guard: duplicateCheck,
@@ -171,6 +187,38 @@ router.post('/scan', requireAuth, async (c) => {
       receiptNumber: extraction.document.document_number.value ?? undefined,
       supplierId: supplierMatch.matchedSupplierId ?? undefined,
     });
+
+    // 8. Persist to ocr_jobs Audit Table
+    try {
+      await db.insert(ocrJobs).values({
+        id: jobId,
+        correlationId,
+        imageHash: duplicateCheck.imageHash,
+        originalImageUrl,
+        fileName: file.name,
+        durationMs,
+        visionDurationMs: extraction.engine_telemetry?.processing_duration_ms,
+        rawExtractionJson: extraction,
+        suggestedReceiptJson: responsePayload.suggested_receipt,
+        needsManualReview,
+        reviewReasons: combinedReasons,
+        mathDiscrepancy: extraction.math_discrepancies.length > 0,
+        isDuplicate: duplicateCheck.isDuplicate,
+        duplicateType: duplicateCheck.duplicateType,
+        supplierId: supplierMatch.matchedSupplierId || null,
+        status: duplicateCheck.isDuplicate
+          ? 'REJECTED'
+          : needsManualReview
+            ? 'NEEDS_REVIEW'
+            : 'EXTRACTED',
+      });
+    } catch (dbErr) {
+      // Non-blocking degradation
+      console.warn(
+        '[YarnReceiptsScan] Failed to persist ocr_jobs record:',
+        dbErr,
+      );
+    }
 
     return c.json(responsePayload, 200);
   } catch (error) {
@@ -226,6 +274,31 @@ router.post('/scan', requireAuth, async (c) => {
       },
       500,
     );
+  }
+});
+
+/**
+ * POST /api/v1/yarn-receipts/jobs/:id/link-receipt
+ * Links created receipt ID to the audit job.
+ */
+router.post('/jobs/:id/link-receipt', requireAuth, async (c) => {
+  const jobId = c.req.param('id');
+  if (!jobId) {
+    return c.json({ error: 'Job ID is required' }, 400);
+  }
+  const body = await c.req.json<{ receiptId?: string }>();
+  if (!body.receiptId) {
+    return c.json({ error: 'receiptId is required' }, 400);
+  }
+
+  try {
+    await db
+      .update(ocrJobs)
+      .set({ createdReceiptId: body.receiptId, status: 'APPROVED' })
+      .where(eq(ocrJobs.id, jobId));
+    return c.json({ success: true, jobId, receiptId: body.receiptId }, 200);
+  } catch (err) {
+    return c.json({ error: String(err) }, 500);
   }
 });
 

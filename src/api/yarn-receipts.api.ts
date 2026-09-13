@@ -348,6 +348,7 @@ export async function fetchLatestYarnPrices(
 export interface YarnSlipScanResponse {
   job_id: string;
   status: string;
+  original_image_url?: string | null;
   extraction: {
     document: {
       document_type: string;
@@ -486,4 +487,161 @@ export async function scanYarnSlip(
   }
 
   return (await response.json()) as YarnSlipScanResponse;
+}
+
+export async function linkReceiptToScanJob(
+  jobId: string,
+  receiptId: string,
+): Promise<void> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  await fetch(`/api/v1/yarn-receipts/jobs/${jobId}/link-receipt`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ receiptId }),
+  });
+}
+
+export type LatestYarnPriceResult = {
+  unitPrice: number;
+  receiptNumber: string | null;
+  receiptDate: string | null;
+  isSupplierSpecific: boolean;
+};
+
+export async function fetchLatestYarnUnitPrice(params: {
+  yarnCatalogId: string;
+  supplierId?: string | null;
+}): Promise<LatestYarnPriceResult | null> {
+  const { yarnCatalogId, supplierId } = params;
+  if (!yarnCatalogId) return null;
+
+  // 1. Try matching with specific supplier first if provided
+  if (supplierId) {
+    const { data, error } = await supabase
+      .from('yarn_receipts')
+      .select(
+        'receipt_number, receipt_date, yarn_receipt_items!inner(yarn_catalog_id, unit_price)',
+      )
+      .eq('supplier_id', supplierId)
+      .eq('status', 'confirmed')
+      .eq('yarn_receipt_items.yarn_catalog_id', yarnCatalogId)
+      .gt('yarn_receipt_items.unit_price', 0)
+      .order('receipt_date', { ascending: false })
+      .limit(1);
+
+    if (!error && data && data.length > 0 && data[0]) {
+      const receipt = data[0];
+      const items = receipt.yarn_receipt_items as unknown as {
+        yarn_catalog_id: string;
+        unit_price: number;
+      }[];
+      const matchedItem = (items || []).find(
+        (i) => i.yarn_catalog_id === yarnCatalogId && Number(i.unit_price) > 0,
+      );
+      if (matchedItem) {
+        return {
+          unitPrice: Number(matchedItem.unit_price),
+          receiptNumber: receipt.receipt_number,
+          receiptDate: receipt.receipt_date,
+          isSupplierSpecific: true,
+        };
+      }
+    }
+  }
+
+  // 2. Fallback: Search across all suppliers for this yarn catalog
+  const { data: fallbackData, error: fbError } = await supabase
+    .from('yarn_receipts')
+    .select(
+      'receipt_number, receipt_date, yarn_receipt_items!inner(yarn_catalog_id, unit_price)',
+    )
+    .eq('status', 'confirmed')
+    .eq('yarn_receipt_items.yarn_catalog_id', yarnCatalogId)
+    .gt('yarn_receipt_items.unit_price', 0)
+    .order('receipt_date', { ascending: false })
+    .limit(1);
+
+  if (!fbError && fallbackData && fallbackData.length > 0 && fallbackData[0]) {
+    const receipt = fallbackData[0];
+    const items = receipt.yarn_receipt_items as unknown as {
+      yarn_catalog_id: string;
+      unit_price: number;
+    }[];
+    const matchedItem = (items || []).find(
+      (i) => i.yarn_catalog_id === yarnCatalogId && Number(i.unit_price) > 0,
+    );
+    if (matchedItem) {
+      return {
+        unitPrice: Number(matchedItem.unit_price),
+        receiptNumber: receipt.receipt_number,
+        receiptDate: receipt.receipt_date,
+        isSupplierSpecific: false,
+      };
+    }
+  }
+
+  return null;
+}
+
+export type OpenPurchaseOrderOption = {
+  id: string;
+  poCode: string;
+  orderDate: string;
+  status: string;
+  items: {
+    materialId: string;
+    unitPrice: number;
+    orderedQty: number;
+  }[];
+};
+
+export async function fetchOpenPurchaseOrdersForSupplier(
+  supplierId: string,
+): Promise<OpenPurchaseOrderOption[]> {
+  if (!supplierId) return [];
+
+  const { data, error } = await supabase
+    .from('purchase_orders')
+    .select(
+      'id, po_code, order_date, status, purchase_order_items(material_id, unit_price, ordered_qty)',
+    )
+    .eq('supplier_id', supplierId)
+    .in('status', [
+      'approved',
+      'sent',
+      'supplier_confirmed',
+      'receiving',
+      'partial_received',
+    ])
+    .order('order_date', { ascending: false })
+    .limit(20);
+
+  if (error) throw error;
+
+  return (data ?? []).map((po) => {
+    const rawItems = (po.purchase_order_items ?? []) as unknown as {
+      material_id: string;
+      unit_price: number;
+      ordered_qty: number;
+    }[];
+    return {
+      id: po.id,
+      poCode: po.po_code,
+      orderDate: po.order_date,
+      status: po.status ?? '',
+      items: rawItems.map((it) => ({
+        materialId: it.material_id,
+        unitPrice: Number(it.unit_price) || 0,
+        orderedQty: Number(it.ordered_qty) || 0,
+      })),
+    };
+  });
 }

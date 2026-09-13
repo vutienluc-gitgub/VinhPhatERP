@@ -10,3 +10,4 @@ export * from './shipping-rates.js';
 export * from './orders.js';
 export * from './quotations.js';
 export * from './inventory.js';
+export * from './ocr-jobs.js';

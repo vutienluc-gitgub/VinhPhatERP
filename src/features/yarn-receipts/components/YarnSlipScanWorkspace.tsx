@@ -1,6 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useYarnCatalogOptions } from '@/application/inventory';
+import {
+  findPoItemPrice,
+  useLatestYarnPrice,
+  useSupplierOpenPOs,
+} from '@/features/yarn-receipts/hooks/useLatestYarnPrice';
 import { useYarnSlipDirectTransaction } from '@/features/yarn-receipts/hooks/useYarnSlipDirectTransaction';
 import { useYarnSlipScan } from '@/features/yarn-receipts/hooks/useYarnSlipScan';
 import {
@@ -10,12 +15,12 @@ import {
 import { SCAN_WORKSPACE_LABELS } from '@/features/yarn-receipts/yarn-slip-scan.constants';
 import type { YarnReceiptsFormValues } from '@/schema/yarn-receipt.schema';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
-import { Icon } from '@/shared/components/Icon';
 
 import { ScanAuditDetails } from './scan/ScanAuditDetails';
 import { ScanDocumentViewer } from './scan/ScanDocumentViewer';
 import { ScanProcessingView } from './scan/ScanProcessingView';
 import { ScanUploadDropzone } from './scan/ScanUploadDropzone';
+import { ScanWorkspaceBanner } from './scan/ScanWorkspaceBanner';
 import { ScanWorkspaceFooter } from './scan/ScanWorkspaceFooter';
 
 export interface YarnSlipScanWorkspaceProps {
@@ -30,6 +35,8 @@ export function YarnSlipScanWorkspace({
   onApply,
 }: YarnSlipScanWorkspaceProps) {
   const [breakdownByPackages, setBreakdownByPackages] = useState(false);
+  const [unitPrice, setUnitPrice] = useState<number>(0);
+  const [selectedPoId, setSelectedPoId] = useState<string>('');
   const { data: yarnCatalogs = [] } = useYarnCatalogOptions();
   const { isSubmitting, createDraftReceipt, confirmDirectReceipt } =
     useYarnSlipDirectTransaction();
@@ -63,6 +70,32 @@ export function YarnSlipScanWorkspace({
     );
   }, [scanResponse?.suggested_receipt.yarn_type, yarnCatalogs]);
 
+  const supplierId = scanResponse?.supplier_match.matchedSupplierId;
+  const yarnCatalogId = catalogMatch?.matchedCatalogId;
+
+  const { data: latestPrice, isLoading: isLoadingPrice } = useLatestYarnPrice({
+    yarnCatalogId,
+    supplierId,
+  });
+
+  const { data: openPos = [] } = useSupplierOpenPOs(supplierId);
+
+  useEffect(() => {
+    if (latestPrice && latestPrice.unitPrice > 0 && unitPrice === 0) {
+      setUnitPrice(latestPrice.unitPrice);
+    }
+  }, [latestPrice, unitPrice]);
+
+  const handleSelectPo = (poId: string) => {
+    setSelectedPoId(poId);
+    if (!poId) return;
+    const chosenPo = openPos.find((p) => p.id === poId);
+    const poPrice = findPoItemPrice(chosenPo, yarnCatalogId);
+    if (poPrice && poPrice > 0) {
+      setUnitPrice(poPrice);
+    }
+  };
+
   const hasErrors =
     (scanResponse?.extraction.math_discrepancies.length ?? 0) > 0 ||
     Boolean(scanResponse?.duplicate_guard.isDuplicate);
@@ -78,10 +111,29 @@ export function YarnSlipScanWorkspace({
 
   function getPrefillValues(): Partial<YarnReceiptsFormValues> | null {
     if (!scanResponse) return null;
-    return mapScanResultToFormValues(scanResponse, {
+    const mapped = mapScanResultToFormValues(scanResponse, {
       catalogs: yarnCatalogs,
       breakdownByPackages,
     });
+    const chosenPo = openPos.find((p) => p.id === selectedPoId);
+    const poNote = chosenPo ? `Theo đơn mua ${chosenPo.poCode}` : null;
+    const mergedNotes = [mapped.notes, poNote].filter(Boolean).join(' - ');
+
+    return {
+      ...mapped,
+      notes: mergedNotes || mapped.notes,
+      items: (mapped.items || []).map((it) => ({
+        ...it,
+        unitPrice: unitPrice > 0 ? unitPrice : it.unitPrice,
+      })),
+    };
+  }
+
+  function handleResetAndClose() {
+    setUnitPrice(0);
+    setSelectedPoId('');
+    resetScan();
+    onClose();
   }
 
   function handleEditInForm() {
@@ -96,8 +148,7 @@ export function YarnSlipScanWorkspace({
     }
 
     onApply(prefillValues);
-    resetScan();
-    onClose();
+    handleResetAndClose();
   }
 
   async function handleSaveDraft() {
@@ -105,11 +156,10 @@ export function YarnSlipScanWorkspace({
     if (!prefillValues) return;
 
     try {
-      await createDraftReceipt(prefillValues);
-      resetScan();
-      onClose();
+      await createDraftReceipt(prefillValues, scanResponse?.job_id);
+      handleResetAndClose();
     } catch (_err) {
-      // Error notifications handled by toast in hook
+      // Handled by hook toast
     }
   }
 
@@ -128,11 +178,10 @@ export function YarnSlipScanWorkspace({
     if (!proceed) return;
 
     try {
-      await confirmDirectReceipt(prefillValues);
-      resetScan();
-      onClose();
+      await confirmDirectReceipt(prefillValues, scanResponse?.job_id);
+      handleResetAndClose();
     } catch (_err) {
-      // Error notifications handled by toast in hook
+      // Handled by hook toast
     }
   }
 
@@ -161,65 +210,12 @@ export function YarnSlipScanWorkspace({
         {/* Screen 3: Side-by-Side Audit Workspace */}
         {!isScanning && scanResponse && (
           <div className="flex flex-col space-y-4">
-            {/* Status Banner */}
-            <div
-              className={`p-3.5 rounded-lg border flex items-center justify-between gap-3 text-sm ${
-                statusVariant === 'error'
-                  ? 'bg-danger-soft border-danger text-danger'
-                  : statusVariant === 'warning'
-                    ? 'bg-warning-soft border-warning text-warning'
-                    : 'bg-success-soft border-success text-success'
-              }`}
-            >
-              <div className="flex items-center gap-2 font-medium">
-                <Icon
-                  name={
-                    statusVariant === 'error'
-                      ? 'AlertCircle'
-                      : statusVariant === 'warning'
-                        ? 'AlertTriangle'
-                        : 'CheckCircle'
-                  }
-                  size={18}
-                />
-                <span>
-                  {statusVariant === 'error'
-                    ? SCAN_WORKSPACE_LABELS.STATUS_ERROR
-                    : statusVariant === 'warning'
-                      ? SCAN_WORKSPACE_LABELS.STATUS_WARNING
-                      : SCAN_WORKSPACE_LABELS.STATUS_PASSED}
-                </span>
-              </div>
-              <span className="text-xs px-2 py-0.5 rounded bg-surface/80 text-foreground font-mono">
-                Job ID: {scanResponse.job_id.slice(0, 8)}
-              </span>
-            </div>
-
-            {/* Mobile Tab Switcher */}
-            <div className="flex md:hidden border-b border-default">
-              <button
-                type="button"
-                onClick={() => setActiveTab('data')}
-                className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'data'
-                    ? 'border-[var(--primary)] text-[var(--primary)]'
-                    : 'border-transparent text-muted'
-                }`}
-              >
-                {SCAN_WORKSPACE_LABELS.TAB_AUDITED_DATA}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('image')}
-                className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'image'
-                    ? 'border-[var(--primary)] text-[var(--primary)]'
-                    : 'border-transparent text-muted'
-                }`}
-              >
-                {SCAN_WORKSPACE_LABELS.TAB_DOCUMENT_IMAGE}
-              </button>
-            </div>
+            <ScanWorkspaceBanner
+              statusVariant={statusVariant}
+              jobId={scanResponse.job_id}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
 
             {/* 2-Column Grid on Desktop, Tabbed on Mobile */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
@@ -238,13 +234,20 @@ export function YarnSlipScanWorkspace({
                 catalogMatch={catalogMatch}
                 breakdownByPackages={breakdownByPackages}
                 onToggleBreakdown={setBreakdownByPackages}
+                unitPrice={unitPrice}
+                onPriceChange={setUnitPrice}
+                selectedPoId={selectedPoId}
+                onSelectPo={handleSelectPo}
+                openPos={openPos}
+                latestPrice={latestPrice}
+                isLoadingPrice={isLoadingPrice}
               />
             </div>
 
             <ScanWorkspaceFooter
               isSubmitting={isSubmitting}
               hasErrors={hasErrors}
-              onRescan={resetScan}
+              onRescan={handleResetAndClose}
               onEditInForm={handleEditInForm}
               onSaveDraft={() => void handleSaveDraft()}
               onConfirmDirect={() => void handleConfirmDirect()}

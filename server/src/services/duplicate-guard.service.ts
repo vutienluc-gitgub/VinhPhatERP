@@ -7,11 +7,11 @@
 
 import crypto from 'node:crypto';
 
-import { and, eq, or, ilike } from 'drizzle-orm';
+import { and, eq, or, ilike, gte } from 'drizzle-orm';
 
 import { YARN_SLIP_SCAN_MESSAGES } from '../constants/yarn-receipts.constants.js';
 import { db } from '../db/client.js';
-import { yarnReceipts } from '../db/schema/index.js';
+import { ocrJobs, yarnReceipts } from '../db/schema/index.js';
 
 export interface DuplicateCheckParams {
   imageBytes: Uint8Array | Buffer;
@@ -84,7 +84,7 @@ export class DuplicateGuardService {
   ): Promise<DuplicateCheckResult> {
     const imageHash = this.computeImageHash(params.imageBytes);
 
-    // 1. Check Image Hash Cache (Tier 1 fast check)
+    // 1. Check Image Hash Cache (Tier 1 fast check in RAM)
     const existingHashRecord = this.imageHashCache.get(imageHash);
     if (existingHashRecord) {
       const isExpired =
@@ -101,6 +101,47 @@ export class DuplicateGuardService {
           ),
         };
       }
+    }
+
+    // 2. Check Persistent DB (Tier 2: ocr_jobs table)
+    try {
+      const retentionCutoff = new Date(Date.now() - this.retentionMs);
+      const [existingJob] = await db
+        .select({
+          id: ocrJobs.id,
+          imageHash: ocrJobs.imageHash,
+          createdReceiptId: ocrJobs.createdReceiptId,
+          createdAt: ocrJobs.createdAt,
+        })
+        .from(ocrJobs)
+        .where(
+          and(
+            eq(ocrJobs.imageHash, imageHash),
+            gte(ocrJobs.createdAt, retentionCutoff),
+          ),
+        )
+        .limit(1);
+
+      if (existingJob) {
+        // Read-through: Populate RAM cache for future O(1) checks
+        this.recordImageHash(imageHash, {
+          supplierId: params.supplierId || undefined,
+        });
+
+        return {
+          isDuplicate: true,
+          imageHash,
+          duplicateType: 'IMAGE_HASH',
+          existingReceiptId: existingJob.createdReceiptId || undefined,
+          warningMessage: YARN_SLIP_SCAN_MESSAGES.duplicateImageFound(),
+        };
+      }
+    } catch (dbErr) {
+      // Non-blocking degradation
+      console.warn(
+        '[DuplicateGuard] Failed to query ocr_jobs for hash:',
+        dbErr,
+      );
     }
 
     const { supplierId, documentNumber, documentDate } = params;

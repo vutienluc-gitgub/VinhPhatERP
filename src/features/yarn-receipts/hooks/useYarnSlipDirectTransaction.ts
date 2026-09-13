@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import {
   createYarnReceiptFull,
   confirmYarnReceipt,
+  linkReceiptToScanJob,
   type YarnReceiptCreateInput,
 } from '@/api/yarn-receipts.api';
 import type { YarnReceipt } from '@/domain/inventory/yarn-receipts.types';
@@ -22,9 +23,11 @@ export interface UseYarnSlipDirectTransactionReturn {
   error: string | null;
   createDraftReceipt: (
     values: Partial<YarnReceiptsFormValues>,
+    jobId?: string,
   ) => Promise<YarnReceipt>;
   confirmDirectReceipt: (
     values: Partial<YarnReceiptsFormValues>,
+    jobId?: string,
   ) => Promise<YarnReceipt>;
 }
 
@@ -78,12 +81,20 @@ export function useYarnSlipDirectTransaction(): UseYarnSlipDirectTransactionRetu
 
   const createDraftReceipt = async (
     values: Partial<YarnReceiptsFormValues>,
+    jobId?: string,
   ): Promise<YarnReceipt> => {
     setIsSubmitting(true);
     setError(null);
     try {
       const input = toCreateInput(values);
       const created = await createYarnReceiptFull(input);
+      if (jobId) {
+        try {
+          await linkReceiptToScanJob(jobId, created.id);
+        } catch {
+          // Non-blocking job linking
+        }
+      }
       await queryClient.invalidateQueries({ queryKey: ['yarn-receipts'] });
       toast.success(SCAN_WORKSPACE_LABELS.MSG_SAVE_DRAFT_SUCCESS);
       return created;
@@ -99,6 +110,7 @@ export function useYarnSlipDirectTransaction(): UseYarnSlipDirectTransactionRetu
 
   const confirmDirectReceipt = async (
     values: Partial<YarnReceiptsFormValues>,
+    jobId?: string,
   ): Promise<YarnReceipt> => {
     setIsSubmitting(true);
     setError(null);
@@ -109,6 +121,14 @@ export function useYarnSlipDirectTransaction(): UseYarnSlipDirectTransactionRetu
 
       // 2. Confirm to trigger Domain Transaction and Stock Movement
       await confirmYarnReceipt(created.id);
+
+      if (jobId) {
+        try {
+          await linkReceiptToScanJob(jobId, created.id);
+        } catch {
+          // Non-blocking job linking
+        }
+      }
 
       // 3. Invalidate stock and receipt queries
       await Promise.all([
