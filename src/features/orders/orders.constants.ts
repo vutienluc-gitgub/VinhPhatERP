@@ -99,6 +99,7 @@ export const ORDERS_LIST_LABELS = {
   COL_BALANCE: 'Còn nợ',
   COL_STATUS: 'Trạng thái',
   COL_ACTIONS: 'Thao tác',
+  COL_FULFILLMENT: 'Tiến độ giao',
   AUDIT_LOG_TITLE: 'Lịch sử hoạt động',
 } as const;
 

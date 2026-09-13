@@ -81,6 +81,18 @@ function orderToFormValues(order: Order): OrdersFormValues {
       unit: (it.unit === 'm' ? 'm' : 'kg') as 'm' | 'kg',
       quantity: Number(it.quantity),
       unitPrice: Number(it.unit_price),
+      orderedQty: Number(
+        (it as Record<string, unknown>).ordered_qty || it.quantity || 0,
+      ),
+      fulfilledQty: Number((it as Record<string, unknown>).fulfilled_qty || 0),
+      returnedQty: Number((it as Record<string, unknown>).returned_qty || 0),
+      cancelledQty: Number((it as Record<string, unknown>).cancelled_qty || 0),
+      fulfillmentStatus:
+        ((it as Record<string, unknown>).fulfillment_status as
+          | 'unfulfilled'
+          | 'partially_fulfilled'
+          | 'fulfilled'
+          | 'closed_shortage') ?? 'unfulfilled',
     })),
   };
 }

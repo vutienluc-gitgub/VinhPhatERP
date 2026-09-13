@@ -95,6 +95,36 @@ export const UNIT_OPTIONS = [
 
 export type UnitType = (typeof UNIT_OPTIONS)[number]['value'];
 
+export type FulfillmentStatus =
+  | 'unfulfilled'
+  | 'partially_fulfilled'
+  | 'fulfilled'
+  | 'closed_shortage';
+
+export const FULFILLMENT_STATUS_OPTIONS = [
+  { value: 'unfulfilled', label: 'Chưa giao' },
+  { value: 'partially_fulfilled', label: 'Giao một phần' },
+  { value: 'fulfilled', label: 'Đã giao đủ' },
+  { value: 'closed_shortage', label: 'Đóng thiếu' },
+] as const;
+
+export const FULFILLMENT_STATUS_LABELS: Record<FulfillmentStatus, string> = {
+  unfulfilled: 'Chưa giao',
+  partially_fulfilled: 'Giao một phần',
+  fulfilled: 'Đã giao đủ',
+  closed_shortage: 'Đóng thiếu',
+};
+
+export const FULFILLMENT_STATUS_BADGE_VARIANTS: Record<
+  FulfillmentStatus,
+  'gray' | 'warning' | 'success' | 'purple'
+> = {
+  unfulfilled: 'gray',
+  partially_fulfilled: 'warning',
+  fulfilled: 'success',
+  closed_shortage: 'purple',
+};
+
 /* ── Zod Schemas ── */
 
 // 1. Định nghĩa ITEM schema cơ bản
@@ -114,6 +144,19 @@ export const orderItemBaseSchema = z.object({
   unitPrice: z
     .number({ required_error: 'Nhập đơn giá' })
     .min(0, 'Đơn giá >= 0'),
+  orderedQty: z.number().min(0).optional(),
+  fulfilledQty: z.number().min(0).optional(),
+  returnedQty: z.number().min(0).optional(),
+  cancelledQty: z.number().min(0).optional(),
+  fulfillmentStatus: z
+    .enum([
+      'unfulfilled',
+      'partially_fulfilled',
+      'fulfilled',
+      'closed_shortage',
+    ])
+    .optional()
+    .default('unfulfilled'),
 });
 
 // Item schema cho EDIT: cho phép quantity >= 0
@@ -181,6 +224,7 @@ export const emptyOrderItem: OrderItemFormValues = {
   unit: 'kg',
   quantity: 0,
   unitPrice: 0,
+  fulfillmentStatus: 'unfulfilled',
 };
 
 export const emptyTradingItem: OrderItemFormValues = {
@@ -193,6 +237,7 @@ export const emptyTradingItem: OrderItemFormValues = {
   unit: 'kg',
   quantity: 0,
   unitPrice: 0,
+  fulfillmentStatus: 'unfulfilled',
 };
 
 export const ordersDefaultValues: OrdersFormValues = {

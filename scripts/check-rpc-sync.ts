@@ -50,6 +50,7 @@ const COMPATIBLE_CASTS = new Set([
   'numeric -> int', // JS number sent, DB accepts int
   'text -> int', // number/string sent, DB accepts int
   'text -> uuid[]', // uuid array sent as text, DB accepts uuid[]
+  'text -> text[]', // string array sent as text, DB accepts text[]
   'timestamptz -> date', // timestamp sent, DB stores as date
   'text -> supplier_category', // custom enum
   'text -> active_status', // custom enum

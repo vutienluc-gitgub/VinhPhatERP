@@ -22,8 +22,10 @@ import {
   ORDER_STATUS_BADGE_VARIANTS,
   ORDER_TYPE_LABELS,
   PRODUCT_CATEGORY_LABELS,
+  FULFILLMENT_STATUS_LABELS,
+  FULFILLMENT_STATUS_BADGE_VARIANTS,
 } from '@/schema/order.schema';
-import type { ProductCategory } from '@/schema/order.schema';
+import type { ProductCategory, FulfillmentStatus } from '@/schema/order.schema';
 import { isOrderEditable } from '@/domain/orders/OrderStateMachine';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Badge } from '@/shared/components/Badge';
@@ -391,6 +393,7 @@ export function OrderDetail({
                   <th className="text-right">
                     {ORDERS_FORM_LABELS.FIELD_QUANTITY}
                   </th>
+                  <th>{ORDERS_LIST_LABELS.COL_FULFILLMENT}</th>
                   <th className="text-right">{ORDERS_LIST_LABELS.COL_PRICE}</th>
                   <th className="text-right">
                     {ORDERS_LIST_LABELS.COL_AMOUNT}
@@ -401,8 +404,17 @@ export function OrderDetail({
                 {items
                   .sort((a, b) => a.sort_order - b.sort_order)
                   .map((item, idx) => {
-                    const category = (item as Record<string, unknown>)
-                      .product_category as ProductCategory | undefined;
+                    const rawItem = item as Record<string, unknown>;
+                    const category = rawItem.product_category as
+                      | ProductCategory
+                      | undefined;
+                    const status =
+                      (rawItem.fulfillment_status as FulfillmentStatus) ||
+                      'unfulfilled';
+                    const fulfilled = Number(rawItem.fulfilled_qty || 0);
+                    const ordered = Number(
+                      rawItem.ordered_qty || item.quantity || 0,
+                    );
                     return (
                       <tr key={item.id}>
                         <td className="text-muted-foreground text-sm">
@@ -430,6 +442,17 @@ export function OrderDetail({
                             decimals={2}
                           />
                         </td>
+                        <td>
+                          <Badge
+                            variant={
+                              FULFILLMENT_STATUS_BADGE_VARIANTS[status] ||
+                              'gray'
+                            }
+                          >
+                            {FULFILLMENT_STATUS_LABELS[status] || status} (
+                            {fulfilled}/{ordered})
+                          </Badge>
+                        </td>
                         <td className="text-right tabular-nums">
                           <MoneyText value={item.unit_price} suffix="đ" />
                         </td>
@@ -441,7 +464,7 @@ export function OrderDetail({
                   })}
                 <tr>
                   <td
-                    colSpan={order.order_type === 'trading' ? 6 : 5}
+                    colSpan={order.order_type === 'trading' ? 7 : 6}
                     className="text-right font-bold"
                   >
                     {ORDERS_FORM_LABELS.TXT_TOTAL}

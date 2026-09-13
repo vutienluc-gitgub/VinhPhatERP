@@ -1,7 +1,7 @@
 import { InvalidStateTransitionError } from '@/domain/core/errors/ConcurrencyErrors';
 import type { FinishedFabricRoll } from '@/domain/inventory/finished-fabric.types';
-import { assertSingleMutation } from '@/lib/db-mutation-guard';
 import { supabase } from '@/services/supabase/client';
+import { untypedDb } from '@/services/supabase/untyped';
 
 const TABLE = 'finished_fabric_rolls';
 
@@ -82,31 +82,28 @@ export async function reserveRoll(
 }
 
 export async function unreserveRoll(rollId: string): Promise<void> {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update({
-      status: 'in_stock',
-      reserved_for_order_id: null,
-    })
-    .eq('id', rollId)
-    .eq('status', 'reserved')
-    .select()
-    .single();
-  assertSingleMutation(data, error, {
-    entityName: 'Cuộn vải thành phẩm',
-    expectedStatus: 'reserved',
-    transitionName: 'hủy giữ chỗ',
+  const { error } = await untypedDb.rpc('rpc_unreserve_finished_roll', {
+    p_roll_id: rollId,
   });
+
+  if (error) {
+    if (error.message?.includes('ROLL_NOT_RESERVED')) {
+      throw new InvalidStateTransitionError(
+        'reserved',
+        'unreserve',
+        'Cuộn vải không còn ở trạng thái giữ chỗ.',
+      );
+    }
+    if (error.message?.includes('ROLL_NOT_FOUND')) {
+      throw new Error('Không tìm thấy cuộn vải.');
+    }
+    throw error;
+  }
 }
 
 export async function releaseAllReserved(orderId: string): Promise<void> {
-  const { error } = await supabase
-    .from(TABLE)
-    .update({
-      status: 'in_stock',
-      reserved_for_order_id: null,
-    })
-    .eq('reserved_for_order_id', orderId)
-    .eq('status', 'reserved');
+  const { error } = await untypedDb.rpc('rpc_release_order_reservations', {
+    p_order_id: orderId,
+  });
   if (error) throw error;
 }
