@@ -149,7 +149,9 @@ export function RawFabricList({
         subtitle={MSG.PAGE_SUBTITLE}
         actions={
           <div className="flex items-center gap-4">
-            <ViewToggle value={viewMode} onChange={setViewMode} />
+            <div className="hidden md:flex">
+              <ViewToggle value={viewMode} onChange={setViewMode} />
+            </div>
             <ActionMenu
               onNew={onNew}
               onBulkNew={onBulkNew}
