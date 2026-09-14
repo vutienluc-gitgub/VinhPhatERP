@@ -68,30 +68,25 @@ export function ActionMenu({
       {/* Mobile layout — shown only on mobile */}
       <div className="flex md:hidden items-center gap-2 w-full">
         {/* Xuất Excel: icon button */}
-        <button
-          type="button"
-          className="btn-icon btn-standard"
-          onClick={onExport}
-          disabled={isExporting}
+        <Button
+          variant="outline"
+          size="icon"
+          leftIcon="FileSpreadsheet"
           aria-label="Xuất Excel"
-        >
-          {isExporting ? (
-            <Icon name="Loader2" size={20} className="animate-spin" />
-          ) : (
-            <Icon name="FileSpreadsheet" size={20} />
-          )}
-        </button>
+          onClick={onExport}
+          isLoading={isExporting}
+          disabled={isExporting}
+        />
 
         {/* Nhập mẻ: icon button */}
-        <button
-          type="button"
-          className="btn-icon btn-standard"
+        <Button
+          variant="outline"
+          size="icon"
+          leftIcon="Zap"
+          aria-label="Nhập mẻ"
           onClick={onBulkNew}
           disabled={isExporting}
-          aria-label="Nhập mẻ"
-        >
-          <Icon name="Zap" size={20} />
-        </button>
+        />
 
         {/* Nhập mới: full-width primary */}
         <Button
