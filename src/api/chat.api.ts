@@ -13,7 +13,19 @@ import type {
 } from '@/schema/chat.schema';
 
 function toError(error: unknown, fallbackMessage: string): Error {
-  if (error instanceof Error) return error;
+  if (error instanceof Error) {
+    if (
+      error instanceof TypeError &&
+      (error.message.includes('Load failed') ||
+        error.message.includes('fetch') ||
+        error.message.includes('NetworkError'))
+    ) {
+      return new Error(
+        'Không thể tải tin nhắn do mất kết nối mạng hoặc phiên hết hạn',
+      );
+    }
+    return error;
+  }
   if (error && typeof error === 'object') {
     const errRecord = error as Record<string, unknown>;
     const msg =
@@ -91,37 +103,41 @@ export async function fetchChatMessages(
   roomId: string,
   cursor?: string,
 ): Promise<ChatMessage[]> {
-  const { data, error } = await untypedDb.rpc('rpc_get_chat_messages', {
-    p_room_id: roomId,
-    p_cursor: cursor ?? undefined,
-    p_limit: CHAT_MESSAGES_PAGE_SIZE,
-  });
+  try {
+    const { data, error } = await untypedDb.rpc('rpc_get_chat_messages', {
+      p_room_id: roomId,
+      p_cursor: cursor ?? undefined,
+      p_limit: CHAT_MESSAGES_PAGE_SIZE,
+    });
 
-  if (error) {
-    console.error(
-      '[Chat] fetchChatMessages error:',
-      error.message,
-      error.hint,
-      error.code,
-      error.details,
-    );
-    throw toError(error, 'Không thể tải danh sách tin nhắn');
+    if (error) {
+      console.error(
+        '[Chat] fetchChatMessages error:',
+        error.message,
+        error.hint,
+        error.code,
+        error.details,
+      );
+      throw toError(error, 'Không thể tải danh sách tin nhắn');
+    }
+
+    if (Array.isArray(data)) {
+      return data as ChatMessage[];
+    }
+
+    if (
+      data &&
+      typeof data === 'object' &&
+      'messages' in data &&
+      Array.isArray((data as { messages: unknown }).messages)
+    ) {
+      return (data as { messages: ChatMessage[] }).messages;
+    }
+
+    return [];
+  } catch (err) {
+    throw toError(err, 'Không thể tải danh sách tin nhắn');
   }
-
-  if (Array.isArray(data)) {
-    return data as ChatMessage[];
-  }
-
-  if (
-    data &&
-    typeof data === 'object' &&
-    'messages' in data &&
-    Array.isArray((data as { messages: unknown }).messages)
-  ) {
-    return (data as { messages: ChatMessage[] }).messages;
-  }
-
-  return [];
 }
 
 // ── Send Message (via RPC — uses same tenant resolution as RLS) ──

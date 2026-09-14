@@ -210,10 +210,21 @@ export function useChatMessages(roomId: string | undefined) {
       return last ? last.created_at : undefined;
     },
     // Revalidate on mount to catch any messages sent while drawer was closed.
-    // Stale time 0 ensures instant cached render + automatic background refresh.
-    staleTime: 0,
+    // Stale time 5s prevents rapid fetch loop when component re-renders.
+    staleTime: 5000,
     refetchOnMount: true,
     gcTime: 30 * 60 * 1000,
+    retry: (failureCount, error) => {
+      if (failureCount >= 3) return false;
+      if (
+        error instanceof Error &&
+        (error.message.includes('403') || error.message.includes('401'))
+      ) {
+        return false;
+      }
+      return true;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
   });
 }
 

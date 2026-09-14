@@ -99,14 +99,6 @@ export function useChatDrawerOrchestration({
     }
   }, [open, entityType, entityId, hasDirectRoomId, cachedRoom?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Mark room as read when drawer is open
-  const markAsRead = useMarkAsRead(resolvedRoomId);
-  useEffect(() => {
-    if (open && resolvedRoomId) {
-      markAsRead();
-    }
-  }, [open, resolvedRoomId, markAsRead, data]);
-
   // Register room globally so notifications are muted for this active room
   useEffect(() => {
     if (!open || !resolvedRoomId) return;
@@ -121,6 +113,17 @@ export function useChatDrawerOrchestration({
     () => extractChronologicalMessages(data?.pages),
     [data?.pages],
   );
+
+  const lastMessageId =
+    flattenedMessages[flattenedMessages.length - 1]?.id ?? null;
+
+  // Mark room as read when drawer is open or when a new message arrives
+  const markAsRead = useMarkAsRead(resolvedRoomId);
+  useEffect(() => {
+    if (open && resolvedRoomId) {
+      markAsRead();
+    }
+  }, [open, resolvedRoomId, markAsRead, lastMessageId]);
 
   const timelineState = useMemo(() => {
     const hasError = Boolean(
