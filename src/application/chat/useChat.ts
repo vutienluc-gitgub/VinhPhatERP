@@ -19,6 +19,7 @@ import {
   removeReaction,
   searchMessages,
 } from '@/api/chat.api';
+import { extractChronologicalMessages } from '@/features/chat/chat.utils';
 import type {
   ChatMessage,
   ChatMention,
@@ -823,8 +824,8 @@ export function useChatRealtime(roomId: string | undefined) {
           const cached = queryClient.getQueryData(
             CHAT_KEYS.messages(roomId),
           ) as InfiniteData | undefined;
-          const allMessages = cached?.pages.flat() ?? [];
-          const latestMsg = allMessages[0]; // Newest is at index 0 of page 0
+          const chronological = extractChronologicalMessages(cached?.pages);
+          const latestMsg = chronological[chronological.length - 1];
 
           if (latestMsg?.created_at) {
             void supabase
