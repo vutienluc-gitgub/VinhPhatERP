@@ -41,6 +41,7 @@
 }
 
 .mobile-nav-link {
+  position: relative;
   flex: 1;
   min-width: 0;
   display: flex;
@@ -50,7 +51,7 @@
   gap: 0.25rem;
   padding: 0.25rem 0;
   border-radius: 0;
-  font-size: 0.65rem;
+  font-size: 0.75rem; /* 12px per UI guideline */
   font-weight: 500;
   color: var(--muted-foreground);
   text-decoration: none;
@@ -59,14 +60,25 @@
   transition: 160ms ease;
 }
 
-.mobile-nav-link.is-active {
-  background: transparent;
-  color: var(--primary-strong);
+.mobile-nav-link.active {
+  color: var(--foreground);
+  background: rgba(var(--brand-rgb), 0.1);
 }
 
-.mobile-nav-link.is-active svg {
-  color: var(--primary-strong);
-  stroke-width: 2.5;
+.mobile-nav-link.active svg {
+  color: var(--primary);
+}
+
+/* ── 2px Active Indicator Bar (top) ── */
+.mobile-nav-active-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.5rem; /* 24px, matches icon width */
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--primary);
 }
 
 @media (width >= 768px) {

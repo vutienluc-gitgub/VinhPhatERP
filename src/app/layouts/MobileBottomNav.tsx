@@ -17,7 +17,7 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
   onOpenMore,
 }: MobileBottomNavProps) {
   return (
-    <nav className="mobile-nav" aria-label="Bottom navigation">
+    <nav className="mobile-nav" aria-label="Bottom navigation" role="tablist">
       {bottomTabs.map((item) => {
         const iconName =
           item.icon ?? (item.path === '/' ? 'Home' : 'Component');
@@ -25,17 +25,26 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
           <NavLink
             key={item.path}
             to={item.path}
+            role="tab"
+            aria-selected={undefined}
             className={({ isActive }) =>
-              `mobile-nav-link${isActive ? ' text-foreground bg-primary/10' : ''}`
+              `mobile-nav-link${isActive ? ' active' : ''}`
             }
             end={item.path === '/'}
           >
             {({ isActive }) => (
               <>
+                {/* Active indicator — 2px bar on top */}
+                {isActive && (
+                  <span
+                    className="mobile-nav-active-indicator"
+                    aria-hidden="true"
+                  />
+                )}
                 <Icon
                   name={iconName}
-                  size={22}
-                  strokeWidth={isActive ? 2.2 : 1.6}
+                  size={24}
+                  strokeWidth={isActive ? 2 : 1.5}
                 />
                 <span>{item.shortLabel}</span>
               </>
@@ -45,14 +54,19 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
       })}
       <button
         type="button"
-        className={`mobile-nav-link mobile-menu-btn${isDrawerActive ? ' text-foreground bg-primary/10' : ''}`}
+        role="tab"
+        aria-selected={isDrawerActive}
+        className={`mobile-nav-link mobile-menu-btn${isDrawerActive ? ' active' : ''}`}
         onClick={onOpenMore}
-        aria-label="Menu"
+        aria-label={APP_SHELL_LABELS.MENU}
       >
+        {isDrawerActive && (
+          <span className="mobile-nav-active-indicator" aria-hidden="true" />
+        )}
         <Icon
           name="LayoutGrid"
-          size={22}
-          strokeWidth={isDrawerActive ? 2.2 : 1.6}
+          size={24}
+          strokeWidth={isDrawerActive ? 2 : 1.5}
         />
         <span>{APP_SHELL_LABELS.MENU}</span>
       </button>
