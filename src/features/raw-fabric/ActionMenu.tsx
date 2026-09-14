@@ -1,5 +1,3 @@
-import { useRef, useState, useEffect } from 'react';
-
 import { Button } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
 
@@ -16,21 +14,6 @@ export function ActionMenu({
   onExport,
   isExporting,
 }: ActionMenuProps) {
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
-
   return (
     <>
       {/* Desktop layout */}
@@ -84,49 +67,31 @@ export function ActionMenu({
 
       {/* Mobile layout — shown only on mobile */}
       <div className="flex md:hidden items-center gap-2 w-full">
-        {/* ... dropdown menu */}
-        <div className="relative" ref={menuRef}>
-          <button
-            type="button"
-            className="btn-icon btn-standard"
-            onClick={() => setOpen((v) => !v)}
-            disabled={isExporting}
-            aria-label="Thêm hành động"
-          >
-            {isExporting ? (
-              <Icon name="Loader2" size={20} className="animate-spin" />
-            ) : (
-              <Icon name="MoreHorizontal" size={20} />
-            )}
-          </button>
-
-          {open && (
-            <div className="absolute left-0 top-full mt-1 z-50 bg-surface border border-border rounded-lg shadow-lg min-w-[160px] py-1">
-              <button
-                type="button"
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-surface-subtle disabled:opacity-50"
-                onClick={() => {
-                  setOpen(false);
-                  onBulkNew();
-                }}
-                disabled={isExporting}
-              >
-                <Icon name="Zap" size={16} /> Nhập mẻ
-              </button>
-              <button
-                type="button"
-                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-surface-subtle disabled:opacity-50"
-                onClick={() => {
-                  setOpen(false);
-                  onExport();
-                }}
-                disabled={isExporting}
-              >
-                <Icon name="FileSpreadsheet" size={16} /> Xuất Excel
-              </button>
-            </div>
+        {/* Xuất Excel: icon button */}
+        <button
+          type="button"
+          className="btn-icon btn-standard"
+          onClick={onExport}
+          disabled={isExporting}
+          aria-label="Xuất Excel"
+        >
+          {isExporting ? (
+            <Icon name="Loader2" size={20} className="animate-spin" />
+          ) : (
+            <Icon name="FileSpreadsheet" size={20} />
           )}
-        </div>
+        </button>
+
+        {/* Nhập mẻ: icon button */}
+        <button
+          type="button"
+          className="btn-icon btn-standard"
+          onClick={onBulkNew}
+          disabled={isExporting}
+          aria-label="Nhập mẻ"
+        >
+          <Icon name="Zap" size={20} />
+        </button>
 
         {/* Nhập mới: full-width primary */}
         <Button

@@ -1,66 +1,77 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ActionMenu } from '@/features/raw-fabric/ActionMenu';
 
-describe('ActionMenu - Mobile Dropdown Alignment', () => {
-  it('positions mobile dropdown with left-0 to avoid overflowing off-screen to the left', () => {
-    const handleNew = vi.fn();
-    const handleBulkNew = vi.fn();
-    const handleExport = vi.fn();
-
+describe('ActionMenu - Mobile and Desktop Layouts', () => {
+  it('renders Xuất Excel icon button directly on mobile layout without a dropdown', () => {
     render(
       <ActionMenu
-        onNew={handleNew}
-        onBulkNew={handleBulkNew}
-        onExport={handleExport}
+        onNew={vi.fn()}
+        onBulkNew={vi.fn()}
+        onExport={vi.fn()}
         isExporting={false}
       />,
     );
 
-    // Open mobile dropdown
-    const toggleButton = screen.getByRole('button', { name: 'Thêm hành động' });
-    fireEvent.click(toggleButton);
-
-    // Find the dropdown container inside the mobile section
-    const mobileContainer = toggleButton.closest('.md\\:hidden');
+    const mobileContainer = document.querySelector('.md\\:hidden');
     expect(mobileContainer).not.toBeNull();
 
-    const dropdownContainer = mobileContainer?.querySelector('.absolute');
-    expect(dropdownContainer).not.toBeNull();
+    // Mobile layout directly renders the Xuất Excel icon button
+    const mobileExportBtn = mobileContainer?.querySelector(
+      'button[aria-label="Xuất Excel"]',
+    );
+    expect(mobileExportBtn).not.toBeNull();
 
-    // The dropdown is anchored to the leftmost button on mobile, so it MUST align left-0
-    // If it has right-0, it overflows off-screen to the left on mobile viewports.
-    expect(dropdownContainer?.className).toContain('left-0');
-    expect(dropdownContainer?.className).not.toContain('right-0');
+    // Mobile layout directly renders the Nhập mẻ icon button
+    const mobileBulkNewBtn = mobileContainer?.querySelector(
+      'button[aria-label="Nhập mẻ"]',
+    );
+    expect(mobileBulkNewBtn).not.toBeNull();
   });
 
-  it('triggers onExport when clicking Xuất Excel in mobile dropdown', () => {
-    const handleNew = vi.fn();
-    const handleBulkNew = vi.fn();
+  it('triggers onExport when clicking Xuất Excel in mobile layout', () => {
     const handleExport = vi.fn();
 
     render(
       <ActionMenu
-        onNew={handleNew}
-        onBulkNew={handleBulkNew}
+        onNew={vi.fn()}
+        onBulkNew={vi.fn()}
         onExport={handleExport}
         isExporting={false}
       />,
     );
 
-    // Open mobile dropdown
-    const toggleButton = screen.getByRole('button', { name: 'Thêm hành động' });
-    fireEvent.click(toggleButton);
-
-    const mobileContainer = toggleButton.closest('.md\\:hidden');
+    const mobileContainer = document.querySelector('.md\\:hidden');
     const exportButton = mobileContainer?.querySelector(
-      'button:nth-child(2)',
+      'button[aria-label="Xuất Excel"]',
     ) as HTMLElement;
     expect(exportButton).not.toBeNull();
     fireEvent.click(exportButton);
 
     expect(handleExport).toHaveBeenCalledTimes(1);
+  });
+
+  it('triggers onBulkNew when clicking Nhập mẻ in mobile layout', () => {
+    const handleBulkNew = vi.fn();
+
+    render(
+      <ActionMenu
+        onNew={vi.fn()}
+        onBulkNew={handleBulkNew}
+        onExport={vi.fn()}
+        isExporting={false}
+      />,
+    );
+
+    const mobileContainer = document.querySelector('.md\\:hidden');
+    const bulkButton = mobileContainer?.querySelector(
+      'button[aria-label="Nhập mẻ"]',
+    ) as HTMLElement;
+    expect(bulkButton).not.toBeNull();
+    fireEvent.click(bulkButton);
+
+    expect(handleBulkNew).toHaveBeenCalledTimes(1);
   });
 
   it('disables mobile buttons when isExporting is true', () => {
@@ -73,8 +84,16 @@ describe('ActionMenu - Mobile Dropdown Alignment', () => {
       />,
     );
 
-    const toggleButton = screen.getByRole('button', { name: 'Thêm hành động' });
-    expect(toggleButton).toBeDisabled();
+    const mobileContainer = document.querySelector('.md\\:hidden');
+    const exportButton = mobileContainer?.querySelector(
+      'button[aria-label="Xuất Excel"]',
+    );
+    expect(exportButton).toBeDisabled();
+
+    const bulkButton = mobileContainer?.querySelector(
+      'button[aria-label="Nhập mẻ"]',
+    );
+    expect(bulkButton).toBeDisabled();
   });
 
   it('triggers onExport when clicking desktop Xuất Excel button', () => {
@@ -89,12 +108,13 @@ describe('ActionMenu - Mobile Dropdown Alignment', () => {
       />,
     );
 
-    const desktopContainer = screen
-      .getByLabelText('Xuất Excel')
-      .closest('.hidden.md\\:flex');
+    const desktopContainer = document.querySelector('.hidden.md\\:flex');
     expect(desktopContainer).not.toBeNull();
 
-    const desktopExportBtn = screen.getByLabelText('Xuất Excel');
+    const desktopExportBtn = desktopContainer?.querySelector(
+      'button[aria-label="Xuất Excel"]',
+    ) as HTMLElement;
+    expect(desktopExportBtn).not.toBeNull();
     fireEvent.click(desktopExportBtn);
     expect(handleExport).toHaveBeenCalledTimes(1);
   });

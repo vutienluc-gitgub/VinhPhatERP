@@ -20,6 +20,8 @@ import {
   Bot,
   ExternalLink,
   ArrowUp,
+  FileSpreadsheet,
+  Zap,
 } from 'lucide-react';
 import type * as LucideIcons from 'lucide-react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
@@ -72,6 +74,10 @@ const STATIC_ICONS: Record<string, ComponentType<LucideProps>> = {
   'external-link': ExternalLink,
   ArrowUp,
   'arrow-up': ArrowUp,
+  FileSpreadsheet,
+  'file-spreadsheet': FileSpreadsheet,
+  Zap,
+  zap: Zap,
 };
 
 const toKebabCase = (str: string) => {
