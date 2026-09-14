@@ -44,6 +44,23 @@ _Ghi chú:_ Việc tuân thủ Architecture Guard là **BẮT BUỘC**.
 
 ---
 
+## Dependency & CI Lockfile Safety
+
+### Forbidden
+
+- Adding test frameworks (`vitest`, `@testing-library`) into `server/package.json` (server tests are run via root Vitest runner).
+- Modifying `package.json` without committing the updated `package-lock.json` in the same commit.
+- Using `git push --no-verify` when modifying dependencies or type definitions.
+
+### Required
+
+- `server/tsconfig.json` MUST exclude test files (`src/**/__tests__/**/*`, `src/**/*.test.ts`).
+- Root `npm run typecheck` remains scoped to `tsconfig.app.json` (frontend).
+- Full audit (`npm run audit:full`) MUST check both frontend typecheck and server typecheck (`npm run typecheck:server`).
+- Run `npm ci --dry-run` locally for both root and server before pushing to ensure zero lockfile drift.
+
+---
+
 ## Database Safety (CRITICAL)
 
 Helper: `src/lib/db-guard.ts`
