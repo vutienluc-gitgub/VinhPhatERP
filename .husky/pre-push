@@ -1,4 +1,10 @@
 
+echo "📦 Checking Root package-lock.json sync..."
+npm ci --dry-run || { echo "❌ Root package-lock.json is out of sync! Run 'npm install'."; exit 1; }
+
+echo "📦 Checking Server package-lock.json sync..."
+(cd server && npm ci --dry-run) || { echo "❌ Server package-lock.json is out of sync! Run 'cd server && npm install'."; exit 1; }
+
 echo "🔍 Checking RPC sync..."
 npm run rpc:check || exit 1
 
