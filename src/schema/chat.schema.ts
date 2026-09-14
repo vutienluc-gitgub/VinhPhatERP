@@ -240,6 +240,8 @@ export const CHAT_LABELS = {
   VIEW_PARTNER_INFO: 'Xem thông tin đối tác',
   SEARCH: 'Tìm kiếm',
   SEARCH_MESSAGES: 'Tìm kiếm tin nhắn',
+  SEARCH_PLACEHOLDER: 'Tìm kiếm tin nhắn...',
+  CLEAR: 'Xóa',
 } as const;
 
 export const CHAT_CONTEXT_LABELS = {

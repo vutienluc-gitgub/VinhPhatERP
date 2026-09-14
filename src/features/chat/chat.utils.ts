@@ -530,3 +530,47 @@ export function resolveEntityDisplayMetadata(
       };
   }
 }
+
+/**
+ * Pure formatter for message reply payload construction.
+ */
+export function formatReplyMessagePayload(
+  replyToMessage?: ChatMessage | null,
+): {
+  id: string;
+  sender_name: string;
+  content: string;
+  message_type: string;
+} | null {
+  if (!replyToMessage) return null;
+  return {
+    id: replyToMessage.id,
+    sender_name: replyToMessage.sender_name ?? 'Người dùng',
+    content: replyToMessage.content,
+    message_type: replyToMessage.message_type,
+  };
+}
+
+/**
+ * Helper to safely scroll to a chat message by ID and highlight it briefly.
+ * Returns a cleanup function that cancels the highlight timer and removes the class.
+ */
+export function scrollToAndHighlightMessage(
+  messageId: string,
+  durationMs = 2500,
+): (() => void) | undefined {
+  if (!messageId) return undefined;
+  const el = document.querySelector(`[data-message-id="${messageId}"]`);
+  if (!el) return undefined;
+
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.add('chat-message-highlight');
+  const timeoutId = setTimeout(() => {
+    el.classList.remove('chat-message-highlight');
+  }, durationMs);
+
+  return () => {
+    clearTimeout(timeoutId);
+    el.classList.remove('chat-message-highlight');
+  };
+}

@@ -172,3 +172,33 @@ describe('chat.utils - extractChronologicalMessages', () => {
     ]);
   });
 });
+
+describe('chat.utils - formatReplyMessagePayload & scrollToAndHighlightMessage', () => {
+  it('formats reply message payload correctly', async () => {
+    const { formatReplyMessagePayload } =
+      await import('@/features/chat/chat.utils');
+    expect(formatReplyMessagePayload(null)).toBeNull();
+    expect(formatReplyMessagePayload(undefined)).toBeNull();
+
+    const sampleMsg = {
+      id: 'msg-123',
+      sender_name: 'Nguyễn Văn A',
+      content: 'Nội dung tin nhắn',
+      message_type: 'text',
+    } as ChatMessage;
+
+    expect(formatReplyMessagePayload(sampleMsg)).toEqual({
+      id: 'msg-123',
+      sender_name: 'Nguyễn Văn A',
+      content: 'Nội dung tin nhắn',
+      message_type: 'text',
+    });
+  });
+
+  it('safely handles scrollToAndHighlightMessage when DOM element is missing or present', async () => {
+    const { scrollToAndHighlightMessage } =
+      await import('@/features/chat/chat.utils');
+    expect(scrollToAndHighlightMessage('')).toBeUndefined();
+    expect(scrollToAndHighlightMessage('non-existent-id')).toBeUndefined();
+  });
+});
