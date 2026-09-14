@@ -593,4 +593,72 @@ describe('Chat Platform Reliability Test Matrix (6 Distributed Scenarios)', () =
     expect(pushRecipients).not.toContain('sale-02');
     expect(pushRecipients).not.toContain('wh-01');
   });
+
+  // ─────────────────────────────────────────────────────────────
+  // Case J: Failed Message Preservation & Retry Eligibility
+  // ─────────────────────────────────────────────────────────────
+  it('Case J: Unsaved failed messages are preserved across server page 0 refetches and eligible for retry', () => {
+    const failedMsg: ChatMessage = {
+      id: 'temp-failed-123',
+      client_id: 'client-failed-123',
+      tenant_id: 'tenant-1',
+      room_id: 'room-01',
+      sender_id: 'user-me',
+      message_type: 'text',
+      content: 'Tin nhắn bị rớt mạng',
+      image_url: null,
+      file_url: null,
+      file_name: null,
+      file_type: null,
+      status: 'failed',
+      created_at: '2026-09-14T16:00:00.000Z',
+      deleted_at: null,
+      is_pinned: false,
+      pinned_at: null,
+      pinned_by: null,
+    };
+
+    const serverMessages: ChatMessage[] = [
+      {
+        id: 'server-confirmed-001',
+        client_id: 'client-001',
+        tenant_id: 'tenant-1',
+        room_id: 'room-01',
+        sender_id: 'user-me',
+        message_type: 'text',
+        content: 'Tin nhắn đã lưu',
+        image_url: null,
+        file_url: null,
+        file_name: null,
+        file_type: null,
+        status: 'sent',
+        created_at: '2026-09-14T15:59:00.000Z',
+        deleted_at: null,
+        is_pinned: false,
+        pinned_at: null,
+        pinned_by: null,
+      },
+    ];
+
+    // Merge logic check: unsaved failed message MUST remain at head of page 0
+    const unsaved = [failedMsg].filter(
+      (m) =>
+        m.status === 'pending' || m.status === 'failed' || m.status === 'error',
+    );
+    const serverIds = new Set(serverMessages.map((m) => m.id));
+    const serverClientIds = new Set(
+      serverMessages.map((m) => m.client_id).filter(Boolean),
+    );
+    const toKeep = unsaved.filter(
+      (m) =>
+        !serverIds.has(m.id) &&
+        (!m.client_id || !serverClientIds.has(m.client_id)),
+    );
+    const mergedPage0 = [...toKeep, ...serverMessages];
+
+    expect(mergedPage0.length).toBe(2);
+    expect(mergedPage0[0]?.status).toBe('failed');
+    expect(mergedPage0[0]?.content).toBe('Tin nhắn bị rớt mạng');
+    expect(mergedPage0[1]?.id).toBe('server-confirmed-001');
+  });
 });

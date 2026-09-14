@@ -165,7 +165,11 @@ export const ChatBubble = memo(function ChatBubble({
     );
   }
 
-  const isError = !isOptimistic && message.status === 'error';
+  const isError =
+    !isOptimistic &&
+    (message.status === 'error' ||
+      message.status === 'failed' ||
+      status === 'failed');
   const statusClass = isOptimistic
     ? 'chat-bubble--pending'
     : isError

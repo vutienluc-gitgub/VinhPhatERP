@@ -224,6 +224,27 @@ export function useChatDrawerOrchestration({
     [resolvedRoomId, sendMutation],
   );
 
+  const handleRetryMessage = useCallback(
+    (msg: ChatMessage) => {
+      if (!resolvedRoomId) return;
+      const clientId = msg.client_id || msg.id || crypto.randomUUID();
+      sendMutation.mutate({
+        clientId,
+        content: msg.content || '',
+        messageType:
+          (msg.message_type as 'text' | 'image' | 'system' | 'file') ?? 'text',
+        imageUrl: msg.image_url ?? undefined,
+        fileUrl: msg.file_url ?? undefined,
+        fileName: msg.file_name ?? undefined,
+        fileType: msg.file_type ?? undefined,
+        mentions: msg.mentions,
+        replyToId: msg.reply_to_id,
+        replyToMessage: msg.reply_to_message,
+      });
+    },
+    [resolvedRoomId, sendMutation],
+  );
+
   const createRoomErrorMessage = useMemo(() => {
     if (!createRoomMutation.isError) return null;
     const err = createRoomMutation.error;
@@ -254,6 +275,7 @@ export function useChatDrawerOrchestration({
     createRoomError: createRoomErrorMessage,
     isCreateRoomError: createRoomMutation.isError,
     handleRetryRoom,
+    handleRetryMessage,
     handleSend,
     handleSendImage,
     handleSendFile,

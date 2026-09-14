@@ -50,6 +50,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
     createRoomError,
     isCreateRoomError,
     handleRetryRoom,
+    handleRetryMessage,
     handleSend,
     handleSendImage,
     handleSendFile,
@@ -178,6 +179,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
               isFetchingNextPage={isFetchingNextPage}
               onLoadMore={() => void fetchNextPage()}
               onQuoteReply={setReplyingToMessage}
+              onRetry={handleRetryMessage}
               partnerName={title}
               entityType={entityType}
             />

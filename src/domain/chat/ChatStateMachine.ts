@@ -49,6 +49,7 @@ export const chatMessageStateMachine = new StateMachine<
     pending: ['send_success', 'send_error'],
     sent: [],
     error: ['retry'],
+    failed: ['retry'],
   },
   {
     send_success: 'sent',

@@ -20,7 +20,7 @@ export type ChatMessageType =
 
 // ── Message Status ──
 
-export type ChatMessageStatus = 'pending' | 'sent' | 'error';
+export type ChatMessageStatus = 'pending' | 'sent' | 'error' | 'failed';
 
 export type ChatMention = {
   type: 'user' | 'role' | 'document';

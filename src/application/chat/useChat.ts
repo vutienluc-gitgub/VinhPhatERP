@@ -201,6 +201,34 @@ export function useChatMessages(roomId: string | undefined) {
       if (!pageParam && messages.length > 0) {
         void saveCachedMessages(roomId!, messages);
       }
+      // Preserve local unsaved (pending or failed) messages from current cache when fetching page 0
+      if (!pageParam && roomId) {
+        const currentData = queryClient.getQueryData<InfiniteData>(
+          CHAT_KEYS.messages(roomId),
+        );
+        const currentFirstPage = currentData?.pages?.[0];
+        if (Array.isArray(currentFirstPage)) {
+          const unsaved = currentFirstPage.filter(
+            (m) =>
+              m.status === 'pending' ||
+              m.status === 'failed' ||
+              m.status === 'error' ||
+              '_optimistic' in m,
+          );
+          if (unsaved.length > 0) {
+            const serverIds = new Set(messages.map((m) => m.id));
+            const serverClientIds = new Set(
+              messages.map((m) => m.client_id).filter(Boolean),
+            );
+            const toKeep = unsaved.filter(
+              (m) =>
+                !serverIds.has(m.id) &&
+                (!m.client_id || !serverClientIds.has(m.client_id)),
+            );
+            return [...toKeep, ...messages];
+          }
+        }
+      }
       return messages;
     },
     initialPageParam: undefined as string | undefined,
