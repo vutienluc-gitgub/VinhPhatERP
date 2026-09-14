@@ -33,6 +33,8 @@ export const RAW_FABRIC_MESSAGES = {
 
   ERR_LOAD: 'Lỗi tải dữ liệu:',
   ERR_EXPORT: 'Lỗi xuất Excel:',
+  EXPORT_SUCCESS: 'Xuất file Excel thành công',
+  EXPORT_EMPTY: 'Không có dữ liệu để xuất Excel',
 
   // FORM MESSAGES & LABELS
   FORM_TITLE_EDIT: 'Sửa cuộn:',

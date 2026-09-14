@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import {
   Icon,
@@ -77,11 +78,19 @@ export function RawFabricList({
     setExportError(null);
     try {
       const resp = await fetchAllExport();
-      if (resp.data) {
-        await exportExcel(resp.data);
+      if (resp.error) {
+        throw resp.error;
       }
+      if (!resp.data || resp.data.length === 0) {
+        toast.error(MSG.EXPORT_EMPTY);
+        return;
+      }
+      await exportExcel(resp.data);
+      toast.success(MSG.EXPORT_SUCCESS);
     } catch (err) {
-      setExportError(err instanceof Error ? err.message : String(err));
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      setExportError(errorMsg);
+      toast.error(`${MSG.ERR_EXPORT} ${errorMsg}`);
     } finally {
       setIsExporting(false);
     }

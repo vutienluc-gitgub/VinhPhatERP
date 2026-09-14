@@ -101,7 +101,7 @@ export function ActionMenu({
           </button>
 
           {open && (
-            <div className="absolute right-0 top-full mt-1 z-50 bg-surface border border-border rounded-lg shadow-lg min-w-[160px] py-1">
+            <div className="absolute left-0 top-full mt-1 z-50 bg-surface border border-border rounded-lg shadow-lg min-w-[160px] py-1">
               <button
                 type="button"
                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-surface-subtle disabled:opacity-50"
