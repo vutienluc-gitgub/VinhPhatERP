@@ -191,11 +191,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
       const newestMsg = chronologicalMessages[chronologicalMessages.length - 1];
       const isMine = Boolean(
         (user?.id && newestMsg?.sender_id === user?.id) ||
-        (!newestMsg?.sender_id && newestMsg?.status === 'pending') ||
-        (profile?.role !== 'customer' &&
-          (newestMsg?.sender_role === 'admin' ||
-            newestMsg?.sender_role === 'manager' ||
-            newestMsg?.sender_role === 'staff')),
+        (!newestMsg?.sender_id && newestMsg?.status === 'pending'),
       );
 
       if (isMine || isNearBottom) {
@@ -206,13 +202,7 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     }
 
     lastMessageCountRef.current = currentCount;
-  }, [
-    chronologicalMessages,
-    isNearBottom,
-    user?.id,
-    profile?.role,
-    scrollToBottom,
-  ]);
+  }, [chronologicalMessages, isNearBottom, user?.id, scrollToBottom]);
 
   // Initial load scroll to bottom
   const isCurrentlyLoading =

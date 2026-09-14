@@ -37,22 +37,17 @@ export function resolveParticipantParty(
 /**
  * Resolves visual render side (right vs left) based on party and portal perspective.
  *
- * Business Invariant:
- * - On Admin Portal (Perspective: 'internal'):
- *   ALL Internal messages (Staff A, Staff B, Manager, Admin) align RIGHT (Blue/Primary).
- *   External messages (Customer, Driver) align LEFT (Outline/Secondary).
- *
- * - On External Portals (Perspective: 'external'):
- *   Self-sent messages align RIGHT.
- *   Factory/Admin messages align LEFT.
+ * Architectural Invariant:
+ * - `isMine` MUST represent the exact authenticated viewer (`currentUser.id === sender_id`),
+ *   never the sender's party/role.
+ * - `side = right` MUST mean `isSelfSender === true` (isMine).
+ * - Every other sender MUST align `left` with their authentic name and initials,
+ *   regardless of portal perspective (Admin, Customer, or Driver).
  */
 export function resolveMessageSide(
-  party: ChatParticipantParty,
-  perspective: 'internal' | 'external' = 'internal',
+  _party: ChatParticipantParty,
+  _perspective: 'internal' | 'external' = 'internal',
   isSelfSender = false,
 ): ChatMessageSide {
-  if (perspective === 'internal') {
-    return party === 'internal' || isSelfSender ? 'right' : 'left';
-  }
   return isSelfSender ? 'right' : 'left';
 }
