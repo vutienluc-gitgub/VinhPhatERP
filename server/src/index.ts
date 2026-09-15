@@ -21,18 +21,41 @@ app.use('*', logger());
 app.use('*', secureHeaders());
 app.use('*', prettyJSON());
 
-// CORS — chỉ cho phép origin từ frontend
-const allowedOrigins = (
-  process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173'
-).split(',');
+// CORS — Cấu hình phòng thủ chuẩn cho Web, Mobile PWA & WebView Origins
+const defaultAllowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost',
+  'capacitor://localhost',
+];
+
+const envOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : [];
+
+const allowedOrigins = Array.from(
+  new Set([...defaultAllowedOrigins, ...envOrigins]),
+);
+
 app.use(
   '*',
   cors({
-    origin: (origin) =>
-      allowedOrigins.includes(origin) ? origin : allowedOrigins[0],
-    allowHeaders: ['Content-Type', 'Authorization'],
-    allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    origin: (origin) => {
+      if (!origin) return allowedOrigins[0];
+      return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+    },
+    allowHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Tenant-ID',
+      'X-Client-Info',
+      'apikey',
+      'Prefer',
+      'X-Requested-With',
+    ],
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
+    maxAge: 86400, // Cache Preflight OPTIONS response for 24 hours
   }),
 );
 
