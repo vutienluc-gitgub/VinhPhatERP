@@ -79,6 +79,31 @@ Xem đầy đủ: [docs/RUN_COMMANDS.md](docs/RUN_COMMANDS.md)
 
 ---
 
+## Bảo vệ cấu hình CI — Cảnh giác ghi đè kiểu "stale snapshot"
+
+> Bài học từ PR #2 (`perf(chat): optimize chat db performance and unread RPCs`).
+
+**Hiện tượng**: commit sinh tự động (vd. bot `google-labs-jules`) có thể mang theo nội dung **cũ** của các file hạ tầng và ghi đè thay đổi vừa merge vào `main`. Nội dung ghi đè là **bản cũ nguyên văn** — khớp blob hash của commit trước đó — chứ không phải chỉnh sửa có chủ đích.
+
+Hệ quả thực tế: một commit tính năng chat đã xóa `lint:css`, `theme:check`, `build`, job `e2e` và `ai-audit` khỏi `.github/workflows/ci.yml`, đồng thời đảo ngược `.husky/pre-push`. CI vì thế vẫn báo xanh nhưng chỉ chạy **3 job thay vì 5** — tín hiệu giả, rất dễ đánh lừa khi review.
+
+**Quy tắc**:
+
+1. Trước khi tin một bảng CI xanh, phải kiểm tra workflow có chạy **đủ gate** không (số job + tên step), không chỉ nhìn kết luận `success`.
+2. Không bao giờ đưa thay đổi `.github/`, `.husky/`, `.agents/rules/`, `e2e/` vào commit tính năng. Nếu diff xuất hiện các file này → dừng lại, tách riêng hoặc khôi phục.
+3. File hạ tầng phải khớp với `main`. Phục hồi bằng `git checkout origin/main -- <file>`, rồi gộp bằng `git commit --fixup` + `git rebase -i --autosquash` (không để lại cặp "commit xóa rồi commit thêm lại" trong lịch sử).
+
+**Kiểm tra nhanh** trước khi push:
+
+```bash
+git diff --name-only origin/main...HEAD \
+  | grep -E '^\.github/|^\.husky/|^\.agents/rules/|^e2e/'
+```
+
+Không có output = an toàn. Có output = phải xem lại từng file.
+
+---
+
 ## Skills
 
 | Khi cần                | Dùng skill                         |
