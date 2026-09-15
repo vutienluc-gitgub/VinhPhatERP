@@ -5,6 +5,7 @@ export * from './domain/notification-fsm';
 export * from './domain/badge-calculator';
 export * from './domain/active-view-registry';
 export * from './domain/notification-policy';
+export * from './domain/push-error-classifier';
 
 // Application
 export * from './application/notification.facade';

@@ -1,5 +1,5 @@
 // Supabase Edge Function: send-web-push
-// Enterprise Web Push Dispatcher with VAPID, Multi-Device Delivery, 410 Cleanup & Logging
+// Enterprise Web Push Dispatcher with VAPID, Multi-Device Delivery, Fast 202 Response, Error Classification & Logging
 // Deploy: supabase functions deploy send-web-push
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -26,10 +26,18 @@ interface PushNotificationPayload {
   priority?: string;
   metadata?: Record<string, unknown>;
   message_id?: string;
+  room_id?: string;
+  sender_id?: string;
+  sender_name?: string;
 }
 
-// Configure VAPID details from environment (Fail Closed: No Hardcoded Secret Fallback)
-const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+// Authoritative VAPID Public Key fallback (Single Source of Truth matching client)
+const AUTHORITATIVE_PUBLIC_KEY =
+  'BElJS1biXMms_8auV6_QTwt4Dy0mI36FdcwAk7sR2Cw5h2PJ9Qv-lmeeMDRraW_VVpVCLH3DaMIAapuljw0QQTY';
+
+// Configure VAPID details from environment
+const vapidPublicKey =
+  Deno.env.get('VAPID_PUBLIC_KEY') || AUTHORITATIVE_PUBLIC_KEY;
 const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
 const vapidSubject =
   Deno.env.get('VAPID_SUBJECT') || 'mailto:admin@detmayvinhphat.com';
@@ -48,6 +56,431 @@ function sanitizePushBody(body: string): string {
     /(\d{1,3}[.,]\d{3}[.,]\d{3}[.,]\d{3}|\d{1,3}[.,]\d{3}[.,]\d{3}|\d{1,3}[.,]\d{3})\s*(đ|VND|vnđ|USD|\$)/gi,
     '***',
   );
+}
+
+/**
+ * Core push dispatch worker function
+ */
+async function executePushDispatch(
+  // deno-lint-ignore no-explicit-any
+  supabase: any,
+  payload: PushNotificationPayload,
+  dedupEventId?: string,
+): Promise<{ ok: boolean; devices_targeted: number; results: unknown[] }> {
+  const results: unknown[] = [];
+
+  // ── 1. CHAT MESSAGE FAN-OUT ──
+  if (payload.type === 'CHAT_MESSAGE' && payload.message_id) {
+    let message: {
+      id: string;
+      content: string | null;
+      message_type: string;
+      sender_id: string | null;
+      room_id: string;
+    } | null = null;
+    let retryCount = 0;
+
+    while (retryCount < 2) {
+      const { data } = await supabase
+        .from('chat_messages')
+        .select('id, content, message_type, sender_id, room_id')
+        .eq('id', payload.message_id)
+        .single();
+
+      if (data) {
+        message = data as typeof message;
+        break;
+      }
+
+      await new Promise((r) => setTimeout(r, 300));
+      retryCount++;
+    }
+
+    if (!message) {
+      return { ok: true, devices_targeted: 0, results: [] };
+    }
+
+    // Fetch all participants of this room EXCEPT sender
+    let { data: participants } = await supabase
+      .from('chat_room_participants')
+      .select('user_id, unread_count')
+      .eq('room_id', message.room_id)
+      .neq('user_id', message.sender_id);
+
+    // Defensive resolution: Self-healing fallback if participants not found
+    if (!participants || participants.length === 0) {
+      const { data: room } = await supabase
+        .from('chat_rooms')
+        .select('entity_type, entity_id, tenant_id')
+        .eq('id', message.room_id)
+        .maybeSingle();
+
+      if (room) {
+        let recipientQuery = supabase.from('profiles').select('id');
+        if (room.entity_type === 'customer') {
+          recipientQuery = recipientQuery.or(
+            `customer_id.eq.${room.entity_id},and(tenant_id.eq.${room.tenant_id},role.in.(admin,manager,staff,kho,warehouse,sale,operator,accountant))`,
+          );
+        } else if (room.entity_type === 'supplier') {
+          recipientQuery = recipientQuery.or(
+            `supplier_id.eq.${room.entity_id},and(tenant_id.eq.${room.tenant_id},role.in.(admin,manager,staff,kho,warehouse,sale,operator,accountant))`,
+          );
+        } else {
+          recipientQuery = recipientQuery
+            .eq('tenant_id', room.tenant_id)
+            .in('role', ['admin', 'manager', 'staff', 'kho', 'sale']);
+        }
+
+        const { data: fallbackProfiles } = await recipientQuery;
+        if (fallbackProfiles && fallbackProfiles.length > 0) {
+          participants = fallbackProfiles
+            .filter((p: { id: string }) => p.id !== message?.sender_id)
+            .map((p: { id: string }) => ({ user_id: p.id, unread_count: 1 }));
+        }
+      }
+    }
+
+    if (!participants || participants.length === 0) {
+      return { ok: true, devices_targeted: 0, results: [] };
+    }
+
+    const userIds = participants.map((p: { user_id: string }) => p.user_id);
+    const { data: subscriptions } = await supabase
+      .from('push_subscriptions')
+      .select('*')
+      .in('user_id', userIds)
+      .is('revoked_at', null);
+
+    if (!subscriptions || subscriptions.length === 0) {
+      return { ok: true, devices_targeted: 0, results: [] };
+    }
+
+    let bodyText = '';
+    if (message.message_type === 'image') {
+      bodyText = '[Hinh anh] Da gui mot hinh anh';
+    } else if (message.message_type === 'file') {
+      bodyText = '[Tep dinh kem] Da gui mot tep dinh kem';
+    } else {
+      bodyText = (message.content || '').substring(0, 100);
+    }
+
+    bodyText = bodyText.replace(/[@#]\S+/g, '').trim();
+    bodyText = sanitizePushBody(bodyText);
+
+    const unreadMap = new Map<string, number>();
+    participants.forEach((p: { user_id: string; unread_count?: number }) => {
+      unreadMap.set(p.user_id, p.unread_count || 1);
+    });
+
+    let senderName = payload.sender_name || 'Thanh vien';
+    if (message.sender_id && !payload.sender_name) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', message.sender_id)
+        .maybeSingle();
+
+      if (profile?.full_name) {
+        senderName = profile.full_name;
+      }
+    }
+
+    for (const sub of subscriptions) {
+      const pushMessage = JSON.stringify({
+        title: `${senderName}`,
+        body: bodyText,
+        action: 'chat',
+        roomId: message.room_id,
+        senderName: senderName,
+        messageId: message.id,
+        notification_id: `chat-${message.id}-${Date.now()}`,
+        unreadCount: unreadMap.get(sub.user_id) || 1,
+      });
+
+      const pushSubscription = {
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.p256dh, auth: sub.auth },
+      };
+
+      try {
+        if (!vapidPrivateKey) {
+          results.push({
+            subscription_id: sub.id,
+            status: 'sent_mock',
+            response_code: 200,
+          });
+          continue;
+        }
+
+        const isAppleEndpoint =
+          typeof sub.endpoint === 'string' &&
+          sub.endpoint.includes('push.apple.com');
+        const pushOptions: Record<string, unknown> = {
+          TTL: 86400,
+          urgency: 'high',
+        };
+
+        if (isAppleEndpoint) {
+          pushOptions.headers = {
+            'apns-push-type': 'alert',
+            'apns-priority': '10',
+            'apns-expiration': String(Math.floor(Date.now() / 1000) + 86400),
+          };
+        }
+
+        const response = await webpush.sendNotification(
+          pushSubscription,
+          pushMessage,
+          pushOptions,
+        );
+
+        results.push({
+          subscription_id: sub.id,
+          status: 'delivered',
+          response_code: response.statusCode,
+        });
+
+        if (payload.notification_id) {
+          await supabase.from('notification_delivery_logs').insert({
+            notification_id: payload.notification_id,
+            channel: 'web_push',
+            status: 'delivered',
+            response_code: response.statusCode,
+          });
+        }
+      } catch (err: unknown) {
+        const error = err as {
+          statusCode?: number;
+          message?: string;
+          body?: string;
+          headers?: Record<string, string>;
+        };
+        const statusCode = error.statusCode || 500;
+        const rawBody = error.body || '';
+        let reason = '';
+        try {
+          if (rawBody.startsWith('{')) {
+            const parsed = JSON.parse(rawBody);
+            reason = parsed.reason || '';
+          }
+        } catch {
+          reason = rawBody;
+        }
+
+        const errorMessage = reason || error.message || String(err);
+
+        results.push({
+          subscription_id: sub.id,
+          status: 'failed',
+          response_code: statusCode,
+          reason: reason || undefined,
+          error: errorMessage,
+        });
+
+        // Strict Error Classification (NO naive 400 revoke!)
+        const isDeadToken =
+          statusCode === 410 ||
+          statusCode === 404 ||
+          (statusCode === 400 &&
+            (reason === 'BadDeviceToken' ||
+              reason === 'Unregistered' ||
+              reason === 'DeviceTokenNotForTopic'));
+
+        if (isDeadToken) {
+          WebhookReliability.logWarn('Revoking dead push subscription', {
+            subscriptionId: sub.id,
+            statusCode,
+            reason,
+          });
+          await supabase
+            .from('push_subscriptions')
+            .update({
+              revoked_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', sub.id);
+        } else {
+          WebhookReliability.logError(
+            'Push delivery transient failure (token retained)',
+            {
+              subscriptionId: sub.id,
+              statusCode,
+              reason,
+              error: error.message,
+            },
+          );
+        }
+      }
+    }
+
+    if (dedupEventId) {
+      await supabase.rpc('rpc_complete_inbound_webhook_event', {
+        p_source: 'send-web-push',
+        p_event_id: dedupEventId,
+        p_status: 'processed',
+      });
+    }
+
+    return { ok: true, devices_targeted: subscriptions.length, results };
+  }
+
+  // ── 2. NORMAL NOTIFICATION FAN-OUT ──
+  if (payload.user_id) {
+    if (payload.domain) {
+      const { data: pref } = await supabase
+        .from('notification_preferences')
+        .select('push_enabled')
+        .eq('user_id', payload.user_id)
+        .eq('domain', payload.domain)
+        .maybeSingle();
+
+      if (pref && pref.push_enabled === false) {
+        return {
+          ok: true,
+          devices_targeted: 0,
+          results: [{ status: 'skipped_user_preference' }],
+        };
+      }
+    }
+
+    const { data: subscriptions, error: subsError } = await supabase
+      .from('push_subscriptions')
+      .select('*')
+      .eq('user_id', payload.user_id)
+      .is('revoked_at', null);
+
+    if (subsError || !subscriptions || subscriptions.length === 0) {
+      return { ok: true, devices_targeted: 0, results: [] };
+    }
+
+    const pushMessage = JSON.stringify({
+      notification_id: payload.notification_id,
+      title: payload.title || 'Vinh Phat ERP',
+      body: sanitizePushBody(payload.body || ''),
+      entity_type: payload.entity_type,
+      entity_id: payload.entity_id,
+      action: payload.action,
+      priority: payload.priority || 'normal',
+    });
+
+    for (const sub of subscriptions) {
+      const pushSubscription = {
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.p256dh, auth: sub.auth },
+      };
+
+      try {
+        if (!vapidPrivateKey) {
+          results.push({
+            subscription_id: sub.id,
+            status: 'sent_mock',
+            response_code: 200,
+          });
+          continue;
+        }
+
+        const isAppleEndpoint =
+          typeof sub.endpoint === 'string' &&
+          sub.endpoint.includes('push.apple.com');
+        const pushOptions: Record<string, unknown> = {
+          TTL: 86400,
+          urgency: payload.priority === 'urgent' ? 'high' : 'normal',
+        };
+
+        if (isAppleEndpoint) {
+          pushOptions.headers = {
+            'apns-push-type': 'alert',
+            'apns-priority': payload.priority === 'urgent' ? '10' : '5',
+            'apns-expiration': String(Math.floor(Date.now() / 1000) + 86400),
+          };
+        }
+
+        const response = await webpush.sendNotification(
+          pushSubscription,
+          pushMessage,
+          pushOptions,
+        );
+
+        results.push({
+          subscription_id: sub.id,
+          status: 'delivered',
+          response_code: response.statusCode,
+        });
+
+        if (payload.notification_id) {
+          await supabase.from('notification_delivery_logs').insert({
+            notification_id: payload.notification_id,
+            channel: 'web_push',
+            status: 'delivered',
+            response_code: response.statusCode,
+          });
+        }
+      } catch (err: unknown) {
+        const error = err as {
+          statusCode?: number;
+          message?: string;
+          body?: string;
+        };
+        const statusCode = error.statusCode || 500;
+        const rawBody = error.body || '';
+        let reason = '';
+        try {
+          if (rawBody.startsWith('{')) {
+            const parsed = JSON.parse(rawBody);
+            reason = parsed.reason || '';
+          }
+        } catch {
+          reason = rawBody;
+        }
+
+        const errorMessage = reason || error.message || String(err);
+
+        results.push({
+          subscription_id: sub.id,
+          status: 'failed',
+          response_code: statusCode,
+          reason: reason || undefined,
+          error: errorMessage,
+        });
+
+        // Strict Error Classification (NO naive 400 revoke!)
+        const isDeadToken =
+          statusCode === 410 ||
+          statusCode === 404 ||
+          (statusCode === 400 &&
+            (reason === 'BadDeviceToken' ||
+              reason === 'Unregistered' ||
+              reason === 'DeviceTokenNotForTopic'));
+
+        if (isDeadToken) {
+          WebhookReliability.logWarn('Revoking dead push subscription', {
+            subscriptionId: sub.id,
+            statusCode,
+            reason,
+          });
+          await supabase
+            .from('push_subscriptions')
+            .update({
+              revoked_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', sub.id);
+        }
+      }
+    }
+
+    if (dedupEventId) {
+      await supabase.rpc('rpc_complete_inbound_webhook_event', {
+        p_source: 'send-web-push',
+        p_event_id: dedupEventId,
+        p_status: 'processed',
+      });
+    }
+
+    return { ok: true, devices_targeted: subscriptions.length, results };
+  }
+
+  return { ok: true, devices_targeted: 0, results: [] };
 }
 
 serve(async (req: Request) => {
@@ -76,23 +509,34 @@ serve(async (req: Request) => {
     );
 
     // 2. Caller Authentication Guard
-    const authHeader = req.headers.get('Authorization');
+    const authHeader = req.headers.get('Authorization') || '';
+    const apiKeyHeader = req.headers.get('apikey') || '';
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const KNOWN_ANON_KEY =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGhpanJvZmxqeGtjY2R3dHViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MDk1NTksImV4cCI6MjA5MDA4NTU1OX0.8e-qbhqv6UgCZ46Yx7sa9FWGCdT50q27i4kAiMtCpxc';
 
-    if (!authHeader) {
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+    const isServiceRole =
+      (serviceRoleKey && token === serviceRoleKey) ||
+      (serviceRoleKey && apiKeyHeader === serviceRoleKey);
+    const isAnon =
+      (anonKey && token === anonKey) ||
+      token === KNOWN_ANON_KEY ||
+      apiKeyHeader === KNOWN_ANON_KEY ||
+      (anonKey && apiKeyHeader === anonKey);
+
+    if (!token && !apiKeyHeader) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized: Missing Authorization header' }),
+        JSON.stringify({
+          error: 'Unauthorized: Missing Authorization or apikey header',
+        }),
         {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         },
       );
     }
-
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const isServiceRole = serviceRoleKey && token === serviceRoleKey;
-    const isAnon = anonKey && token === anonKey;
 
     if (!isServiceRole && !isAnon) {
       const { data: userAuth, error: authErr } =
@@ -141,386 +585,51 @@ serve(async (req: Request) => {
       }
     }
 
-    // ── CHAT MESSAGE FAN-OUT ──
-    if (payload.type === 'CHAT_MESSAGE' && payload.message_id) {
-      // 1. Fetch message with retry logic to avoid race condition
-      let message: {
-        id: string;
-        content: string | null;
-        message_type: string;
-        sender_id: string | null;
-        room_id: string;
-      } | null = null;
-      let retryCount = 0;
+    // 4. Check if synchronous mode requested (e.g. for diagnostic probes/tests)
+    const requestUrl = new URL(req.url);
+    const isSync =
+      requestUrl.searchParams.get('sync') === 'true' ||
+      payload.metadata?.sync === true;
 
-      while (retryCount < 2) {
-        const { data } = await supabase
-          .from('chat_messages')
-          .select('id, content, message_type, sender_id, room_id')
-          .eq('id', payload.message_id)
-          .single();
-
-        if (data) {
-          message = data as typeof message;
-          break;
-        }
-
-        // Wait 300ms before retrying
-        await new Promise((r) => setTimeout(r, 300));
-        retryCount++;
-      }
-
-      if (!message) return new Response('OK', { status: 200 }); // Fail silently
-
-      // 2. Fetch all participants of this room EXCEPT sender
-      let { data: participants } = await supabase
-        .from('chat_room_participants')
-        .select('user_id, unread_count')
-        .eq('room_id', message.room_id)
-        .neq('user_id', message.sender_id);
-
-      // DEFENSIVE RESOLUTION: Self-healing fallback if participants not found
-      if (!participants || participants.length === 0) {
-        const { data: room } = await supabase
-          .from('chat_rooms')
-          .select('entity_type, entity_id, tenant_id')
-          .eq('id', message.room_id)
-          .maybeSingle();
-
-        if (room) {
-          // If sender is customer/supplier, notify internal staff; if sender is staff, notify customer/supplier
-          let recipientQuery = supabase.from('profiles').select('id');
-          if (room.entity_type === 'customer') {
-            recipientQuery = recipientQuery.or(
-              `customer_id.eq.${room.entity_id},and(tenant_id.eq.${room.tenant_id},role.in.(admin,manager,staff,kho,warehouse,sale,operator,accountant))`,
-            );
-          } else if (room.entity_type === 'supplier') {
-            recipientQuery = recipientQuery.or(
-              `supplier_id.eq.${room.entity_id},and(tenant_id.eq.${room.tenant_id},role.in.(admin,manager,staff,kho,warehouse,sale,operator,accountant))`,
-            );
-          } else {
-            recipientQuery = recipientQuery
-              .eq('tenant_id', room.tenant_id)
-              .in('role', ['admin', 'manager', 'staff', 'kho', 'sale']);
-          }
-
-          const { data: fallbackProfiles } = await recipientQuery;
-          if (fallbackProfiles && fallbackProfiles.length > 0) {
-            participants = fallbackProfiles
-              .filter((p) => p.id !== message.sender_id)
-              .map((p) => ({ user_id: p.id, unread_count: 1 }));
-
-            // Async backfill to chat_room_participants
-            for (const p of fallbackProfiles) {
-              void supabase.from('chat_room_participants').insert({
-                room_id: message.room_id,
-                user_id: p.id,
-                role: 'member',
-                unread_count: p.id !== message.sender_id ? 1 : 0,
-              });
-            }
-          }
-        }
-      }
-
-      if (!participants || participants.length === 0) {
-        return new Response('OK', { status: 200 });
-      }
-
-      // 3. Fetch push subscriptions for all participants
-      const userIds = participants.map((p) => p.user_id);
-      const { data: subscriptions } = await supabase
-        .from('push_subscriptions')
-        .select('*')
-        .in('user_id', userIds)
-        .is('revoked_at', null);
-
-      if (!subscriptions || subscriptions.length === 0) {
-        return new Response('OK', { status: 200 });
-      }
-
-      // 4. Format push body (No emoji in source code)
-      let bodyText = '';
-      if (message.message_type === 'image') {
-        bodyText = '[Hinh anh] Da gui mot hinh anh';
-      } else if (message.message_type === 'file') {
-        bodyText = '[Tep dinh kem] Da gui mot tep dinh kem';
-      } else {
-        bodyText = (message.content || '').substring(0, 100);
-      }
-
-      // Strip mentions from push notification
-      bodyText = bodyText.replace(/[@#]\S+/g, '').trim();
-      bodyText = sanitizePushBody(bodyText);
-
-      // We need to look up unread count per user
-      const unreadMap = new Map<string, number>();
-      participants.forEach((p) => {
-        unreadMap.set(p.user_id, p.unread_count || 1);
-      });
-
-      let senderName = 'Nguoi dung';
-      if (message.sender_id) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', message.sender_id)
-          .maybeSingle();
-
-        if (profile?.full_name) {
-          senderName = profile.full_name;
-        }
-      }
-
-      // 5. Send push to all devices
-      const results = [];
-      for (const sub of subscriptions) {
-        const pushMessage = JSON.stringify({
-          title: `${senderName}`,
-          body: bodyText,
-          action: 'chat',
-          roomId: message.room_id,
-          senderName: senderName,
-          notification_id: `chat-${message.id}-${Date.now()}`,
-          unreadCount: unreadMap.get(sub.user_id) || 1,
-        });
-
-        const pushSubscription = {
-          endpoint: sub.endpoint,
-          keys: { p256dh: sub.p256dh, auth: sub.auth },
-        };
-
-        try {
-          if (!vapidPrivateKey) {
-            results.push({
-              subscription_id: sub.id,
-              status: 'sent_mock',
-              response_code: 200,
-            });
-            continue;
-          }
-
-          const response = await webpush.sendNotification(
-            pushSubscription,
-            pushMessage,
-            { TTL: 86400, urgency: 'high' },
-          );
-          results.push({
-            subscription_id: sub.id,
-            status: 'delivered',
-            response_code: response.statusCode,
-          });
-        } catch (err: unknown) {
-          const error = err as { statusCode?: number; message?: string };
-          const statusCode = error.statusCode || 500;
-          results.push({
-            subscription_id: sub.id,
-            status: 'failed',
-            response_code: statusCode,
-          });
-
-          if (statusCode === 410 || statusCode === 404) {
-            await supabase
-              .from('push_subscriptions')
-              .update({
-                revoked_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              })
-              .eq('id', sub.id);
-          }
-        }
-      }
-
-      return new Response(
-        JSON.stringify({
-          ok: true,
-          devices_targeted: subscriptions.length,
-          results,
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        },
-      );
-    }
-
-    // ── NORMAL NOTIFICATION ──
-    if (!payload.user_id || !payload.title) {
-      return new Response(
-        JSON.stringify({
-          error: 'user_id and title are required for standard notifications',
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        },
-      );
-    }
-
-    // 1. Check user notification preferences if domain specified
-    if (payload.domain) {
-      const { data: pref } = await supabase
-        .from('notification_preferences')
-        .select('push_enabled')
-        .eq('user_id', payload.user_id)
-        .eq('domain', payload.domain)
-        .maybeSingle();
-
-      if (pref && pref.push_enabled === false) {
-        return new Response(
-          JSON.stringify({
-            status: 'skipped',
-            reason: 'User disabled push for this domain',
-          }),
-          {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          },
-        );
-      }
-    }
-
-    // 2. Fetch all active subscriptions for user
-    const { data: subscriptions, error: subsError } = await supabase
-      .from('push_subscriptions')
-      .select('*')
-      .eq('user_id', payload.user_id)
-      .is('revoked_at', null);
-
-    if (subsError) throw subsError;
-
-    if (!subscriptions || subscriptions.length === 0) {
-      return new Response(
-        JSON.stringify({
-          status: 'no_subscriptions',
-          message: 'No active push devices registered for user',
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        },
-      );
-    }
-
-    // 3. Calculate recipient's total unread count for OS App Badging
-    const { count: unreadCount } = await supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', payload.user_id)
-      .eq('is_read', false);
-
-    // Prepare sanitized payload
-    const pushMessage = JSON.stringify({
-      notification_id: payload.notification_id,
-      title: payload.title,
-      body: sanitizePushBody(payload.body || ''),
-      entity_type: payload.entity_type,
-      entity_id: payload.entity_id,
-      action: payload.action,
-      priority: payload.priority || 'normal',
-      unread_count: (unreadCount ?? 0) + 1,
-    });
-
-    const results = [];
-
-    // 4. Send Web Push to all active devices
-    for (const sub of subscriptions) {
-      const pushSubscription = {
-        endpoint: sub.endpoint,
-        keys: { p256dh: sub.p256dh, auth: sub.auth },
-      };
-
-      try {
-        if (!vapidPrivateKey) {
-          results.push({
-            subscription_id: sub.id,
-            status: 'sent_mock',
-            response_code: 200,
-          });
-          continue;
-        }
-
-        const response = await webpush.sendNotification(
-          pushSubscription,
-          pushMessage,
-          {
-            TTL: 86400,
-            urgency: payload.priority === 'urgent' ? 'high' : 'normal',
-          },
-        );
-
-        results.push({
-          subscription_id: sub.id,
-          status: 'delivered',
-          response_code: response.statusCode,
-        });
-
-        // Log successful delivery
-        if (payload.notification_id) {
-          await supabase.from('notification_delivery_logs').insert({
-            notification_id: payload.notification_id,
-            channel: 'web_push',
-            status: 'delivered',
-            response_code: response.statusCode,
-          });
-        }
-      } catch (err: unknown) {
-        const error = err as { statusCode?: number; message?: string };
-        const statusCode = error.statusCode || 500;
-        const errorMessage = error.message || String(err);
-
-        results.push({
-          subscription_id: sub.id,
-          status: 'failed',
-          response_code: statusCode,
-          error: errorMessage,
-        });
-
-        // Log delivery failure
-        if (payload.notification_id) {
-          await supabase.from('notification_delivery_logs').insert({
-            notification_id: payload.notification_id,
-            channel: 'web_push',
-            status: 'failed',
-            response_code: statusCode,
-            error_message: errorMessage,
-          });
-        }
-
-        // 5. Automatic 410 Gone / 404 Cleanup
-        if (statusCode === 410 || statusCode === 404) {
-          await supabase
-            .from('push_subscriptions')
-            .update({
-              revoked_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', sub.id);
-        }
-      }
-    }
-
-    if (dedupEventId) {
-      await supabase.rpc('rpc_complete_inbound_webhook_event', {
-        p_source: 'send-web-push',
-        p_event_id: dedupEventId,
-        p_status: 'processed',
+    if (isSync) {
+      // Synchronous execution for test runner/diagnostics
+      const result = await executePushDispatch(supabase, payload, dedupEventId);
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    WebhookReliability.logInfo('Web push dispatch completed', {
-      devicesTargeted: subscriptions.length,
-      eventId: dedupEventId,
+    // 5. Asynchronous Fast 202 Response for Postgres triggers & webhooks (< 30ms)
+    const dispatchPromise = executePushDispatch(
+      supabase,
+      payload,
+      dedupEventId,
+    ).catch((err) => {
+      WebhookReliability.logError(
+        'Unhandled error in background push dispatch',
+        err,
+      );
     });
+
+    // Register background execution with EdgeRuntime if supported
+    // @ts-ignore
+    if (
+      typeof EdgeRuntime !== 'undefined' &&
+      typeof EdgeRuntime.waitUntil === 'function'
+    ) {
+      // @ts-ignore
+      EdgeRuntime.waitUntil(dispatchPromise);
+    }
 
     return new Response(
       JSON.stringify({
-        ok: true,
-        devices_targeted: subscriptions.length,
-        results,
+        status: 'accepted',
+        message: 'Push notification accepted for background dispatch',
+        dedup_event_id: dedupEventId,
       }),
       {
-        status: 200,
+        status: 202,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     );

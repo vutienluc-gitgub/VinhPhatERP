@@ -26,9 +26,19 @@ export function useNotificationFacade() {
 
   useEffect(() => {
     let mounted = true;
-    void NotificationFacade.getDeviceState().then((state) => {
-      if (mounted) setFsmState(state);
-    });
+
+    async function init() {
+      if (userId) {
+        await NotificationFacade.ensureDeviceSubscribed(userId).catch(() => {});
+      }
+      const state = await NotificationFacade.getDeviceState();
+      if (mounted) {
+        setFsmState(state);
+      }
+    }
+
+    void init();
+
     return () => {
       mounted = false;
     };

@@ -31,8 +31,7 @@ async function checkTodayMessage() {
     const rooms = await sql`
       SELECT id, entity_type, entity_id, status, created_at, updated_at
       FROM public.chat_rooms
-      WHERE (entity_type = 'customer' AND entity_id = ${customer.id}::text)
-         OR (entity_type = 'customer' AND entity_id = ${customer.code})
+      WHERE entity_type = 'customer' AND entity_id = ${customer.id}::uuid
       ORDER BY created_at DESC;
     `;
     console.log('Phòng chat:', rooms);
@@ -61,7 +60,7 @@ async function checkTodayMessage() {
       '\n=== 4. CÁC TIN NHẮN TRONG PHÒNG (ĐẶC BIỆT LÀ TIN NHẮN HÔM NAY) ===',
     );
     const messages = await sql`
-      SELECT m.id, m.client_id, m.sender_id, m.content, m.status, m.created_at, m.read_at,
+      SELECT m.id, m.client_id, m.sender_id, m.content, m.status, m.created_at,
              pr.full_name AS sender_name, pr.role AS sender_role
       FROM public.chat_messages m
       LEFT JOIN public.profiles pr ON m.sender_id = pr.id

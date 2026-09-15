@@ -1,3 +1,5 @@
+import { resolveVapidPublicKey } from '@/shared/constants/notifications';
+
 /**
  * Converts a URL-safe Base64 string to a Uint8Array required by W3C PushManager.
  */
@@ -16,11 +18,8 @@ export function urlBase64ToUint8Array(base64String: string): Uint8Array {
 
 /**
  * Returns the VAPID public key configured in environment.
- * Default is a verified NIST P-256 prime256v1 elliptic curve public key.
+ * Default is the authoritative NIST P-256 prime256v1 elliptic curve public key.
  */
 export function getVapidPublicKey(): string {
-  return (
-    import.meta.env.VITE_VAPID_PUBLIC_KEY ||
-    'BFjNvul1vaXsyiw-wJBxXh11Q-zfKO5BIpZqNKmHrQIRMtmRfq71y_nJ7_chvZhxmrkEK3mFkxuiYbmP9Fv9hbU'
-  );
+  return resolveVapidPublicKey();
 }

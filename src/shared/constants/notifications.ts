@@ -33,3 +33,17 @@ export const IOS_PWA_LABELS = {
   STEP_3: '3. Mở ứng dụng từ Màn hình chính để bật thông báo',
   GOT_IT: 'Đã hiểu',
 } as const;
+
+/**
+ * Authoritative NIST P-256 VAPID Public Key for Web Push Subscriptions
+ * Single Source of Truth for frontend and backend validation.
+ * Must match backend VAPID_PRIVATE_KEY in server/.env and Supabase Secrets.
+ */
+export const AUTHORITATIVE_VAPID_PUBLIC_KEY =
+  'BElJS1biXMms_8auV6_QTwt4Dy0mI36FdcwAk7sR2Cw5h2PJ9Qv-lmeeMDRraW_VVpVCLH3DaMIAapuljw0QQTY';
+
+export function resolveVapidPublicKey(): string {
+  return (
+    import.meta.env.VITE_VAPID_PUBLIC_KEY || AUTHORITATIVE_VAPID_PUBLIC_KEY
+  );
+}

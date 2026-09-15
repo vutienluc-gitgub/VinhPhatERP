@@ -165,8 +165,11 @@ export const ChatBubble = memo(function ChatBubble({
     );
   }
 
+  const isSent =
+    message.status === 'sent' || status === 'sent' || status === 'read';
   const isError =
     !isOptimistic &&
+    !isSent &&
     (message.status === 'error' ||
       message.status === 'failed' ||
       status === 'failed');

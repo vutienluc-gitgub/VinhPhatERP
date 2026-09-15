@@ -367,9 +367,22 @@ export function useSendMessage(roomId: string | undefined) {
               : [],
         );
         const firstPage = normalizedPages[0] ?? [];
+        const existingIdx = firstPage.findIndex(
+          (m) =>
+            (Boolean(params.clientId) && m.client_id === params.clientId) ||
+            m.id === params.clientId,
+        );
+
+        const updatedFirstPage =
+          existingIdx !== -1
+            ? firstPage.map((m, idx) =>
+                idx === existingIdx ? (optimisticMsg as ChatMessage) : m,
+              )
+            : [optimisticMsg as ChatMessage, ...firstPage];
+
         return {
           ...data,
-          pages: [[optimisticMsg, ...firstPage], ...normalizedPages.slice(1)],
+          pages: [updatedFirstPage, ...normalizedPages.slice(1)],
         };
       });
 

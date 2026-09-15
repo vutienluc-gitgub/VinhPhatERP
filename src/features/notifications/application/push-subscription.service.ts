@@ -121,7 +121,35 @@ export class PushSubscriptionService {
   }
 
   /**
-   * Checks if device is currently subscribed
+   * Validates if the subscription's applicationServerKey matches the authoritative VAPID key
+   */
+  static isKeyMatchingAuthoritative(sub: PushSubscription): boolean {
+    if (!sub.options || !sub.options.applicationServerKey) {
+      return true; // Fallback for environments where applicationServerKey is not exposed on options
+    }
+
+    try {
+      const currentKeyBytes = new Uint8Array(sub.options.applicationServerKey);
+      const expectedKeyBytes = VapidKeyClient.getApplicationServerKey();
+
+      if (currentKeyBytes.length !== expectedKeyBytes.length) {
+        return false;
+      }
+
+      for (let i = 0; i < currentKeyBytes.length; i++) {
+        if (currentKeyBytes[i] !== expectedKeyBytes[i]) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch {
+      return true;
+    }
+  }
+
+  /**
+   * Checks if device is currently subscribed with a valid, non-stale VAPID key
    */
   static async isDeviceSubscribed(): Promise<boolean> {
     try {
@@ -133,8 +161,55 @@ export class PushSubscriptionService {
       const registration = await ServiceWorkerClient.getReadyRegistration();
       const sub =
         await ServiceWorkerClient.getExistingSubscription(registration);
-      return Boolean(sub);
+      if (!sub) {
+        return false;
+      }
+
+      // Detect VAPID key drift/mismatch
+      const isKeyValid = this.isKeyMatchingAuthoritative(sub);
+      if (!isKeyValid) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          '[PushSubscriptionService] VAPID Key mismatch on existing device subscription. Unsubscribing stale registration.',
+        );
+        await sub.unsubscribe().catch(() => {});
+        return false;
+      }
+
+      return true;
     } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Silently resubscribes the device if permission is already granted but device is not subscribed (e.g. after key rotation)
+   */
+  static async silentResubscribeIfStale(userId: string): Promise<boolean> {
+    if (!userId) return false;
+    try {
+      const caps = PlatformCapabilityClient.getCapabilities();
+      if (!caps.isFullySupported) return false;
+      if (caps.isIOS && !caps.isStandalone) return false;
+
+      const permission = PermissionClient.getPermission();
+      if (permission !== 'granted') return false;
+
+      const isSubscribed = await this.isDeviceSubscribed();
+      if (!isSubscribed) {
+        // eslint-disable-next-line no-console
+        console.info(
+          '[PushSubscriptionService] Permission is granted but device not subscribed. Initiating silent re-subscription.',
+        );
+        return await this.subscribeDevice(userId);
+      }
+      return true;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[PushSubscriptionService] Silent re-subscription failed:',
+        err,
+      );
       return false;
     }
   }

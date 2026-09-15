@@ -1,14 +1,12 @@
+import { resolveVapidPublicKey } from '@/shared/constants/notifications';
 import { VapidKeyValidator } from '@/features/notifications/infrastructure/vapid-key-validator';
 
 export class VapidKeyClient {
-  private static readonly DEFAULT_PUBLIC_KEY =
-    'BElJS1biXMms_8auV6_QTwt4Dy0mI36FdcwAk7sR2Cw5h2PJ9Qv-lmeeMDRraW_VVpVCLH3DaMIAapuljw0QQTY';
-
   /**
-   * Returns the raw base64url string from environment or verified fallback
+   * Returns the raw base64url string from environment or authoritative constant
    */
   static getPublicKeyString(): string {
-    return import.meta.env.VITE_VAPID_PUBLIC_KEY || this.DEFAULT_PUBLIC_KEY;
+    return resolveVapidPublicKey();
   }
 
   /**

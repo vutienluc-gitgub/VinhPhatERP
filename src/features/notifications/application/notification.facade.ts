@@ -34,6 +34,13 @@ export class NotificationFacade {
   }
 
   /**
+   * Silently ensures the device has an active, valid push subscription when permission is already granted
+   */
+  static async ensureDeviceSubscribed(userId: string): Promise<boolean> {
+    return PushSubscriptionService.silentResubscribeIfStale(userId);
+  }
+
+  /**
    * High-level entry point to enable push on current device (Must be triggered by User Gesture)
    */
   static async enableDevicePush(userId: string): Promise<FacadeResult> {

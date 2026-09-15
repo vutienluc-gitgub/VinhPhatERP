@@ -8,6 +8,9 @@ echo "📦 Checking Server package-lock.json sync..."
 echo "🔍 Checking RPC sync..."
 npm run rpc:check || exit 1
 
+echo "🔑 Checking VAPID sync..."
+npm run vapid:check || exit 1
+
 echo "🛡️ Running Full System Audit..."
 npm run audit:full || exit 1
 
