@@ -5,6 +5,7 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch: # Cho phép chạy tay job ai-audit (Actions → CI → Run workflow)
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -25,10 +26,16 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+      - name: Lint CSS
+        run: npm run lint:css
+      - name: Theme contract check
+        run: npm run theme:check
       - name: Typecheck
         run: npm run typecheck
       - name: Test
         run: npm run test
+      - name: Build
+        run: npm run build
 
   server:
     runs-on: ubuntu-latest
@@ -65,3 +72,65 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
         working-directory: agent
+
+  # ─────────────────────────────────────────────────────────────
+  # E2E (Playwright) — đã chuyển từ pre-push hook sang CI.
+  # Bật bằng Repository Variable: Settings → Secrets and variables →
+  # Actions → Variables → E2E_ENABLED = true
+  # Yêu cầu Repository Secrets:
+  #   E2E_EMAIL, E2E_PASSWORD,
+  #   VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
+  # (global-setup đăng nhập qua Supabase REST API — xem e2e/global-setup.ts)
+  # ─────────────────────────────────────────────────────────────
+  e2e:
+    if: ${{ vars.E2E_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run E2E
+        run: npm run test:e2e
+        env:
+          E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────
+  # AI Audit — chỉ chạy thủ công (Actions → CI → Run workflow)
+  # vì gọi Anthropic API (tốn chi phí), không phù hợp chạy mỗi push.
+  # Yêu cầu Repository Secret: ANTHROPIC_API_KEY
+  # ─────────────────────────────────────────────────────────────
+  ai-audit:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: AI Audit
+        run: npm run ai:audit
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

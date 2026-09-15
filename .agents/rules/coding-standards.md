@@ -33,11 +33,14 @@ Architecture Guard
    │
    ▼
 Pre-push / Pre-commit
-   └── npm run lint -- --max-warnings=0 && npm run lint:css (Chặn ngay tại máy Dev nếu vi phạm)
+   └── FAST checks only (pre-push): lockfile sync + rpc:check + vapid:check
+       + theme:check + typecheck (front & server). Mục tiêu < ~2 phút.
+       Lint/lint:css chặn ngay tại máy Dev qua pre-commit (lint-staged).
    │
    ▼
 CI / GitHub
-   └── lint + lint:css + typecheck + test (Lá chắn cuối trước khi merge)
+   └── lint + lint:css + theme:check + typecheck (front/server/agent)
+       + Vitest + build + E2E (Lá chắn cuối trước khi merge)
 ```
 
 _Ghi chú:_ Việc tuân thủ Architecture Guard là **BẮT BUỘC**.
@@ -257,7 +260,10 @@ npm run lint:css                   # 0 CSS errors (MANDATORY)
 
 - Task is NOT complete until all 4 commands pass with 0 problems
 - If errors are outside current task scope, report immediately — do not self-fix unrelated code
-- Pre-push hook enforces: `rpc:check` -> `ai:audit` -> `test:e2e`
+- Pre-push hook enforces FAST checks only: lockfile sync -> `rpc:check` ->
+  `vapid:check` -> `theme:check` -> typecheck (front & server).
+- Heavy gates (lint full, `lint:css`, Vitest, `test:e2e`) run in CI
+  (`.github/workflows/ci.yml`); `ai:audit` runs manually via workflow_dispatch.
 
 ---
 
