@@ -492,7 +492,7 @@ export async function fetchReactions(
   return Array.from(grouped.values());
 }
 
-// ── Search Messages ──
+// ── Search Messages (via Trigram & Unaccented RPC) ──
 
 export async function searchMessages(params: {
   roomId: string;
@@ -500,13 +500,11 @@ export async function searchMessages(params: {
 }): Promise<ChatMessage[]> {
   if (!params.query.trim()) return [];
 
-  const { data, error } = await supabase
-    .from('chat_messages')
-    .select('*')
-    .eq('room_id', params.roomId)
-    .ilike('content', `%${params.query}%`)
-    .order('created_at', { ascending: false })
-    .limit(50);
+  const { data, error } = await untypedDb.rpc('rpc_search_chat_messages', {
+    p_room_id: params.roomId,
+    p_query: params.query.trim(),
+    p_limit: 50,
+  });
 
   if (error) throw toError(error, 'Không thể tìm kiếm tin nhắn');
   return (data as ChatMessage[]) ?? [];
