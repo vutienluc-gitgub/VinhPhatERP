@@ -36,6 +36,8 @@ import {
   enqueueMessage,
   getQueuedMessages,
   dequeueMessage,
+  updateQueueRetry,
+  MAX_QUEUE_RETRIES,
 } from '@/shared/lib/chat-offline-queue';
 import {
   broadcastTypingStart,
@@ -1020,11 +1022,20 @@ export function useChatOfflineSync(roomId: string | undefined) {
     try {
       const queued = await getQueuedMessages();
       const roomMessages = queued.filter((m) => m.roomId === roomId);
-      if (roomMessages.length === 0) return;
+      if (roomMessages.length === 0) {
+        setPendingCount(0);
+        return;
+      }
 
       setPendingCount(roomMessages.length);
 
       for (const msg of roomMessages) {
+        const currentRetry = msg.retryCount ?? 0;
+        if (currentRetry >= MAX_QUEUE_RETRIES) {
+          // Skip messages that exceeded max retries to unblock remaining queue
+          continue;
+        }
+
         try {
           await sendChatMessage({
             roomId: msg.roomId,
@@ -1032,12 +1043,16 @@ export function useChatOfflineSync(roomId: string | undefined) {
             content: msg.content,
             messageType: msg.messageType,
             imageUrl: msg.imageUrl,
+            fileUrl: msg.fileUrl,
+            fileName: msg.fileName,
+            fileType: msg.fileType,
           });
           await dequeueMessage(msg.clientId);
           setPendingCount((c) => Math.max(0, c - 1));
-        } catch {
-          // Keep in queue for next retry
-          break;
+        } catch (err) {
+          console.error(`[ChatOfflineSync] Retry ${currentRetry + 1} failed for ${msg.clientId}:`, err);
+          await updateQueueRetry(msg.clientId, currentRetry + 1);
+          break; // Stop flushing this batch on network error; retry on next online trigger
         }
       }
     } finally {
