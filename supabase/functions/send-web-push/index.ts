@@ -14,6 +14,7 @@ const corsHeaders = {
 };
 
 interface PushNotificationPayload {
+  outbox_id?: string;
   notification_id?: string;
   user_id?: string;
   domain?: string;
@@ -228,24 +229,29 @@ async function executePushDispatch(
           };
         }
 
+        const startTimeMs = Date.now();
         const response = await webpush.sendNotification(
           pushSubscription,
           pushMessage,
           pushOptions,
         );
+        const latencyMs = Date.now() - startTimeMs;
 
         results.push({
           subscription_id: sub.id,
           status: 'delivered',
           response_code: response.statusCode,
+          latency_ms: latencyMs,
         });
 
         if (payload.notification_id) {
           await supabase.from('notification_delivery_logs').insert({
             notification_id: payload.notification_id,
+            subscription_id: sub.id,
             channel: 'web_push',
             status: 'delivered',
             response_code: response.statusCode,
+            latency_ms: latencyMs,
           });
         }
       } catch (err: unknown) {
@@ -318,6 +324,26 @@ async function executePushDispatch(
         p_source: 'send-web-push',
         p_event_id: dedupEventId,
         p_status: 'processed',
+      });
+    }
+
+    if (payload.outbox_id) {
+      // deno-lint-ignore no-explicit-any
+      const hasSuccess = results.some(
+        (r: any) => r.status === 'delivered' || r.status === 'sent_mock',
+      );
+      const outboxStatus =
+        hasSuccess || subscriptions.length === 0 ? 'delivered' : 'failed';
+      // deno-lint-ignore no-explicit-any
+      const outboxError =
+        !hasSuccess && results.length > 0
+          ? String((results[0] as any)?.error || 'Push dispatch failed')
+          : null;
+
+      await supabase.rpc('rpc_complete_notification_outbox_item', {
+        p_outbox_id: payload.outbox_id,
+        p_status: outboxStatus,
+        p_error: outboxError,
       });
     }
 
@@ -395,24 +421,29 @@ async function executePushDispatch(
           };
         }
 
+        const startTimeMs = Date.now();
         const response = await webpush.sendNotification(
           pushSubscription,
           pushMessage,
           pushOptions,
         );
+        const latencyMs = Date.now() - startTimeMs;
 
         results.push({
           subscription_id: sub.id,
           status: 'delivered',
           response_code: response.statusCode,
+          latency_ms: latencyMs,
         });
 
         if (payload.notification_id) {
           await supabase.from('notification_delivery_logs').insert({
             notification_id: payload.notification_id,
+            subscription_id: sub.id,
             channel: 'web_push',
             status: 'delivered',
             response_code: response.statusCode,
+            latency_ms: latencyMs,
           });
         }
       } catch (err: unknown) {
@@ -474,6 +505,26 @@ async function executePushDispatch(
         p_source: 'send-web-push',
         p_event_id: dedupEventId,
         p_status: 'processed',
+      });
+    }
+
+    if (payload.outbox_id) {
+      // deno-lint-ignore no-explicit-any
+      const hasSuccess = results.some(
+        (r: any) => r.status === 'delivered' || r.status === 'sent_mock',
+      );
+      const outboxStatus =
+        hasSuccess || subscriptions.length === 0 ? 'delivered' : 'failed';
+      // deno-lint-ignore no-explicit-any
+      const outboxError =
+        !hasSuccess && results.length > 0
+          ? String((results[0] as any)?.error || 'Push dispatch failed')
+          : null;
+
+      await supabase.rpc('rpc_complete_notification_outbox_item', {
+        p_outbox_id: payload.outbox_id,
+        p_status: outboxStatus,
+        p_error: outboxError,
       });
     }
 
