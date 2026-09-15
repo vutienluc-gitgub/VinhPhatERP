@@ -1,12 +1,15 @@
 /**
- * Typing Indicator - BroadcastChannel-based typing state sync.
+ * Typing Indicator - Hybrid Supabase Realtime Broadcast & BroadcastChannel sync.
  *
- * Uses BroadcastChannel for multi-tab synchronization without database.
+ * Uses Supabase Realtime Broadcast Channels for cross-device typing indicator state sync with 0% DB overhead,
+ * and BroadcastChannel for multi-tab synchronization on local machine.
  * Typing state expires after 3 seconds of inactivity.
  */
 
-const TYPING_CHANNEL = 'chat_typing';
-const TYPING_EXPIRY_MS = 3000; // 3 seconds
+import { supabase } from '@/services/supabase/client';
+
+const LOCAL_TYPING_CHANNEL = 'chat_typing';
+export const TYPING_EXPIRY_MS = 3000; // 3 seconds
 
 export interface TypingMessage {
   type: 'typing_start' | 'typing_stop';
@@ -16,34 +19,38 @@ export interface TypingMessage {
   timestamp: number;
 }
 
-const channel = new BroadcastChannel(TYPING_CHANNEL);
-
-// Active typing states (userId -> { timestamp, userName })
-const typingStates = new Map<string, { timestamp: number; userName: string }>();
-
-// Cleanup expired typing states
-setInterval(() => {
-  const now = Date.now();
-  for (const [userId, state] of typingStates.entries()) {
-    if (now - state.timestamp > TYPING_EXPIRY_MS) {
-      typingStates.delete(userId);
-    }
-  }
-}, 1000);
+const localChannel = typeof window !== 'undefined' ? new BroadcastChannel(LOCAL_TYPING_CHANNEL) : null;
 
 /**
- * Broadcast typing start event.
+ * Broadcast typing start event via local BroadcastChannel and Supabase Realtime Broadcast.
  */
 export function broadcastTypingStart(params: {
   roomId: string;
   userId: string;
   userName: string;
+  channel?: ReturnType<typeof supabase.channel> | null;
 }): void {
-  channel.postMessage({
+  const payload: TypingMessage = {
     type: 'typing_start',
-    ...params,
+    roomId: params.roomId,
+    userId: params.userId,
+    userName: params.userName,
     timestamp: Date.now(),
-  } satisfies TypingMessage);
+  };
+
+  try {
+    localChannel?.postMessage(payload);
+  } catch {
+    // Fail silently if channel closed
+  }
+
+  if (params.channel) {
+    void params.channel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload,
+    });
+  }
 }
 
 /**
@@ -53,23 +60,42 @@ export function broadcastTypingStop(params: {
   roomId: string;
   userId: string;
   userName: string;
+  channel?: ReturnType<typeof supabase.channel> | null;
 }): void {
-  channel.postMessage({
+  const payload: TypingMessage = {
     type: 'typing_stop',
-    ...params,
+    roomId: params.roomId,
+    userId: params.userId,
+    userName: params.userName,
     timestamp: Date.now(),
-  } satisfies TypingMessage);
+  };
+
+  try {
+    localChannel?.postMessage(payload);
+  } catch {
+    // Fail silently if channel closed
+  }
+
+  if (params.channel) {
+    void params.channel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload,
+    });
+  }
 }
 
 /**
- * Listen for typing events.
+ * Listen for local typing events.
  */
 export function onTypingEvent(
   callback: (message: TypingMessage) => void,
 ): () => void {
+  if (!localChannel) return () => {};
+
   const handler = (event: MessageEvent) => {
     callback(event.data as TypingMessage);
   };
-  channel.addEventListener('message', handler);
-  return () => channel.removeEventListener('message', handler);
+  localChannel.addEventListener('message', handler);
+  return () => localChannel.removeEventListener('message', handler);
 }

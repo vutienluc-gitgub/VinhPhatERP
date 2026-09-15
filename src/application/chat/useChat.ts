@@ -624,9 +624,7 @@ export function useSearchMessages(roomId: string | undefined, query: string) {
   });
 }
 
-// ── Typing Indicator ──
-
-const TYPING_EXPIRY_MS = 3000; // 3 seconds
+// ── Typing Indicator (Supabase Realtime Broadcast + Local BroadcastChannel) ──
 
 export function useTypingIndicator(roomId: string | undefined) {
   const [typingUsers, setTypingUsers] = useState<
@@ -636,11 +634,10 @@ export function useTypingIndicator(roomId: string | undefined) {
 
   // Track typing timestamps for expiry
   const typingTimestampsRef = useRef<Map<string, number>>(new Map());
+  const broadcastChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
-  useEffect(() => {
-    if (!roomId) return;
-
-    const unsubscribe = onTypingEvent((message) => {
+  const handleTypingMessage = useCallback(
+    (message: { type: string; roomId: string; userId: string; userName: string; timestamp: number }) => {
       if (message.roomId !== roomId) return;
       if (message.userId === user?.id) return; // Ignore own typing events
 
@@ -648,7 +645,11 @@ export function useTypingIndicator(roomId: string | undefined) {
         typingTimestampsRef.current.set(message.userId, message.timestamp);
         setTypingUsers((prev) => {
           const exists = prev.find((u) => u.userId === message.userId);
-          if (exists) return prev;
+          if (exists) {
+            return prev.map((u) =>
+              u.userId === message.userId ? { ...u, timestamp: message.timestamp } : u,
+            );
+          }
           return [
             ...prev,
             {
@@ -664,10 +665,39 @@ export function useTypingIndicator(roomId: string | undefined) {
           prev.filter((u) => u.userId !== message.userId),
         );
       }
+    },
+    [roomId, user?.id],
+  );
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    // 1. Subscribe to Supabase Realtime Broadcast Channel for cross-device realtime typing state
+    const channel = supabase.channel(`typing:${roomId}`, {
+      config: { broadcast: { self: false } },
     });
 
-    return unsubscribe;
-  }, [roomId, user?.id]);
+    channel
+      .on('broadcast', { event: 'typing' }, ({ payload }) => {
+        handleTypingMessage(payload as Parameters<typeof handleTypingMessage>[0]);
+      })
+      .subscribe();
+
+    broadcastChannelRef.current = channel;
+
+    // 2. Subscribe to local BroadcastChannel for multi-tab sync
+    const unsubscribeLocal = onTypingEvent((message) => {
+      handleTypingMessage(message);
+    });
+
+    return () => {
+      unsubscribeLocal();
+      if (broadcastChannelRef.current) {
+        void supabase.removeChannel(broadcastChannelRef.current);
+        broadcastChannelRef.current = null;
+      }
+    };
+  }, [roomId, handleTypingMessage]);
 
   // Cleanup expired typing states
   useEffect(() => {
@@ -676,7 +706,7 @@ export function useTypingIndicator(roomId: string | undefined) {
       const expiredUserIds: string[] = [];
 
       for (const [userId, timestamp] of typingTimestampsRef.current.entries()) {
-        if (now - timestamp > TYPING_EXPIRY_MS) {
+        if (now - timestamp > 3000) {
           expiredUserIds.push(userId);
         }
       }
@@ -700,6 +730,7 @@ export function useTypingIndicator(roomId: string | undefined) {
       roomId,
       userId: profile.id,
       userName: profile.full_name || 'Unknown',
+      channel: broadcastChannelRef.current,
     });
   }, [roomId, profile]);
 
@@ -709,6 +740,7 @@ export function useTypingIndicator(roomId: string | undefined) {
       roomId,
       userId: profile.id,
       userName: profile.full_name || 'Unknown',
+      channel: broadcastChannelRef.current,
     });
   }, [roomId, profile]);
 
