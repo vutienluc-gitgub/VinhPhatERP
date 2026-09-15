@@ -12,14 +12,22 @@ import type {
   UnifiedTimelineItem,
 } from '@/schema/chat.schema';
 
+function isNetworkCrashError(errMessage: string): boolean {
+  const normalized = errMessage.toLowerCase();
+  return (
+    normalized.includes('load failed') ||
+    normalized.includes('failed to fetch') ||
+    normalized.includes('networkerror') ||
+    normalized.includes('network request failed') ||
+    normalized.includes('webkit') ||
+    normalized.includes('cors') ||
+    normalized.includes('abort')
+  );
+}
+
 function toError(error: unknown, fallbackMessage: string): Error {
   if (error instanceof Error) {
-    if (
-      error instanceof TypeError &&
-      (error.message.includes('Load failed') ||
-        error.message.includes('fetch') ||
-        error.message.includes('NetworkError'))
-    ) {
+    if (isNetworkCrashError(error.message)) {
       return new Error(
         'Không thể tải tin nhắn do mất kết nối mạng hoặc phiên hết hạn',
       );
@@ -33,9 +41,50 @@ function toError(error: unknown, fallbackMessage: string): Error {
       (typeof errRecord.details === 'string' && errRecord.details) ||
       (typeof errRecord.hint === 'string' && errRecord.hint) ||
       fallbackMessage;
+
+    if (isNetworkCrashError(msg)) {
+      return new Error(
+        'Không thể tải tin nhắn do mất kết nối mạng hoặc phiên hết hạn',
+      );
+    }
     return new Error(msg);
   }
-  return new Error(String(error || fallbackMessage));
+
+  const strErr = String(error || fallbackMessage);
+  if (isNetworkCrashError(strErr)) {
+    return new Error(
+      'Không thể tải tin nhắn do mất kết nối mạng hoặc phiên hết hạn',
+    );
+  }
+  return new Error(strErr);
+}
+
+/**
+ * Resilient Network Retry Wrapper for WebView / Mobile Web
+ * Retries transient network drops up to 2 times before throwing sanitized error.
+ */
+async function withNetworkRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries = 2,
+  delayMs = 300,
+): Promise<T> {
+  let attempt = 0;
+  while (attempt <= maxRetries) {
+    try {
+      return await fn();
+    } catch (err) {
+      const errMessage = err instanceof Error ? err.message : String(err);
+      const isNetworkDrop = isNetworkCrashError(errMessage);
+
+      if (isNetworkDrop && attempt < maxRetries) {
+        attempt++;
+        await new Promise((resolve) => setTimeout(resolve, delayMs * attempt));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error('Không thể tải tin nhắn do mất kết nối mạng hoặc phiên hết hạn');
 }
 
 // ── Get or Create Room (Atomic) ──
@@ -44,31 +93,33 @@ export async function getOrCreateChatRoom(
   entityType: string,
   entityId: string,
 ): Promise<string> {
-  // Guard: ensure user is authenticated before calling RPC
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  return withNetworkRetry(async () => {
+    // Guard: ensure user is authenticated before calling RPC
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-  if (!session) {
-    throw new Error('Authentication session required to access chat rooms');
-  }
+    if (!session) {
+      throw new Error('Authentication session required to access chat rooms');
+    }
 
-  const { data, error } = await supabase.rpc('rpc_get_or_create_chat_room', {
-    p_entity_type: entityType,
-    p_entity_id: entityId,
+    const { data, error } = await supabase.rpc('rpc_get_or_create_chat_room', {
+      p_entity_type: entityType,
+      p_entity_id: entityId,
+    });
+
+    if (error) {
+      console.error(
+        '[Chat] getOrCreateChatRoom error:',
+        error.message,
+        error.hint,
+        error.code,
+        error.details,
+      );
+      throw toError(error, 'Không thể tạo hoặc lấy thông tin phòng chat');
+    }
+    return data as string;
   });
-
-  if (error) {
-    console.error(
-      '[Chat] getOrCreateChatRoom error:',
-      error.message,
-      error.hint,
-      error.code,
-      error.details,
-    );
-    throw toError(error, 'Không thể tạo hoặc lấy thông tin phòng chat');
-  }
-  return data as string;
 }
 
 // ── Fetch Room by Entity ──
@@ -103,41 +154,43 @@ export async function fetchChatMessages(
   roomId: string,
   cursor?: string,
 ): Promise<ChatMessage[]> {
-  try {
-    const { data, error } = await untypedDb.rpc('rpc_get_chat_messages', {
-      p_room_id: roomId,
-      p_cursor: cursor ?? undefined,
-      p_limit: CHAT_MESSAGES_PAGE_SIZE,
-    });
+  return withNetworkRetry(async () => {
+    try {
+      const { data, error } = await untypedDb.rpc('rpc_get_chat_messages', {
+        p_room_id: roomId,
+        p_cursor: cursor ?? undefined,
+        p_limit: CHAT_MESSAGES_PAGE_SIZE,
+      });
 
-    if (error) {
-      console.error(
-        '[Chat] fetchChatMessages error:',
-        error.message,
-        error.hint,
-        error.code,
-        error.details,
-      );
-      throw toError(error, 'Không thể tải danh sách tin nhắn');
+      if (error) {
+        console.error(
+          '[Chat] fetchChatMessages error:',
+          error.message,
+          error.hint,
+          error.code,
+          error.details,
+        );
+        throw toError(error, 'Không thể tải danh sách tin nhắn');
+      }
+
+      if (Array.isArray(data)) {
+        return data as ChatMessage[];
+      }
+
+      if (
+        data &&
+        typeof data === 'object' &&
+        'messages' in data &&
+        Array.isArray((data as { messages: unknown }).messages)
+      ) {
+        return (data as { messages: ChatMessage[] }).messages;
+      }
+
+      return [];
+    } catch (err) {
+      throw toError(err, 'Không thể tải danh sách tin nhắn');
     }
-
-    if (Array.isArray(data)) {
-      return data as ChatMessage[];
-    }
-
-    if (
-      data &&
-      typeof data === 'object' &&
-      'messages' in data &&
-      Array.isArray((data as { messages: unknown }).messages)
-    ) {
-      return (data as { messages: ChatMessage[] }).messages;
-    }
-
-    return [];
-  } catch (err) {
-    throw toError(err, 'Không thể tải danh sách tin nhắn');
-  }
+  });
 }
 
 // ── Send Message (via RPC — uses same tenant resolution as RLS) ──
@@ -292,48 +345,50 @@ export interface FetchMyChatRoomsParams {
 export async function fetchMyChatRooms(
   params?: FetchMyChatRoomsParams,
 ): Promise<MyChatRoomSummary[]> {
-  const { data, error } = await untypedDb.rpc('rpc_get_my_chat_rooms_v2', {
-    p_limit: params?.limit ?? 20,
-    p_cursor_updated_at: params?.cursorUpdatedAt ?? null,
-    p_cursor_room_id: params?.cursorRoomId ?? null,
-  });
+  return withNetworkRetry(async () => {
+    const { data, error } = await untypedDb.rpc('rpc_get_my_chat_rooms_v2', {
+      p_limit: params?.limit ?? 20,
+      p_cursor_updated_at: params?.cursorUpdatedAt ?? null,
+      p_cursor_room_id: params?.cursorRoomId ?? null,
+    });
 
-  if (error) {
-    throw toError(error, 'Không thể tải danh sách phòng chat');
-  }
-  if (!data || data.length === 0) return [];
+    if (error) {
+      throw toError(error, 'Không thể tải danh sách phòng chat');
+    }
+    if (!data || data.length === 0) return [];
 
-  interface RpcRoomRowV2 {
-    room_id: string;
-    entity_type: string;
-    entity_id: string;
-    entity_name: string | null;
-    entity_code: string | null;
-    room_status: string;
-    updated_at: string;
-    unread_count: number | string;
-    last_message: string | null;
-    last_message_at: string | null;
-    last_message_type: string | null;
-  }
+    interface RpcRoomRowV2 {
+      room_id: string;
+      entity_type: string;
+      entity_id: string;
+      entity_name: string | null;
+      entity_code: string | null;
+      room_status: string;
+      updated_at: string;
+      unread_count: number | string;
+      last_message: string | null;
+      last_message_at: string | null;
+      last_message_type: string | null;
+    }
 
-  return (data as RpcRoomRowV2[]).map((row) => {
-    const fallbackMeta = resolveEntityDisplayMetadata(row.entity_type, null);
-    return {
-      roomId: row.room_id,
-      entityType: row.entity_type,
-      entityId: row.entity_id,
-      roomStatus: row.room_status,
-      updatedAt: row.updated_at,
-      unreadCount: Number(row.unread_count),
-      lastMessage: row.last_message,
-      lastMessageAt: row.last_message_at,
-      lastMessageType: row.last_message_type,
-      entityName:
-        row.entity_name ||
-        `${fallbackMeta.displayName} #${row.entity_id.slice(0, 8)}`,
-      entityCode: row.entity_code || '',
-    };
+    return (data as RpcRoomRowV2[]).map((row) => {
+      const fallbackMeta = resolveEntityDisplayMetadata(row.entity_type, null);
+      return {
+        roomId: row.room_id,
+        entityType: row.entity_type,
+        entityId: row.entity_id,
+        roomStatus: row.room_status,
+        updatedAt: row.updated_at,
+        unreadCount: Number(row.unread_count),
+        lastMessage: row.last_message,
+        lastMessageAt: row.last_message_at,
+        lastMessageType: row.last_message_type,
+        entityName:
+          row.entity_name ||
+          `${fallbackMeta.displayName} #${row.entity_id.slice(0, 8)}`,
+        entityCode: row.entity_code || '',
+      };
+    });
   });
 }
 
@@ -500,12 +555,14 @@ export async function searchMessages(params: {
 }): Promise<ChatMessage[]> {
   if (!params.query.trim()) return [];
 
-  const { data, error } = await untypedDb.rpc('rpc_search_chat_messages', {
-    p_room_id: params.roomId,
-    p_query: params.query.trim(),
-    p_limit: 50,
-  });
+  return withNetworkRetry(async () => {
+    const { data, error } = await untypedDb.rpc('rpc_search_chat_messages', {
+      p_room_id: params.roomId,
+      p_query: params.query.trim(),
+      p_limit: 50,
+    });
 
-  if (error) throw toError(error, 'Không thể tìm kiếm tin nhắn');
-  return (data as ChatMessage[]) ?? [];
+    if (error) throw toError(error, 'Không thể tìm kiếm tin nhắn');
+    return (data as ChatMessage[]) ?? [];
+  });
 }
