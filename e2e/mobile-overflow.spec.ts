@@ -52,6 +52,28 @@ const ROUTES_TO_CHECK = [
 ];
 
 async function assertNoHorizontalOverflow(page: Page, route: string) {
+  // ⏳ Chờ layout ổn định trước khi đo — chống flaky khi full-suite chạy song
+  // song (2 workers) làm render chậm: font swap, lazy chunk, data async.
+  // Vẫn đo ngay sau khi ổn định → overflow THẬT (persistent) vẫn bị bắt.
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+
+    const maxMs = 5_000;
+    const start = performance.now();
+    let prevWidth = -1;
+    let stableFrames = 0;
+
+    while (performance.now() - start < maxMs) {
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => resolve()),
+      );
+      const width = document.documentElement.scrollWidth;
+      stableFrames = width === prevWidth ? stableFrames + 1 : 0;
+      prevWidth = width;
+      if (stableFrames >= 3) return; // scrollWidth không đổi qua 3 frame liên tiếp
+    }
+  });
+
   const metrics = await page.evaluate(() => {
     const doc = document.documentElement;
     const body = document.body;
