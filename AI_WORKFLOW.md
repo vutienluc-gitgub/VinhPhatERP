@@ -54,7 +54,7 @@ This document specifies the exact, step-by-step workflow AI Agents MUST follow w
 │              PHASE 5: TEST & FINAL VERIFICATION             │
 │  Run rpc:check, typecheck, lint, lint:css, vitest.          │
 │  Fill AI_CHECKLIST.md. Output Final Production Report.      │
-└─────────────────────────────────────────────────────────────┘
+└──────────────────────────────┬──────────────────────────────┘
 ```
 
 ---
@@ -154,6 +154,12 @@ The human reviewer reviews the audit and replies:
 - All multi-row or stock/debt operations must be atomic RPCs.
 - Inspect diff, run `npm run typecheck` and `npm run rpc:check`.
 
+#### 🗄️ Database Migration & Schema Protocol
+- New database changes MUST create a new migration file under `supabase/migrations/` using timestamp prefix (`YYYYMMDDHHMMSS_name.sql`).
+- **FORBIDDEN**: Never modify already applied migration files.
+- All new or modified functions/RPCs MUST declare `SECURITY DEFINER` and `SET search_path = public, pg_temp`.
+- Always update TypeScript database types in `src/schema/database.types.ts` following schema additions.
+
 **Output Format**:
 
 ```markdown
@@ -179,9 +185,9 @@ The human reviewer checks the data diff and replies:
 
 ---
 
-### 🟣 PHASE 3: UI / UX (Execution)
+### 🟣 PHASE 3: UI / UX & PWA (Execution)
 
-**Goal**: Elevate presentation quality, loading states, render safety, and semantic design tokens.
+**Goal**: Elevate presentation quality, loading states, render safety, semantic design tokens, and PWA capabilities.
 
 **Rules**:
 
@@ -191,6 +197,11 @@ The human reviewer checks the data diff and replies:
 - Replace hardcoded colors with Semantic Design Tokens (`text-foreground`, `bg-surface`, etc.).
 - **DO NOT modify domain logic or calculations.**
 - Inspect diff, run `npm run lint:css` and `npm run lint`.
+
+#### 📲 PWA & Service Worker Guidelines
+- Service Worker modifications (`public/sw.js`) MUST remain compatible with mobile browsers (iOS Safari & Android Chrome).
+- **FORBIDDEN**: Never reference DOM/Window APIs (`window`, `localStorage`, `document`) inside Service Worker scope (`self`). Use IndexedDB or postMessage.
+- Ensure Push Notification `tag` formatting is unique to avoid collapsing alerts on iOS Lock Screen.
 
 **Output Format**:
 
@@ -229,21 +240,28 @@ The human reviewer checks the visual diff and replies:
 
 ### 🔴 PHASE 5: TEST & FINAL VERIFICATION (Quality Gate)
 
-**Goal**: Full verification across the entire quality toolchain.
+**Goal**: Full verification across the entire quality toolchain for both Client and Hono Backend Server.
 
 **Actions**:
 
-1. Run automated test suite:
+1. Run automated test and quality suite:
    ```bash
    npm run rpc:check
    npm run typecheck
+   npm run typecheck:server   # Server TypeScript verification
    npm run lint -- --max-warnings=0
    npm run lint:css
    npm run test
+   npm run build:all          # Verify production builds for client & server
    ```
 2. Verify all checks report **0 errors, 0 warnings, 100% tests passed**.
 3. Complete `AI_CHECKLIST.md`.
 4. Output final report.
+
+#### 🆘 Emergency Rollback Protocol
+If any phase implementation causes unresolvable build errors or breaks pre-existing unit tests, the AI Agent MUST:
+1. Immediately restore affected files (`restore_file`) to the last working commit.
+2. Re-evaluate the root cause before attempting a revised solution.
 
 **Output Format**:
 
@@ -254,9 +272,11 @@ The human reviewer checks the visual diff and replies:
 
 - `npm run rpc:check`: ✅ 0 issues
 - `npm run typecheck`: ✅ 0 errors
+- `npm run typecheck:server`: ✅ 0 errors
 - `npm run lint`: ✅ 0 warnings
 - `npm run lint:css`: ✅ 0 errors
 - `npm run test`: ✅ 100% passed
+- `npm run build:all`: ✅ 0 build errors
 
 ### Summary of Changes
 

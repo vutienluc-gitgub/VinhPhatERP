@@ -1,15 +1,17 @@
 /**
- * Chat Offline Queue — IndexedDB-based queue for Driver offline messages.
+ * Chat Offline Queue — IndexedDB-based queue for Driver & Warehouse offline messages.
  *
- * When network is lost, messages are stored locally in IndexedDB.
- * When `navigator.onLine` becomes true, the queue auto-flushes.
+ * Stores pending messages in IndexedDB when network is lost.
+ * Flushes queue sequentially with Exponential Backoff retry limits when `navigator.onLine` becomes true.
  */
 
 const DB_NAME = 'erp_chat_offline';
 const DB_VERSION = 1;
 const STORE_NAME = 'pending_messages';
 
-interface QueuedMessage {
+export const MAX_QUEUE_RETRIES = 5;
+
+export interface QueuedMessage {
   clientId: string;
   roomId: string;
   content: string;
@@ -19,6 +21,8 @@ interface QueuedMessage {
   fileName?: string;
   fileType?: string;
   queuedAt: number;
+  retryCount?: number;
+  lastAttemptAt?: number;
 }
 
 function openDb(): Promise<IDBDatabase> {
@@ -42,13 +46,18 @@ export async function enqueueMessage(msg: QueuedMessage): Promise<void> {
   const db = await openDb();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
-    tx.objectStore(STORE_NAME).put(msg);
+    const store = tx.objectStore(STORE_NAME);
+    store.put({
+      ...msg,
+      retryCount: msg.retryCount ?? 0,
+      lastAttemptAt: msg.lastAttemptAt ?? Date.now(),
+    });
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
 }
 
-/** Get all queued messages, ordered by queuedAt. */
+/** Get all queued messages, ordered chronologically by queuedAt. */
 export async function getQueuedMessages(): Promise<QueuedMessage[]> {
   const db = await openDb();
   return new Promise((resolve, reject) => {
@@ -61,6 +70,33 @@ export async function getQueuedMessages(): Promise<QueuedMessage[]> {
       resolve(items);
     };
     request.onerror = () => reject(request.error);
+  });
+}
+
+/** Update retry metadata for a queued message. */
+export async function updateQueueRetry(
+  clientId: string,
+  retryCount: number,
+): Promise<void> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const getReq = store.get(clientId);
+
+    getReq.onsuccess = () => {
+      const existing = getReq.result as QueuedMessage | undefined;
+      if (existing) {
+        store.put({
+          ...existing,
+          retryCount,
+          lastAttemptAt: Date.now(),
+        });
+      }
+    };
+
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
   });
 }
 
