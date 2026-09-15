@@ -33,13 +33,28 @@ export function LoginForm({
 }: {
   onForgotPassword?: () => void;
 }) {
-  const { signIn, signInWithGoogle } = useAuth();
+  const { signIn, signInWithGoogle, signInWithPasskey } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [isCapsLock, setIsCapsLock] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
+  const [isPasskeyLoading, setIsPasskeyLoading] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
+
+  const handlePasskeyLogin = useCallback(async () => {
+    try {
+      setIsPasskeyLoading(true);
+      setServerError(null);
+      await signInWithPasskey();
+      navigate('/dashboard');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setServerError(msg);
+    } finally {
+      setIsPasskeyLoading(false);
+    }
+  }, [signInWithPasskey, navigate]);
 
   const {
     register,
@@ -250,6 +265,25 @@ export function LoginForm({
         </span>
         <div className="flex-1 h-px bg-surface/10" />
       </div>
+
+      {/* ── Passkey / Biometric 1-Touch Button ──────────────── */}
+      <button
+        type="button"
+        onClick={handlePasskeyLogin}
+        disabled={isLocked || isPasskeyLoading}
+        className="group relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-[#6366f1]/20 hover:bg-[#6366f1]/30 border border-[#6366f1]/40 text-white rounded-xl font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <Icon
+          name="Fingerprint"
+          size={20}
+          className="text-[#a5b4fc] animate-pulse"
+        />
+        <span>
+          {isPasskeyLoading
+            ? 'Đang xác thực sinh trắc học…'
+            : AUTH_MESSAGES.passkeyLogin}
+        </span>
+      </button>
 
       {/* ── Google Button (with Glow) ──────────────────────── */}
       <button

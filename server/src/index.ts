@@ -1,3 +1,4 @@
+import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
@@ -10,7 +11,6 @@ import ordersRouter from './routes/orders.js';
 import suppliersRouter from './routes/suppliers.js';
 import webhooksRouter from './routes/webhooks.js';
 import yarnReceiptsRouter from './routes/yarn-receipts.js';
-import { startWebhookRetryWorker } from './workers/webhook-retry.worker.js';
 
 const app = new Hono();
 
@@ -71,16 +71,16 @@ app.onError((err, c) => {
 // ──────────────────────────────────────────────
 // Start Background Daemons
 // ──────────────────────────────────────────────
-startWebhookRetryWorker();
-
 // ──────────────────────────────────────────────
 // Start Server
 // ──────────────────────────────────────────────
-const port = Number(process.env.PORT ?? 3000);
+const port = Number(process.env.PORT ?? 3001);
 // eslint-disable-next-line no-console
 console.log(`[VinhPhat API] Server listening on http://localhost:${port}`);
 
-export default {
-  port,
+serve({
   fetch: app.fetch,
-};
+  port,
+});
+
+export default app;

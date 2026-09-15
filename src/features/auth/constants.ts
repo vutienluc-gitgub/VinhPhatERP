@@ -41,6 +41,9 @@ export const AUTH_MESSAGES = {
   goBack: 'Quay lại',
   errorUserNotFound: 'Email không tồn tại hoặc chưa đăng ký.',
   capsLockWarning: 'Caps Lock đang bật',
+  passkeyLogin: 'Đăng nhập 1 chạm (Face ID / Touch ID / Passkey)',
+  passkeyNotSupported: 'Thiết bị này chưa hỗ trợ sinh trắc học.',
+  passkeySuccess: 'Xác thực sinh trắc học thành công.',
 };
 
 export const AUTH_LABELS = {
@@ -51,4 +54,5 @@ export const AUTH_LABELS = {
   forgotPassword: 'Quên mật khẩu?',
   emailPlaceholder: '1081991@gmail.com',
   passwordPlaceholder: '••••••••',
+  registerPasskey: 'Đăng ký thiết bị sinh trắc học (Passkey / Face ID)',
 };
