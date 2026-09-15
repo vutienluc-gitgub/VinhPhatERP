@@ -79,3 +79,24 @@ Thumbs.db
 *.pem
 *.key
 *.cert
+
+# =========================
+# 🗄 DATABASE DUMPS & SECRETS (CỰC QUAN TRỌNG)
+# =========================
+# SQL dumps chứa dữ liệu thật của khách hàng — KHÔNG commit
+db_dump.sql
+dump.sql
+*.dump.sql
+*-dump.sql
+db_schema.sql
+supabase_schema.sql
+/schema.sql
+server/.env
+**/.env
+!.env.example
+!**/.env.example
+# Chỉ giữ migration/rollback chính thức của Supabase
+!supabase/migrations/*.sql
+!supabase/rollbacks/*.sql
+!supabase/schema.sql
+!scripts/**/*.sql
