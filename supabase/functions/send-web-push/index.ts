@@ -34,7 +34,7 @@ interface PushNotificationPayload {
 
 // Authoritative VAPID Public Key fallback (Single Source of Truth matching client)
 const AUTHORITATIVE_PUBLIC_KEY =
-  'BElJS1biXMms_8auV6_QTwt4Dy0mI36FdcwAk7sR2Cw5h2PJ9Qv-lmeeMDRraW_VVpVCLH3DaMIAapuljw0QQTY';
+  'BCAplL58sPONGLlqHpdHNYMV6_p0A_NoZdyt9E6jjRxLcTjMpDjGgpj4ix0OL_YD8NVM3QtJ-mpWnu-aVo3JmGM';
 
 // Configure VAPID details from environment
 const vapidPublicKey =

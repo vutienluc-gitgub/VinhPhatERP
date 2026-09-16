@@ -40,7 +40,7 @@ export const IOS_PWA_LABELS = {
  * Must match backend VAPID_PRIVATE_KEY in server/.env and Supabase Secrets.
  */
 export const AUTHORITATIVE_VAPID_PUBLIC_KEY =
-  'BElJS1biXMms_8auV6_QTwt4Dy0mI36FdcwAk7sR2Cw5h2PJ9Qv-lmeeMDRraW_VVpVCLH3DaMIAapuljw0QQTY';
+  'BCAplL58sPONGLlqHpdHNYMV6_p0A_NoZdyt9E6jjRxLcTjMpDjGgpj4ix0OL_YD8NVM3QtJ-mpWnu-aVo3JmGM';
 
 export function resolveVapidPublicKey(): string {
   return (
