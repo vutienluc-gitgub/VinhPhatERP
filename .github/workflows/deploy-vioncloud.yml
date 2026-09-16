@@ -61,8 +61,8 @@ jobs:
             fi
             pm2 save
 
-            # 6. Reload Nginx
+            # 6. Reload / Restart Nginx
             echo "🌐 Reloading Nginx..."
-            sudo systemctl reload nginx
+            sudo systemctl reload nginx || sudo systemctl restart nginx
 
             echo "✅ Deployment finished successfully!"
