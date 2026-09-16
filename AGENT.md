@@ -5,7 +5,7 @@
 Phần mềm quản lý sản xuất vải cho Vĩnh Phát.  
 Stack: React + TypeScript + Vite · Supabase (auth, DB, RLS) · Hono (API server) · Drizzle ORM · Vitest.
 
-Xem thêm: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/CODING_RULES.md](docs/CODING_RULES.md)
+Xem thêm: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/coding-rules.md](docs/coding-rules.md)
 
 ---
 
@@ -18,7 +18,7 @@ Xem thêm: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/CODING_RULES.md
 | `src/services/`        | Adapter Supabase, offline queue (Lưu ý: Insert/Upsert qua `src/lib/db-guard.ts`) |
 | `server/`              | Hono API server, Drizzle schema, routes                                          |
 | `supabase/migrations/` | SQL migrations — không sửa file đã push                                          |
-| `agent/`               | AI agent package — quy tắc riêng ở [agent/AGENTS.md](agent/AGENTS.md)            |
+| `agent/`               | AI agent package — quy tắc riêng ở [agent/ai-tool.md](agent/ai-tool.md)          |
 
 ---
 

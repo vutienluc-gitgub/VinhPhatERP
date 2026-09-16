@@ -1,6 +1,6 @@
 ﻿# agent/ — Override Instructions
 
-> Quy tắc chung của toàn repo: xem [../AGENTS.md](../AGENTS.md)  
+> Quy tắc chung của toàn repo: xem [../AGENT.md](../AGENT.md)  
 > File này chỉ ghi những điểm **khác biệt hoặc bổ sung** cho package `agent/`.
 
 ---

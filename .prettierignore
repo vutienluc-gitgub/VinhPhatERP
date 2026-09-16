@@ -1,6 +1,6 @@
-legacy-combobox-list.json
-eslint-report.json
-stylelint-report.json
-audit_results.json
-dark_mode_audit_report.json
+scripts/oneoff/legacy-combobox-list.json
+scripts/oneoff/eslint-report.json
+scripts/oneoff/dark_mode_audit_report.json
+scripts/oneoff/audit_results.json
+scripts/oneoff/temp_form.txt
 *.sql

@@ -25,9 +25,11 @@ jobs:
       - name: Install
         run: npm ci
       - name: Lint
-        run: npm run lint
+        run: npm run lint -- --max-warnings=0
       - name: Lint CSS
         run: npm run lint:css
+      - name: File size ratchet
+        run: npm run size:check
       - name: Theme contract check
         run: npm run theme:check
       - name: Typecheck
@@ -111,6 +113,33 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────
+  # RPC Sync — frontend rpc() calls phải khớp signature trong DB.
+  # Cần kết nối DB thật nên mặc định TẮT. Bật bằng Repository Variable:
+  #   Settings → Secrets and variables → Actions → Variables → RPC_SYNC_ENABLED = true
+  # Yêu cầu Repository Secret: DATABASE_URL (connection string Postgres/Supabase).
+  #
+  # Khi job này chưa bật, AI không được coi rpc:check là PASS —
+  # xem AI_WORKFLOW.md §1.2 Evidence Rule: báo cáo là [NOT VERIFIED].
+  # ────────────────────────────────────────────────────────────
+  rpc-sync:
+    if: ${{ vars.RPC_SYNC_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: RPC sync
+        run: npm run rpc:check
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   # ─────────────────────────────────────────────────────────────
   # AI Audit — chỉ chạy thủ công (Actions → CI → Run workflow)

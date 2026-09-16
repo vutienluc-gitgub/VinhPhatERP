@@ -9,6 +9,25 @@
 #   GitHub Required Status Checks (CI) = rào chắn bắt buộc.
 # ─────────────────────────────────────────────────────────────
 
+echo "🚦 Checking branch guard..."
+
+# Cấm push trực tiếp lên main (AI_WORKFLOW.md §1.3 — không làm việc trên main).
+# Human có thể ghi đè có chủ đích: ALLOW_MAIN_PUSH=1 git push
+# Khi đã bật GitHub Required Status Checks, hãy bảo vệ branch main trong
+# Settings → Branches để rào chắn này được thực thi ở phía server.
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
+  if [ "$ALLOW_MAIN_PUSH" = "1" ]; then
+    echo "⚠️  ALLOW_MAIN_PUSH=1 → cho phép push trực tiếp lên '$CURRENT_BRANCH'."
+  else
+    echo "❌ Từ chối push trực tiếp lên '$CURRENT_BRANCH'."
+    echo "   Tạo branch làm việc: git switch -c fix/<scope>"
+    echo "   Xem AI_WORKFLOW.md §1.3 (Branch & Commit Discipline)."
+    echo "   Nếu thực sự cần push thẳng: ALLOW_MAIN_PUSH=1 git push"
+    exit 1
+  fi
+fi
+
 echo "📦 Checking Root package-lock.json sync..."
 npm ci --dry-run || { echo "❌ Root package-lock.json is out of sync! Run 'npm install'."; exit 1; }
 
@@ -23,6 +42,9 @@ if [ "$SKIP_RPC_CHECK" = "1" ]; then
 else
   npm run rpc:check || exit 1
 fi
+
+echo "📏 Checking file size ratchet..."
+npm run size:check || exit 1
 
 echo "🔑 Checking VAPID sync..."
 npm run vapid:check || exit 1
