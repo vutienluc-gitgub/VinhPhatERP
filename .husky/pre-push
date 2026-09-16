@@ -16,7 +16,13 @@ echo "📦 Checking Server package-lock.json sync..."
 (cd server && npm ci --dry-run) || { echo "❌ Server package-lock.json is out of sync! Run 'cd server && npm install'."; exit 1; }
 
 echo "🔍 Checking RPC sync..."
-npm run rpc:check || exit 1
+# SKIP_RPC_CHECK=1 git push  → bỏ qua bước này khi DB không khả dụng (offline / .env sai mật khẩu).
+# Mặc định vẫn FAIL-CLOSED: không kết nối được DB thì không cho push.
+if [ "$SKIP_RPC_CHECK" = "1" ]; then
+  echo "⏭️  SKIP_RPC_CHECK=1 → skip rpc:check. Chạy 'npm run rpc:check' khi online để đảm bảo RPC sync!"
+else
+  npm run rpc:check || exit 1
+fi
 
 echo "🔑 Checking VAPID sync..."
 npm run vapid:check || exit 1
