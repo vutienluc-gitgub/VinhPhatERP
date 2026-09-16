@@ -55,7 +55,7 @@ scanDirectory(SRC_DIR);
 
 console.log(`\nHoàn thành! Đã tìm thấy ${totalViolations} lỗi vi phạm Hardcoded Color tại ${totalFiles} file.`);
 console.log('Xuất báo cáo ra file dark_mode_audit_report.json ...');
-fs.writeFileSync(path.join(__dirname, '../dark_mode_audit_report.json'), JSON.stringify(report, null, 2));
+fs.writeFileSync(path.join(__dirname, 'oneoff/dark_mode_audit_report.json'), JSON.stringify(report, null, 2));
 
 console.log('Tạo artifact báo cáo tóm tắt...');
 // Write summary to console

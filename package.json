@@ -15,6 +15,8 @@
     "lint:race": "eslint . --ext ts,tsx --rule \"require-atomic-updates: error\"",
     "lint:fix-race": "eslint . --ext ts,tsx --fix --rule \"require-atomic-updates: error\"",
     "lint:css": "stylelint \"src/**/*.css\"",
+    "size:check": "node scripts/check-file-size.mjs",
+    "size:baseline": "node scripts/check-file-size.mjs --update-baseline",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write .",
     "check": "npm run lint && npm run lint:css && npm run typecheck",

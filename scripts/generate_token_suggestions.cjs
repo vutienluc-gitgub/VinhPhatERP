@@ -102,5 +102,5 @@ for (const [file, items] of Object.entries(grouped)) {
   markdown.push('');
 }
 
-fs.writeFileSync(path.join(process.cwd(), 'ui_color_suggestions.md'), markdown.join('\n'));
+fs.writeFileSync(path.join(__dirname, 'oneoff', 'ui_color_suggestions.md'), markdown.join('\n'));
 console.log('Successfully generated ui_color_suggestions.md with ' + suggestions.length + ' suggestions.');
