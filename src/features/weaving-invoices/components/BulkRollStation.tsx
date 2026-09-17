@@ -8,15 +8,13 @@ import type {
   Control,
 } from 'react-hook-form';
 
-import { Button, VPSelect } from '@/shared/components';
+import { Button } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
-import {
-  QUALITY_GRADES,
-  QUALITY_GRADE_LABELS,
-} from '@/schema/weaving-invoice.schema';
 import { checkIsRollScanned } from '@/features/weaving-invoices/hooks/useWeavingInvoiceCalculator';
 import { WeightInput, QuantityInput } from '@/shared/value';
+
+import { RollQualitySelect } from './RollQualitySelect';
 
 /* ── Types ── */
 
@@ -267,25 +265,10 @@ export function BulkRollStation({
               <div className="grid grid-cols-2 gap-3">
                 <div className="form-field">
                   <label className="text-sm font-bold">Chất lượng</label>
-                  <Controller
-                    name={`rolls.${activeIndex}.quality_grade`}
+                  <RollQualitySelect
                     control={control}
-                    render={({ field }) => (
-                      <VPSelect
-                        className="w-full"
-                        size="lg"
-                        error={!!errors.rolls?.[activeIndex]?.quality_grade}
-                        value={field.value ?? ''}
-                        onValueChange={field.onChange}
-                        options={[
-                          { value: '', label: '— Chưa kiểm định —' },
-                          ...QUALITY_GRADES.map((g) => ({
-                            value: g,
-                            label: QUALITY_GRADE_LABELS[g],
-                          })),
-                        ]}
-                      />
-                    )}
+                    index={activeIndex}
+                    error={errors.rolls?.[activeIndex]?.quality_grade}
                   />
                   {errors.rolls?.[activeIndex]?.quality_grade && (
                     <span className="field-error">

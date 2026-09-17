@@ -121,7 +121,6 @@ export function ApprovalPoCPage() {
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     loadData();
     NotificationSubscriber.init();

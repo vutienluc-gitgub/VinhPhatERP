@@ -8,41 +8,12 @@ import { QRCodeDisplay } from '@/shared/components/QRCodeDisplay';
 import { Button, Icon } from '@/shared/components';
 
 import { PublicInvoiceRollsTable } from './components/PublicInvoiceRollsTable';
-
-function calculateTotalLength(
-  items: Array<{ length_m: number | null }>,
-): number {
-  let total = 0;
-  for (const item of items) {
-    total += item.length_m ?? 0;
-  }
-  return total;
-}
-
-function formatDate(value: string | null | undefined): string {
-  if (!value) return '—';
-  const d = new Date(value);
-  if (isNaN(d.getTime())) return value;
-  return d.toLocaleDateString('vi-VN');
-}
-
-function formatMoney(value: number | null | undefined): string {
-  if (value === null || value === undefined) return '0 đ';
-  // eslint-disable-next-line no-restricted-syntax
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(value);
-}
-
-function formatQty(qty: number | null | undefined): string {
-  if (qty === null || qty === undefined) return '0';
-  // eslint-disable-next-line no-restricted-syntax
-  return new Intl.NumberFormat('vi-VN', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 2,
-  }).format(qty);
-}
+import {
+  calculateTotalLength,
+  formatDate,
+  formatMoney,
+  formatQty,
+} from './public-invoice-detail.utils';
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   draft: {
