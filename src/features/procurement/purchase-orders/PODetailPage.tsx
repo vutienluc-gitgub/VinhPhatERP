@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Button, StatusBadge } from '@/shared/components';
+import { Button, Icon, StatusBadge } from '@/shared/components';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useConcurrencyConflictHandler } from '@/shared/hooks/useConcurrencyConflictHandler';
 import { supabase } from '@/services/supabase/client';
@@ -18,7 +18,6 @@ import {
   useConfirmPurchaseOrder,
 } from '@/application/purchase-orders';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
-import { Icon } from '@/shared/components';
 
 import { usePODetailData } from './hooks/usePODetailData';
 import { GoodsReceiptForm } from './GoodsReceiptForm';

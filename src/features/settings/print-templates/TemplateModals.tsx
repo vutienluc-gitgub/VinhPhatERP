@@ -8,7 +8,11 @@ import type {
 } from '@/domain/print';
 import { Button, Icon, VPSelect } from '@/shared/components';
 
-import { PRINT_TEMPLATE_LABELS } from './print-templates.constants';
+import {
+  DOC_TYPE_OPTIONS,
+  PRINTER_TYPE_OPTIONS,
+  PRINT_TEMPLATE_LABELS,
+} from './print-templates.constants';
 
 interface CreateTemplateModalProps {
   isOpen: boolean;
@@ -143,15 +147,8 @@ export function CreateTemplateModal({
               <VPSelect
                 className="w-full"
                 value={docType}
-                onValueChange={(v) => setDocType(v as DocumentType)}
-                options={[
-                  { value: 'shipment_delivery', label: 'Phiếu Xuất Kho' },
-                  { value: 'inventory_receipt', label: 'Phiếu Nhập Kho' },
-                  { value: 'production_order', label: 'Lệnh Sản Xuất' },
-                  { value: 'roll_tag', label: 'Tem Cây Vải' },
-                  { value: 'sales_statement', label: 'Bảng Kê Giao Hàng' },
-                  { value: 'payment_receipt', label: 'Phiếu Thu Tiền' },
-                ]}
+                onValueChange={setDocType}
+                options={DOC_TYPE_OPTIONS}
               />
             </div>
 
@@ -162,19 +159,13 @@ export function CreateTemplateModal({
               <VPSelect
                 className="w-full"
                 value={printerType}
-                onValueChange={(v) => {
-                  const pType = v as PrinterProfileType;
+                onValueChange={(pType) => {
                   setPrinterType(pType);
                   if (pType === 'dot_matrix') setFormat('A5');
                   else if (pType === 'laser') setFormat('A4');
                   else setFormat('K80');
                 }}
-                options={[
-                  { value: 'dot_matrix', label: 'In Kim (3 liên)' },
-                  { value: 'laser', label: 'Laser / PDF' },
-                  { value: 'thermal_receipt', label: 'In Nhiệt K80' },
-                  { value: 'thermal_label', label: 'Tem Barcode' },
-                ]}
+                options={PRINTER_TYPE_OPTIONS}
               />
             </div>
           </div>

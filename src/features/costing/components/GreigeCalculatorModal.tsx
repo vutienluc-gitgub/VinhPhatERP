@@ -16,6 +16,7 @@ import {
   COSTING_MESSAGES,
 } from '@/features/costing/costing.constants';
 
+type CostingTab = 'simulation' | 'history';
 interface GreigeCalculatorModalProps {
   open: boolean;
   onClose: () => void;
@@ -40,9 +41,7 @@ export function GreigeCalculatorModal({
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'simulation' | 'history'>(
-    'simulation',
-  );
+  const [activeTab, setActiveTab] = useState<CostingTab>('simulation');
 
   // Fetch approved BOMs to select
   const { data: bomList, isLoading: isBomListLoading } = useQuery({

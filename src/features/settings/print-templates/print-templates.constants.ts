@@ -1,3 +1,22 @@
+import type { DocumentType, PrinterProfileType } from '@/domain/print';
+import type { VPOption } from '@/shared/components';
+
+export const DOC_TYPE_OPTIONS: VPOption<DocumentType>[] = [
+  { value: 'shipment_delivery', label: 'Phiếu Xuất Kho' },
+  { value: 'inventory_receipt', label: 'Phiếu Nhập Kho' },
+  { value: 'production_order', label: 'Lệnh Sản Xuất' },
+  { value: 'roll_tag', label: 'Tem Cây Vải' },
+  { value: 'sales_statement', label: 'Bảng Kê Giao Hàng' },
+  { value: 'payment_receipt', label: 'Phiếu Thu Tiền' },
+];
+
+export const PRINTER_TYPE_OPTIONS: VPOption<PrinterProfileType>[] = [
+  { value: 'dot_matrix', label: 'In Kim (3 liên)' },
+  { value: 'laser', label: 'Laser / PDF' },
+  { value: 'thermal_receipt', label: 'In Nhiệt K80' },
+  { value: 'thermal_label', label: 'Tem Barcode' },
+];
+
 export const PRINT_TEMPLATE_LABELS = {
   TITLE: 'Kho Mẫu In Chứng Từ',
   SUBTITLE:
