@@ -14,6 +14,7 @@ import type {
   ProductionStage,
   StageStatus,
 } from '@/domain/orders/progress.types';
+import { Icon, VPSelect } from '@/shared/components';
 
 import { OpsLevelPath } from './OpsLevelPath';
 import { ProgressExpBar } from './ProgressExpBar';
@@ -118,47 +119,47 @@ export function ProgressBoard() {
           <label htmlFor="stage-filter">
             {ORDERS_PROG_LABELS.PROG_FILTER_STAGE}
           </label>
-          <select
+          <VPSelect
             id="stage-filter"
-            className="field-select"
+            className="w-full"
+            options={[
+              { value: '', label: ORDERS_PROG_LABELS.PROG_FILTER_ALL },
+              ...PRODUCTION_STAGES.map((s) => ({
+                value: s,
+                label: STAGE_LABELS[s],
+              })),
+            ]}
             value={stageFilter}
-            onChange={(e) =>
-              setStageFilter(e.target.value as ProductionStage | '')
-            }
-          >
-            <option value="">{ORDERS_PROG_LABELS.PROG_FILTER_ALL}</option>
-            {PRODUCTION_STAGES.map((s) => (
-              <option key={s} value={s}>
-                {STAGE_LABELS[s]}
-              </option>
-            ))}
-          </select>
+            onValueChange={(v) => setStageFilter(v as ProductionStage | '')}
+          />
         </div>
 
         <div className="filter-field">
           <label htmlFor="status-filter">
             {ORDERS_PROG_LABELS.PROG_FILTER_STATUS}
           </label>
-          <select
+          <VPSelect
             id="status-filter"
-            className="field-select"
+            className="w-full"
+            options={[
+              { value: '', label: ORDERS_PROG_LABELS.PROG_FILTER_ALL },
+              {
+                value: 'pending',
+                label: ORDERS_PROG_LABELS.PROG_STATUS_PENDING,
+              },
+              {
+                value: 'in_progress',
+                label: ORDERS_PROG_LABELS.PROG_STATUS_DOING,
+              },
+              { value: 'done', label: ORDERS_PROG_LABELS.PROG_STATUS_DONE },
+              {
+                value: 'skipped',
+                label: ORDERS_PROG_LABELS.PROG_STATUS_SKIPPED,
+              },
+            ]}
             value={statusFilter}
-            onChange={(e) =>
-              setStatusFilter(e.target.value as StageStatus | '')
-            }
-          >
-            <option value="">{ORDERS_PROG_LABELS.PROG_FILTER_ALL}</option>
-            <option value="pending">
-              {ORDERS_PROG_LABELS.PROG_STATUS_PENDING}
-            </option>
-            <option value="in_progress">
-              {ORDERS_PROG_LABELS.PROG_STATUS_DOING}
-            </option>
-            <option value="done">{ORDERS_PROG_LABELS.PROG_STATUS_DONE}</option>
-            <option value="skipped">
-              {ORDERS_PROG_LABELS.PROG_STATUS_SKIPPED}
-            </option>
-          </select>
+            onValueChange={(v) => setStatusFilter(v as StageStatus | '')}
+          />
         </div>
 
         {(stageFilter || statusFilter) && (
@@ -217,8 +218,15 @@ export function ProgressBoard() {
                             overdue ? 'text-danger' : 'text-muted-foreground'
                           }
                         >
-                          📅 {group.deliveryDate}
-                          {overdue && ' ⚠️'}
+                          <Icon name="Calendar" size={12} className="inline" />{' '}
+                          {group.deliveryDate}
+                          {overdue && (
+                            <Icon
+                              name="TriangleAlert"
+                              size={12}
+                              className="inline ml-1"
+                            />
+                          )}
                         </span>
                       )}
                     </div>

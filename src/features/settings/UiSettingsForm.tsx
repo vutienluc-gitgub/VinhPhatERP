@@ -64,7 +64,7 @@ export function UiSettingsForm() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-pink-soft text-pink flex items-center justify-center shrink-0">
             <Icon name="Palette" size={20} strokeWidth={1.5} />
           </div>
           <div>

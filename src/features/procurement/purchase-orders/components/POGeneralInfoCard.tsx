@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { UseFormReturn, Controller } from 'react-hook-form';
 
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
-import { Combobox } from '@/shared/components';
+import { Combobox, VPSelect } from '@/shared/components';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
 import type { Supplier } from '@/domain/crm/suppliers.types';
 import type { Employee } from '@/schema';
@@ -109,7 +109,7 @@ export function POGeneralInfoCard({
                 type="button"
                 className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all h-7 ${
                   tradeType === 'domestic'
-                    ? 'bg-surface text-foreground shadow-sm border border-black/5'
+                    ? 'bg-surface text-foreground shadow-sm border border-muted'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => handleTradeTypeChange('domestic')}
@@ -120,7 +120,7 @@ export function POGeneralInfoCard({
                 type="button"
                 className={`flex-1 py-1 text-xs font-semibold rounded-md transition-all h-7 ${
                   tradeType === 'import'
-                    ? 'bg-surface text-foreground shadow-sm border border-black/5'
+                    ? 'bg-surface text-foreground shadow-sm border border-muted'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
                 onClick={() => handleTradeTypeChange('import')}
@@ -203,24 +203,42 @@ export function POGeneralInfoCard({
           {tradeType === 'import' && (
             <div className="form-field animate-fadeIn">
               <label>{PO_CONSTANTS.LABEL_INCOTERMS}</label>
-              <select className="field-select h-9" {...register('incoterms')}>
-                <option value="">{PO_CONSTANTS.SELECT_DEFAULT}</option>
-                {PO_CONSTANTS.INCOTERMS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="incoterms"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    className="w-full"
+                    value={field.value ?? ''}
+                    onValueChange={field.onChange}
+                    options={[
+                      { value: '', label: PO_CONSTANTS.SELECT_DEFAULT },
+                      ...PO_CONSTANTS.INCOTERMS_OPTIONS,
+                    ]}
+                  />
+                )}
+              />
             </div>
           )}
 
           <div className="form-field">
             <label>{PO_CONSTANTS.LABEL_PRIORITY}</label>
-            <select className="field-select h-9" {...register('priority')}>
-              <option value="normal">{PO_CONSTANTS.PRIORITY_NORMAL}</option>
-              <option value="high">{PO_CONSTANTS.PRIORITY_HIGH}</option>
-              <option value="urgent">{PO_CONSTANTS.PRIORITY_URGENT}</option>
-            </select>
+            <Controller
+              name="priority"
+              control={control}
+              render={({ field }) => (
+                <VPSelect
+                  className="w-full"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  options={[
+                    { value: 'normal', label: PO_CONSTANTS.PRIORITY_NORMAL },
+                    { value: 'high', label: PO_CONSTANTS.PRIORITY_HIGH },
+                    { value: 'urgent', label: PO_CONSTANTS.PRIORITY_URGENT },
+                  ]}
+                />
+              )}
+            />
           </div>
         </div>
       </div>
@@ -233,13 +251,18 @@ export function POGeneralInfoCard({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="form-field">
             <label>{PO_CONSTANTS.LABEL_PAYMENT_TERMS}</label>
-            <select className="field-select h-9" {...register('payment_terms')}>
-              {PO_CONSTANTS.PAYMENT_TERMS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="payment_terms"
+              control={control}
+              render={({ field }) => (
+                <VPSelect
+                  className="w-full"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  options={[...PO_CONSTANTS.PAYMENT_TERMS_OPTIONS]}
+                />
+              )}
+            />
           </div>
 
           <div className="form-field">

@@ -159,9 +159,16 @@ export function AdHocShipmentItemsTable({
                       <div
                         className={`text-[10px] font-medium px-2 pb-1 text-right ${isOverStock ? 'text-danger' : 'text-success'}`}
                       >
-                        {isOverStock
-                          ? `⚠ Thiếu ${(qty - 245).toFixed(1)} kg`
-                          : '✓ Đủ tồn'}
+                        {isOverStock ? (
+                          <span className="inline-flex items-center gap-1">
+                            <Icon name="TriangleAlert" size={11} />
+                            {`Thiếu ${(qty - 245).toFixed(1)} kg`}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1">
+                            <Icon name="Check" size={11} /> Đủ tồn
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>

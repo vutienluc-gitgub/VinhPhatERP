@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { formatQuantity } from '@/shared/value/core/formatter';
+import { Icon } from '@/shared/components';
 import { fetchPublicShipmentSummary } from '@/api/verify.api';
 import type { PublicShipmentSummary } from '@/api/verify.api';
 
@@ -71,7 +72,11 @@ export function ShipmentVerifyPage() {
   if (error || !shipment) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0f5fb] gap-3 p-6">
-        <div className="text-4xl">🔍</div>
+        <Icon
+          name="Search"
+          size={36}
+          className="text-[var(--muted-foreground)]"
+        />
         <h1 className="font-bold text-lg text-[var(--foreground)]">
           {MSG.NOT_FOUND_TITLE}
         </h1>
@@ -133,14 +138,14 @@ export function ShipmentVerifyPage() {
             {MSG.DELIVERY_INFO}
           </div>
           <div className="flex items-start gap-3 text-sm">
-            <span className="text-lg leading-none">👤</span>
+            <Icon name="User" size={16} className="shrink-0" />
             <span className="text-[var(--foreground)] font-medium">
               {shipment.customer_name ?? '—'}
             </span>
           </div>
           {shipment.delivery_address && (
             <div className="flex items-start gap-3 text-sm">
-              <span className="text-lg leading-none">📍</span>
+              <Icon name="MapPin" size={16} className="shrink-0" />
               <span className="text-[var(--muted-foreground)]">
                 {shipment.delivery_address}
               </span>

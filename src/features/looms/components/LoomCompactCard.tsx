@@ -19,7 +19,7 @@ export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
     idle: 'bg-surface-strong text-inverse-foreground',
     maintenance: 'bg-warning-soft text-inverse-foreground',
     breakdown: 'bg-danger-soft text-inverse-foreground',
-    setup: 'bg-purple-500 text-inverse-foreground',
+    setup: 'bg-purple text-inverse-foreground',
   };
 
   const statusBg = statusColorMap[loom.status] ?? statusColorMap.idle;

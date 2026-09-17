@@ -24,8 +24,8 @@ const VARIANT_CLASSES: Record<PanelIconVariant, string> = {
   success: 'bg-success-soft text-success',
   warning: 'bg-warning-soft text-warning',
   danger: 'bg-danger-soft text-danger',
-  purple: 'bg-purple-500/10 text-purple-600',
-  pink: 'bg-pink-500/10 text-pink-600',
+  purple: 'bg-purple-soft text-purple',
+  pink: 'bg-pink-soft text-pink',
 };
 
 /**

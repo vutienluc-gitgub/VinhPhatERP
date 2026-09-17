@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { usePinnedMessages } from '@/application/chat';
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
+import { Icon } from '@/shared/components';
 
 interface PinnedMessagesBarProps {
   roomId: string;
@@ -44,9 +45,13 @@ export function PinnedMessagesBar({ roomId }: PinnedMessagesBarProps) {
           </span>
           {!expanded && (
             <span className="chat-pinned-preview">
-              {topMessage.message_type === 'image'
-                ? '🖼️ Hình ảnh'
-                : topMessage.content}
+              {topMessage.message_type === 'image' ? (
+                <span className="inline-flex items-center gap-1">
+                  <Icon name="Image" size={12} /> Hình ảnh
+                </span>
+              ) : (
+                topMessage.content
+              )}
             </span>
           )}
         </div>
@@ -75,7 +80,13 @@ export function PinnedMessagesBar({ roomId }: PinnedMessagesBarProps) {
           {pinnedMessages.map((msg) => (
             <div key={msg.id} className="chat-pinned-item">
               <div className="chat-pinned-item-content">
-                {msg.message_type === 'image' ? '🖼️ Hình ảnh' : msg.content}
+                {msg.message_type === 'image' ? (
+                  <span className="inline-flex items-center gap-1">
+                    <Icon name="Image" size={12} /> Hình ảnh
+                  </span>
+                ) : (
+                  msg.content
+                )}
               </div>
             </div>
           ))}

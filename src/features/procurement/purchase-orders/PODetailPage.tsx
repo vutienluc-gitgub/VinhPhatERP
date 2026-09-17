@@ -18,6 +18,7 @@ import {
   useConfirmPurchaseOrder,
 } from '@/application/purchase-orders';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
+import { Icon } from '@/shared/components';
 
 import { usePODetailData } from './hooks/usePODetailData';
 import { GoodsReceiptForm } from './GoodsReceiptForm';
@@ -94,7 +95,7 @@ export function PODetailPage() {
           ) {
             toast.success(
               `NCC ${payload.new.supplier_name_snapshot ?? ''} đã xác nhận ${payload.new.po_code}`,
-              { icon: '🔔', duration: 6000 },
+              { icon: <Icon name="Bell" size={16} />, duration: 6000 },
             );
           } else if (
             payload.new.status === 'supplier_rejected' &&
@@ -102,7 +103,7 @@ export function PODetailPage() {
           ) {
             toast.error(
               `NCC ${payload.new.supplier_name_snapshot ?? ''} đã TỪ CHỐI ${payload.new.po_code}`,
-              { icon: '❌', duration: 8000 },
+              { icon: <Icon name="CircleX" size={16} />, duration: 8000 },
             );
           }
         },

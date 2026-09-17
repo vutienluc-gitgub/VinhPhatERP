@@ -1,5 +1,5 @@
 import type { BarcodeBlock, QRBlock, TemplateBlock } from '@/domain/print';
-import { Icon } from '@/shared/components';
+import { Icon, VPSelect } from '@/shared/components';
 
 interface QRBarcodeInspectorProps {
   block: QRBlock | BarcodeBlock;
@@ -70,21 +70,24 @@ export function QRBarcodeInspector({
             <label className="text-[11px] font-medium text-muted">
               Định Dạng Mã Vạch:
             </label>
-            <select
+            <VPSelect
+              size="sm"
+              className="w-full"
               value={block.format}
-              onChange={(e) =>
+              onValueChange={(v) =>
                 onUpdateBlock({
                   ...block,
-                  format: e.target.value as 'CODE128' | 'EAN13' | 'QR',
+                  format: v as 'CODE128' | 'EAN13' | 'QR',
                 })
               }
-              className="field-input text-xs"
-            >
-              <option value="CODE128">
-                CODE128 (Chuẩn Tem Vải & Thùng Hàng)
-              </option>
-              <option value="EAN13">EAN-13 (Chuẩn Bán Lẻ Toàn Cầu)</option>
-            </select>
+              options={[
+                {
+                  value: 'CODE128',
+                  label: 'CODE128 (Chuẩn Tem Vải & Thùng Hàng)',
+                },
+                { value: 'EAN13', label: 'EAN-13 (Chuẩn Bán Lẻ Toàn Cầu)' },
+              ]}
+            />
           </div>
 
           <div className="flex flex-col gap-1">

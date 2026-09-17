@@ -17,7 +17,7 @@ export function ReconciliationModal({
   if (!isOpen || !report) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/50 backdrop-blur-sm animate-fade-in">
       <div className="panel-card max-w-2xl w-full shadow-2xl overflow-hidden animate-scale-up">
         <div className="card-header-area bg-surface-secondary/40">
           <div className="flex items-center justify-between">

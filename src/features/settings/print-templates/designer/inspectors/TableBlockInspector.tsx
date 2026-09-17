@@ -1,5 +1,5 @@
 import type { TableBlock, TableColumnConfig } from '@/domain/print';
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 
 interface TableBlockInspectorProps {
   block: TableBlock;
@@ -74,19 +74,19 @@ export function TableBlockInspector({
           <label className="text-[11px] font-medium text-muted">
             Kiểu Khung Viền:
           </label>
-          <select
+          <VPSelect
+            size="sm"
+            className="w-full"
             value={block.borderStyle}
-            onChange={(e) =>
-              handleBorderStyleChange(
-                e.target.value as 'solid' | 'dashed' | 'none',
-              )
+            onValueChange={(v) =>
+              handleBorderStyleChange(v as 'solid' | 'dashed' | 'none')
             }
-            className="field-input text-xs"
-          >
-            <option value="dashed">Viền nét đứt (In Kim)</option>
-            <option value="solid">Viền nét liền (Laser)</option>
-            <option value="none">Không viền</option>
-          </select>
+            options={[
+              { value: 'dashed', label: 'Viền nét đứt (In Kim)' },
+              { value: 'solid', label: 'Viền nét liền (Laser)' },
+              { value: 'none', label: 'Không viền' },
+            ]}
+          />
         </div>
 
         <div className="flex flex-col gap-1">
@@ -175,19 +175,21 @@ export function TableBlockInspector({
 
                 <div className="flex items-center gap-1">
                   <span className="text-[10px] text-muted shrink-0">Căn:</span>
-                  <select
+                  <VPSelect
+                    size="sm"
+                    className="h-6 w-[90px] px-1 text-[11px]"
                     value={col.align}
-                    onChange={(e) =>
+                    onValueChange={(v) =>
                       handleUpdateColumn(idx, {
-                        align: e.target.value as 'left' | 'center' | 'right',
+                        align: v as 'left' | 'center' | 'right',
                       })
                     }
-                    className="field-input text-[11px] h-6 py-0 px-1"
-                  >
-                    <option value="left">Trái</option>
-                    <option value="center">Giữa</option>
-                    <option value="right">Phải</option>
-                  </select>
+                    options={[
+                      { value: 'left', label: 'Trái' },
+                      { value: 'center', label: 'Giữa' },
+                      { value: 'right', label: 'Phải' },
+                    ]}
+                  />
                 </div>
               </div>
             </div>

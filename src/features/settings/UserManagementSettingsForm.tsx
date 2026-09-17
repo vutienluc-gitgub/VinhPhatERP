@@ -66,7 +66,7 @@ export function UserManagementSettingsForm() {
     <div className="panel-card card-flush">
       <div className="card-header-area">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-purple-soft text-purple flex items-center justify-center shrink-0">
             <Icon name="Users" size={20} strokeWidth={1.5} />
           </div>
           <div>

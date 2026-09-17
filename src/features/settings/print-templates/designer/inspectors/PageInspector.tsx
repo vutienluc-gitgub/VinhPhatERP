@@ -1,5 +1,5 @@
 import type { PrintLayout, PrintTemplateEntity } from '@/domain/print';
-import { Icon } from '@/shared/components';
+import { Icon, VPSelect } from '@/shared/components';
 
 interface PageInspectorProps {
   template: PrintTemplateEntity;
@@ -173,51 +173,55 @@ export function PageInspector({
           <label className="text-[11px] font-medium text-muted">
             Kiểu Font Chữ In:
           </label>
-          <select
+          <VPSelect
+            size="sm"
+            className="w-full"
             value={styles?.fontFamily || 'Inter'}
-            onChange={(e) =>
+            onValueChange={(v) =>
               onUpdateLayout({
                 ...layout,
                 styles: {
                   ...styles,
-                  fontFamily: e.target.value as
-                    | 'Inter'
-                    | 'Roboto'
-                    | 'Courier_Mono',
+                  fontFamily: v as 'Inter' | 'Roboto' | 'Courier_Mono',
                   baseFontSizePt: styles?.baseFontSizePt || 10,
                 },
               })
             }
-            className="field-input text-xs"
-          >
-            <option value="Inter">Inter (Hiện đại - Chuẩn Laser / PDF)</option>
-            <option value="Roboto">Roboto (Chuẩn Văn Phòng)</option>
-            <option value="Courier_Mono">
-              Courier Monospace (Nét Kim Dot-Matrix)
-            </option>
-          </select>
+            options={[
+              { value: 'Inter', label: 'Inter (Hiện đại - Chuẩn Laser / PDF)' },
+              { value: 'Roboto', label: 'Roboto (Chuẩn Văn Phòng)' },
+              {
+                value: 'Courier_Mono',
+                label: 'Courier Monospace (Nét Kim Dot-Matrix)',
+              },
+            ]}
+          />
         </div>
 
         <div className="flex flex-col gap-1">
           <label className="text-[11px] font-medium text-muted">
             Chiều Giấy In:
           </label>
-          <select
+          <VPSelect
+            size="sm"
+            className="w-full"
             value={template.orientation}
-            onChange={(e) =>
+            onValueChange={(v) =>
               onUpdateTemplate({
-                orientation: e.target.value as 'portrait' | 'landscape',
+                orientation: v as 'portrait' | 'landscape',
               })
             }
-            className="field-input text-xs"
-          >
-            <option value="landscape">
-              Khổ Ngang (Landscape - Phù hợp A5 Kim)
-            </option>
-            <option value="portrait">
-              Khổ Đứng (Portrait - Phù hợp A4 Laser)
-            </option>
-          </select>
+            options={[
+              {
+                value: 'landscape',
+                label: 'Khổ Ngang (Landscape - Phù hợp A5 Kim)',
+              },
+              {
+                value: 'portrait',
+                label: 'Khổ Đứng (Portrait - Phù hợp A4 Laser)',
+              },
+            ]}
+          />
         </div>
       </div>
     </div>

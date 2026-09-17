@@ -136,7 +136,7 @@ export const K80PrintLayout = React.forwardRef<
                 {data.columns.map((col) => (
                   <th
                     key={col.id}
-                    className="text-right border-b border-dashed border-black pb-1"
+                    className="text-right border-b border-dashed border-foreground pb-1"
                     style={{ width: `${100 / data.columns.length}%` }}
                   >
                     {col.fabricCode || LABELS.EMPTY_DASH}
@@ -162,7 +162,7 @@ export const K80PrintLayout = React.forwardRef<
               ))}
               <tr>
                 <td colSpan={data.columns.length} className="pt-2">
-                  <div className="border-t border-dashed border-black w-full" />
+                  <div className="border-t border-dashed border-foreground w-full" />
                 </td>
               </tr>
               <tr>
@@ -190,7 +190,7 @@ export const K80PrintLayout = React.forwardRef<
               </tr>
               <tr>
                 <td colSpan={data.columns.length} className="pt-2">
-                  <div className="border-t border-dashed border-black w-full" />
+                  <div className="border-t border-dashed border-foreground w-full" />
                 </td>
               </tr>
             </tbody>

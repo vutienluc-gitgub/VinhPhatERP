@@ -6,7 +6,7 @@ import {
   useCreateLeadActivity,
 } from '@/application/crm/useCrm';
 import type { ActivityType } from '@/domain/crm/crm.types';
-import { Button } from '@/shared/components/Button';
+import { Button, VPSelect } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
 import { ACTIVITY_TYPE_MAP } from '@/features/crm/crm.constants';
 
@@ -54,15 +54,17 @@ export function ActivityTimeline({ leadId }: ActivityTimelineProps) {
         className="mb-6 bg-surface border border-border rounded-lg p-3"
       >
         <div className="flex items-center gap-2 mb-2">
-          <select
+          <VPSelect
             value={activityType}
-            onChange={(e) => setActivityType(e.target.value as ActivityType)}
-            className="text-sm border border-border rounded px-2 py-1 bg-surface"
-          >
-            <option value="NOTE">Ghi chú</option>
-            <option value="CALL">Cuộc gọi</option>
-            <option value="EMAIL">Email</option>
-          </select>
+            onValueChange={(v) => setActivityType(v as ActivityType)}
+            size="sm"
+            className="w-[140px]"
+            options={[
+              { value: 'NOTE', label: 'Ghi chú' },
+              { value: 'CALL', label: 'Cuộc gọi' },
+              { value: 'EMAIL', label: 'Email' },
+            ]}
+          />
         </div>
         <textarea
           value={newNote}

@@ -8,7 +8,7 @@ import {
   useAllSupplierPrices,
   useUpsertSupplierPrice,
 } from '@/application/crm';
-import { Button } from '@/shared/components';
+import { Button, VPSelect } from '@/shared/components';
 import {
   MoneyInput,
   QuantityInput,
@@ -134,12 +134,23 @@ export function SupplierPriceList({ supplierId }: Props) {
             </div>
             <div className="form-field">
               <label>{L.LBL_UNIT}</label>
-              <select className="field-input" {...register('uom')}>
-                <option value="kg">kg</option>
-                <option value="cây">{MSG.OPT_UNIT_CAY}</option>
-                <option value="mét">{MSG.OPT_UNIT_MET}</option>
-                <option value="cuộn">{MSG.OPT_UNIT_CUON}</option>
-              </select>
+              <Controller
+                name="uom"
+                control={control}
+                render={({ field }) => (
+                  <VPSelect
+                    className="w-full"
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    options={[
+                      { value: 'kg', label: 'kg' },
+                      { value: 'cây', label: MSG.OPT_UNIT_CAY },
+                      { value: 'mét', label: MSG.OPT_UNIT_MET },
+                      { value: 'cuộn', label: MSG.OPT_UNIT_CUON },
+                    ]}
+                  />
+                )}
+              />
             </div>
             <div className="form-field">
               <label>{L.LBL_MOQ}</label>

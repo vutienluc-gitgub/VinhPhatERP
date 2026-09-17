@@ -1,7 +1,7 @@
 import { UseFormReturn, Controller } from 'react-hook-form';
 
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 import { MoneyText, MoneyInput } from '@/shared/value';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
 
@@ -22,7 +22,7 @@ export function POPaymentPanel({
   isPending,
   onSubmit,
 }: POPaymentPanelProps) {
-  const { register, control, watch, handleSubmit } = form;
+  const { control, watch, handleSubmit } = form;
 
   const watchVatRate = watch('vat_rate') || 0;
   const watchShippingFee = watch('shipping_fee') || 0;
@@ -39,16 +39,21 @@ export function POPaymentPanel({
         <div className="p-4 bg-gray-50/40 rounded-xl border border-border space-y-4">
           <div className="form-field">
             <label>{PO_CONSTANTS.LABEL_CURRENCY}</label>
-            <select
-              className="field-select h-9 w-full bg-surface font-normal"
-              {...register('currency')}
-            >
-              {PO_CONSTANTS.CURRENCY_OPTIONS.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="currency"
+              control={control}
+              render={({ field }) => (
+                <VPSelect
+                  className="w-full"
+                  options={PO_CONSTANTS.CURRENCY_OPTIONS.map((c) => ({
+                    value: c,
+                    label: c,
+                  }))}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                />
+              )}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

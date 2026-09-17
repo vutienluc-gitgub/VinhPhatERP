@@ -64,7 +64,7 @@ export function FabricRecommendations({
                 to={`/p/fabric/${item.slug}`}
                 className="flex flex-col group"
               >
-                <div className="w-full aspect-square rounded-lg bg-gray-50 overflow-hidden mb-1.5 relative border border-black/5 shadow-sm">
+                <div className="w-full aspect-square rounded-lg bg-surface-secondary overflow-hidden mb-1.5 relative border border-muted shadow-sm">
                   {item.image_url ? (
                     <SafeImage
                       src={item.image_url}
@@ -102,7 +102,7 @@ export function FabricRecommendations({
                 to={`/p/fabric/${item.slug}`}
                 className="flex items-center gap-3 group"
               >
-                <div className="w-14 h-14 rounded-lg bg-gray-50 overflow-hidden shrink-0 border border-black/5 shadow-sm">
+                <div className="w-14 h-14 rounded-lg bg-surface-secondary overflow-hidden shrink-0 border border-muted shadow-sm">
                   {item.image_url ? (
                     <SafeImage
                       src={item.image_url}

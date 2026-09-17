@@ -1,4 +1,5 @@
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+import { Icon } from '@/shared/components';
 import { useTraceChain } from '@/application/inventory';
 import { QUALITY_GRADE_LABELS } from '@/schema/finished-fabric.schema';
 import { formatQuantity, formatCurrency } from '@/shared/value/core/formatter';
@@ -52,7 +53,9 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
       <div className="trace-chain">
         {/* Level 1: Cuộn thành phẩm */}
         <div className="trace-node trace-node--active">
-          <div className="trace-node-icon">🏭</div>
+          <div className="trace-node-icon">
+            <Icon name="Factory" size={20} />
+          </div>
           <div className="trace-node-body">
             <p className="trace-node-label">{MSG.NODE_FINISHED}</p>
             <p className="trace-node-title">{roll.roll_number}</p>
@@ -70,7 +73,10 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
               <span>{fmtNum(roll.weight_kg, 'kg')}</span>
             </div>
             {roll.warehouse_location && (
-              <p className="trace-node-meta">📍 {roll.warehouse_location}</p>
+              <p className="trace-node-meta">
+                <Icon name="MapPin" size={12} className="inline" />{' '}
+                {roll.warehouse_location}
+              </p>
             )}
           </div>
         </div>
@@ -81,14 +87,18 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
         {/* Level 2: Cuộn vải mộc */}
         {isLoading ? (
           <div className="trace-node trace-node--loading">
-            <div className="trace-node-icon">⏳</div>
+            <div className="trace-node-icon">
+              <Icon name="Hourglass" size={20} />
+            </div>
             <div className="trace-node-body">
               <p className="trace-node-label">{MSG.LOADING}</p>
             </div>
           </div>
         ) : rawRoll ? (
           <div className="trace-node">
-            <div className="trace-node-icon">🧶</div>
+            <div className="trace-node-icon">
+              <Icon name="Package" size={20} />
+            </div>
             <div className="trace-node-body">
               <p className="trace-node-label">{MSG.NODE_RAW}</p>
               <p className="trace-node-title">{rawRoll.roll_number}</p>
@@ -123,7 +133,9 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
           </div>
         ) : (
           <div className="trace-node trace-node--empty">
-            <div className="trace-node-icon">❓</div>
+            <div className="trace-node-icon">
+              <Icon name="CircleHelp" size={20} />
+            </div>
             <div className="trace-node-body">
               <p className="trace-node-label">{MSG.NODE_RAW}</p>
               <p className="trace-node-meta">{MSG.EMPTY_RAW}</p>
@@ -138,7 +150,9 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
         {rawRoll &&
           (yarnReceipt ? (
             <div className="trace-node">
-              <div className="trace-node-icon">📋</div>
+              <div className="trace-node-icon">
+                <Icon name="ClipboardList" size={20} />
+              </div>
               <div className="trace-node-body">
                 <p className="trace-node-label">{MSG.NODE_YARN}</p>
                 <p className="trace-node-title">{yarnReceipt.receipt_number}</p>
@@ -167,7 +181,9 @@ export function TraceChainPanel({ roll, onClose }: TraceChainPanelProps) {
             </div>
           ) : (
             <div className="trace-node trace-node--empty">
-              <div className="trace-node-icon">❓</div>
+              <div className="trace-node-icon">
+                <Icon name="CircleHelp" size={20} />
+              </div>
               <div className="trace-node-body">
                 <p className="trace-node-label">{MSG.NODE_YARN}</p>
                 <p className="trace-node-meta">

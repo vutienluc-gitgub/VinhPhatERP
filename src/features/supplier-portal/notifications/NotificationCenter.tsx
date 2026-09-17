@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
-import { Icon } from '@/shared/components/Icon';
+import { Icon, type IconName } from '@/shared/components/Icon';
 
 import { useNotifications } from './useNotifications';
 import type { NotificationItem } from './types';
@@ -14,10 +14,10 @@ export interface NotificationCenterProps {
   supplierId?: string;
 }
 
-const TYPE_ICON: Record<NotificationItem['type'], string> = {
-  purchase_order: '📦',
-  rfq: '📄',
-  debt: '💰',
+const TYPE_ICON: Record<NotificationItem['type'], IconName> = {
+  purchase_order: 'Package',
+  rfq: 'FileText',
+  debt: 'Wallet',
 };
 
 export function NotificationCenter({ supplierId }: NotificationCenterProps) {
@@ -144,8 +144,8 @@ export function NotificationCenter({ supplierId }: NotificationCenterProps) {
                         : 'bg-info-soft hover:bg-info/10'
                     }`}
                   >
-                    <span className="text-base shrink-0 mt-[1px]">
-                      {TYPE_ICON[item.type]}
+                    <span className="shrink-0 mt-[1px] text-info">
+                      <Icon name={TYPE_ICON[item.type]} size={16} />
                     </span>
                     <div className="flex-1 min-w-0">
                       <p

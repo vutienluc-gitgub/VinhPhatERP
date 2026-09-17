@@ -17,7 +17,7 @@ export function SourceTypeBadge({
     );
   }
   return (
-    <span className="inline-flex items-center rounded-sm bg-purple-50 px-1.5 py-0.5 text-[10px] font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
+    <span className="inline-flex items-center rounded-sm bg-purple-soft px-1.5 py-0.5 text-[10px] font-medium text-purple ring-1 ring-inset ring-purple/10">
       MANUAL
     </span>
   );

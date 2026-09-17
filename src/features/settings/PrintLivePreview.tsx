@@ -101,9 +101,9 @@ export function PrintLivePreview({
       {/* Scaled Preview Paper Canvas */}
       <div className="bg-surface-secondary border border-default rounded-xl p-4 flex items-center justify-center min-h-[380px] overflow-hidden shadow-inner">
         <div
-          className={`bg-white text-slate-900 shadow-md transition-all duration-300 origin-top text-[10px] leading-snug select-none relative ${
+          className={`bg-surface-strong text-foreground shadow-md transition-all duration-300 origin-top text-[10px] leading-snug select-none relative ${
             isA4 ? 'w-[280px] min-h-[396px] p-4' : ''
-          } ${isA5 ? 'w-[330px] min-h-[232px] py-3 border border-black font-sans' : ''} ${
+          } ${isA5 ? 'w-[330px] min-h-[232px] py-3 border border-foreground/40 font-sans' : ''} ${
             isK80 ? 'w-[180px] min-h-[260px] p-2 font-mono text-[9px]' : ''
           }`}
           style={{
@@ -124,31 +124,31 @@ export function PrintLivePreview({
                 {Array.from({ length: 9 }).map((_, i) => (
                   <div
                     key={`lh-${i}`}
-                    className="w-2 h-2 rounded-full border border-slate-300 bg-slate-100 shadow-inner"
+                    className="w-2 h-2 rounded-full border border-foreground/40 bg-surface-secondary shadow-inner"
                   />
                 ))}
               </div>
               {/* Left Perforation Line */}
-              <div className="absolute left-4 top-0 bottom-0 border-r border-dashed border-slate-300 pointer-events-none" />
+              <div className="absolute left-4 top-0 bottom-0 border-r border-dashed border-foreground/30 pointer-events-none" />
 
               {/* Right Sprocket Holes */}
               <div className="absolute right-1 top-0 bottom-0 flex flex-col justify-around py-2 pointer-events-none">
                 {Array.from({ length: 9 }).map((_, i) => (
                   <div
                     key={`rh-${i}`}
-                    className="w-2 h-2 rounded-full border border-slate-300 bg-slate-100 shadow-inner"
+                    className="w-2 h-2 rounded-full border border-foreground/40 bg-surface-secondary shadow-inner"
                   />
                 ))}
               </div>
               {/* Right Perforation Line */}
-              <div className="absolute right-4 top-0 bottom-0 border-r border-dashed border-slate-300 pointer-events-none" />
+              <div className="absolute right-4 top-0 bottom-0 border-r border-dashed border-foreground/30 pointer-events-none" />
             </>
           )}
 
           {/* Header */}
           <div
             className={`pb-2 mb-2 flex items-start justify-between ${
-              isA5 ? 'border-b border-black' : 'border-b border-slate-200'
+              isA5 ? 'border-b border-foreground' : 'border-b border-default'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -165,34 +165,34 @@ export function PrintLivePreview({
                 <div className="font-extrabold text-[10px] uppercase tracking-wide">
                   {companyName}
                 </div>
-                <div className="font-bold text-[11px] text-slate-800 uppercase">
+                <div className="font-bold text-[11px] text-foreground uppercase">
                   PHIẾU XUẤT KHO
                 </div>
               </div>
             </div>
 
-            <div className="text-right text-[8px] text-slate-600">
+            <div className="text-right text-[8px] text-muted-foreground">
               <div>Số: XK2604-0001</div>
               <div>02/04/2026</div>
             </div>
           </div>
 
           {/* Info Customer */}
-          <div className="bg-slate-50 p-1.5 rounded mb-2 text-[8.5px] space-y-0.5 border border-slate-200">
+          <div className="bg-surface-secondary p-1.5 rounded mb-2 text-[8.5px] space-y-0.5 border border-default">
             <div>
-              <span className="text-slate-500">Khách:</span>{' '}
-              <strong className="text-slate-800">Công ty May Á Đông</strong>
+              <span className="text-muted-foreground">Khách:</span>{' '}
+              <strong className="text-foreground">Công ty May Á Đông</strong>
             </div>
             <div>
-              <span className="text-slate-500">Giao tại:</span> 123 Đường Lê
-              Lợi, Q.1, TP.HCM
+              <span className="text-muted-foreground">Giao tại:</span> 123 Đường
+              Lê Lợi, Q.1, TP.HCM
             </div>
           </div>
 
           {/* Table Mockup */}
           <table className="w-full border-collapse mb-2 text-[8px]">
             <thead>
-              <tr className="border-b border-slate-400 bg-slate-100 font-bold">
+              <tr className="border-b border-foreground/40 bg-surface-secondary font-bold">
                 <th className="py-0.5 px-1 text-left">STT</th>
                 <th className="py-0.5 px-1 text-left">Loại vải</th>
                 <th className="py-0.5 px-1 text-right">Mã cuộn</th>
@@ -200,13 +200,13 @@ export function PrintLivePreview({
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-slate-200">
+              <tr className="border-b border-default">
                 <td className="py-0.5 px-1">1</td>
                 <td className="py-0.5 px-1">Cotton 100% 2c</td>
                 <td className="py-0.5 px-1 text-right">C01, C02</td>
                 <td className="py-0.5 px-1 text-right font-bold">238.5</td>
               </tr>
-              <tr className="border-b border-slate-200">
+              <tr className="border-b border-default">
                 <td className="py-0.5 px-1">2</td>
                 <td className="py-0.5 px-1">CVC 65/35 Cá Sấu</td>
                 <td className="py-0.5 px-1 text-right">C03, C04</td>
@@ -214,19 +214,19 @@ export function PrintLivePreview({
               </tr>
               {isLongFixture && (
                 <>
-                  <tr className="border-b border-slate-200">
+                  <tr className="border-b border-default">
                     <td className="py-0.5 px-1">3</td>
                     <td className="py-0.5 px-1">TC 65/35 Khổ 1m6</td>
                     <td className="py-0.5 px-1 text-right">C05, C06</td>
                     <td className="py-0.5 px-1 text-right font-bold">310.5</td>
                   </tr>
-                  <tr className="border-b border-slate-200">
+                  <tr className="border-b border-default">
                     <td className="py-0.5 px-1">4</td>
                     <td className="py-0.5 px-1">Viscose Hàn Quốc</td>
                     <td className="py-0.5 px-1 text-right">C07, C08</td>
                     <td className="py-0.5 px-1 text-right font-bold">195.0</td>
                   </tr>
-                  <tr className="border-b border-slate-200">
+                  <tr className="border-b border-default">
                     <td className="py-0.5 px-1">5</td>
                     <td className="py-0.5 px-1">Thun Lạnh 4C Spandex</td>
                     <td className="py-0.5 px-1 text-right">C09, C10</td>
@@ -238,15 +238,15 @@ export function PrintLivePreview({
           </table>
 
           {/* Footer & QR */}
-          <div className="flex items-center justify-between pt-1 border-t border-slate-200 mt-auto">
+          <div className="flex items-center justify-between pt-1 border-t border-default mt-auto">
             <div className="flex-1 pr-2">
-              <div className="text-[7.5px] text-slate-500 italic">
+              <div className="text-[7.5px] text-muted-foreground italic">
                 {values.print_footer_note ||
                   'Vui lòng kiểm tra hàng trước khi rời kho.'}
               </div>
             </div>
             {values.print_show_qr && (
-              <div className="shrink-0 bg-white p-0.5 border border-slate-200 rounded">
+              <div className="shrink-0 bg-surface-strong p-0.5 border border-default rounded">
                 <QRCodeSVG
                   value="https://quantri.detmayvinhphat.com/verify/XK2604-0001"
                   size={28}

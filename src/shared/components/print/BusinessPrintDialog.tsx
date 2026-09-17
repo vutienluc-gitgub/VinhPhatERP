@@ -15,6 +15,7 @@ import {
 import { Button, Icon } from '@/shared/components';
 import { exportShipmentToPdf } from '@/shared/services/print/shipment';
 import type { ShipmentDocument } from '@/domain/shipments/types';
+import { sumBy } from '@/shared/utils/array.util';
 
 export interface BusinessPrintDialogProps {
   isOpen: boolean;
@@ -98,13 +99,15 @@ export function BusinessPrintDialog({
     (documentData?.carrier as string) ||
     'Xe tải Vĩnh Phát (51C-123.45)';
 
-  const items = shipmentDoc?.shipment_items ||
-    (documentData?.items as Array<{
-      roll_number: string;
-      fabric_type: string;
-      color_name: string;
-      quantity: number;
-    }>) || [
+  type PrintItem = {
+    roll_number: string | null;
+    fabric_type: string;
+    color_name: string | null;
+    quantity: number;
+  };
+
+  const items: PrintItem[] = shipmentDoc?.shipment_items ||
+    (documentData?.items as PrintItem[]) || [
       {
         roll_number: 'C01',
         fabric_type: 'Vải Cotton 100% 2 chiều 230gsm',
@@ -125,10 +128,7 @@ export function BusinessPrintDialog({
       },
     ];
 
-  const totalQuantity = items.reduce(
-    (sum, item) => sum + (Number(item.quantity) || 0),
-    0,
-  );
+  const totalQuantity = sumBy(items, (item) => Number(item.quantity) || 0);
 
   const handleExecutePrint = async () => {
     setIsPrinting(true);

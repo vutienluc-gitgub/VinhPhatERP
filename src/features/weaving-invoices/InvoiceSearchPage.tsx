@@ -142,7 +142,7 @@ export function InvoiceSearchPage() {
             <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-[#3da5e0]/10 rounded-full blur-2xl" />
 
             <div className="inline-flex items-center justify-center w-16 h-16 bg-surface/10 rounded-2xl backdrop-blur-md mb-4 text-inverse-foreground text-3xl">
-              📄
+              <Icon name="FileText" size={28} />
             </div>
             <h1 className="text-xl font-bold text-inverse-foreground tracking-wide uppercase">
               VinhPhat ERP
@@ -167,7 +167,10 @@ export function InvoiceSearchPage() {
             {/* Cảnh báo cấu hình Turnstile nghiêm trọng trên Prod */}
             {configError && (
               <div className="bg-red-50 border border-danger text-danger p-4 rounded-xl text-xs font-bold space-y-1">
-                <p>⚠️ CẢNH BÁO BẢO MẬT HỆ THỐNG</p>
+                <p className="flex items-center gap-1.5">
+                  <Icon name="TriangleAlert" size={13} /> CẢNH BÁO BẢO MẬT HỆ
+                  THỐNG
+                </p>
                 <p className="font-normal text-danger">
                   Hệ thống bảo mật Turnstile chưa được cấu hình Key trên môi
                   trường Production. Vui lòng liên hệ bộ phận Kỹ thuật để thiết
@@ -262,7 +265,7 @@ export function InvoiceSearchPage() {
             {/* Error alerts */}
             {validationError && (
               <div className="bg-red-50 border border-danger text-danger px-4 py-3 rounded-xl text-xs font-semibold flex items-center gap-2">
-                <span>⚠️</span>
+                <Icon name="TriangleAlert" size={13} className="shrink-0" />
                 <span>{validationError}</span>
               </div>
             )}

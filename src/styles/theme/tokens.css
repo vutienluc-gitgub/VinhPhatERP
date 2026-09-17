@@ -75,6 +75,14 @@
   --info-strong: rgb(var(--brand-strong-rgb));
   --info-soft: rgba(var(--brand-rgb), 0.1);
 
+  /* ── Accent States (violet / pink) ─────────────────────────── */
+  --purple: #7d3c98; /* "in progress / manual" states */
+  --purple-strong: #642f7a;
+  --purple-soft: rgba(155, 89, 182, 0.12);
+  --pink: #be185d; /* "theming / palette" states */
+  --pink-strong: #9d174d;
+  --pink-soft: rgba(190, 24, 93, 0.12);
+
   /* ── Interactive ───────────────────────────────────────────── */
   --link: rgb(var(--brand-rgb));
   --primary-hover: rgb(var(--brand-strong-rgb));
