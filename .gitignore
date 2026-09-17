@@ -70,6 +70,20 @@ scripts/junk/
 scratch/
 
 # =========================
+# 📊 GENERATED REPORTS
+# =========================
+# Báo cáo do tool sinh ra (audit, lint, token) — không commit.
+# Script ghi vào scripts/oneoff/ ; pattern ở đây chặn mọi vị trí
+# để report không tái xuất hiện ở thư mục gốc.
+eslint-report.json
+stylelint-report.json
+dark_mode_audit_report.json
+audit_results.json
+legacy-combobox-list.json
+legacy-files.json
+ui_color_suggestions.md
+
+# =========================
 # ⚙️ OS
 # =========================
 Thumbs.db

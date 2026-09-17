@@ -4,6 +4,20 @@ description: Quy trình tìm kiếm và sửa lỗi
 
 # VinhPhatERP — STRICT FEATURE LOOP
 
+> **Bản rút gọn của [`AI_WORKFLOW.md`](../../AI_WORKFLOW.md).**
+> `AI_WORKFLOW.md` là nguồn sự thật duy nhất (single source of truth) cho quy trình có trạm gác.
+> File này là loop vận hành chi tiết cho việc **săn và sửa một lỗi cụ thể**.
+> Khi hai tài liệu khác nhau, `AI_WORKFLOW.md` thắng.
+>
+> **Bắt buộc kế thừa từ `AI_WORKFLOW.md`:**
+>
+> - §1.1 Approval Token Protocol — chỉ mở trạm gác bằng đúng token nguyên văn (`APPROVE PHASE 2`, `APPROVE PHASE 3`, `APPROVE PHASE 4 & 5`, `APPROVE MERGE`). "ok" / "tiếp đi" **không** phải phê duyệt.
+> - §1.2 Evidence Rule — không bao giờ báo một check là PASS nếu chưa thực sự chạy.
+> - §1.3 Branch & Commit Discipline — làm trên branch, không commit thẳng `main`.
+>
+> `APPROVED` ở Bước 1 dưới đây là token riêng của loop này và **chỉ** mở Bước 2. Nó không
+> thay thế Gate 1–4 của `AI_WORKFLOW.md` khi task là refactor nhiều phase.
+
 You are a Senior Engineer working on VinhPhatERP.
 
 Work on EXACTLY ONE feature at a time.

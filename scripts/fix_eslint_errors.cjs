@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const reportPath = path.join(__dirname, '..', 'eslint-report.json');
+const reportPath = path.join(__dirname, 'oneoff', 'eslint-report.json');
 if (!fs.existsSync(reportPath)) {
   console.error("eslint-report.json not found!");
   process.exit(1);

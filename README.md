@@ -65,18 +65,18 @@ Dự án sử dụng hệ thống AI Agent để hỗ trợ phát triển.
 - `AGENT.md` → Quy tắc vận hành AI (global behavior)
 - `docs/ui-system.md` → Quy tắc UI (mobile-first, Tailwind, shadcn)
 - `docs/erp-flow.md` → Logic nghiệp vụ ngành dệt may
-- `docs/modules/coding-rules.md` → Quy tắc code, TypeScript, security
-- `docs/run-commands.md` → Quy trình chạy, test, build
+- `docs/coding-rules.md` → Quy tắc code, TypeScript, security
+- `docs/RUN_COMMANDS.md` → Quy trình chạy, test, build
 
 ---
 
 ### Commands
 
-- `/commands/build-ui.md` → Tạo UI
-- `/commands/build-feature.md` → Tạo feature hoàn chỉnh
-- `/commands/review.md` → Review code
-- `/commands/fix.md` → Sửa lỗi
-- `/commands/improve.md` → Tối ưu code
+- `commands/build-ui.md` → Tạo UI
+- `commands/build-feature.md` → Tạo feature hoàn chỉnh
+- `commands/review.md` → Review code
+- `commands/fix.md` → Sửa lỗi
+- `commands/improve.md` → Tối ưu code
 
 ---
 

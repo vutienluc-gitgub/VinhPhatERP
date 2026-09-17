@@ -69,12 +69,12 @@ module.exports = {
     'build',
     // Drizzle auto-generated migrations — không lint
     '**/drizzle/migrations/**',
-    // File rác tại root — nên xoá hẳn, tạm thời ignore
+    // File nháp một lần — không lint (xem scripts/oneoff/README.md)
+    'scripts/oneoff/**',
     'temp.types.ts',
     'temp_types.ts',
     'test.ts',
     'tmp-test-bom.ts',
-    'tmp/**',
   ],
 
   settings: {
