@@ -9,7 +9,7 @@ import {
 } from '@/domain/logistics';
 
 const SUPABASE_URL =
-  process.env.VITE_SUPABASE_URL || 'https://sxphijrofljxkccdwtub.supabase.co';
+  process.env.VITE_SUPABASE_URL || 'https://quantri.detmayvinhphat.com';
 const SERVICE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGhpanJvZmxqeGtjY2R3dHViIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDUwOTU1OSwiZXhwIjoyMDkwMDg1NTU5fQ.DKems71L40cRKbHqQTxVWKSXgdYkBR525DWuX4ARyaU';

@@ -6,6 +6,7 @@ export const APP_SHELL_LABELS = {
   CALCULATOR_TITLE: 'Máy tính giá mộc (Costing Studio)',
   CALCULATOR: 'Tính giá',
   INBOX: 'Hộp thư',
+  PROFILE: 'Hồ sơ cá nhân',
   LOGOUT: 'Đăng xuất',
   HOME: 'Tổng quan',
   QUICK_CREATE: 'Tạo mới nhanh',

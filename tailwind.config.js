@@ -70,6 +70,9 @@ export default {
       label: 'var(--text-label)',
       foreground: 'var(--foreground)',
       link: 'var(--link)',
+      auth: {
+        bg: 'var(--auth-bg)',
+      },
     },
     extend: {
       borderRadius: {

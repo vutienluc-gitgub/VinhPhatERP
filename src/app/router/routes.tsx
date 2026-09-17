@@ -174,7 +174,16 @@ export function getNavigationItems(): NavigationItem[] {
     };
   });
 
-  return [dashboardItem, ...pluginItems];
+  const profileItem: NavigationItem = {
+    path: '/profile',
+    label: 'Hồ sơ cá nhân',
+    shortLabel: 'Hồ sơ',
+    description: 'Thông tin tài khoản, cài đặt Face ID và sinh trắc học.',
+    icon: 'User',
+    group: 'system',
+  };
+
+  return [dashboardItem, ...pluginItems, profileItem];
 }
 
 const ResetPasswordPage = lazy(() =>

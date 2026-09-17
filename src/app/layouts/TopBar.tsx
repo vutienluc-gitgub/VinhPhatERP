@@ -247,6 +247,15 @@ export const TopBar = React.memo(function TopBar({
               </span>
             </div>
             <div className="user-dropdown-divider" />
+            <NavLink
+              to="/profile"
+              className="user-dropdown-item"
+              role="menuitem"
+              onClick={() => setShowUserMenu(false)}
+            >
+              <Icon name="User" size={16} strokeWidth={1.5} />
+              {APP_SHELL_LABELS.PROFILE}
+            </NavLink>
             <button
               type="button"
               className="user-dropdown-item"

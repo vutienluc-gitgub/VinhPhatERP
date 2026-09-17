@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 async function testPushDispatch() {
   const edgeFunctionUrl =
-    'https://sxphijrofljxkccdwtub.supabase.co/functions/v1/send-web-push?sync=true';
+    'https://quantri.detmayvinhphat.com/functions/v1/send-web-push?sync=true';
   const anonKey =
     process.env.VITE_SUPABASE_ANON_KEY ||
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGhpanJvZmxqeGtjY2R3dHViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MDk1NTksImV4cCI6MjA5MDA4NTU1OX0.8e-qbhqv6UgCZ46Yx7sa9FWGCdT50q27i4kAiMtCpxc';

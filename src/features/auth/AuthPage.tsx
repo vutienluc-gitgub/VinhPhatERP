@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
 import { Icon } from '@/shared/components/Icon';
@@ -18,7 +19,7 @@ export function AuthPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-[#0B0F19]">
+      <div className="min-h-screen w-full flex items-center justify-center bg-auth-bg">
         <div className="flex flex-col items-center gap-4">
           <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
           <p className="text-inverse-foreground/60 font-medium">
@@ -31,7 +32,7 @@ export function AuthPage() {
 
   if (session) {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0B0F19] p-4 text-inverse-foreground">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-auth-bg p-4 text-inverse-foreground">
         <div className="max-w-md w-full bg-surface-strong/10 border border-transparent/10 p-8 rounded-2xl backdrop-blur-xl animate-in fade-in zoom-in duration-500">
           <div className="text-center mb-8">
             <span className="text-foreground font-semibold tracking-wider uppercase text-xs mb-2 block">
@@ -46,7 +47,7 @@ export function AuthPage() {
           </p>
           <div className="flex flex-col gap-3">
             <Button asChild fullWidth size="lg">
-              <a href="/">Vào trang chủ</a>
+              <Link to="/">Vào trang chủ</Link>
             </Button>
             <SignOutButton />
           </div>
@@ -56,7 +57,7 @@ export function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-[#0B0F19] text-inverse-foreground overflow-hidden font-sans">
+    <div className="flex min-h-screen w-full bg-auth-bg text-inverse-foreground overflow-hidden font-sans">
       {/* ── Left Panel (Branding / Art) ── */}
       <div className="hidden lg:flex w-5/12 xl:w-[45%] relative flex-col justify-between p-12 lg:p-16 border-r border-transparent/5">
         {/* Background Gradients & Glows */}
@@ -88,14 +89,14 @@ export function AuthPage() {
             thông minh và được thiết kế dành riêng cho bạn.
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
-              ⚡ Tốc độ cao
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
+              <Icon name="Zap" size={14} /> Tốc độ cao
             </span>
-            <span className="px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
-              🔒 Bảo mật SSL
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
+              <Icon name="ShieldCheck" size={14} /> Bảo mật SSL
             </span>
-            <span className="px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
-              🚀 Premium UI
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
+              <Icon name="Rocket" size={14} /> Premium UI
             </span>
           </div>
         </div>

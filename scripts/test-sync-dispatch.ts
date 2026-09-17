@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 async function main() {
   const supabaseUrl =
-    process.env.VITE_SUPABASE_URL || 'https://sxphijrofljxkccdwtub.supabase.co';
+    process.env.VITE_SUPABASE_URL || 'https://quantri.detmayvinhphat.com';
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!serviceRoleKey) {

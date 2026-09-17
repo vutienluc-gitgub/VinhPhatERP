@@ -146,7 +146,7 @@
       "prettier --write"
     ],
     "*.css": [
-      "stylelint --fix",
+      "stylelint --fix --allow-empty-input",
       "prettier --write"
     ]
   },
