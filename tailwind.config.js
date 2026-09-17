@@ -37,6 +37,16 @@ export default {
         strong: 'var(--info-strong)',
         soft: 'var(--info-soft)',
       },
+      purple: {
+        DEFAULT: 'var(--purple)',
+        strong: 'var(--purple-strong)',
+        soft: 'var(--purple-soft)',
+      },
+      pink: {
+        DEFAULT: 'var(--pink)',
+        strong: 'var(--pink-strong)',
+        soft: 'var(--pink-soft)',
+      },
       muted: {
         DEFAULT: 'var(--surface-subtle)',
         foreground: 'var(--muted-foreground)',
@@ -94,7 +104,7 @@ export default {
     },
     {
       pattern:
-        /^(bg|text|border)-(primary|secondary|accent|success|warning|danger|info|muted|surface|background|card|foreground)(-[a-z]+)?$/,
+        /^(bg|text|border|ring)-(primary|secondary|accent|success|warning|danger|info|purple|pink|muted|surface|background|card|foreground)(-[a-z]+)?$/,
       variants: ['hover', 'focus', 'active', 'group-hover'],
     },
     'bg-[var(--surface-subtle)]',

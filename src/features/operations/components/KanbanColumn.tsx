@@ -136,7 +136,7 @@ export function KanbanColumn({
           }`}
         >
           {wipLimit && count > wipLimit && (
-            <span className="text-[10px]">⚠</span>
+            <Icon name="TriangleAlert" size={10} className="inline" />
           )}
           <span>{wipLimit ? `${count}/${wipLimit}` : count}</span>
         </div>

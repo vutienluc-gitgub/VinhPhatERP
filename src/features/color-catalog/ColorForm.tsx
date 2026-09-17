@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import { Button } from '@/shared/components';
+import { Button, VPSelect } from '@/shared/components';
 import { useConfirm } from '@/shared/components/ConfirmDialog';
 import { colorSchema, colorDefaultValues } from '@/schema/color.schema';
 import type { ColorFormValues, ColorRow } from '@/schema/color.schema';
@@ -122,16 +122,25 @@ export function ColorForm({ initialData, onClose }: ColorFormProps) {
 
       <div className="form-field">
         <label htmlFor="color_group">{MSG.LBL_GROUP}</label>
-        <select
-          id="color_group"
-          className={`field-select ${errors.color_group ? 'border-danger' : ''}`}
-          {...register('color_group')}
-        >
-          <option value="">-- {MSG.TAB_NONE} --</option>
-          <option value="Màu Đậm">{MSG.TAB_DARK}</option>
-          <option value="Màu Trung">{MSG.TAB_MIDDLE}</option>
-          <option value="Màu Lợt">{MSG.TAB_LIGHT}</option>
-        </select>
+        <Controller
+          name="color_group"
+          control={control}
+          render={({ field }) => (
+            <VPSelect
+              id="color_group"
+              className="w-full"
+              error={!!errors.color_group}
+              value={field.value}
+              onValueChange={field.onChange}
+              options={[
+                { value: '', label: `-- ${MSG.TAB_NONE} --` },
+                { value: 'Màu Đậm', label: MSG.TAB_DARK },
+                { value: 'Màu Trung', label: MSG.TAB_MIDDLE },
+                { value: 'Màu Lợt', label: MSG.TAB_LIGHT },
+              ]}
+            />
+          )}
+        />
         {errors.color_group && (
           <p className="field-error">{errors.color_group.message}</p>
         )}

@@ -8,7 +8,7 @@ import type {
   Control,
 } from 'react-hook-form';
 
-import { Button } from '@/shared/components';
+import { Button, VPSelect } from '@/shared/components';
 import { Icon } from '@/shared/components/Icon';
 import type { WeavingInvoiceFormValues } from '@/schema/weaving-invoice.schema';
 import {
@@ -267,21 +267,26 @@ export function BulkRollStation({
               <div className="grid grid-cols-2 gap-3">
                 <div className="form-field">
                   <label className="text-sm font-bold">Chất lượng</label>
-                  <select
-                    className={clsx(
-                      'field-select h-12',
-                      errors.rolls?.[activeIndex]?.quality_grade &&
-                        'border-danger',
+                  <Controller
+                    name={`rolls.${activeIndex}.quality_grade`}
+                    control={control}
+                    render={({ field }) => (
+                      <VPSelect
+                        className="w-full"
+                        size="lg"
+                        error={!!errors.rolls?.[activeIndex]?.quality_grade}
+                        value={field.value ?? ''}
+                        onValueChange={field.onChange}
+                        options={[
+                          { value: '', label: '— Chưa kiểm định —' },
+                          ...QUALITY_GRADES.map((g) => ({
+                            value: g,
+                            label: QUALITY_GRADE_LABELS[g],
+                          })),
+                        ]}
+                      />
                     )}
-                    {...register(`rolls.${activeIndex}.quality_grade`)}
-                  >
-                    <option value="">— Chưa kiểm định —</option>
-                    {QUALITY_GRADES.map((g) => (
-                      <option key={g} value={g}>
-                        {QUALITY_GRADE_LABELS[g]}
-                      </option>
-                    ))}
-                  </select>
+                  />
                   {errors.rolls?.[activeIndex]?.quality_grade && (
                     <span className="field-error">
                       {errors.rolls[activeIndex]?.quality_grade?.message}

@@ -1,6 +1,8 @@
 import { forwardRef } from 'react';
 
-// eslint-disable-next-line no-restricted-syntax -- Allowed emoji dataset for chat picker
+/* eslint-disable no-restricted-syntax -- Emoji ở đây là DỮ LIỆU payload gửi lên server
+   (bộ chọn emoji của chat), không phải icon trang trí. Thay bằng <Icon /> sẽ làm
+   hỏng tính năng chat vì server/client trao đổi đúng codepoint emoji. */
 const PICKER_EMOJIS = [
   '😀',
   '😂',
@@ -27,6 +29,7 @@ const PICKER_EMOJIS = [
   '🟢',
   '🔵',
 ] as const;
+/* eslint-enable no-restricted-syntax */
 
 interface Props {
   onSelectEmoji: (emoji: string) => void;

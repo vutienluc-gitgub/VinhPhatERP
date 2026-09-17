@@ -271,7 +271,7 @@ export function LoginForm({
         type="button"
         onClick={handlePasskeyLogin}
         disabled={isLocked || isPasskeyLoading}
-        className="group relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-[#6366f1]/20 hover:bg-[#6366f1]/30 border border-[#6366f1]/40 text-white rounded-xl font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        className="group relative w-full flex items-center justify-center gap-3 px-4 py-3 bg-primary/20 hover:bg-primary/30 border border-primary/40 text-primary rounded-xl font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Icon
           name="Fingerprint"

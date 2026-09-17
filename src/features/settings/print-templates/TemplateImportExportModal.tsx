@@ -2,7 +2,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { printTemplateSchema, type PrintTemplateEntity } from '@/domain/print';
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 
 interface TemplateImportExportModalProps {
   isOpen: boolean;
@@ -162,17 +162,15 @@ export function TemplateImportExportModal({
                 <label className="text-xs font-semibold text-foreground">
                   Chọn mẫu in muốn xuất file:
                 </label>
-                <select
+                <VPSelect
+                  className="w-full"
                   value={selectedExportTemplateId}
-                  onChange={(e) => setSelectedExportTemplateId(e.target.value)}
-                  className="field-input text-sm"
-                >
-                  {templates.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name} ({t.code} • rev.{t.revision})
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={setSelectedExportTemplateId}
+                  options={templates.map((t) => ({
+                    value: t.id,
+                    label: `${t.name} (${t.code} • rev.${t.revision})`,
+                  }))}
+                />
               </div>
 
               <div className="p-4 rounded-xl bg-surface-secondary/50 border border-default flex flex-col gap-1 text-xs text-muted">

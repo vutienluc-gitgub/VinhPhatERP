@@ -22,7 +22,7 @@ export function DeadLetterDetailModal({
   const maskedPayload = WebhookLogger.sanitizePayload(event.payload);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-4">
       <div className="w-full max-w-2xl rounded-xl border border-default bg-surface shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-default p-5">

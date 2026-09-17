@@ -306,7 +306,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={() => setActiveFilter('all')}
             className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
               activeFilter === 'all'
-                ? 'bg-primary text-white border-primary'
+                ? 'bg-primary text-inverse-foreground border-primary'
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
@@ -317,7 +317,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={() => setActiveFilter('customer')}
             className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
               activeFilter === 'customer'
-                ? 'bg-primary text-white border-primary'
+                ? 'bg-primary text-inverse-foreground border-primary'
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
@@ -328,7 +328,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={() => setActiveFilter('shipment')}
             className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
               activeFilter === 'shipment'
-                ? 'bg-primary text-white border-primary'
+                ? 'bg-primary text-inverse-foreground border-primary'
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
@@ -339,7 +339,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={() => setActiveFilter('unread')}
             className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
               activeFilter === 'unread'
-                ? 'bg-primary text-white border-primary'
+                ? 'bg-primary text-inverse-foreground border-primary'
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >

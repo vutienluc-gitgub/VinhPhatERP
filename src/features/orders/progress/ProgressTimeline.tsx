@@ -196,7 +196,8 @@ export function ProgressTimeline({
 
                 {row.notes && editingId !== row.id && (
                   <div className="text-[0.82rem] text-muted-foreground mt-[2px]">
-                    📝 {row.notes}
+                    <Icon name="NotebookPen" size={12} className="inline" />{' '}
+                    {row.notes}
                   </div>
                 )}
 
@@ -261,7 +262,7 @@ export function ProgressTimeline({
                           setNoteText(row.notes ?? '');
                         }}
                       >
-                        📝
+                        <Icon name="NotebookPen" size={13} />
                       </button>
                     )}
                   </div>

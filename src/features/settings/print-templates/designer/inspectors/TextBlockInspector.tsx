@@ -1,6 +1,6 @@
 import type { TextBlock } from '@/domain/print';
 import type { DocumentType } from '@/domain/print';
-import { Icon } from '@/shared/components';
+import { Icon, VPSelect } from '@/shared/components';
 import { VariablePicker } from '@/features/settings/print-templates/designer/VariablePicker';
 
 interface TextBlockInspectorProps {
@@ -75,19 +75,21 @@ export function TextBlockInspector({
           <label className="text-[11px] font-medium text-muted">
             Kiểu Chữ:
           </label>
-          <select
+          <VPSelect
+            size="sm"
+            className="w-full"
             value={block.fontWeight}
-            onChange={(e) =>
+            onValueChange={(v) =>
               onUpdateBlock({
                 ...block,
-                fontWeight: e.target.value as 'normal' | 'bold',
+                fontWeight: v as 'normal' | 'bold',
               })
             }
-            className="field-input text-xs"
-          >
-            <option value="normal">Bình thường (Normal)</option>
-            <option value="bold">In đậm (Bold)</option>
-          </select>
+            options={[
+              { value: 'normal', label: 'Bình thường (Normal)' },
+              { value: 'bold', label: 'In đậm (Bold)' },
+            ]}
+          />
         </div>
       </div>
 

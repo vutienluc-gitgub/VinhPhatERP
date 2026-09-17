@@ -21,7 +21,7 @@ function mapColorHintToVariant(
     case 'orange':
       return 'warning';
     case 'pink':
-      return 'danger'; // Using danger for pink since there's no native pink variant usually, or warning
+      return 'pink';
     default:
       return 'gray';
   }

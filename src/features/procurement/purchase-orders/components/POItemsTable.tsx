@@ -1,7 +1,7 @@
 import { UseFormReturn, useFieldArray, Controller } from 'react-hook-form';
 
 import type { PurchaseOrderFormValues } from '@/domain/purchase-orders';
-import { Button, Icon, Combobox } from '@/shared/components';
+import { Button, Icon, Combobox, VPSelect } from '@/shared/components';
 import { MoneyText, MoneyInput, QuantityInput } from '@/shared/value';
 import { PO_CONSTANTS } from '@/features/procurement/purchase-orders/purchase-orders.constants';
 import type { SupplierPrice } from '@/api/suppliers.api';
@@ -26,7 +26,6 @@ export function POItemsTable({
 }: POItemsTableProps) {
   const {
     control,
-    register,
     watch,
     formState: { errors },
   } = form;
@@ -159,18 +158,25 @@ export function POItemsTable({
                     />
                   </td>
                   <td className="px-2 py-1.5 align-middle">
-                    <select
-                      id={`input-uom-${index}`}
-                      className="table-cell-select font-normal"
-                      {...register(`items.${index}.uom`)}
-                      onKeyDown={(e) => handleKeyDown(e, index, 'uom')}
-                    >
-                      {PO_CONSTANTS.UOM_OPTIONS.map((u) => (
-                        <option key={u} value={u}>
-                          {u}
-                        </option>
-                      ))}
-                    </select>
+                    <Controller
+                      name={`items.${index}.uom`}
+                      control={control}
+                      render={({ field }) => (
+                        <div onKeyDown={(e) => handleKeyDown(e, index, 'uom')}>
+                          <VPSelect
+                            id={`input-uom-${index}`}
+                            size="sm"
+                            className="w-full font-normal"
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            options={PO_CONSTANTS.UOM_OPTIONS.map((u) => ({
+                              value: u,
+                              label: u,
+                            }))}
+                          />
+                        </div>
+                      )}
+                    />
                   </td>
                   <td className="px-2 py-1.5 text-right align-middle">
                     <Controller

@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
 
 import { Icon } from '@/shared/components/Icon';
+import { VPSelect } from '@/shared/components/VPSelect';
 import { Badge } from '@/shared/components';
 import type { MediaAsset } from '@/features/media/media.types';
 import { MEDIA_LABELS } from '@/features/media/media.constants';
@@ -197,18 +198,16 @@ export function MediaDetailPanel({ asset, onClose }: MediaDetailPanelProps) {
         </div>
         <div className="media-detail-row">
           <span className="media-detail-label">Thư mục</span>
-          <select
-            className="media-detail-select"
+          <VPSelect
+            className="w-full"
+            size="sm"
             value={asset.folder_id ?? ''}
-            onChange={(e) => handleMove(e.target.value || null)}
-          >
-            <option value="">{MEDIA_LABELS.ROOT_FOLDER}</option>
-            {folders.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.name}
-              </option>
-            ))}
-          </select>
+            onValueChange={(v) => handleMove(v || null)}
+            options={[
+              { value: '', label: MEDIA_LABELS.ROOT_FOLDER },
+              ...folders.map((f) => ({ value: f.id, label: f.name })),
+            ]}
+          />
         </div>
         {asset.is_public && (
           <div className="media-detail-row">

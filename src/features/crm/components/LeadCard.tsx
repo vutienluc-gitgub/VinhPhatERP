@@ -72,7 +72,7 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
 
       {lead.type === 'SAMPLE' && lead.sample_detail?.fabric_catalog && (
         <div className="text-xs bg-surface-subtle border border-border p-1.5 rounded mb-3 flex items-center gap-1.5">
-          <Icon name="Layers" size={12} className="text-purple-600 shrink-0" />
+          <Icon name="Layers" size={12} className="text-purple shrink-0" />
           <span className="line-clamp-1">
             Xin mẫu: {lead.sample_detail.fabric_catalog.name}
           </span>

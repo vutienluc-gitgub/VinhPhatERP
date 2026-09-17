@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
-import { Icon } from '@/shared/components/Icon';
+import { Icon, VPSelect } from '@/shared/components';
 import { fetchBomList } from '@/api/bom.api';
 import { saveCostEstimation } from '@/api/cost-estimations.api';
 import type { CostingSimulationState } from '@/features/costing/types/greige-costing.type';
@@ -160,19 +160,20 @@ export function GreigeCalculatorModal({
             <label className="block text-sm font-semibold mb-2">
               {COSTING_LABELS.STEP_1_BOM}
             </label>
-            <select
-              className="field-input w-full text-sm font-medium"
+            <VPSelect
+              className="w-full"
               value={selectedBomId || ''}
-              onChange={(e) => setSelectedBomId(e.target.value)}
+              onValueChange={setSelectedBomId}
               disabled={isBomListLoading}
-            >
-              <option value="">{COSTING_LABELS.BOM_PLACEHOLDER}</option>
-              {bomList?.map((bom) => (
-                <option key={bom.id} value={bom.id}>
-                  [{bom.code}] {bom.name}
-                </option>
-              ))}
-            </select>
+              placeholder={COSTING_LABELS.BOM_PLACEHOLDER}
+              options={[
+                { value: '', label: COSTING_LABELS.BOM_PLACEHOLDER },
+                ...(bomList ?? []).map((bom) => ({
+                  value: bom.id,
+                  label: `[${bom.code}] ${bom.name}`,
+                })),
+              ]}
+            />
             {isLoadingBom && (
               <p className="text-xs text-foreground mt-2 animate-pulse">
                 {COSTING_LABELS.LOADING_BOM}
@@ -225,18 +226,18 @@ export function GreigeCalculatorModal({
                       }
                       min="0"
                     />
-                    <select
-                      className="field-input text-sm rounded-l-none w-20 bg-muted/10 px-2"
+                    <VPSelect
+                      size="sm"
+                      className="w-20"
                       value={state.weaving_price_unit}
-                      onChange={(e) =>
-                        updateState({
-                          weaving_price_unit: e.target.value as 'kg' | 'm',
-                        })
+                      onValueChange={(v) =>
+                        updateState({ weaving_price_unit: v as 'kg' | 'm' })
                       }
-                    >
-                      <option value="kg">/kg</option>
-                      <option value="m">/m</option>
-                    </select>
+                      options={[
+                        { value: 'kg', label: '/kg' },
+                        { value: 'm', label: '/m' },
+                      ]}
+                    />
                   </div>
                 </div>
                 <div className="form-field">

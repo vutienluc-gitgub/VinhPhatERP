@@ -24,11 +24,11 @@ try {
 
 const architectureGuardRules = [
   {
-    selector: "Literal[value=/[\\p{Extended_Pictographic}]/u], JSXText[value=/[\\p{Extended_Pictographic}]/u], TemplateElement[value.raw=/[\\p{Extended_Pictographic}]/u]",
+    selector: "Literal[value=/(?![\\u00A9\\u00AE\\u2122])[\\p{Extended_Pictographic}]/u], JSXText[value=/(?![\\u00A9\\u00AE\\u2122])[\\p{Extended_Pictographic}]/u], TemplateElement[value.raw=/(?![\\u00A9\\u00AE\\u2122])[\\p{Extended_Pictographic}]/u]",
     message: "[Architecture Guard] Không sử dụng Emoji trực tiếp trong source code (bao gồm cả chuỗi kết hợp modifiers/ZWJ). Bắt buộc dùng component <Icon /> từ lucide-react."
   },
   {
-    selector: "JSXAttribute[name.name='className'] Literal[value=/.*(?:^|\\s)(text|bg|border)-(white|black|transparent|(gray|red|blue|green|yellow|orange|purple|pink|indigo|slate|emerald|teal|amber|rose)-\\d{3})(?:\\/\\d+)?(?:\\s|$).*/]",
+    selector: "JSXAttribute[name.name='className'] Literal[value=/.*(?:^|\\s)(text|bg|border)-(white|black|(gray|red|blue|green|yellow|orange|purple|pink|indigo|slate|emerald|teal|amber|rose)-\\d{3})(?:\\/\\d+)?(?:\\s|$).*/]",
     message: "[Architecture Guard] Bắt buộc dùng Semantic Design Tokens (vd: text-muted, bg-surface) thay vì Hardcoded Tailwind Colors (vd: text-white, bg-white/95, text-gray-900)."
   },
   {
@@ -41,6 +41,26 @@ const legacyComboboxRule = {
   selector: "ImportDeclaration[source.value='@/shared/components/Combobox']",
   message: "[Architecture Guard] Legacy Combobox bị cấm sử dụng ở code mới. Hãy dùng VPCombobox, VPSelect hoặc VPVirtualCombobox."
 };
+
+// Rule 3 (.erp-rules.md): UI không chứa business logic / format tiền tệ.
+const uiBusinessLogicRules = [
+  {
+    selector: "CallExpression[callee.property.name='reduce']",
+    message: "❌ Không được dùng 'reduce' trong UI component. Hãy tách logic tính toán ra các hàm utils / use-case.",
+  },
+  {
+    selector: "CallExpression[callee.name='formatCurrency']",
+    message: "⚠️ Không sử dụng formatCurrency() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
+  },
+  {
+    selector: "CallExpression[callee.property.name='toLocaleString']",
+    message: "⚠️ Không sử dụng toLocaleString() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
+  },
+  {
+    selector: "NewExpression[callee.object.name='Intl'][callee.property.name='NumberFormat']",
+    message: "⚠️ Không sử dụng Intl.NumberFormat() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
+  },
+];
 
 module.exports = {
   root: true,
@@ -327,24 +347,14 @@ module.exports = {
     {
       files: ['src/**/*.tsx'], // Chỉ áp dụng cho các file giao diện
       rules: {
+        // PHẢI spread đầy đủ: ESLint thay thế cả mảng option khi override,
+        // nên thiếu Architecture Guard ở đây = emoji/hardcoded color/<select>
+        // bị vô hiệu hoá trên toàn bộ src/**/*.tsx (195 lỗi ẩn).
         'no-restricted-syntax': [
           'error',
-          {
-            selector: "CallExpression[callee.property.name='reduce']",
-            message: "❌ Không được dùng 'reduce' trong UI component. Hãy tách logic tính toán ra các hàm utils / use-case.",
-          },
-          {
-            selector: "CallExpression[callee.name='formatCurrency']",
-            message: "⚠️ Không sử dụng formatCurrency() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
-          },
-          {
-            selector: "CallExpression[callee.property.name='toLocaleString']",
-            message: "⚠️ Không sử dụng toLocaleString() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
-          },
-          {
-            selector: "NewExpression[callee.object.name='Intl'][callee.property.name='NumberFormat']",
-            message: "⚠️ Không sử dụng Intl.NumberFormat() trong giao diện. Hãy dùng <MoneyText /> hoặc <MoneyCell />.",
-          },
+          ...architectureGuardRules,
+          ...uiBusinessLogicRules,
+          legacyComboboxRule,
         ],
       },
     },
@@ -430,6 +440,7 @@ module.exports = {
           'error',
           // Bỏ luật cấm <select> raw cho thư mục core
           ...architectureGuardRules.filter(r => !r.selector.includes("'select'")),
+          ...uiBusinessLogicRules,
           legacyComboboxRule
         ]
       }

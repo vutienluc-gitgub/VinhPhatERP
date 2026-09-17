@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useCompanySettings } from '@/shared/hooks/useCompanySettings';
 import { MoneyText } from '@/shared/value';
 import { useQuotation } from '@/application/quotations';
+import { Icon } from '@/shared/components';
 
 function formatDateLong(dateStr: string | null): string {
   if (!dateStr) return '';
@@ -55,7 +56,7 @@ export default function QuotationPrint() {
           onClick={() => window.print()}
           className="px-5 py-2.5 cursor-pointer"
         >
-          🖨️ In lại
+          <Icon name="Printer" size={14} className="inline" /> In lại
         </button>
       </div>
 
@@ -84,7 +85,7 @@ export default function QuotationPrint() {
           </div>
         </div>
 
-        <hr className="my-4 mx-0 border-none border-b-2 border-black" />
+        <hr className="my-4 mx-0 border-none border-b-2 border-foreground" />
 
         <div className="text-center my-8 mx-0">
           <h2 className="m-0 text-[1.8rem] uppercase">BẢNG BÁO GIÁ</h2>

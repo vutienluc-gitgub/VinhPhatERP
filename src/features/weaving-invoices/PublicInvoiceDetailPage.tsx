@@ -179,7 +179,11 @@ export function PublicInvoiceDetailPage() {
   if (error || !invoice) {
     return (
       <div className="min-h-screen bg-[#f0f5fb] flex flex-col items-center justify-center gap-4 p-6">
-        <div className="text-5xl">🔍</div>
+        <Icon
+          name="Search"
+          size={44}
+          className="text-[var(--muted-foreground)]"
+        />
         <h1 className="font-bold text-xl text-[var(--foreground)] text-center">
           Không tìm thấy hóa đơn
         </h1>
@@ -229,7 +233,9 @@ export function PublicInvoiceDetailPage() {
             className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-3 py-2 border border-[#dce6f0] bg-surface hover:bg-slate-50 transition-all cursor-pointer shadow-sm text-info"
             aria-label="Chia sẻ hóa đơn qua Zalo"
           >
-            <span>💬 Zalo</span>
+            <span className="inline-flex items-center gap-1">
+              <Icon name="MessageCircle" size={13} /> Zalo
+            </span>
           </button>
 
           {/* Nút chia sẻ Email */}
@@ -433,7 +439,8 @@ export function PublicInvoiceDetailPage() {
             </div>
             <div className="inline-flex flex-col border border-success bg-emerald-50/50 rounded-2xl p-4 text-left max-w-sm">
               <span className="text-success font-bold text-xs flex items-center gap-1.5">
-                <span>✓</span> Chữ ký điện tử hợp lệ
+                <Icon name="Check" size={12} className="shrink-0" /> Chữ ký điện
+                tử hợp lệ
               </span>
               <span className="text-[10px] text-success mt-1">
                 Ký bởi: {invoice.supplier_name}

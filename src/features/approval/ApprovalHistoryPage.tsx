@@ -410,7 +410,7 @@ export function ApprovalHistoryPage() {
 
       {/* Detail Snapshot Modal */}
       {selectedHistory && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-foreground/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-surface border border-default rounded-xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95">
             <div className="p-5 border-b border-default flex items-center justify-between">
               <div>

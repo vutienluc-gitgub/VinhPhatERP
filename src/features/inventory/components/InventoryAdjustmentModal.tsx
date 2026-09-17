@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { AdaptiveSheet, Button, Icon } from '@/shared/components';
+import { AdaptiveSheet, Button, Icon, VPSelect } from '@/shared/components';
 import {
   inventoryAdjustmentSchema,
   type InventoryAdjustmentFormValues,
@@ -109,18 +109,28 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
             <label className="text-sm font-medium">
               {INVENTORY_MESSAGES.LBL_ITEM_TYPE}
             </label>
-            <select
-              {...form.register('itemType')}
-              className="w-full input-field"
-            >
-              <option value="raw_fabric">
-                {INVENTORY_MESSAGES.OPT_RAW_FABRIC}
-              </option>
-              <option value="finished_fabric">
-                {INVENTORY_MESSAGES.OPT_FINISHED_FABRIC}
-              </option>
-              <option value="yarn">{INVENTORY_MESSAGES.OPT_YARN}</option>
-            </select>
+            <Controller
+              name="itemType"
+              control={form.control}
+              render={({ field }) => (
+                <VPSelect
+                  className="w-full"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  options={[
+                    {
+                      value: 'raw_fabric',
+                      label: INVENTORY_MESSAGES.OPT_RAW_FABRIC,
+                    },
+                    {
+                      value: 'finished_fabric',
+                      label: INVENTORY_MESSAGES.OPT_FINISHED_FABRIC,
+                    },
+                    { value: 'yarn', label: INVENTORY_MESSAGES.OPT_YARN },
+                  ]}
+                />
+              )}
+            />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium">
@@ -138,41 +148,67 @@ export function InventoryAdjustmentModal({ isOpen, onClose }: Props) {
           <label className="text-sm font-medium">
             {INVENTORY_MESSAGES.LBL_ADJUST_REASON}
           </label>
-          <select
-            {...form.register('adjustmentType')}
-            className="w-full input-field"
-          >
-            <option value="PHYSICAL_COUNT">
-              {INVENTORY_MESSAGES.OPT_REASON_PHYSICAL_COUNT}
-            </option>
-            <option value="DAMAGE">
-              {INVENTORY_MESSAGES.OPT_REASON_DAMAGE}
-            </option>
-            <option value="QUALITY_REJECTION">
-              {INVENTORY_MESSAGES.OPT_REASON_QUALITY_REJECTION}
-            </option>
-            <option value="SAMPLE_USAGE">
-              {INVENTORY_MESSAGES.OPT_REASON_SAMPLE_USAGE}
-            </option>
-            <option value="PRODUCTION_CONSUMPTION">
-              {INVENTORY_MESSAGES.OPT_REASON_PRODUCTION_CONSUMPTION}
-            </option>
-            <option value="SYSTEM_CORRECTION">
-              {INVENTORY_MESSAGES.REASON_SYSTEM_CORRECTION}
-            </option>
-          </select>
+          <Controller
+            name="adjustmentType"
+            control={form.control}
+            render={({ field }) => (
+              <VPSelect
+                className="w-full"
+                value={field.value}
+                onValueChange={field.onChange}
+                options={[
+                  {
+                    value: 'PHYSICAL_COUNT',
+                    label: INVENTORY_MESSAGES.OPT_REASON_PHYSICAL_COUNT,
+                  },
+                  {
+                    value: 'DAMAGE',
+                    label: INVENTORY_MESSAGES.OPT_REASON_DAMAGE,
+                  },
+                  {
+                    value: 'QUALITY_REJECTION',
+                    label: INVENTORY_MESSAGES.OPT_REASON_QUALITY_REJECTION,
+                  },
+                  {
+                    value: 'SAMPLE_USAGE',
+                    label: INVENTORY_MESSAGES.OPT_REASON_SAMPLE_USAGE,
+                  },
+                  {
+                    value: 'PRODUCTION_CONSUMPTION',
+                    label: INVENTORY_MESSAGES.OPT_REASON_PRODUCTION_CONSUMPTION,
+                  },
+                  {
+                    value: 'SYSTEM_CORRECTION',
+                    label: INVENTORY_MESSAGES.REASON_SYSTEM_CORRECTION,
+                  },
+                ]}
+              />
+            )}
+          />
         </div>
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium">
             {INVENTORY_MESSAGES.LBL_ADJUST_TYPE}
           </label>
-          <select {...form.register('mode')} className="w-full input-field">
-            <option value="quick">{INVENTORY_MESSAGES.OPT_TYPE_QUICK}</option>
-            <option value="physical">
-              {INVENTORY_MESSAGES.OPT_TYPE_PHYSICAL}
-            </option>
-          </select>
+          <Controller
+            name="mode"
+            control={form.control}
+            render={({ field }) => (
+              <VPSelect
+                className="w-full"
+                value={field.value}
+                onValueChange={field.onChange}
+                options={[
+                  { value: 'quick', label: INVENTORY_MESSAGES.OPT_TYPE_QUICK },
+                  {
+                    value: 'physical',
+                    label: INVENTORY_MESSAGES.OPT_TYPE_PHYSICAL,
+                  },
+                ]}
+              />
+            )}
+          />
         </div>
 
         {mode === 'physical' ? (

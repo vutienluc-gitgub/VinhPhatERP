@@ -13,8 +13,7 @@ export function ShipmentSaaSBadge({ status }: { status: ShipmentStatus }) {
     shipped: 'bg-info-soft/10 text-info dark:text-info ring-blue-500/20',
     delivered:
       'bg-success-soft/10 text-success dark:text-success ring-emerald-500/20',
-    partially_returned:
-      'bg-purple-500/10 text-purple-700 dark:text-purple-400 ring-purple-500/20',
+    partially_returned: 'bg-purple-soft text-purple ring-purple/20',
     returned: 'bg-danger-soft/10 text-danger dark:text-danger ring-red-500/20',
     preparing:
       'bg-warning-soft/10 text-warning-strong dark:text-warning ring-amber-500/20',
@@ -22,7 +21,7 @@ export function ShipmentSaaSBadge({ status }: { status: ShipmentStatus }) {
   const dotColors: Record<string, string> = {
     shipped: 'bg-info-soft',
     delivered: 'bg-success-soft',
-    partially_returned: 'bg-purple-500',
+    partially_returned: 'bg-purple',
     returned: 'bg-danger-soft',
     preparing: 'bg-warning-soft',
   };

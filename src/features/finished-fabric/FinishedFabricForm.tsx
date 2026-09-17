@@ -34,6 +34,7 @@ import type {
   FinishedFabricRoll,
   RollStatus,
 } from '@/domain/inventory/finished-fabric.types';
+import { Icon } from '@/shared/components';
 
 import { FinishedFabricFormStep3Storage } from './components/FinishedFabricFormStep3Storage';
 import { FinishedFabricFormStep2Specs } from './components/FinishedFabricFormStep2Specs';
@@ -238,7 +239,7 @@ export function FinishedFabricForm({ roll, onClose }: FinishedFabricFormProps) {
             role="alert"
             className="bg-[#fff3cd] border border-[#ffc107] rounded-md py-[0.6rem] px-[0.9rem] mb-4 text-sm text-[#856404] flex items-center gap-[0.4rem]"
           >
-            🔒 {lockReason}
+            <Icon name="Lock" size={13} className="shrink-0" /> {lockReason}
           </div>
         )}
 

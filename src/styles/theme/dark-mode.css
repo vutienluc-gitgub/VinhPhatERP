@@ -54,6 +54,12 @@
   --info: #7ab3e8;
   --info-strong: #4a8fd4;
   --info-soft: rgba(122, 179, 232, 0.15);
+  --purple: #c084fc;
+  --purple-strong: #a855f7;
+  --purple-soft: rgba(192, 132, 252, 0.15);
+  --pink: #f472b6;
+  --pink-strong: #ec4899;
+  --pink-soft: rgba(244, 114, 182, 0.15);
 
   --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 

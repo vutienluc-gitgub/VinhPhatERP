@@ -6,7 +6,7 @@ import type {
   PrinterProfileType,
   PrintTemplateEntity,
 } from '@/domain/print';
-import { Button, Icon } from '@/shared/components';
+import { Button, Icon, VPSelect } from '@/shared/components';
 
 import { PRINT_TEMPLATE_LABELS } from './print-templates.constants';
 
@@ -140,40 +140,42 @@ export function CreateTemplateModal({
               <label className="text-xs font-semibold text-foreground">
                 {PRINT_TEMPLATE_LABELS.FIELD_DOC_TYPE}
               </label>
-              <select
+              <VPSelect
+                className="w-full"
                 value={docType}
-                onChange={(e) => setDocType(e.target.value as DocumentType)}
-                className="field-input text-sm"
-              >
-                <option value="shipment_delivery">Phiếu Xuất Kho</option>
-                <option value="inventory_receipt">Phiếu Nhập Kho</option>
-                <option value="production_order">Lệnh Sản Xuất</option>
-                <option value="roll_tag">Tem Cây Vải</option>
-                <option value="sales_statement">Bảng Kê Giao Hàng</option>
-                <option value="payment_receipt">Phiếu Thu Tiền</option>
-              </select>
+                onValueChange={(v) => setDocType(v as DocumentType)}
+                options={[
+                  { value: 'shipment_delivery', label: 'Phiếu Xuất Kho' },
+                  { value: 'inventory_receipt', label: 'Phiếu Nhập Kho' },
+                  { value: 'production_order', label: 'Lệnh Sản Xuất' },
+                  { value: 'roll_tag', label: 'Tem Cây Vải' },
+                  { value: 'sales_statement', label: 'Bảng Kê Giao Hàng' },
+                  { value: 'payment_receipt', label: 'Phiếu Thu Tiền' },
+                ]}
+              />
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-foreground">
                 {PRINT_TEMPLATE_LABELS.FIELD_PRINTER_TYPE}
               </label>
-              <select
+              <VPSelect
+                className="w-full"
                 value={printerType}
-                onChange={(e) => {
-                  const pType = e.target.value as PrinterProfileType;
+                onValueChange={(v) => {
+                  const pType = v as PrinterProfileType;
                   setPrinterType(pType);
                   if (pType === 'dot_matrix') setFormat('A5');
                   else if (pType === 'laser') setFormat('A4');
                   else setFormat('K80');
                 }}
-                className="field-input text-sm"
-              >
-                <option value="dot_matrix">In Kim (3 liên)</option>
-                <option value="laser">Laser / PDF</option>
-                <option value="thermal_receipt">In Nhiệt K80</option>
-                <option value="thermal_label">Tem Barcode</option>
-              </select>
+                options={[
+                  { value: 'dot_matrix', label: 'In Kim (3 liên)' },
+                  { value: 'laser', label: 'Laser / PDF' },
+                  { value: 'thermal_receipt', label: 'In Nhiệt K80' },
+                  { value: 'thermal_label', label: 'Tem Barcode' },
+                ]}
+              />
             </div>
           </div>
 
