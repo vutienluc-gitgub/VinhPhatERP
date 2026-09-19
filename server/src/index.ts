@@ -11,6 +11,7 @@ import ordersRouter from './routes/orders.js';
 import suppliersRouter from './routes/suppliers.js';
 import webhooksRouter from './routes/webhooks.js';
 import yarnReceiptsRouter from './routes/yarn-receipts.js';
+import aiChatRouter from './routes/ai-chat.js';
 
 const app = new Hono();
 
@@ -56,6 +57,8 @@ api.route('/orders', ordersRouter);
 api.route('/webhooks', webhooksRouter);
 api.route('/notifications', notificationsRouter);
 api.route('/yarn-receipts', yarnReceiptsRouter);
+api.route('/chat', aiChatRouter);
+api.route('/ai/chat', aiChatRouter);
 
 app.route('/api/v1', api);
 

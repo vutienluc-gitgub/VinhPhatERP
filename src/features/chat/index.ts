@@ -4,3 +4,6 @@ export * from './ChatDrawer';
 export * from './ChatInboxDrawer';
 export * from './UnifiedFeedPage';
 export * from './controllers/chatNavigationStore';
+export * from './components/AIChatDrawer';
+export * from './components/AIChatWidget';
+export * from './hooks/useAIChatStream';

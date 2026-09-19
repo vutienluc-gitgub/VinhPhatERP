@@ -5,6 +5,7 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchMyChatRooms, type MyChatRoomSummary } from '@/api/chat.api';
 import { Icon } from '@/shared/components/Icon';
 import { CHAT_INBOX_LABELS, CHAT_LABELS } from '@/schema/chat.schema';
+import { AIChatDrawer } from '@/features/chat/components/AIChatDrawer';
 
 import { ChatDrawer } from './ChatDrawer';
 import './chat.css';
@@ -226,6 +227,8 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
     void queryClient.invalidateQueries({ queryKey: ['chat-inbox-rooms'] });
   }
 
+  const [showAIChat, setShowAIChat] = useState(false);
+
   // When a room is active, render ChatDrawer completely standalone
   if (activeRoom) {
     return (
@@ -239,6 +242,11 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
         subtitle={activeRoom.entityCode}
       />
     );
+  }
+
+  // When AI Chat is active, render AIChatDrawer
+  if (showAIChat) {
+    return <AIChatDrawer open={true} onClose={() => setShowAIChat(false)} />;
   }
 
   if (!open) return null;
@@ -345,6 +353,43 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
           >
             {CHAT_INBOX_LABELS.FILTER_UNREAD}
           </button>
+        </div>
+
+        {/* AI Assistant Quick Card */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setShowAIChat(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setShowAIChat(true);
+            }
+          }}
+          className="mx-3 my-2 p-2.5 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-between cursor-pointer group"
+          aria-label="Mở Trợ lý AI Vịnh Phát"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <Icon name="Sparkles" size={16} />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-foreground">
+                  Trợ lý AI Vịnh Phát
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium">
+                  Gemini 3.6
+                </span>
+              </div>
+              <p className="text-[11px] text-muted truncate m-0">
+                Hỏi đáp quy trình dệt nhuộm & xuất nhập kho với AI Streaming
+              </p>
+            </div>
+          </div>
+          <span className="text-xs px-2.5 py-1 rounded-lg bg-primary text-primary-foreground font-medium shrink-0">
+            Hỏi AI
+          </span>
         </div>
 
         {/* Room list */}
