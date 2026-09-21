@@ -37,7 +37,7 @@ export const AIChatDrawer = React.memo(function AIChatDrawer({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = useCallback((smooth = true) => {
-    messagesEndRef.current?.scrollIntoView({
+    messagesEndRef.current?.scrollIntoView?.({
       behavior: smooth ? 'smooth' : 'auto',
     });
   }, []);
@@ -92,7 +92,7 @@ export const AIChatDrawer = React.memo(function AIChatDrawer({
   return createPortal(
     <>
       <div
-        className="fixed inset-0 bg-black/40 z-50 transition-opacity backdrop-blur-xs"
+        className="fixed inset-0 bg-foreground/50 z-50 transition-opacity backdrop-blur-xs"
         onClick={onClose}
         aria-hidden="true"
       />

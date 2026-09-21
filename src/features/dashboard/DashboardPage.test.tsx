@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -211,5 +211,26 @@ describe('DashboardPage', () => {
     expect(
       container.querySelectorAll('.skeleton-block').length,
     ).toBeGreaterThan(0);
+  });
+
+  it('renders AIChatWidget and responds to Ctrl+J shortcut', () => {
+    render(
+      <MemoryRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <DashboardPage />
+      </MemoryRouter>,
+    );
+
+    const aiButton = screen.getByRole('button', {
+      name: /Trợ lý AI Vịnh Phát/i,
+    });
+    expect(aiButton).toBeInTheDocument();
+
+    // Trigger Ctrl+J keyboard shortcut
+    fireEvent.keyDown(window, { key: 'j', ctrlKey: true });
+    expect(
+      screen.getByPlaceholderText(/Nhập câu hỏi cho Trợ lý AI/i),
+    ).toBeInTheDocument();
   });
 });

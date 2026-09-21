@@ -13,6 +13,7 @@ import {
 } from '@/application/analytics';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
+import { AIChatWidget } from '@/features/chat/components/AIChatWidget';
 
 import { DASHBOARD_LABELS } from './dashboard.constants';
 import { RevenueOverviewCard } from './RevenueOverviewCard';
@@ -188,6 +189,7 @@ export function DashboardPage() {
         </div>
       </div>
       <ContextualGuide activeGuides={activeGuides} />
+      <AIChatWidget />
     </div>
   );
 }
