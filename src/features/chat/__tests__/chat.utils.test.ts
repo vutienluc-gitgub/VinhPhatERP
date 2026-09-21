@@ -117,6 +117,49 @@ describe('chat.utils - buildMessageGroups', () => {
   });
 });
 
+describe('chat.utils - deriveMessageStatus failed lifecycle', () => {
+  const baseMessage: ChatMessage = {
+    id: 'client-fail-1',
+    client_id: 'client-fail-1',
+    tenant_id: 'tenant-1',
+    room_id: 'room-1',
+    sender_id: 'user-me',
+    message_type: 'text',
+    content: 'Alo',
+    image_url: null,
+    file_url: null,
+    file_name: null,
+    file_type: null,
+    status: 'failed',
+    created_at: '2026-09-21T08:00:00.000Z',
+    deleted_at: null,
+    is_pinned: false,
+    pinned_at: null,
+    pinned_by: null,
+  };
+
+  it('maps the persisted failed status to the failed presentation (retry visible), never to sent', async () => {
+    const { deriveMessageStatus } = await import('@/features/chat/chat.utils');
+    expect(deriveMessageStatus(baseMessage, true)).toBe('failed');
+  });
+
+  it('maps the legacy error status to failed', async () => {
+    const { deriveMessageStatus } = await import('@/features/chat/chat.utils');
+    expect(deriveMessageStatus({ ...baseMessage, status: 'error' }, true)).toBe(
+      'failed',
+    );
+  });
+
+  it('keeps failed status in the view model even when the sender is the current user', () => {
+    const groups = buildMessageGroups([baseMessage], 'user-me', {
+      currentUserId: 'user-me',
+    });
+    const viewModel = groups[0]?.clusters[0]?.messages[0];
+    expect(viewModel?.isMine).toBe(true);
+    expect(viewModel?.status).toBe('failed');
+  });
+});
+
 describe('chat.schema - getQuickRepliesByRole', () => {
   it('returns customer-oriented quick replies for customer role', async () => {
     const { getQuickRepliesByRole, CUSTOMER_QUICK_REPLIES } =
