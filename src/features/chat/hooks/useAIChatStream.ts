@@ -110,15 +110,34 @@ export function useAIChatStream({
         if (!response.ok) {
           let errorMessage = `Yêu cầu thất bại (${response.status})`;
           try {
-            const errorJson = (await response.json()) as {
-              error?: string;
-              message?: string;
-            };
-            errorMessage = errorJson.error || errorJson.message || errorMessage;
-          } catch {
             const errorText = await response.text();
-            if (errorText) errorMessage = errorText;
+            if (errorText) {
+              try {
+                const errorJson = JSON.parse(errorText) as {
+                  error?: string;
+                  message?: string;
+                };
+                errorMessage =
+                  errorJson.error || errorJson.message || errorMessage;
+              } catch {
+                if (!errorText.trim().startsWith('<')) {
+                  errorMessage = errorText;
+                }
+              }
+            }
+          } catch {
+            // Không thể đọc body stream
           }
+
+          if (response.status === 502 || response.status === 504) {
+            errorMessage =
+              'Máy chủ backend chưa được khởi động (Vui lòng chạy: npm run dev:all hoặc npm run dev:server).';
+          } else if (response.status === 503) {
+            errorMessage = errorMessage.includes('GEMINI_API_KEY')
+              ? errorMessage
+              : 'Dịch vụ AI tạm thời không khả dụng (503).';
+          }
+
           throw new Error(errorMessage);
         }
 

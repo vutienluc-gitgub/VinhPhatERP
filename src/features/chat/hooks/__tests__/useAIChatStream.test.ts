@@ -112,4 +112,45 @@ describe('useAIChatStream hook', () => {
     expect(result.current.messages).toHaveLength(1);
     expect(result.current.messages[0]?.id).toBe('welcome-msg');
   });
+
+  it('handles 502 backend down error gracefully without stream read crash', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 502,
+      text: () => Promise.resolve('<html><body>502 Bad Gateway</body></html>'),
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    const { result } = renderHook(() => useAIChatStream());
+
+    await act(async () => {
+      await result.current.sendMessage('Chào bạn');
+    });
+
+    expect(result.current.error).toContain(
+      'Máy chủ backend chưa được khởi động',
+    );
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.isStreaming).toBe(false);
+  });
+
+  it('handles JSON error response gracefully', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      text: () =>
+        Promise.resolve(
+          JSON.stringify({ error: 'Nội dung tin nhắn không hợp lệ' }),
+        ),
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    const { result } = renderHook(() => useAIChatStream());
+
+    await act(async () => {
+      await result.current.sendMessage('Chào bạn');
+    });
+
+    expect(result.current.error).toBe('Nội dung tin nhắn không hợp lệ');
+  });
 });
