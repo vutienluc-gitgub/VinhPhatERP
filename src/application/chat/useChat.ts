@@ -1,10 +1,10 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   fetchChatMessages,
@@ -20,12 +20,7 @@ import {
   searchMessages,
 } from '@/api/chat.api';
 import { extractChronologicalMessages } from '@/features/chat/chat.utils';
-import type {
-  ChatMessage,
-  ChatMention,
-  ChatRoom,
-  OptimisticChatMessage,
-} from '@/schema/chat.schema';
+import type { ChatMessage, ChatRoom } from '@/schema/chat.schema';
 import {
   broadcastNewMessage,
   broadcastConnectionStatus,
@@ -33,7 +28,6 @@ import {
 } from '@/shared/lib/chat-broadcast';
 import { useAuth } from '@/shared/hooks/useAuth';
 import {
-  enqueueMessage,
   getQueuedMessages,
   dequeueMessage,
 } from '@/shared/lib/chat-offline-queue';
@@ -49,9 +43,11 @@ import {
 } from '@/shared/lib/chat-cache-storage';
 import { supabase } from '@/services/supabase/client';
 
+import { appendMessage, useSendMessage } from './useSendMessage';
+
 // ── Query Keys ──
 
-const CHAT_KEYS = {
+export const CHAT_KEYS = {
   rooms: ['chat-rooms'] as const,
   room: (entityType: string, entityId: string) =>
     ['chat-rooms', entityType, entityId] as const,
@@ -68,58 +64,9 @@ export type ChatConnectionStatus =
 
 // ── Helpers ──
 
-type InfiniteData = { pages: ChatMessage[][]; pageParams: unknown[] };
+export type InfiniteData = { pages: ChatMessage[][]; pageParams: unknown[] };
 
-function appendMessage(old: unknown, newMsg: ChatMessage): unknown {
-  const data = old as InfiniteData | undefined;
-  if (!data || !Array.isArray(data.pages)) return data;
-
-  const normalizedPages = data.pages.map((p) =>
-    Array.isArray(p)
-      ? p
-      : p &&
-          typeof p === 'object' &&
-          'messages' in p &&
-          Array.isArray((p as { messages: unknown }).messages)
-        ? (p as { messages: ChatMessage[] }).messages
-        : [],
-  );
-
-  const allMessages = normalizedPages.flat();
-  const existing = allMessages.find(
-    (m) =>
-      (Boolean(newMsg.client_id) && m.client_id === newMsg.client_id) ||
-      m.id === newMsg.id,
-  );
-
-  if (existing) {
-    // If message is already confirmed and identical, keep data
-    const isOpt = '_optimistic' in existing && Boolean(existing._optimistic);
-    if (!isOpt && existing.status !== 'pending' && existing.id === newMsg.id) {
-      return data;
-    }
-
-    // Replace optimistic / pending message with the confirmed real message
-    return {
-      ...data,
-      pages: normalizedPages.map((page) =>
-        page.map((m) =>
-          (Boolean(newMsg.client_id) && m.client_id === newMsg.client_id) ||
-          m.id === newMsg.id
-            ? { ...m, ...newMsg, status: 'sent', _optimistic: false }
-            : m,
-        ),
-      ),
-    };
-  }
-
-  const firstPage = normalizedPages[0] ?? [];
-
-  return {
-    ...data,
-    pages: [[newMsg, ...firstPage], ...normalizedPages.slice(1)],
-  };
-}
+export { useSendMessage, appendMessage };
 
 // ── Room Hooks ──
 
@@ -253,168 +200,6 @@ export function useChatMessages(roomId: string | undefined) {
       return true;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
-  });
-}
-
-// ── Send Message (Optimistic Updates + Offline Queue) ──
-
-export function useSendMessage(roomId: string | undefined) {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
-  return useMutation({
-    mutationFn: async (params: {
-      clientId: string;
-      content?: string;
-      messageType?: 'text' | 'image' | 'system' | 'file';
-      imageUrl?: string;
-      fileUrl?: string;
-      fileName?: string;
-      fileType?: string;
-      mentions?: ChatMention[];
-      replyToId?: string | null;
-      replyToMessage?: ChatMessage['reply_to_message'];
-    }) => {
-      if (!roomId) throw new Error('Room ID is required');
-
-      // Offline: queue message in IndexedDB
-      if (!navigator.onLine) {
-        await enqueueMessage({
-          clientId: params.clientId,
-          roomId,
-          content: params.content || '',
-          messageType: params.messageType ?? 'text',
-          imageUrl: params.imageUrl,
-          fileUrl: params.fileUrl,
-          fileName: params.fileName,
-          fileType: params.fileType,
-          queuedAt: Date.now(),
-        });
-        // Return a synthetic response so optimistic UI stays
-        return {
-          id: params.clientId,
-          client_id: params.clientId,
-          tenant_id: '',
-          room_id: roomId,
-          sender_id: user?.id ?? null,
-          message_type: params.messageType ?? 'text',
-          content: params.content,
-          image_url: params.imageUrl ?? null,
-          file_url: params.fileUrl ?? null,
-          file_name: params.fileName ?? null,
-          file_type: params.fileType ?? null,
-          reply_to_id: params.replyToId ?? null,
-          reply_to_message: params.replyToMessage ?? null,
-          status: 'pending' as const,
-          created_at: new Date().toISOString(),
-          deleted_at: null,
-          read_at: null,
-          read_by: null,
-        };
-      }
-
-      return sendChatMessage({ roomId, ...params });
-    },
-    onMutate: async (params) => {
-      if (!roomId) return;
-
-      const queryKey = CHAT_KEYS.messages(roomId);
-      await queryClient.cancelQueries({ queryKey });
-
-      const previous = queryClient.getQueryData(queryKey);
-
-      const optimisticMsg: OptimisticChatMessage = {
-        id: params.clientId,
-        client_id: params.clientId,
-        tenant_id: '',
-        room_id: roomId,
-        sender_id: user?.id ?? null,
-        message_type: (params.messageType ?? 'text') as
-          | 'text'
-          | 'image'
-          | 'system'
-          | 'file',
-        content: params.content || '',
-        image_url: params.imageUrl ?? null,
-        file_url: params.fileUrl ?? null,
-        file_name: params.fileName ?? null,
-        file_type: params.fileType ?? null,
-        reply_to_id: params.replyToId ?? null,
-        reply_to_message: params.replyToMessage ?? null,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        deleted_at: null,
-        is_pinned: false,
-        pinned_at: null,
-        pinned_by: null,
-        mentions: params.mentions,
-        read_at: null,
-        read_by: null,
-        _optimistic: true,
-      };
-
-      queryClient.setQueryData(queryKey, (old: unknown) => {
-        const data = old as InfiniteData | undefined;
-        if (!data || !Array.isArray(data.pages)) return data;
-        const normalizedPages = data.pages.map((p) =>
-          Array.isArray(p)
-            ? p
-            : p &&
-                typeof p === 'object' &&
-                'messages' in p &&
-                Array.isArray((p as { messages: unknown }).messages)
-              ? (p as { messages: ChatMessage[] }).messages
-              : [],
-        );
-        const firstPage = normalizedPages[0] ?? [];
-        const existingIdx = firstPage.findIndex(
-          (m) =>
-            (Boolean(params.clientId) && m.client_id === params.clientId) ||
-            m.id === params.clientId,
-        );
-
-        const updatedFirstPage =
-          existingIdx !== -1
-            ? firstPage.map((m, idx) =>
-                idx === existingIdx ? (optimisticMsg as ChatMessage) : m,
-              )
-            : [optimisticMsg as ChatMessage, ...firstPage];
-
-        return {
-          ...data,
-          pages: [updatedFirstPage, ...normalizedPages.slice(1)],
-        };
-      });
-
-      return { previous };
-    },
-    onSuccess: (confirmedMsg) => {
-      if (!roomId || !confirmedMsg) return;
-      queryClient.setQueryData(CHAT_KEYS.messages(roomId), (old: unknown) =>
-        appendMessage(old, confirmedMsg as ChatMessage),
-      );
-    },
-    onError: (err, variables) => {
-      console.error('[Chat] Failed to send message:', err);
-      if (roomId) {
-        queryClient.setQueryData(CHAT_KEYS.messages(roomId), (old: unknown) => {
-          const data = old as InfiniteData | undefined;
-          if (!data || !Array.isArray(data.pages)) return data;
-          return {
-            ...data,
-            pages: data.pages.map((page) =>
-              Array.isArray(page)
-                ? page.map((m) =>
-                    m.client_id === variables.clientId
-                      ? { ...m, status: 'failed' as const, _optimistic: false }
-                      : m,
-                  )
-                : [],
-            ),
-          };
-        });
-      }
-    },
   });
 }
 

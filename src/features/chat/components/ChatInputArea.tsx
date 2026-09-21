@@ -7,6 +7,7 @@ import {
   type ClipboardEvent,
   type KeyboardEvent,
 } from 'react';
+import toast from 'react-hot-toast';
 
 import {
   CHAT_LABELS,
@@ -23,6 +24,7 @@ import { ChatEmojiPicker } from './ChatEmojiPicker';
 import { ChatUploadPreview } from './ChatUploadPreview';
 import { ChatMentionsPopover } from './ChatMentionsPopover';
 import { ChatUtilityMenu, type ChatUtilityType } from './ChatUtilityMenu';
+import { ChatReplyBanner } from './ChatReplyBanner';
 
 export interface ChatSendMeta {
   mentions?: ChatMention[];
@@ -31,7 +33,7 @@ export interface ChatSendMeta {
 }
 
 interface ChatInputAreaProps {
-  onSend: (content: string, meta?: ChatSendMeta) => void;
+  onSend: (content: string, meta?: ChatSendMeta) => boolean | void;
   onSendImage?: (imageUrl: string) => void;
   onSendFile?: (fileUrl: string, fileName: string, fileType: string) => void;
   roomId?: string;
@@ -218,6 +220,11 @@ export function ChatInputArea({
     const trimmed = text.trim();
     if (!trimmed || disabled || isUploading) return;
 
+    if (!roomId) {
+      toast.error(CHAT_LABELS.ROOM_INITIALIZING);
+      return;
+    }
+
     // Prevent repeat identical message spam within 3 seconds
     const now = Date.now();
     if (
@@ -236,7 +243,14 @@ export function ChatInputArea({
       meta.replyToMessage = replyingToMessage;
     }
 
-    onSend(trimmed, Object.keys(meta).length > 0 ? meta : undefined);
+    const wasAccepted = onSend(
+      trimmed,
+      Object.keys(meta).length > 0 ? meta : undefined,
+    );
+    if (wasAccepted === false) {
+      return;
+    }
+
     chatAudio.playSentSound();
     setText('');
     setMentions([]);
@@ -257,6 +271,7 @@ export function ChatInputArea({
     text,
     disabled,
     isUploading,
+    roomId,
     replyingToMessage,
     mentions,
     onSend,
@@ -508,27 +523,10 @@ export function ChatInputArea({
       onDrop={handleDrop}
     >
       {/* Quoted Reply Banner */}
-      {replyingToMessage && (
-        <div className="chat-reply-banner">
-          <div className="chat-reply-banner-content">
-            <div className="chat-reply-banner-header">
-              <Icon name="CornerUpLeft" size={12} />
-              <span>{CHAT_LABELS.REPLYING_TO}</span>
-            </div>
-            <p className="chat-reply-banner-text">
-              {replyingToMessage.content || replyingToMessage.message_type}
-            </p>
-          </div>
-          <button
-            type="button"
-            className="chat-reply-banner-close"
-            onClick={onCancelReply}
-            aria-label={CHAT_LABELS.CANCEL_REPLY}
-          >
-            <Icon name="X" size={14} />
-          </button>
-        </div>
-      )}
+      <ChatReplyBanner
+        replyingToMessage={replyingToMessage ?? null}
+        onCancelReply={onCancelReply}
+      />
 
       {/* Attachment Previews */}
       <ChatUploadPreview
