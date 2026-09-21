@@ -42,7 +42,7 @@ export function DashboardPage() {
   const { data: transactions, isLoading: txLoading } = useRecentTransactions();
 
   return (
-    <div className="page-container">
+    <div className="page-container pb-20">
       <div className="flex items-center justify-between mb-4">
         <h1 className="sr-only">Dashboard</h1>
         <LiveIndicator label={DASHBOARD_LABELS.LIVE_UPDATE} />

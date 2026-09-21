@@ -31,19 +31,19 @@ export function AIChatWidget({ className = '' }: AIChatWidgetProps) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`fixed bottom-5 right-5 z-40 h-12 px-3.5 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-transform border-none cursor-pointer group ${className}`}
+        className={`fixed bottom-5 right-5 z-40 h-11 sm:h-12 px-3.5 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary-foreground/20 flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all border-none cursor-pointer group select-none ${className}`}
         aria-label="Mở Trợ lý AI Vịnh Phát"
         title="Trợ lý AI Vịnh Phát (Ctrl+J)"
       >
         <Icon
           name="Sparkles"
           size={20}
-          className="transition-transform group-hover:rotate-12 text-primary-foreground"
+          className="transition-transform duration-200 group-hover:rotate-12 text-primary-foreground shrink-0"
         />
-        <span className="hidden sm:inline font-medium text-xs tracking-wide">
+        <span className="hidden sm:inline font-medium text-xs tracking-wide text-primary-foreground">
           Trợ lý AI
         </span>
-        <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-primary-foreground/20 text-[10px] font-mono leading-none">
+        <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-primary-foreground/25 text-primary-foreground text-[10px] font-mono font-semibold leading-none shadow-xs">
           Ctrl+J
         </kbd>
       </button>

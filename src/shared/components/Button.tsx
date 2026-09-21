@@ -9,7 +9,7 @@ import { Icon } from './Icon';
 import type { IconName } from './Icon';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.98] aria-disabled:pointer-events-none aria-disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 select-none',
+  'inline-flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed aria-disabled:pointer-events-none aria-disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 select-none',
   {
     variants: {
       variant: {
@@ -20,15 +20,15 @@ const buttonVariants = cva(
         danger: 'btn-danger',
         info: 'btn-info',
         outline:
-          'border border-border bg-transparent text-text active:bg-primary/[0.06]',
+          'border border-border bg-transparent text-foreground hover:bg-surface-subtle hover:border-border-muted active:bg-primary/[0.06]',
         ghost:
-          'bg-transparent text-muted-foreground active:text-foreground active:bg-surface-subtle',
+          'bg-transparent text-muted-foreground hover:text-foreground hover:bg-surface-subtle active:text-foreground active:bg-surface-subtle',
       },
       size: {
         sm: 'px-4 py-2 text-xs rounded-sm min-h-[36px] gap-1.5',
-        md: 'px-5 py-3 text-sm rounded-sm min-h-[44px] gap-2',
-        lg: 'px-6 py-3.5 text-base rounded-sm min-h-[52px] gap-2.5',
-        icon: 'p-2.5 rounded-sm aspect-square min-h-[44px] min-w-[44px]',
+        md: 'px-5 py-3 text-sm rounded-md min-h-[44px] gap-2',
+        lg: 'px-6 py-3.5 text-base rounded-lg min-h-[52px] gap-2.5',
+        icon: 'p-2.5 rounded-md aspect-square min-h-[44px] min-w-[44px]',
       },
       fullWidth: {
         true: 'w-full',

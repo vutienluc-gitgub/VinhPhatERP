@@ -233,4 +233,20 @@ describe('DashboardPage', () => {
       screen.getByPlaceholderText(/Nhập câu hỏi cho Trợ lý AI/i),
     ).toBeInTheDocument();
   });
+
+  it('has safe bottom padding to prevent AIChatWidget from obscuring cards and kbd has high contrast', () => {
+    const { container } = render(
+      <MemoryRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <DashboardPage />
+      </MemoryRouter>,
+    );
+
+    const pageContainer = container.querySelector('.page-container');
+    expect(pageContainer).toHaveClass('pb-20');
+
+    const kbd = container.querySelector('kbd');
+    expect(kbd).toHaveClass('text-primary-foreground');
+  });
 });
