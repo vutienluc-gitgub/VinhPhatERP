@@ -92,7 +92,7 @@ export const AIChatDrawer = React.memo(function AIChatDrawer({
   return createPortal(
     <>
       <div
-        className="fixed inset-0 bg-foreground/50 z-50 transition-opacity backdrop-blur-xs"
+        className="fixed inset-0 bg-foreground/50 z-[120] transition-opacity backdrop-blur-xs"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -100,7 +100,7 @@ export const AIChatDrawer = React.memo(function AIChatDrawer({
         role="dialog"
         aria-modal="true"
         aria-labelledby="ai-chat-drawer-title"
-        className="fixed inset-y-0 right-0 z-50 w-full sm:max-w-md bg-surface border-l border-border shadow-2xl flex flex-col transition-transform animate-in slide-in-from-right duration-200"
+        className="fixed inset-y-0 right-0 z-[120] w-full sm:max-w-md bg-surface border-l border-border shadow-2xl flex flex-col transition-transform animate-in slide-in-from-right duration-200"
       >
         {/* Header */}
         <header className="px-4 py-3.5 border-b border-border bg-surface-secondary/50 flex items-center justify-between shrink-0">
@@ -260,7 +260,7 @@ export const AIChatDrawer = React.memo(function AIChatDrawer({
         </div>
 
         {/* Input area */}
-        <footer className="p-3 border-t border-border bg-surface shrink-0">
+        <footer className="p-3 border-t border-border bg-surface shrink-0 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
           <div className="relative rounded-xl border border-border bg-surface-secondary/30 focus-within:border-primary transition-colors">
             <textarea
               ref={textareaRef}

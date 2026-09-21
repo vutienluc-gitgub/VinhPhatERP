@@ -31,7 +31,7 @@ export function AIChatWidget({ className = '' }: AIChatWidgetProps) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`fixed bottom-5 right-5 z-40 h-11 sm:h-12 px-3.5 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary-foreground/20 flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all border-none cursor-pointer group select-none ${className}`}
+        className={`fixed right-4 md:right-5 bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:bottom-5 z-[110] md:z-40 h-11 sm:h-12 px-3.5 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 ring-1 ring-primary-foreground/20 flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all border-none cursor-pointer group select-none ${className}`}
         aria-label="Mở Trợ lý AI Vịnh Phát"
         title="Trợ lý AI Vịnh Phát (Ctrl+J)"
       >
