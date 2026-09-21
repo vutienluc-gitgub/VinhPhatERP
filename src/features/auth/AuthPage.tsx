@@ -39,7 +39,7 @@ export function AuthPage() {
               Đã đăng nhập
             </span>
             <h2 className="text-2xl font-bold">
-              Xin chào, {session.user.email}
+              Xin chào, {session.user.email ?? 'Thành viên'}
             </h2>
           </div>
           <p className="text-center mb-8 text-inverse-foreground/50 text-sm">
@@ -62,25 +62,18 @@ export function AuthPage() {
       <div className="hidden lg:flex w-5/12 xl:w-[45%] relative flex-col justify-between p-12 lg:p-16 border-r border-transparent/5">
         {/* Background Gradients & Glows */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#6366f1]/20 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#3b82f6]/20 rounded-full blur-[120px]" />
+          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-info/20 rounded-full blur-[120px]" />
         </div>
 
         {/* Top: Logo */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-[#6366f1] to-[#4f46e5] rounded-xl flex items-center justify-center shadow-lg shadow-[#6366f1]/30">
-            <Icon name="Layers" className="text-inverse-foreground" size={24} />
-          </div>
-          <span className="text-2xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
-            VINH PHAT V3
-          </span>
-        </div>
+        <AuthBrandLogo layout="row" />
 
         {/* Middle: Value Prop */}
         <div className="relative z-10 max-w-lg mt-auto mb-auto">
           <h1 className="text-4xl xl:text-5xl font-bold text-inverse-foreground mb-6 leading-[1.15]">
             Hệ thống Quản trị <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#818cf8] to-[#c084fc]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-info to-purple">
               Nguồn lực Toàn diện
             </span>
           </h1>
@@ -112,25 +105,14 @@ export function AuthPage() {
       <div className="flex-1 flex flex-col justify-center relative p-6 sm:p-12 lg:px-24">
         {/* Add a subtle glow behind the mobile form */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
-          <div className="absolute top-0 right-0 w-full h-[50%] bg-[#6366f1]/10 blur-[100px]" />
+          <div className="absolute top-0 right-0 w-full h-[50%] bg-primary/10 blur-[100px]" />
         </div>
 
         <div className="w-full max-w-[400px] mx-auto relative z-10">
-          <div className="lg:hidden mb-12 flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-500">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#6366f1] to-[#4f46e5] rounded-xl flex items-center justify-center shadow-lg shadow-[#6366f1]/30 mb-4">
-              <Icon
-                name="Layers"
-                className="text-inverse-foreground"
-                size={24}
-              />
-            </div>
-            <span className="text-xl font-bold tracking-wider text-inverse-foreground">
-              VINH PHAT V3
-            </span>
-          </div>
+          <AuthBrandLogo layout="col" />
 
           <div className="bg-surface/5 backdrop-blur-2xl border border-transparent/10 rounded-3xl p-8 sm:p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
-            {mode === 'login' ? (
+            {mode === 'login' && (
               <>
                 <LoginForm
                   onForgotPassword={() => setMode('forgot-password')}
@@ -138,27 +120,33 @@ export function AuthPage() {
                 <div className="mt-6 text-center text-sm text-inverse-foreground/50">
                   Chưa có tài khoản?{' '}
                   <button
+                    type="button"
                     onClick={() => setMode('register')}
-                    className="text-[#818cf8] hover:text-white font-semibold transition-colors duration-200"
+                    className="text-link hover:text-inverse-foreground font-semibold transition-colors duration-200"
                   >
                     Đăng ký ngay
                   </button>
                 </div>
               </>
-            ) : mode === 'register' ? (
+            )}
+
+            {mode === 'register' && (
               <>
                 <RegisterForm onSuccess={() => setMode('login')} />
                 <div className="mt-6 text-center text-sm text-inverse-foreground/50">
                   Đã có tài khoản?{' '}
                   <button
+                    type="button"
                     onClick={() => setMode('login')}
-                    className="text-[#818cf8] hover:text-white font-semibold transition-colors duration-200"
+                    className="text-link hover:text-inverse-foreground font-semibold transition-colors duration-200"
                   >
                     Đăng nhập
                   </button>
                 </div>
               </>
-            ) : (
+            )}
+
+            {mode === 'forgot-password' && (
               <ForgotPasswordForm onBack={() => setMode('login')} />
             )}
           </div>
@@ -168,16 +156,58 @@ export function AuthPage() {
   );
 }
 
+interface AuthBrandLogoProps {
+  layout?: 'row' | 'col';
+}
+
+function AuthBrandLogo({ layout = 'row' }: AuthBrandLogoProps) {
+  if (layout === 'col') {
+    return (
+      <div className="lg:hidden mb-12 flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-500">
+        <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-strong rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 mb-4">
+          <Icon name="Layers" className="text-inverse-foreground" size={24} />
+        </div>
+        <span className="text-xl font-bold tracking-wider text-inverse-foreground">
+          VINH PHAT V3
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative z-10 flex items-center gap-3">
+      <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-strong rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
+        <Icon name="Layers" className="text-inverse-foreground" size={24} />
+      </div>
+      <span className="text-2xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-inverse-foreground to-inverse-foreground/70">
+        VINH PHAT V3
+      </span>
+    </div>
+  );
+}
+
 function SignOutButton() {
   const { signOut } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    try {
+      setIsSigningOut(true);
+      await signOut();
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
   return (
     <Button
       variant="ghost"
       size="lg"
-      className="border border-transparent/20 text-inverse-foreground hover:bg-white/10"
-      onClick={signOut}
+      className="border border-transparent/20 text-inverse-foreground hover:bg-inverse-foreground/10"
+      onClick={handleSignOut}
+      disabled={isSigningOut}
     >
-      Đăng xuất
+      {isSigningOut ? 'Đang đăng xuất…' : 'Đăng xuất'}
     </Button>
   );
 }
