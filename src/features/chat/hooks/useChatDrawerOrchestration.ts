@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import toast from 'react-hot-toast';
 
 import {
   useChatMessages,
@@ -19,7 +20,11 @@ import {
   formatReplyMessagePayload,
   scrollToAndHighlightMessage,
 } from '@/features/chat/chat.utils';
-import type { ChatMessage, ChatMention } from '@/schema/chat.schema';
+import {
+  CHAT_LABELS,
+  type ChatMessage,
+  type ChatMention,
+} from '@/schema/chat.schema';
 import { useAuth } from '@/shared/hooks/useAuth';
 
 export interface UseChatDrawerOrchestrationOptions {
@@ -183,8 +188,11 @@ export function useChatDrawerOrchestration({
         replyToId?: string | null;
         replyToMessage?: ChatMessage | null;
       },
-    ) => {
-      if (!resolvedRoomId) return;
+    ): boolean => {
+      if (!resolvedRoomId) {
+        toast.error(CHAT_LABELS.ROOM_INITIALIZING);
+        return false;
+      }
       sendMutation.mutate({
         clientId: crypto.randomUUID(),
         content,
@@ -192,6 +200,7 @@ export function useChatDrawerOrchestration({
         replyToId: meta?.replyToId,
         replyToMessage: formatReplyMessagePayload(meta?.replyToMessage),
       });
+      return true;
     },
     [resolvedRoomId, sendMutation],
   );

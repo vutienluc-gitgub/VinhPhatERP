@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 // ── Room Status ──
-
 export type ChatRoomStatus = 'active' | 'closed';
 
 export const CHAT_ROOM_STATUS_LABELS: Record<ChatRoomStatus, string> = {
@@ -10,7 +9,6 @@ export const CHAT_ROOM_STATUS_LABELS: Record<ChatRoomStatus, string> = {
 };
 
 // ── Message Type ──
-
 export type ChatMessageType =
   | 'text'
   | 'image'
@@ -19,7 +17,6 @@ export type ChatMessageType =
   | 'file';
 
 // ── Message Status ──
-
 export type ChatMessageStatus = 'pending' | 'sent' | 'error' | 'failed';
 
 export type ChatMention = {
@@ -31,11 +28,9 @@ export type ChatMention = {
 };
 
 // ── Participant Role ──
-
 export type ChatParticipantRole = 'admin' | 'driver' | 'customer';
 
 // ── Zod Schemas ──
-
 const chatMentionSchema = z.object({
   type: z.enum(['user', 'role', 'document']),
   id: z.string().optional(),
@@ -184,6 +179,7 @@ export const CHAT_LABELS = {
   LOADING: 'Đang tải...',
   NO_MESSAGES: 'Chưa có tin nhắn nào',
   ROOM_CLOSED: 'Phòng chat đã đóng',
+  ROOM_INITIALIZING: 'Phòng chat đang khởi tạo, vui lòng thử lại sau giây lát',
   SEND_ERROR: 'Không gửi được tin nhắn',
   LOAD_ERROR: 'Không thể tải tin nhắn',
   FORBIDDEN: 'Bạn không có quyền truy cập cuộc trò chuyện này',
