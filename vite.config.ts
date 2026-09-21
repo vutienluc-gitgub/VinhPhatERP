@@ -1,80 +1,22 @@
-import path from 'node:path';
-
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vitest/config';
+import path from 'path';
 
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(process.cwd(), './src'),
     },
   },
   server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-      },
-    },
+    host: '0.0.0.0',
+    port: 3000,
+    allowedHosts: true,
   },
-  test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}', 'server/src/**/*.test.ts'],
-    css: true,
-    pool: 'threads',
-  },
-  optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      'lucide-react',
-      '@tanstack/react-query',
-      '@tanstack/react-table',
-      'react-hook-form',
-      '@hookform/resolvers/zod',
-      'zod',
-      '@supabase/supabase-js',
-      'dayjs',
-      'recharts',
-      'exceljs',
-      'fuse.js',
-    ],
-  },
-  build: {
-    chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (
-              id.includes('node_modules/react/') ||
-              id.includes('node_modules/react-dom/') ||
-              id.includes('node_modules/react-router-dom/')
-            ) {
-              return 'vendor-react';
-            }
-            if (id.includes('node_modules/@tanstack/react-query/')) {
-              return 'vendor-query';
-            }
-            if (
-              id.includes('node_modules/react-hook-form/') ||
-              id.includes('node_modules/@hookform/resolvers/') ||
-              id.includes('node_modules/zod/')
-            ) {
-              return 'vendor-form';
-            }
-            if (id.includes('node_modules/@supabase/supabase-js/')) {
-              return 'vendor-supabase';
-            }
-            if (id.includes('node_modules/exceljs/')) {
-              return 'vendor-exceljs';
-            }
-          }
-        },
-      },
-    },
+  preview: {
+    host: '0.0.0.0',
+    port: 3000,
   },
 });

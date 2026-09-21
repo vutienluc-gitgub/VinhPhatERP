@@ -1,85 +1,26 @@
-/* ============================================================
-   Dark Mode Foundation
-   ============================================================ */
-[data-theme='dark'] {
-  color-scheme: dark;
-  color: #eef7ff;
-
-  /* Redefine base RGB for dark mode text */
-  --base-rgb: 238, 247, 255;
-
-  background: var(--background);
-
-  /* Adjusted Surface colors for better contrast */
-  --background: #101e34; /* Lighter base for gradient fallback */
-  --surface: rgba(255, 255, 255, 0.05);
-  --surface-secondary: rgba(255, 255, 255, 0.02);
-  --surface-strong: #1a2942;
-  --card: #16243a;
-  --surface-hover: rgba(255, 255, 255, 0.08);
-  --surface-selected: rgba(255, 255, 255, 0.12);
-  --surface-subtle: rgba(255, 255, 255, 0.03);
-  --surface-disabled: rgba(255, 255, 255, 0.01);
-  --border: rgba(255, 255, 255, 0.12);
-  --border-default: rgba(255, 255, 255, 0.15);
-  --border-muted: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(var(--brand-rgb), 0.4);
-  --border-danger: rgba(var(--danger-rgb), 0.4);
-
-  --foreground: #eef7ff;
+.dark {
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-foreground: #ffffff;
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --surface: #111827;
+  --surface-secondary: #1f2937;
+  --surface-hover: #374151;
+  --surface-selected: #1e3a8a;
+  --surface-subtle: #94a3b8;
+  --surface-accent: #1e293b;
+  --surface-strong: #111827;
+  --border: #374151;
+  --muted: #1e293b;
   --muted-foreground: #94a3b8;
-  --disabled-foreground: #64748b;
-  --inverse-foreground: #091524;
-
-  --primary: #4a8fd4;
-  --primary-strong: #7ab3e8;
-  --primary-hover: #7ab3e8;
-  --accent: #f04d5f;
-  --accent-rgb: 240, 77, 95;
-  --secondary: #94a3b8;
-  --secondary-rgb: 148, 163, 184;
-  --link: #7ab3e8;
-
-  --warning: #f59e0b;
-  --warning-strong: #d97706;
-  --warning-soft: rgba(245, 158, 11, 0.15);
-  --danger: #f87171;
-  --danger-strong: #b91c1c;
-  --danger-soft: rgba(248, 113, 113, 0.15);
-  --danger-rgb: 248, 113, 113;
-  --success: #34d399;
-  --success-strong: #047857;
-  --success-soft: rgba(52, 211, 153, 0.15);
-  --success-rgb: 52, 211, 153;
-  --info: #7ab3e8;
-  --info-strong: #4a8fd4;
-  --info-soft: rgba(122, 179, 232, 0.15);
-  --purple: #c084fc;
-  --purple-strong: #a855f7;
-  --purple-soft: rgba(192, 132, 252, 0.15);
-  --pink: #f472b6;
-  --pink-strong: #ec4899;
-  --pink-soft: rgba(244, 114, 182, 0.15);
-
-  --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-
-  /* ── Computed Backgrounds ───────────────────────────────────── */
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(var(--brand-rgb), 0.18),
-      transparent 35%
-    ),
-    linear-gradient(180deg, #101e34 0%, #091222 100%);
-
-  /* ── Input & Form ───────────────────────────────────────────── */
-  --input: #1b314b;
-  --input-border: rgba(255, 255, 255, 0.1);
-  --input-focus-ring: rgba(var(--brand-rgb), 0.4);
-  --text-label: #a8b3c4;
-
-  --auth-accent: #4a8fd4;
-  --auth-accent-strong: #7ab3e8;
-  --auth-accent-rgb: 74, 143, 212;
-  --auth-bg: #0b0f19;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --warning: #fbbf24;
+  --warning-foreground: #ffffff;
+  --danger: #ef4444;
+  --danger-foreground: #ffffff;
+  --info: #38bdf8;
+  --info-foreground: #ffffff;
+  --radius: 0.5rem;
 }

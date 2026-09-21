@@ -1,123 +1,68 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-  type PropsWithChildren,
-} from 'react';
-
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Button } from './Button';
-/* eslint-disable react-refresh/only-export-components */
-import { AdaptiveSheet } from './AdaptiveSheet';
 
-type ConfirmOptions = {
+interface ConfirmOptions {
   title?: string;
   message: string;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  variant?: 'danger' | 'default';
-};
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'danger' | 'primary';
+  onConfirm: () => void | Promise<void>;
+}
 
-export type ConfirmContextValue = {
-  confirm: (options: ConfirmOptions) => Promise<boolean>;
-  alert: (message: string, title?: string) => Promise<void>;
-};
+interface ConfirmContextType {
+  confirm: (options: ConfirmOptions) => void;
+}
 
-export const ConfirmContext = createContext<ConfirmContextValue | null>(null);
+const ConfirmContext = createContext<ConfirmContextType | undefined>(undefined);
 
-export function ConfirmProvider({ children }: PropsWithChildren) {
-  const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<
-    ConfirmOptions & { isAlert?: boolean }
-  >({
-    message: '',
-  });
-  const resolveRef = useRef<((value: boolean) => void) | null>(null);
+export function ConfirmProvider({ children }: { children: ReactNode }) {
+  const [options, setOptions] = useState<ConfirmOptions | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const confirm = useCallback((opts: ConfirmOptions): Promise<boolean> => {
-    setOptions({
-      ...opts,
-      isAlert: false,
-    });
-    setOpen(true);
-    return new Promise<boolean>((resolve) => {
-      resolveRef.current = resolve;
-    });
-  }, []);
+  const confirm = (opts: ConfirmOptions) => {
+    setOptions(opts);
+  };
 
-  const alert = useCallback(
-    (message: string, title?: string): Promise<void> => {
-      setOptions({
-        message,
-        title: title ?? 'Thông báo',
-        isAlert: true,
-      });
-      setOpen(true);
-      return new Promise<void>((resolve) => {
-        resolveRef.current = () => resolve();
-      });
-    },
-    [],
-  );
-
-  const handleConfirm = useCallback(() => {
-    setOpen(false);
-    resolveRef.current?.(true);
-    resolveRef.current = null;
-  }, []);
-
-  const handleCancel = useCallback(() => {
-    setOpen(false);
-    resolveRef.current?.(false);
-    resolveRef.current = null;
-  }, []);
-
-  const value = useMemo(
-    () => ({
-      confirm,
-      alert,
-    }),
-    [confirm, alert],
-  );
+  const handleConfirm = async () => {
+    if (!options) return;
+    try {
+      setLoading(true);
+      await options.onConfirm();
+      setOptions(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <ConfirmContext.Provider value={value}>
+    <ConfirmContext.Provider value={{ confirm }}>
       {children}
-      <AdaptiveSheet
-        open={open}
-        onClose={handleCancel}
-        title={options.title ?? 'Xác nhận'}
-        titleId="confirm-dialog-title"
-        footer={
-          <>
-            {!options.isAlert && (
-              <Button variant="secondary" type="button" onClick={handleCancel}>
-                {options.cancelLabel ?? 'Huỷ'}
+      {options && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl flex flex-col gap-4">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{options.title || 'Xác nhận hành động'}</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300">{options.message}</p>
+            <div className="flex justify-end gap-3 mt-2">
+              <Button variant="outline" onClick={() => setOptions(null)} disabled={loading}>
+                {options.cancelText || 'Hủy bỏ'}
               </Button>
-            )}
-            <Button
-              variant={options.variant === 'danger' ? 'danger' : 'primary'}
-              type="button"
-              onClick={handleConfirm}
-              autoFocus
-            >
-              {options.isAlert ? 'OK' : (options.confirmLabel ?? 'Xác nhận')}
-            </Button>
-          </>
-        }
-      >
-        <p id="confirm-dialog-message" className="leading-relaxed">
-          {options.message}
-        </p>
-      </AdaptiveSheet>
+              <Button
+                variant={options.variant === 'danger' ? 'danger' : 'primary'}
+                onClick={handleConfirm}
+                loading={loading}
+              >
+                {options.confirmText || 'Đồng ý'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </ConfirmContext.Provider>
   );
 }
 
 export function useConfirm() {
   const ctx = useContext(ConfirmContext);
-  if (!ctx) throw new Error('useConfirm must be used within ConfirmProvider');
-  return ctx;
+  return ctx || { confirm: (opts: ConfirmOptions) => opts.onConfirm() };
 }

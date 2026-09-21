@@ -1,130 +1,48 @@
-import { forwardRef } from 'react';
-import type { ButtonHTMLAttributes } from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { Slot, Slottable } from '@radix-ui/react-slot';
-
+import React, { forwardRef } from 'react';
 import { cn } from '@/shared/utils/cn';
 
-import { Icon } from './Icon';
-import type { IconName } from './Icon';
-
-const buttonVariants = cva(
-  'inline-flex items-center justify-center font-bold transition-all duration-200 active:scale-[0.98] aria-disabled:pointer-events-none aria-disabled:opacity-50 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 select-none',
-  {
-    variants: {
-      variant: {
-        primary: 'btn-primary',
-        secondary: 'btn-secondary',
-        success: 'btn-success',
-        warning: 'btn-warning',
-        danger: 'btn-danger',
-        info: 'btn-info',
-        outline:
-          'border border-border bg-transparent text-text active:bg-primary/[0.06]',
-        ghost:
-          'bg-transparent text-muted-foreground active:text-foreground active:bg-surface-subtle',
-      },
-      size: {
-        sm: 'px-4 py-2 text-xs rounded-sm min-h-[36px] gap-1.5',
-        md: 'px-5 py-3 text-sm rounded-sm min-h-[44px] gap-2',
-        lg: 'px-6 py-3.5 text-base rounded-sm min-h-[52px] gap-2.5',
-        icon: 'p-2.5 rounded-sm aspect-square min-h-[44px] min-w-[44px]',
-      },
-      fullWidth: {
-        true: 'w-full',
-      },
-    },
-    defaultVariants: {
-      variant: 'primary',
-      size: 'md',
-      fullWidth: false,
-    },
-  },
-);
-
-export interface ButtonProps
-  extends
-    ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  /** Displays a spinner and disables the button. */
-  isLoading?: boolean;
-  /** Lucide icon name to display on the left. */
-  leftIcon?: IconName;
-  /** Lucide icon name to display on the right. */
-  rightIcon?: IconName;
-  /** Use Radix Slot pattern to merge props onto a child component (e.g. Link). */
-  asChild?: boolean;
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'link';
+  size?: 'sm' | 'md' | 'lg' | 'icon';
+  loading?: boolean;
+  icon?: React.ReactNode;
 }
 
-/* ── Static maps hoisted outside render to avoid re-creation ── */
-
-/** Icon sizes follow icon-system rules: Small=16, Default=20 */
-const ICON_SIZE: Record<NonNullable<ButtonProps['size']>, number> = {
-  sm: 16,
-  md: 20,
-  lg: 20,
-  icon: 20,
-};
-
-/**
- * Premium Button component following the project's design system.
- *
- * Features:
- *   - Semantic variants: primary, secondary, success, warning, info, danger, outline, ghost.
- *   - Radix Slot pattern (asChild) for seamless router Link integration.
- *   - Gap-based spacing for consistent icon/spinner alignment.
- *   - Touch-friendly: md/lg/icon ≥ 44px. sm = 36px (use sparingly).
- */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant = 'primary',
-      size = 'md',
-      isLoading = false,
-      leftIcon,
-      rightIcon,
-      fullWidth = false,
-      asChild = false,
-      children,
-      disabled,
-      type = 'button',
-      ...props
-    },
-    ref,
-  ) => {
-    const Component = asChild ? Slot : 'button';
-    const iconSize = ICON_SIZE[size || 'md'];
-    const isDisabled = isLoading || disabled;
+  ({ className, variant = 'primary', size = 'md', loading = false, icon, children, disabled, ...props }, ref) => {
+    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed';
+    
+    const variants = {
+      primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 shadow-sm',
+      secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-900 focus:ring-slate-400 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-100',
+      outline: 'border border-slate-300 hover:bg-slate-100 text-slate-700 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800',
+      danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 shadow-sm',
+      ghost: 'hover:bg-slate-100 text-slate-700 dark:hover:bg-slate-800 dark:text-slate-200',
+      link: 'text-blue-600 hover:underline p-0 h-auto',
+    };
+
+    const sizes = {
+      sm: 'px-3 py-1.5 text-xs gap-1.5',
+      md: 'px-4 py-2 text-sm gap-2',
+      lg: 'px-5 py-2.5 text-base gap-2.5',
+      icon: 'p-2 w-9 h-9',
+    };
 
     return (
-      <Component
+      <button
         ref={ref}
-        type={asChild ? undefined : type}
-        disabled={asChild ? undefined : isDisabled}
-        aria-disabled={isDisabled}
-        aria-busy={isLoading}
-        className={cn(buttonVariants({ variant, size, fullWidth, className }))}
+        disabled={disabled || loading}
+        className={cn(baseStyles, variants[variant], sizes[size], className)}
         {...props}
       >
-        {isLoading ? (
-          <div
-            className={cn(
-              'animate-spin rounded-full border-2 border-current border-t-transparent',
-              size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4',
-            )}
-            aria-hidden="true"
-          />
-        ) : (
-          leftIcon && <Icon name={leftIcon} size={iconSize} />
-        )}
-
-        <Slottable>{children}</Slottable>
-
-        {!isLoading && rightIcon && <Icon name={rightIcon} size={iconSize} />}
-      </Component>
+        {loading ? (
+          <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+        ) : icon ? (
+          <span className="shrink-0">{icon}</span>
+        ) : null}
+        {children}
+      </button>
     );
-  },
+  }
 );
-
 Button.displayName = 'Button';

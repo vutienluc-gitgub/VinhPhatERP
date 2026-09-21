@@ -1,134 +1,19 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-
-  /* @architecture-exception: legacy color migration */
-  color: rgb(255, 255, 255, 0.87);
-
-  /* @architecture-exception: legacy color migration */
-  background-color: var(--background);
-  font-synthesis: none;
-  text-rendering: optimizelegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-
-  /* @architecture-exception: legacy color migration */
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  /* @architecture-exception: legacy color migration */
-  color: #535bf2;
-}
+@import "tailwindcss";
+@import "./styles/theme/tokens.css";
+@import "./styles/theme/dark-mode.css";
+@import "./features/chat/styles/tokens.css";
+@import "./features/chat/styles/base.css";
+@import "./features/chat/styles/chat-bubble.css";
+@import "./features/chat/styles/chat-input.css";
+@import "./features/chat/styles/chat-drawer.css";
+@import "./features/chat/styles/chat-context.css";
+@import "./features/chat/styles/chat-reactions.css";
+@import "./features/chat/styles/chat-search.css";
 
 body {
   margin: 0;
-  min-width: 320px;
   min-height: 100vh;
-  min-height: 100dvh; /* dynamic viewport height: no bounce on mobile URL bar toggle */
-  overscroll-behavior-y: none;
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-
-  /* @architecture-exception: legacy color migration */
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  /* @architecture-exception: legacy color migration */
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    /* @architecture-exception: legacy color migration */
-    color: #213547;
-
-    /* @architecture-exception: legacy color migration */
-    background-color: #fff;
-  }
-
-  a:hover {
-    /* @architecture-exception: legacy color migration */
-    color: #747bff;
-  }
-
-  button {
-    /* @architecture-exception: legacy color migration */
-    background-color: #f9f9f9;
-  }
-}
-
-/* Utility cho cuộn mượt và giấu thanh cuộn */
-@layer utilities {
-  .scrollbar-none {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-  }
-
-  .scrollbar-none::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
-  }
-}
-
-/* BỘ CLASS CHUẨN DÀNH CHO BẢN IN (PRINT LAYOUT) */
-@layer components {
-  /* Khổ A4/A5: Khoảng cách thoáng, dễ nhìn */
-  .print-spacing-normal {
-    @apply leading-relaxed;
-  }
-
-  .print-section-normal {
-    @apply mb-4 pb-4 border-b border-dashed border-black;
-  }
-
-  .print-table-normal {
-    @apply w-full border-collapse my-4;
-  }
-
-  .print-table-normal th,
-  .print-table-normal td {
-    @apply border border-black p-2;
-  }
-
-  .print-table-normal th {
-    @apply bg-gray-100 font-bold;
-  }
-
-  /* Khổ K80/K58/Tag: Khoảng cách sát, tiết kiệm giấy */
-  .print-spacing-tight {
-    @apply leading-tight;
-  }
-
-  .print-section-tight {
-    @apply mb-1 pb-1 border-b border-dashed border-black;
-  }
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }

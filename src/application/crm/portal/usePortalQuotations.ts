@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { supabase } from '@/services/supabase/client';
-import { useAuth } from '@/shared/hooks/useAuth';
+import { customerPortalAudit } from '@/features/customer-portal/audit/customerQueryAuditLogger';
 import type { PortalQuotation } from '@/domain/portal/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPCs chưa được sync vào database.types.ts
@@ -13,18 +13,29 @@ const rpc = supabase.rpc.bind(supabase) as (
 const PAGE_SIZE = 10;
 
 export function usePortalQuotations() {
-  const { profile } = useAuth();
   const [quotations, setQuotations] = useState<PortalQuotation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
 
   const fetchQuotations = useCallback(async () => {
+    const tracker = customerPortalAudit.startQuery('portal-quotations', {
+      caller: 'usePortalQuotations.fetchQuotations',
+      page,
+      pageSize: PAGE_SIZE,
+    });
+
     try {
       setLoading(true);
       setError(null);
 
-      let query = supabase
+      tracker.logFetch('quotations', {
+        select: 'id, quotation_number, quotation_date, valid_until, total_amount, status, customer_id, notes, quotation_items',
+        filters: { 'status.neq': 'draft' },
+        range: [page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1],
+      });
+
+      const { data, error: fetchError } = await supabase
         .from('quotations')
         .select(
           `
@@ -48,31 +59,27 @@ export function usePortalQuotations() {
           )
         `,
         )
-        .neq('status', 'draft'); // Khách hàng không xem được bản nháp
-
-      if (profile?.role === 'customer') {
-        if (!profile.customer_id) {
-          setQuotations([]);
-          setLoading(false);
-          return;
-        }
-        query = query.eq('customer_id', profile.customer_id);
-      }
-
-      const { data, error: fetchError } = await query
+        .neq('status', 'draft') // Khách hàng không xem được bản nháp
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
       if (fetchError) throw fetchError;
 
-      setQuotations(data as unknown as PortalQuotation[]);
+      tracker.logResponse(data, null, data?.length ?? 0);
+      const mapped = data as unknown as PortalQuotation[];
+      tracker.logTransform(data, mapped);
+      tracker.logComplete(mapped);
+
+      setQuotations(mapped);
     } catch (err: unknown) {
+      tracker.logError(err);
       console.error('Error fetching portal quotations:', err);
       setError('Không thể tải danh sách báo giá');
     } finally {
       setLoading(false);
     }
-  }, [page, profile?.customer_id, profile?.role]);
+  }, [page]);
+
 
   useEffect(() => {
     fetchQuotations();

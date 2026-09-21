@@ -1,46 +1,26 @@
 import { z } from 'zod';
 
-import { validatePhone } from '@/shared/utils/phone';
+export const tenantRegisterSchema = z.object({
+  companyName: z.string().min(1, 'Vui lòng nhập tên công ty / xưởng dệt'),
+  tenantSlug: z.string().min(3, 'Mã định danh ít nhất 3 ký tự'),
+  fullName: z.string().min(1, 'Vui lòng nhập họ tên quản trị viên'),
+  email: z.string().email('Email không hợp lệ'),
+  phone: z.string().min(8, 'Số điện thoại không hợp lệ'),
+  password: z.string().min(6, 'Mật khẩu ít nhất 6 ký tự'),
+  confirmPassword: z.string(),
+  plan: z.string().default('pro'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Mật khẩu xác nhận không khớp',
+  path: ['confirmPassword'],
+});
 
-/**
- * Schema dang ky workspace moi tren vinhphat.app
- */
-export const tenantRegisterSchema = z
-  .object({
-    companyName: z
-      .string()
-      .min(2, 'Ten cong ty it nhat 2 ky tu')
-      .max(100, 'Ten cong ty toi da 100 ky tu'),
-    slug: z
-      .string()
-      .min(3, 'Subdomain it nhat 3 ky tu')
-      .max(50, 'Subdomain toi da 50 ky tu')
-      .regex(
-        /^[a-z0-9][a-z0-9-]*[a-z0-9]$/,
-        'Chi dung chu thuong, so va dau "-". Khong bat dau/ket thuc bang "-"',
-      ),
-    email: z.string().email('Email khong hop le'),
-    password: z.string().min(6, 'Mat khau it nhat 6 ky tu'),
-    confirmPassword: z.string(),
-    phone: z
-      .string()
-      .regex(/^(\+?[0-9\s\-().]{8,20})?$/, 'So dien thoai khong hop le')
-      .refine(validatePhone, { message: 'So dien thoai khong hop le' })
-      .optional()
-      .or(z.literal('')),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Mat khau xac nhan khong khop',
-    path: ['confirmPassword'],
-  });
-
-export type TenantRegisterFormValues = z.infer<typeof tenantRegisterSchema>;
-
-export const tenantRegisterDefaults: TenantRegisterFormValues = {
+export const tenantRegisterDefaults = {
   companyName: '',
-  slug: '',
+  tenantSlug: '',
+  fullName: '',
   email: '',
+  phone: '',
   password: '',
   confirmPassword: '',
-  phone: '',
+  plan: 'pro',
 };

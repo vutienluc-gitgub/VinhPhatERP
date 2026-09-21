@@ -1,4 +1,3 @@
-import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
@@ -6,12 +5,8 @@ import { prettyJSON } from 'hono/pretty-json';
 import { secureHeaders } from 'hono/secure-headers';
 
 import customersRouter from './routes/customers.js';
-import notificationsRouter from './routes/notifications.js';
 import ordersRouter from './routes/orders.js';
 import suppliersRouter from './routes/suppliers.js';
-import webhooksRouter from './routes/webhooks.js';
-import yarnReceiptsRouter from './routes/yarn-receipts.js';
-import aiChatRouter from './routes/ai-chat.js';
 
 const app = new Hono();
 
@@ -54,11 +49,6 @@ const api = new Hono();
 api.route('/customers', customersRouter);
 api.route('/suppliers', suppliersRouter);
 api.route('/orders', ordersRouter);
-api.route('/webhooks', webhooksRouter);
-api.route('/notifications', notificationsRouter);
-api.route('/yarn-receipts', yarnReceiptsRouter);
-api.route('/chat', aiChatRouter);
-api.route('/ai/chat', aiChatRouter);
 
 app.route('/api/v1', api);
 
@@ -72,18 +62,13 @@ app.onError((err, c) => {
 });
 
 // ──────────────────────────────────────────────
-// Start Background Daemons
+// Start
 // ──────────────────────────────────────────────
-// ──────────────────────────────────────────────
-// Start Server
-// ──────────────────────────────────────────────
-const port = Number(process.env.PORT ?? 3001);
-// eslint-disable-next-line no-console
-console.log(`[VinhPhat API] Server listening on http://localhost:${port}`);
+const port = Number(process.env.PORT ?? 3000);
+// eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
+console.log(`🚀 VinhPhat API server listening on http://localhost:${port}`);
 
-serve({
-  fetch: app.fetch,
+export default {
   port,
-});
-
-export default app;
+  fetch: app.fetch,
+};

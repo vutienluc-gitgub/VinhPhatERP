@@ -35,7 +35,6 @@ export default defineConfig({
         '**/operations-dnd.spec.ts',
         '**/fluid-layout.spec.ts',
         '**/visual-regression.spec.ts',
-        '**/chat.spec.ts',
       ],
     },
     {
@@ -51,7 +50,6 @@ export default defineConfig({
         '**/operations-dnd.spec.ts',
         '**/fluid-layout.spec.ts',
         '**/visual-regression.spec.ts',
-        '**/chat.spec.ts',
       ],
     },
   ],

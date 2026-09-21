@@ -1,14 +1,17 @@
-export type PaginationState = {
+export const DEFAULT_PAGE_SIZE = 20;
+
+export interface PaginationParams {
   page: number;
   pageSize: number;
-};
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
 
-export type PaginatedResult<T> = {
+export interface PaginatedResult<T> {
   data: T[];
   total: number;
   page: number;
   pageSize: number;
   totalPages: number;
-};
-
-export const DEFAULT_PAGE_SIZE = 20;
+}

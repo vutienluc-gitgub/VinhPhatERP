@@ -6,15 +6,11 @@ import React, {
   useState,
 } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import toast from 'react-hot-toast';
 
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Icon } from '@/shared/components/Icon';
-import {
-  buildMessageGroups,
-  extractChronologicalMessages,
-} from '@/features/chat/chat.utils';
+import { buildMessageGroups } from '@/features/chat/chat.utils';
 import type { MessageCluster as MessageClusterType } from '@/features/chat/chat.types';
 import type { ChatTimelineState } from '@/domain/chat';
 
@@ -64,11 +60,14 @@ export const ChatMessageList = React.memo(function ChatMessageList({
   const [unreadNewCount, setUnreadNewCount] = useState(0);
   const lastMessageCountRef = useRef(0);
 
-  // Extract chronological list (oldest-first) using pure helper
-  const chronologicalMessages = useMemo(
-    () => extractChronologicalMessages(pages, timelineState),
-    [pages, timelineState],
-  );
+  // Convert pages (which come with newest-first per page) to a single chronological list (oldest-first)
+  const chronologicalMessages = useMemo(() => {
+    if (timelineState && timelineState.status === 'ready') {
+      return timelineState.messages;
+    }
+    if (!pages || pages.length === 0) return [];
+    return [...pages].reverse().flatMap((page) => [...page].reverse());
+  }, [pages, timelineState]);
 
   const messageGroups = useMemo(
     () =>
@@ -132,56 +131,6 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     setUnreadNewCount(0);
   }, []);
 
-  const handleScrollToMessageId = useCallback(
-    (targetMessageId?: string) => {
-      if (!targetMessageId) return;
-
-      const targetIndex = flatItems.findIndex(
-        (item) =>
-          item.type === 'cluster' &&
-          item.cluster.messages.some(
-            (vm) =>
-              vm.message.id === targetMessageId ||
-              vm.message.client_id === targetMessageId,
-          ),
-      );
-
-      if (targetIndex !== -1) {
-        if (isVirtualized) {
-          rowVirtualizer.scrollToIndex(targetIndex, {
-            align: 'center',
-            behavior: 'smooth',
-          });
-        }
-        setTimeout(() => {
-          const el = document.querySelector(
-            `[data-message-id="${targetMessageId}"]`,
-          );
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            el.classList.add('chat-message-highlight');
-            setTimeout(() => {
-              el.classList.remove('chat-message-highlight');
-            }, 2000);
-          }
-        }, 120);
-      } else {
-        if (hasNextPage && !isFetchingNextPage) {
-          toast(CHAT_LABELS.LOADING_OLDER_MESSAGES);
-          onLoadMore();
-        }
-      }
-    },
-    [
-      flatItems,
-      isVirtualized,
-      rowVirtualizer,
-      hasNextPage,
-      isFetchingNextPage,
-      onLoadMore,
-    ],
-  );
-
   // Handle incoming new messages & auto-scroll
   useEffect(() => {
     const currentCount = chronologicalMessages.length;
@@ -191,7 +140,11 @@ export const ChatMessageList = React.memo(function ChatMessageList({
       const newestMsg = chronologicalMessages[chronologicalMessages.length - 1];
       const isMine = Boolean(
         (user?.id && newestMsg?.sender_id === user?.id) ||
-        (!newestMsg?.sender_id && newestMsg?.status === 'pending'),
+        (!newestMsg?.sender_id && newestMsg?.status === 'pending') ||
+        (profile?.role !== 'customer' &&
+          (newestMsg?.sender_role === 'admin' ||
+            newestMsg?.sender_role === 'manager' ||
+            newestMsg?.sender_role === 'staff')),
       );
 
       if (isMine || isNearBottom) {
@@ -202,7 +155,13 @@ export const ChatMessageList = React.memo(function ChatMessageList({
     }
 
     lastMessageCountRef.current = currentCount;
-  }, [chronologicalMessages, isNearBottom, user?.id, scrollToBottom]);
+  }, [
+    chronologicalMessages,
+    isNearBottom,
+    user?.id,
+    profile?.role,
+    scrollToBottom,
+  ]);
 
   // Initial load scroll to bottom
   const isCurrentlyLoading =
@@ -260,16 +219,12 @@ export const ChatMessageList = React.memo(function ChatMessageList({
           />
           <p className="chat-empty-text font-semibold text-danger">
             {timelineState.code === 'FORBIDDEN'
-              ? CHAT_LABELS.FORBIDDEN
+              ? 'Bạn không có quyền truy cập cuộc trò chuyện này'
               : timelineState.code === 'NOT_FOUND'
-                ? CHAT_LABELS.ROOM_NOT_FOUND
+                ? 'Phòng chat không tồn tại hoặc đã bị xóa'
                 : CHAT_LABELS.LOAD_ERROR}
           </p>
-          <p className="chat-empty-hint">
-            {timelineState.error instanceof Error
-              ? timelineState.error.message
-              : String(timelineState.error)}
-          </p>
+          <p className="chat-empty-hint">{timelineState.error.message}</p>
         </div>
       </div>
     );
@@ -360,7 +315,6 @@ export const ChatMessageList = React.memo(function ChatMessageList({
                       cluster={item.cluster}
                       onRetry={onRetry}
                       onQuoteReply={onQuoteReply}
-                      onScrollToMessage={handleScrollToMessageId}
                     />
                   )}
                 </div>
@@ -377,7 +331,6 @@ export const ChatMessageList = React.memo(function ChatMessageList({
                   cluster={cluster}
                   onRetry={onRetry}
                   onQuoteReply={onQuoteReply}
-                  onScrollToMessage={handleScrollToMessageId}
                 />
               ))}
             </React.Fragment>

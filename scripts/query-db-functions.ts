@@ -86,14 +86,11 @@ export function normalizeType(sqlType: string): string {
 export async function getDbFunctions(
   connectionString: string,
 ): Promise<DbFunction[]> {
-  const useSsl =
-    connectionString.includes('sslmode=require') ||
-    connectionString.includes('pooler.supabase.com');
   const sql = postgres(connectionString, {
     max: 1,
     idle_timeout: 10,
     connect_timeout: 10,
-    ssl: useSsl ? 'require' : false,
+    ssl: 'require',
   });
 
   try {

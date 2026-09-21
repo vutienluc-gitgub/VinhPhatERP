@@ -18,7 +18,7 @@ export const LEAD_STATUS_MAP: Record<
     label: 'Đã gửi mẫu',
     // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
     dot: '🟣',
-    colorClass: 'bg-purple-soft text-purple border-purple',
+    colorClass: 'bg-purple-50 text-purple-700 border-purple-100',
   },
   QUOTED: {
     label: 'Đã báo giá',
@@ -59,7 +59,7 @@ export const LEAD_TYPE_MAP: Record<
   RFQ: { label: 'Yêu cầu Báo giá', colorClass: 'bg-info-soft text-info' },
   SAMPLE: {
     label: 'Yêu cầu Gửi mẫu',
-    colorClass: 'bg-purple-soft text-purple-strong',
+    colorClass: 'bg-purple-100 text-purple-800',
   },
   CONTACT: {
     label: 'Liên hệ',
@@ -84,7 +84,7 @@ export const ACTIVITY_TYPE_MAP: Record<
   EMAIL: {
     label: 'Gửi Email',
     icon: 'Mail',
-    colorClass: 'text-purple bg-purple-soft',
+    colorClass: 'text-purple-600 bg-purple-50',
   },
   SAMPLE: {
     label: 'Gửi mẫu',

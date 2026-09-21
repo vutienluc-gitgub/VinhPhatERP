@@ -1,35 +1,21 @@
-/**
- * Centralized entity type definitions and labels.
- * Single source of truth for all entity-related constants.
- */
-
-export type EntityType =
-  | 'customer'
-  | 'supplier'
-  | 'yarn'
-  | 'loom'
-  | 'employee'
-  | 'order'
-  | 'fabric';
-
-/** Route path segments for each entity type (used in URL construction). */
-export const ENTITY_ROUTES: Record<EntityType, string> = {
-  customer: 'customers',
-  supplier: 'suppliers',
-  yarn: 'yarn-catalog',
-  loom: 'looms',
-  employee: 'employees',
-  order: 'orders',
-  fabric: 'fabric-catalog',
+export const ENTITY_TYPES = {
+  CUSTOMER: 'customer',
+  ORDER: 'order',
+  SUPPLIER: 'supplier',
+  FABRIC: 'fabric',
+  YARN: 'yarn',
+  PAYMENT: 'payment',
+  SHIPMENT: 'shipment',
+  WORK_ORDER: 'work_order',
 };
 
-/** Vietnamese display labels for each entity type. */
-export const ENTITY_LABELS: Record<EntityType, string> = {
-  customer: 'khách hàng',
-  supplier: 'nhà cung cấp',
-  yarn: 'sợi',
-  loom: 'máy dệt',
-  employee: 'nhân viên',
-  order: 'đơn hàng',
-  fabric: 'vải',
+export const ENTITY_LABELS: Record<string, string> = {
+  customer: 'Khách hàng',
+  order: 'Đơn hàng',
+  supplier: 'Nhà cung cấp',
+  fabric: 'Mẫu vải',
+  yarn: 'Sợi dệt',
+  payment: 'Thanh toán / Sổ quỹ',
+  shipment: 'Vận chuyển / Giao hàng',
+  work_order: 'Lệnh sản xuất',
 };

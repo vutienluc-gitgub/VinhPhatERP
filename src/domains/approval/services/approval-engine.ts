@@ -240,7 +240,6 @@ export class ApprovalEngine {
     }
 
     const updatedRequest: Partial<ApprovalRequest> = {
-      ...request,
       id: request.id,
       status: isFullyApproved
         ? APPROVAL_STATUS.APPROVED
@@ -312,7 +311,6 @@ export class ApprovalEngine {
     };
 
     const updatedRequest: Partial<ApprovalRequest> = {
-      ...request,
       id: request.id,
       status: APPROVAL_STATUS.REJECTED,
       row_version: request.row_version + 1,
@@ -353,7 +351,6 @@ export class ApprovalEngine {
       );
 
     const updatedRequest: Partial<ApprovalRequest> = {
-      ...request,
       id: request.id,
       status: APPROVAL_STATUS.CANCELLED,
       row_version: request.row_version + 1,
@@ -423,7 +420,6 @@ export class ApprovalEngine {
     };
 
     const updatedRequest: Partial<ApprovalRequest> = {
-      ...request,
       id: request.id,
       row_version: request.row_version + 1,
     };

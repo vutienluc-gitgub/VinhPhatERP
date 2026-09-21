@@ -1,11 +1,10 @@
 import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { fetchMyChatRooms, type MyChatRoomSummary } from '@/api/chat.api';
 import { Icon } from '@/shared/components/Icon';
 import { CHAT_INBOX_LABELS, CHAT_LABELS } from '@/schema/chat.schema';
-import { AIChatDrawer } from '@/features/chat/components/AIChatDrawer';
 
 import { ChatDrawer } from './ChatDrawer';
 import './chat.css';
@@ -161,36 +160,13 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
   const queryClient = useQueryClient();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useInfiniteQuery({
-      queryKey: ['chat-inbox-rooms'],
-      queryFn: ({ pageParam }) =>
-        fetchMyChatRooms({
-          limit: 20,
-          cursorUpdatedAt: pageParam?.cursorUpdatedAt ?? null,
-          cursorRoomId: pageParam?.cursorRoomId ?? null,
-        }),
-      initialPageParam: null as {
-        cursorUpdatedAt: string;
-        cursorRoomId: string;
-      } | null,
-      getNextPageParam: (lastPage) => {
-        if (!lastPage || lastPage.length < 20) return undefined;
-        const lastItem = lastPage[lastPage.length - 1];
-        if (!lastItem) return undefined;
-        return {
-          cursorUpdatedAt: lastItem.updatedAt,
-          cursorRoomId: lastItem.roomId,
-        };
-      },
-      enabled: open,
-      staleTime: 15_000,
-      refetchInterval: open ? 30_000 : false,
-    });
-
-  const rooms = useMemo(() => {
-    return data?.pages.flatMap((page) => page) ?? [];
-  }, [data]);
+  const { data: rooms = [], isLoading } = useQuery({
+    queryKey: ['chat-inbox-rooms'],
+    queryFn: fetchMyChatRooms,
+    enabled: open,
+    staleTime: 15_000,
+    refetchInterval: open ? 30_000 : false,
+  });
 
   const filteredRooms = useMemo(() => {
     let result = rooms;
@@ -227,8 +203,6 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
     void queryClient.invalidateQueries({ queryKey: ['chat-inbox-rooms'] });
   }
 
-  const [showAIChat, setShowAIChat] = useState(false);
-
   // When a room is active, render ChatDrawer completely standalone
   if (activeRoom) {
     return (
@@ -242,11 +216,6 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
         subtitle={activeRoom.entityCode}
       />
     );
-  }
-
-  // When AI Chat is active, render AIChatDrawer
-  if (showAIChat) {
-    return <AIChatDrawer open={true} onClose={() => setShowAIChat(false)} />;
   }
 
   if (!open) return null;
@@ -314,7 +283,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={() => setActiveFilter('all')}
             className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
               activeFilter === 'all'
-                ? 'bg-primary text-inverse-foreground border-primary'
+                ? 'bg-primary text-white border-primary'
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
@@ -325,7 +294,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={() => setActiveFilter('customer')}
             className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
               activeFilter === 'customer'
-                ? 'bg-primary text-inverse-foreground border-primary'
+                ? 'bg-primary text-white border-primary'
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
@@ -336,7 +305,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={() => setActiveFilter('shipment')}
             className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
               activeFilter === 'shipment'
-                ? 'bg-primary text-inverse-foreground border-primary'
+                ? 'bg-primary text-white border-primary'
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
@@ -347,49 +316,12 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             onClick={() => setActiveFilter('unread')}
             className={`px-2.5 py-1 text-[0.7rem] font-medium rounded-full border transition-colors cursor-pointer ${
               activeFilter === 'unread'
-                ? 'bg-primary text-inverse-foreground border-primary'
+                ? 'bg-primary text-white border-primary'
                 : 'bg-surface-secondary text-muted-foreground border-border hover:text-foreground'
             }`}
           >
             {CHAT_INBOX_LABELS.FILTER_UNREAD}
           </button>
-        </div>
-
-        {/* AI Assistant Quick Card */}
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => setShowAIChat(true)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setShowAIChat(true);
-            }
-          }}
-          className="mx-3 my-2 p-2.5 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-between cursor-pointer group"
-          aria-label="Mở Trợ lý AI Vịnh Phát"
-        >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-              <Icon name="Sparkles" size={16} />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-foreground">
-                  Trợ lý AI Vịnh Phát
-                </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium">
-                  Gemini 3.6
-                </span>
-              </div>
-              <p className="text-[11px] text-muted truncate m-0">
-                Hỏi đáp quy trình dệt nhuộm & xuất nhập kho với AI Streaming
-              </p>
-            </div>
-          </div>
-          <span className="text-xs px-2.5 py-1 rounded-lg bg-primary text-primary-foreground font-medium shrink-0">
-            Hỏi AI
-          </span>
         </div>
 
         {/* Room list */}
@@ -411,20 +343,6 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
               onClick={() => handleOpen(room)}
             />
           ))}
-          {hasNextPage && (
-            <div className="p-3 text-center">
-              <button
-                type="button"
-                onClick={() => void fetchNextPage()}
-                disabled={isFetchingNextPage}
-                className="px-4 py-1.5 text-xs font-medium text-primary bg-surface-secondary border border-border rounded-lg hover:bg-surface transition-colors cursor-pointer disabled:opacity-50"
-              >
-                {isFetchingNextPage
-                  ? CHAT_INBOX_LABELS.LOADING_MORE
-                  : CHAT_INBOX_LABELS.LOAD_MORE}
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </>,

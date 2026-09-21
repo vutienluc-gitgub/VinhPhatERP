@@ -19,14 +19,13 @@ describe('Chat Domain - Participant Party & Message Side Resolution', () => {
     expect(resolveParticipantParty(undefined)).toBe('external');
   });
 
-  it('on Admin Portal (Internal perspective): self messages align RIGHT, any other sender (colleague, customer, driver) aligns LEFT', () => {
-    // Current user sends own message -> RIGHT
-    expect(resolveMessageSide('internal', 'internal', true)).toBe('right');
-
-    // Colleague (another staff member) sends message -> LEFT
-    expect(resolveMessageSide('internal', 'internal', false)).toBe('left');
-    // Manager sends message (seen by staff) -> LEFT
-    expect(resolveMessageSide('internal', 'internal', false)).toBe('left');
+  it('on Admin Portal (Internal perspective): all internal messages align RIGHT, external align LEFT', () => {
+    // Staff A sends on Admin Portal
+    expect(resolveMessageSide('internal', 'internal', false)).toBe('right');
+    // Staff B sends on Admin Portal (seen by Staff A) -> Still RIGHT
+    expect(resolveMessageSide('internal', 'internal', false)).toBe('right');
+    // Manager sends -> RIGHT
+    expect(resolveMessageSide('internal', 'internal', false)).toBe('right');
 
     // Customer sends on Admin Portal -> LEFT
     expect(resolveMessageSide('external', 'internal', false)).toBe('left');
@@ -35,16 +34,10 @@ describe('Chat Domain - Participant Party & Message Side Resolution', () => {
   });
 
   it('on Customer/Driver Portal (External perspective): self messages align RIGHT, enterprise aligns LEFT', () => {
-    // Customer sending own message -> RIGHT
+    // Customer sending own message
     expect(resolveMessageSide('external', 'external', true)).toBe('right');
 
     // Admin/Staff message received on Customer Portal -> LEFT
-    expect(resolveMessageSide('internal', 'external', false)).toBe('left');
-
-    // Driver sending own message -> RIGHT
-    expect(resolveMessageSide('external', 'external', true)).toBe('right');
-
-    // Dispatcher message received on Driver Portal -> LEFT
     expect(resolveMessageSide('internal', 'external', false)).toBe('left');
   });
 });

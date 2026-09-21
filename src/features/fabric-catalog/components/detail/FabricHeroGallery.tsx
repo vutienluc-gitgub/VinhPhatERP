@@ -58,7 +58,7 @@ export function FabricHeroGallery({
 
   return (
     <div className="w-full bg-surface relative">
-      <div className="w-full aspect-[4/3] bg-surface-secondary relative overflow-hidden border border-muted">
+      <div className="w-full aspect-[4/3] bg-surface-secondary relative overflow-hidden border border-black/5">
         {displayImage && !imageError ? (
           <img
             src={displayImage}
@@ -77,7 +77,7 @@ export function FabricHeroGallery({
 
         {(fabric.view_count ?? 0) > 0 && (
           <div className="absolute top-3 right-3 bg-foreground/60 backdrop-blur-md text-inverse-foreground px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-sm">
-            <Icon name="Flame" className="w-3.5 h-3.5 text-warning" />
+            <Icon name="Flame" className="w-3.5 h-3.5 text-orange-400" />
             {COMP_LABELS.HERO_VIEWS.replace(
               '{count}',
               (fabric.view_count ?? 0).toString(),

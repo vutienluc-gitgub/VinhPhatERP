@@ -3,11 +3,7 @@ import postgres from 'postgres';
 
 import * as schema from './schema/index.js';
 
-const connectionString =
-  process.env.DATABASE_URL ??
-  (process.env.NODE_ENV === 'test'
-    ? 'postgresql://postgres:test@127.0.0.1:5432/postgres_test'
-    : undefined);
+const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
   throw new Error('[DB] DATABASE_URL chưa được cấu hình trong .env');

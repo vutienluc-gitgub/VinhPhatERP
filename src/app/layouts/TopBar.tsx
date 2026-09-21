@@ -5,7 +5,6 @@ import type { NavigationItem } from '@/app/router/routes';
 import {
   ChatDrawer,
   ChatInboxDrawer,
-  AIChatDrawer,
   useChatNavigation,
   useChatNavigationSync,
 } from '@/features/chat';
@@ -43,7 +42,6 @@ export const TopBar = React.memo(function TopBar({
 }: TopBarProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showChatInbox, setShowChatInbox] = useState(false);
-  const [showAIChat, setShowAIChat] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Centralized Chat Navigation Controller
@@ -185,20 +183,6 @@ export const TopBar = React.memo(function TopBar({
           <>
             <button
               type="button"
-              className="topbar-icon-btn topbar-ai-btn relative"
-              onClick={() => setShowAIChat(true)}
-              title="Trợ lý AI Vịnh Phát"
-              aria-label="Trợ lý AI Vịnh Phát"
-            >
-              <Icon
-                name="Sparkles"
-                size={17}
-                strokeWidth={1.5}
-                className="text-primary"
-              />
-            </button>
-            <button
-              type="button"
               className="topbar-icon-btn topbar-chat-inbox-btn relative"
               onClick={() => setShowChatInbox(true)}
               title={APP_SHELL_LABELS.INBOX}
@@ -215,15 +199,12 @@ export const TopBar = React.memo(function TopBar({
           </>
         )}
 
-        {/* AI Assistant Drawer */}
-        <AIChatDrawer open={showAIChat} onClose={() => setShowAIChat(false)} />
-
-        {/* Direct Room Chat Drawer (when opened via Push Notification, Deep link, or Entity intent) */}
-        {isOpen && activeIntent ? (
+        {/* Direct Room Chat Drawer (when opened via Push Notification or Deep link intent) */}
+        {isOpen && activeIntent?.roomId ? (
           <ChatDrawer
             open={isOpen}
             onClose={closeChat}
-            roomId={activeIntent.roomId || undefined}
+            roomId={activeIntent.roomId}
             messageId={activeIntent.messageId}
             entityType={activeIntent.entityType}
             entityId={activeIntent.entityId}
@@ -266,15 +247,6 @@ export const TopBar = React.memo(function TopBar({
               </span>
             </div>
             <div className="user-dropdown-divider" />
-            <NavLink
-              to="/profile"
-              className="user-dropdown-item"
-              role="menuitem"
-              onClick={() => setShowUserMenu(false)}
-            >
-              <Icon name="User" size={16} strokeWidth={1.5} />
-              {APP_SHELL_LABELS.PROFILE}
-            </NavLink>
             <button
               type="button"
               className="user-dropdown-item"

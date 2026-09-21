@@ -1,66 +1,29 @@
-import { clsx } from 'clsx';
-import type { ReactNode } from 'react';
+import React from 'react';
+import { cn } from '@/shared/utils/cn';
 
-export interface TabItem<T extends string> {
-  key: T;
+export interface TabItem {
+  id: string;
   label: string;
-  icon?: ReactNode;
-  badge?: number;
+  count?: number;
 }
 
-interface Props<T extends string> {
-  tabs: TabItem<T>[];
-  active: T;
-  onChange: (key: T) => void;
-  /** sm: compact mode for use inside widget headers or tight spaces */
-  size?: 'default' | 'sm';
-  className?: string;
-}
-
-export function TabSwitcher<T extends string>({
-  tabs,
-  active,
-  onChange,
-  size = 'default',
-  className,
-}: Props<T>) {
-  const smBarClass = size === 'sm' ? 'p-0.5' : undefined;
-  const smItemClass = size === 'sm' ? 'px-2 py-1 text-[11px]' : undefined;
-
+export function TabSwitcher({ tabs, activeTab, onChange }: { tabs: TabItem[]; activeTab: string; onChange: (id: string) => void }) {
   return (
-    <div
-      className={clsx(
-        'tab-bar-underline',
-        smBarClass,
-        'w-full min-w-0 max-w-full',
-        className,
-      )}
-      role="tablist"
-    >
-      {tabs.map((tab) => (
+    <div className="flex border-b border-slate-200 dark:border-slate-800 gap-4">
+      {tabs.map((t) => (
         <button
-          key={tab.key}
-          type="button"
-          role="tab"
-          aria-selected={active === tab.key}
-          className={clsx(
-            'tab-item-underline',
-            smItemClass,
-            active === tab.key && 'text-foreground bg-primary/10',
+          key={t.id}
+          onClick={() => onChange(t.id)}
+          className={cn(
+            'pb-3 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2',
+            activeTab === t.id
+              ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+              : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
           )}
-          onClick={() => onChange(tab.key)}
         >
-          {tab.icon}
-          {tab.label}
-          {tab.badge !== undefined && tab.badge > 0 && (
-            <span
-              className={clsx(
-                'tab-badge',
-                active === tab.key && 'tab-badge--active',
-              )}
-            >
-              {tab.badge > 99 ? '99+' : tab.badge}
-            </span>
+          {t.label}
+          {t.count !== undefined && (
+            <span className="px-2 py-0.5 text-xs rounded-full bg-slate-100 dark:bg-slate-800">{t.count}</span>
           )}
         </button>
       ))}

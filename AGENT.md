@@ -22,20 +22,14 @@ Xem thêm: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/CODING_RULES.md
 
 ---
 
-## Quy tắc bắt buộc & AI Governance
+## Quy tắc bắt buộc
 
-Toàn bộ quy tắc cốt lõi và kỷ luật thực thi của AI Agent được quy định tại bộ 3 tài liệu nền tảng ở thư mục gốc:
+Để tránh phân mảnh tài liệu, toàn bộ quy tắc cốt lõi (TypeScript, Database, Bảo mật, UI) được quy định thống nhất tại:
 
-1. [`.erp-rules.md`](.erp-rules.md) — **Hiến pháp VinhPhatERP**: 22 quy tắc kỹ thuật, bảo vệ Database, cấm sửa nghiệp vụ nhạy cảm, Impact Map.
-2. [`AI_WORKFLOW.md`](AI_WORKFLOW.md) — **Quy trình tác nghiệp 5 bước**: Có trạm gác (Gate 1, Gate 2, Gate 3), AI không được tự ý sửa một mạch.
-3. [`AI_CHECKLIST.md`](AI_CHECKLIST.md) — **Biên bản nghiệm thu**: Checklist kiểm soát chất lượng trước khi đóng task.
+- Nền tảng chung: [docs/coding-rules.md](docs/coding-rules.md)
+- Kỷ luật thực thi (Riêng cho AI): Các file trong `.agents/rules/` (Đặc biệt chú ý rule bảo vệ DB tại `db-guard.ts` và bẻ nhỏ Component).
 
-Xem thêm tài liệu bổ trợ:
-
-- Kỷ luật thực thi chi tiết: `.agents/rules/`
-- Kiến trúc & Coding Rules: [docs/coding-rules.md](docs/coding-rules.md)
-
-**AI Agent tuyệt đối tuân thủ quy trình có trạm gác (Approval Gates) thay vì tự suy diễn.**
+**AI Agent tuyệt đối tuân thủ các quy tắc trong các file trên thay vì tự suy diễn.**
 
 ---
 

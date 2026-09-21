@@ -33,34 +33,14 @@ Architecture Guard
    │
    ▼
 Pre-push / Pre-commit
-   └── FAST checks only (pre-push): lockfile sync + rpc:check + vapid:check
-       + theme:check + typecheck (front & server). Mục tiêu < ~2 phút.
-       Lint/lint:css chặn ngay tại máy Dev qua pre-commit (lint-staged).
+   └── npm run lint -- --max-warnings=0 && npm run lint:css (Chặn ngay tại máy Dev nếu vi phạm)
    │
    ▼
 CI / GitHub
-   └── lint + lint:css + theme:check + typecheck (front/server/agent)
-       + Vitest + build + E2E (Lá chắn cuối trước khi merge)
+   └── lint + lint:css + typecheck + test (Lá chắn cuối trước khi merge)
 ```
 
 _Ghi chú:_ Việc tuân thủ Architecture Guard là **BẮT BUỘC**.
-
----
-
-## Dependency & CI Lockfile Safety
-
-### Forbidden
-
-- Adding test frameworks (`vitest`, `@testing-library`) into `server/package.json` (server tests are run via root Vitest runner).
-- Modifying `package.json` without committing the updated `package-lock.json` in the same commit.
-- Using `git push --no-verify` when modifying dependencies or type definitions.
-
-### Required
-
-- `server/tsconfig.json` MUST exclude test files (`src/**/__tests__/**/*`, `src/**/*.test.ts`).
-- Root `npm run typecheck` remains scoped to `tsconfig.app.json` (frontend).
-- Full audit (`npm run audit:full`) MUST check both frontend typecheck and server typecheck (`npm run typecheck:server`).
-- Run `npm ci --dry-run` locally for both root and server before pushing to ensure zero lockfile drift.
 
 ---
 
@@ -260,10 +240,7 @@ npm run lint:css                   # 0 CSS errors (MANDATORY)
 
 - Task is NOT complete until all 4 commands pass with 0 problems
 - If errors are outside current task scope, report immediately — do not self-fix unrelated code
-- Pre-push hook enforces FAST checks only: lockfile sync -> `rpc:check` ->
-  `vapid:check` -> `theme:check` -> typecheck (front & server).
-- Heavy gates (lint full, `lint:css`, Vitest, `test:e2e`) run in CI
-  (`.github/workflows/ci.yml`); `ai:audit` runs manually via workflow_dispatch.
+- Pre-push hook enforces: `rpc:check` -> `ai:audit` -> `test:e2e`
 
 ---
 

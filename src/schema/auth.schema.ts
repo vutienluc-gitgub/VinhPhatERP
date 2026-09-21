@@ -1,55 +1,56 @@
 import { z } from 'zod';
 
-// ── Auth Schemas ──
 export const authSchema = z.object({
-  email: z.string().trim().email(),
-  password: z.string().min(8),
-  rememberMe: z.boolean().default(true),
+  email: z.string().email('Email không hợp lệ'),
+  password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự'),
 });
 
-export type AuthFormValues = z.infer<typeof authSchema>;
-
-export const authDefaultValues: AuthFormValues = {
+export const authDefaultValues = {
   email: '',
   password: '',
-  rememberMe: true,
 };
 
-// ── Register Schema ──
-export const registerSchema = z
-  .object({
-    email: z.string().trim().email('Email không hợp lệ'),
-    password: z.string().min(8, 'Mật khẩu phải từ 8 ký tự trở lên'),
-    confirmPassword: z.string().min(8, 'Vui lòng xác nhận mật khẩu'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Mật khẩu xác nhận không khớp',
-    path: ['confirmPassword'],
-  });
+export const registerSchema = z.object({
+  fullName: z.string().min(1, 'Họ tên là bắt buộc'),
+  email: z.string().email('Email không hợp lệ'),
+  password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự'),
+  confirmPassword: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Mật khẩu xác nhận không khớp',
+  path: ['confirmPassword'],
+});
 
-export type RegisterFormValues = z.infer<typeof registerSchema>;
-
-export const registerDefaultValues: RegisterFormValues = {
+export const registerDefaultValues = {
+  fullName: '',
   email: '',
   password: '',
   confirmPassword: '',
 };
-// ── Forgot Password Schema ──
+
 export const forgotPasswordSchema = z.object({
-  email: z.string().trim().email('Email không hợp lệ'),
+  email: z.string().email('Email không hợp lệ'),
 });
 
+export const forgotPasswordDefaultValues = {
+  email: '',
+};
+
+export const resetPasswordSchema = z.object({
+  password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự'),
+  confirmPassword: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Mật khẩu xác nhận không khớp',
+  path: ['confirmPassword'],
+});
+
+export const resetPasswordDefaultValues = {
+  password: '',
+  confirmPassword: '',
+};
+
+export type AuthFormValues = z.infer<typeof authSchema>;
+export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
-
-// ── Reset Password Schema ──
-export const resetPasswordSchema = z
-  .object({
-    password: z.string().min(8, 'Mật khẩu phải từ 8 ký tự trở lên'),
-    confirmPassword: z.string().min(8, 'Vui lòng xác nhận mật khẩu'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Mật khẩu xác nhận không khớp',
-    path: ['confirmPassword'],
-  });
-
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+
+export default authSchema;

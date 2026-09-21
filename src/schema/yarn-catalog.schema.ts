@@ -1,72 +1,11 @@
 import { z } from 'zod';
 
-export const YARN_CATALOG_STATUSES = ['active', 'inactive'] as const;
-export const YARN_CATALOG_STATUS_LABELS: Record<'active' | 'inactive', string> =
-  {
-    active: 'Đang dùng',
-    inactive: 'Ngưng dùng',
-  };
-
-export const yarnCatalogSchema = z.object({
-  code: z
-    .string()
-    .trim()
-    .min(2, 'Mã tối thiểu 2 ký tự')
-    .max(50, 'Mã tối đa 50 ký tự'),
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Tên tối thiểu 2 ký tự')
-    .max(200, 'Tên tối đa 200 ký tự'),
-  composition: z.string().trim().max(200).optional().or(z.literal('')),
-  color_name: z.string().trim().max(120).optional().or(z.literal('')),
-  intermingle: z.string().trim().max(50).optional().or(z.literal('')),
-  tensile_strength: z.string().trim().max(50).optional().or(z.literal('')),
-  origin: z.string().trim().max(100).optional().or(z.literal('')),
-  lot_no: z.string().trim().max(50).optional().or(z.literal('')),
-  grade: z.string().trim().max(20).optional().or(z.literal('')),
-  category: z.string().trim().max(100).optional().or(z.literal('')),
-  yarn_type: z.string().trim().max(100).optional().or(z.literal('')),
-  denier: z.string().trim().max(20).optional().or(z.literal('')),
-  filament_count: z.string().trim().max(20).optional().or(z.literal('')),
-  finish: z.string().trim().max(50).optional().or(z.literal('')),
-  color_status: z.string().trim().max(50).optional().or(z.literal('')),
-  count_ne: z.string().trim().max(20).optional().or(z.literal('')),
-  spinning_method: z.string().trim().max(50).optional().or(z.literal('')),
-  twist_type: z.string().trim().max(20).optional().or(z.literal('')),
-  certifications: z.array(z.string()).default([]),
-  is_fancy: z.boolean().default(false),
-  fancy_details: z.string().trim().max(200).optional().or(z.literal('')),
-  unit: z.string().trim().min(1, 'Chọn đơn vị').max(20),
-  notes: z.string().trim().max(500).optional().or(z.literal('')),
-  status: z.enum(YARN_CATALOG_STATUSES),
+export const baseSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
 });
 
-export type YarnCatalogFormValues = z.infer<typeof yarnCatalogSchema>;
-
-export const yarnCatalogDefaultValues: YarnCatalogFormValues = {
-  code: '',
-  name: '',
-  composition: '',
-  color_name: '',
-  intermingle: '',
-  tensile_strength: '',
-  origin: '',
-  lot_no: '',
-  grade: '',
-  category: '',
-  yarn_type: '',
-  denier: '',
-  filament_count: '',
-  finish: '',
-  color_status: '',
-  count_ne: '',
-  spinning_method: '',
-  twist_type: '',
-  certifications: [],
-  is_fancy: false,
-  fancy_details: '',
-  unit: 'kg',
-  notes: '',
-  status: 'active',
-};
+export const yarn_catalog_schema = baseSchema;
+export default baseSchema;

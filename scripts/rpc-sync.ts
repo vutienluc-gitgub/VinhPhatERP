@@ -47,24 +47,8 @@ async function main() {
       `   Found ${dbFunctions.length} function(s) in public schema\n`,
     );
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
     // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
-    console.error('❌ Cannot connect to database:', msg);
-    // eslint-disable-next-line no-restricted-syntax -- Allowed string emoji
-    console.error('\n💡 Cách xử lý nhanh:');
-    console.error(
-      '   1. Kiem tra DATABASE_URL trong .env (thu muc goc) — mat khau phai khop voi Supabase hien tai',
-    );
-    console.error(
-      '   2. Chay: npx tsx .agents/verify-db.ts  (kiem tra ca .env goc va server/.env)',
-    );
-    console.error(
-      '   3. Mat khau co ky tu dac biet phai URL-encode: @ → %40, # → %23, : → %3A, / → %2F',
-    );
-    console.error(
-      '   4. Copy dung connection string tu Supabase Dashboard → Project Settings → Database',
-    );
-    console.error('   5. Can push offline? Dung: SKIP_RPC_CHECK=1 git push');
+    console.error('❌ Cannot connect to database:', (err as Error).message);
     process.exit(1);
   }
 

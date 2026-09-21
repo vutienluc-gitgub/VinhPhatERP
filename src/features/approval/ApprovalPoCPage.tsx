@@ -13,7 +13,6 @@ import { ApprovalStatusBadge } from '@/domains/approval/ui/ApprovalStatusBadge';
 import { ApprovalTimeline } from '@/domains/approval/ui/ApprovalTimeline';
 import { ApprovalActions } from '@/domains/approval/ui/ApprovalActions';
 import { ApprovalWorkflowViewer } from '@/domains/approval/ui/ApprovalWorkflowViewer';
-import { Icon } from '@/shared/components';
 import {
   ApprovalRequest,
   ApprovalWorkflow,
@@ -121,6 +120,7 @@ export function ApprovalPoCPage() {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     loadData();
     NotificationSubscriber.init();
@@ -244,7 +244,7 @@ export function ApprovalPoCPage() {
       {notifications.length > 0 && (
         <div className="p-4 bg-info-soft border border-info rounded-lg">
           <h2 className="text-sm font-bold text-info mb-2 flex items-center gap-2">
-            <Icon name="Bell" size={14} className="inline" /> Thông báo mới nhất
+            🔔 Thông báo mới nhất
           </h2>
           <ul className="space-y-2">
             {notifications.map((n) => (

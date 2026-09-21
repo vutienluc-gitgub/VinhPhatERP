@@ -12,7 +12,6 @@ import { SupplierRFQDetailPage } from '@/features/supplier-portal/SupplierRFQDet
 import { SupplierInvoicesPage } from '@/features/supplier-portal/SupplierInvoicesPage';
 import { SupplierDebtPage } from '@/features/supplier-portal/SupplierDebtPage';
 import { SupplierProfilePage } from '@/features/supplier-portal/SupplierProfilePage';
-import { SupplierEntitlementGuard } from '@/features/supplier-portal/components/SupplierEntitlementGuard';
 
 // --- Work Orders ---
 const SupplierWorkOrderListPage = lazy(() =>
@@ -180,75 +179,44 @@ export const portalRoutes: RouteObject[] = [
           },
           {
             path: 'orders',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_PO">
-                <SupplierPOListPage />
-              </SupplierEntitlementGuard>
-            ),
+            element: <SupplierPOListPage />,
           },
           {
             path: 'orders/:id',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_PO">
-                <SupplierPODetailPage />
-              </SupplierEntitlementGuard>
-            ),
+            element: <SupplierPODetailPage />,
           },
           {
             path: 'quotations',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_RFQ">
-                <SupplierRFQListPage />
-              </SupplierEntitlementGuard>
-            ),
+            element: <SupplierRFQListPage />,
           },
           {
             path: 'quotations/:id',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_RFQ">
-                <SupplierRFQDetailPage />
-              </SupplierEntitlementGuard>
-            ),
+            element: <SupplierRFQDetailPage />,
           },
           {
             path: 'invoices',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="SUBMIT_INVOICE">
-                <SupplierInvoicesPage />
-              </SupplierEntitlementGuard>
-            ),
+            element: <SupplierInvoicesPage />,
           },
           {
             path: 'debt',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_DEBT">
-                <SupplierDebtPage />
-              </SupplierEntitlementGuard>
-            ),
+            element: <SupplierDebtPage />,
           },
           {
             path: 'deliveries',
             element: (
-              <SupplierEntitlementGuard requiredEntitlement="CONFIRM_DELIVERY">
-                <div className="p-4">Danh sách Giao hàng - Đang xây dựng</div>
-              </SupplierEntitlementGuard>
+              <div className="p-4">Danh sách Giao hàng - Đang xây dựng</div>
             ),
           },
           {
             path: 'work-orders',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_WORK_ORDER">
-                {withSuspense(<SupplierWorkOrderListPage />, portalFallback)}
-              </SupplierEntitlementGuard>
+            element: withSuspense(
+              <SupplierWorkOrderListPage />,
+              portalFallback,
             ),
           },
           {
             path: 'work-orders/:id',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_WORK_ORDER">
-                {withSuspense(<WorkOrderWorkspace />, portalFallback)}
-              </SupplierEntitlementGuard>
-            ),
+            element: withSuspense(<WorkOrderWorkspace />, portalFallback),
             children: [
               {
                 path: 'overview',

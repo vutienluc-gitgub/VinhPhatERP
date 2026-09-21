@@ -12,7 +12,6 @@ import type { AdHocShipmentDbPayload } from '@/domain/shipments/ShipmentDomain';
 import { safeUpsert } from '@/lib/db-guard';
 import { withTenantId } from '@/services/supabase/tenant';
 import { supabase } from '@/services/supabase/client';
-import { untypedDb } from '@/services/supabase/untyped';
 import type { Database } from '@/services/supabase/database.types';
 import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import type { PaginatedResult } from '@/shared/types/pagination';
@@ -322,10 +321,6 @@ export type DeliveryConfirmInput = {
   receiverName: string;
   receiverPhone: string | null;
   deliveryProof: string;
-  evidencePhotos?: string[];
-  geoLatitude?: number | null;
-  geoLongitude?: number | null;
-  tripId?: string | null;
   notes: string | null;
   driverCommission: number | null;
   accountId: string | null;
@@ -337,17 +332,15 @@ export async function markShipmentDelivered(
   values: DeliveryConfirmInput,
   expectedUpdatedAt?: string,
 ): Promise<void> {
-  const { error } = await untypedDb.rpc('rpc_record_pod_delivery', {
+  const { error } = await supabase.rpc('rpc_mark_shipment_delivered', {
     p_shipment_id: shipmentId,
-    p_trip_id: values.tripId ?? null,
-    p_receiver_name: values.receiverName.trim(),
-    p_receiver_phone: values.receiverPhone?.trim() || null,
-    p_signature_image_url: values.deliveryProof.trim(),
-    p_evidence_photos: values.evidencePhotos ?? [],
-    p_geo_latitude: values.geoLatitude ?? null,
-    p_geo_longitude: values.geoLongitude ?? null,
-    p_notes: values.notes?.trim() || null,
-    p_expected_updated_at: expectedUpdatedAt ?? null,
+    p_data: {
+      receiverName: values.receiverName.trim(),
+      receiverPhone: values.receiverPhone?.trim() || null,
+      deliveryProof: values.deliveryProof.trim(),
+      notes: values.notes?.trim() || null,
+    } as never,
+    p_expected_updated_at: expectedUpdatedAt,
   });
   if (error) {
     if (error.message?.includes('OCC_MISMATCH')) {
@@ -356,9 +349,7 @@ export async function markShipmentDelivered(
       );
     }
     if (error.message?.includes('SHIPMENT_NOT_SHIPPED')) {
-      throw new Error(
-        'Không thể giao phiếu xuất khi chưa ở trạng thái "Đang giao"',
-      );
+      throw new Error('Cannot deliver a shipment that is not shipped');
     }
     throw new Error(error.message || String(error));
   }

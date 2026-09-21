@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
-import { Icon, VPSelect } from '@/shared/components';
+import { Icon } from '@/shared/components/Icon';
 import { fetchBomList } from '@/api/bom.api';
 import { saveCostEstimation } from '@/api/cost-estimations.api';
 import type { CostingSimulationState } from '@/features/costing/types/greige-costing.type';
@@ -16,7 +16,6 @@ import {
   COSTING_MESSAGES,
 } from '@/features/costing/costing.constants';
 
-type CostingTab = 'simulation' | 'history';
 interface GreigeCalculatorModalProps {
   open: boolean;
   onClose: () => void;
@@ -41,7 +40,9 @@ export function GreigeCalculatorModal({
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<CostingTab>('simulation');
+  const [activeTab, setActiveTab] = useState<'simulation' | 'history'>(
+    'simulation',
+  );
 
   // Fetch approved BOMs to select
   const { data: bomList, isLoading: isBomListLoading } = useQuery({
@@ -159,20 +160,19 @@ export function GreigeCalculatorModal({
             <label className="block text-sm font-semibold mb-2">
               {COSTING_LABELS.STEP_1_BOM}
             </label>
-            <VPSelect
-              className="w-full"
+            <select
+              className="field-input w-full text-sm font-medium"
               value={selectedBomId || ''}
-              onValueChange={setSelectedBomId}
+              onChange={(e) => setSelectedBomId(e.target.value)}
               disabled={isBomListLoading}
-              placeholder={COSTING_LABELS.BOM_PLACEHOLDER}
-              options={[
-                { value: '', label: COSTING_LABELS.BOM_PLACEHOLDER },
-                ...(bomList ?? []).map((bom) => ({
-                  value: bom.id,
-                  label: `[${bom.code}] ${bom.name}`,
-                })),
-              ]}
-            />
+            >
+              <option value="">{COSTING_LABELS.BOM_PLACEHOLDER}</option>
+              {bomList?.map((bom) => (
+                <option key={bom.id} value={bom.id}>
+                  [{bom.code}] {bom.name}
+                </option>
+              ))}
+            </select>
             {isLoadingBom && (
               <p className="text-xs text-foreground mt-2 animate-pulse">
                 {COSTING_LABELS.LOADING_BOM}
@@ -225,18 +225,18 @@ export function GreigeCalculatorModal({
                       }
                       min="0"
                     />
-                    <VPSelect
-                      size="sm"
-                      className="w-20"
+                    <select
+                      className="field-input text-sm rounded-l-none w-20 bg-muted/10 px-2"
                       value={state.weaving_price_unit}
-                      onValueChange={(v) =>
-                        updateState({ weaving_price_unit: v as 'kg' | 'm' })
+                      onChange={(e) =>
+                        updateState({
+                          weaving_price_unit: e.target.value as 'kg' | 'm',
+                        })
                       }
-                      options={[
-                        { value: 'kg', label: '/kg' },
-                        { value: 'm', label: '/m' },
-                      ]}
-                    />
+                    >
+                      <option value="kg">/kg</option>
+                      <option value="m">/m</option>
+                    </select>
                   </div>
                 </div>
                 <div className="form-field">

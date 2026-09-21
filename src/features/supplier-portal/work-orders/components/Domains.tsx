@@ -1,31 +1,5 @@
-export { OverviewDomain } from './OverviewDomain';
-export { ProductionDomain } from './ProductionDomain';
-export { MaterialDomain } from './MaterialDomain';
-export { TimelineDomain } from './TimelineDomain';
-
-import { Card } from '@/shared/components/Card';
-import { EmptyState } from '@/shared/components/EmptyState';
-
-export function QualityDomain() {
-  return (
-    <Card className="p-6">
-      <EmptyState
-        icon="check-circle"
-        title="Quản lý Chất lượng"
-        description="Chưa có dữ liệu QC cho lệnh gia công này."
-      />
-    </Card>
-  );
+import React from 'react';
+export function OverviewDomain() {
+  return <div className="p-4">Tổng quan phân hệ đối tác</div>;
 }
-
-export function DocumentsDomain() {
-  return (
-    <Card className="p-6">
-      <EmptyState
-        icon="file-text"
-        title="Tài liệu Kỹ thuật"
-        description="Chưa có tài liệu đính kèm (Machine Sheet, Color Card)."
-      />
-    </Card>
-  );
-}
+export default OverviewDomain;

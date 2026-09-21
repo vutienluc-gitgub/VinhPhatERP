@@ -35,35 +35,7 @@ export type SupplierUpdate = Omit<TableUpdate<'suppliers'>, 'category'> & {
 };
 
 export type SupplierFilter = {
-  category?: string | string[];
-  categories?: string[];
+  category?: string;
   status?: 'active' | 'inactive';
   search?: string;
 };
-
-export const SUPPLIER_CAPABILITY_CODES = [
-  'WEAVING',
-  'KNITTING',
-  'DYEING',
-  'PRINTING',
-  'SUPPLY_YARN',
-  'SUPPLY_GREIGE',
-  'SUPPLY_FINISHED_FABRIC',
-  'SUPPLY_CHEMICAL',
-  'SUPPLY_TRIM',
-  'LOGISTICS',
-  'MAINTENANCE',
-] as const;
-
-export type SupplierCapabilityCode = (typeof SUPPLIER_CAPABILITY_CODES)[number];
-
-export interface SupplierCapability {
-  id: string;
-  tenant_id?: string | null;
-  supplier_id: string;
-  capability_code: SupplierCapabilityCode;
-  is_verified: boolean;
-  notes?: string | null;
-  created_at?: string;
-  updated_at?: string;
-}

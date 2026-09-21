@@ -1,2 +1,2 @@
-// Re-export useAuth from auth feature for use across features
-export { useAuth } from '@/features/auth/AuthProvider';
+import { useAuth as useFeatureAuth } from '@/features/auth/AuthProvider';
+export const useAuth = useFeatureAuth;

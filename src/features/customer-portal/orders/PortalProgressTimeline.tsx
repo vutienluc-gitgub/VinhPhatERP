@@ -5,7 +5,6 @@ import {
   PRODUCTION_STAGE_LABELS,
   STAGE_STATUS_LABELS,
 } from '@/features/customer-portal/constants';
-import { chatNavigationStore } from '@/application/chat';
 import { Icon } from '@/shared/components/Icon';
 
 interface PortalProgressTimelineProps {
@@ -53,11 +52,13 @@ export const PortalProgressTimeline = React.memo(
         onContactFactory();
         return;
       }
-      // Fallback: open entity chat via centralized navigation store
-      chatNavigationStore.openChatByEntity(
-        'order',
-        orderNumber ?? '',
-        orderNumber ? `#${orderNumber}` : undefined,
+      window.dispatchEvent(
+        new CustomEvent('navigate-to-chat', {
+          detail: {
+            roomId: undefined,
+            context: orderNumber ? `#${orderNumber}` : undefined,
+          },
+        }),
       );
     };
 

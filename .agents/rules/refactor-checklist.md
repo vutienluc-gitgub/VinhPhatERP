@@ -2,9 +2,6 @@
 trigger: always_on
 ---
 
-Dưới đây là file Markdown hoàn chỉnh đã được tôi tinh chỉnh theo các đề xuất ở trên (bổ sung Testing, tối ưu DB Safety, Performance, Render Safety/a11y), nhưng vẫn giữ nguyên cấu trúc và spirit khắt khe (STRICT - PRODUCTION LEVEL) của bạn, đồng thời loại bỏ phần chia phase như bạn yêu cầu:
-
-```markdown
 # 🧠 ERP Refactor Checklist (STRICT - PRODUCTION LEVEL)
 
 ## 🚨 GLOBAL RULE
@@ -98,16 +95,12 @@ Dưới đây là file Markdown hoàn chỉnh đã được tôi tinh chỉnh th
 - Có dùng supabase.insert trực tiếp không?
 - Có generate ID bằng Date.now() không?
 - Có khả năng duplicate không?
-- Có bỏ qua check RLS (Row Level Security) policy không?
-- Các thao tác batch (insert/update nhiều rows) có dùng transaction không?
 
 ✅ Action:
 
 - Dùng safeUpsert
 - Đảm bảo idempotent
 - Không duplicate
-- Đảm bảo tuân thủ RLS policy
-- Sử dụng transaction cho các thao tác batch để đảm bảo data integrity
 
 ❌ INVALID nếu unsafe
 
@@ -202,15 +195,10 @@ Dưới đây là file Markdown hoàn chỉnh đã được tôi tinh chỉnh th
 
 - Có render thừa không?
 - Có loop nặng không?
-- Có lỗi N+1 query (gọi API trong vòng lặp) không?
-- Có over-fetching (fetch thừa trường) hoặc under-fetching (thiếu trường phải gọi lại) không?
-- Danh sách dài (>100 rows) đã dùng Virtualization/Pagination chưa?
 
 ✅ Action:
 
 - memo / debounce / lazy
-- Gom API call / Dùng join / Sửa payload query
-- Áp dụng Virtualization cho danh sách lớn
 
 ❌ INVALID nếu performance kém
 
@@ -323,13 +311,12 @@ Dưới đây là file Markdown hoàn chỉnh đã được tôi tinh chỉnh th
 
 ---
 
-# 21. Render Safety & Accessibility
+# 21. Render Safety
 
 - Có dùng `(error as Error).message` trực tiếp không?
 - Có render value có thể null/undefined mà không guard không?
 - List có dùng index làm key không?
 - Có inline style/class dài lặp lại ở nhiều component không?
-- Có vi phạm Accessibility (a11y) cơ bản không? (Image thiếu `alt`, nút bấm bằng `div` thiếu `role`/`tabIndex`, icon decor thiếu `aria-hidden`)
 
 ✅ Action:
 
@@ -337,26 +324,8 @@ Dưới đây là file Markdown hoàn chỉnh đã được tôi tinh chỉnh th
 - Null check trước render: `{value ?? 'N/A'}`
 - Stable key: `key={item.id}` thay vì `key={index}`
 - Extract CSS class cho inline style lặp ≥ 2 lần
-- Đảm bảo tuân thủ a11y cơ bản cho người dùng trình đọc màn hình (screen reader)
 
-❌ INVALID nếu unsafe render hoặc thiếu a11y
-
----
-
-# 22. Testing & Regression (CRITICAL)
-
-- Có đảm bảo logic cũ không bị vỡ sau khi tách/sửa không?
-- Các hàm business logic tách ra (service/hook) có unit test không?
-
-✅ Action:
-
-- Viết hoặc cập nhật Unit Test (ưu tiên Vitest/Jest) cho các logic được refactor.
-- Đảm bảo test pass 100% trước khi đánh dấu hoàn thành.
-
-❌ INVALID nếu:
-
-- Refactor logic core mà không có test.
-- Bỏ qua chạy test suite và làm vỡ tính năng cũ.
+❌ INVALID nếu unsafe render
 
 ---
 
@@ -379,4 +348,3 @@ AI MUST output:
 - "Không lỗi" ≠ "Production-ready"
 
 👉 ONLY clean, structured, safe code is acceptable
-```

@@ -14,7 +14,7 @@ const roleLabel: Record<string, string> = {
  * Route: /profile (protected, all roles)
  */
 export function ProfilePage() {
-  const { user, profile, signOut, registerPasskeyDevice } = useAuth();
+  const { user, profile, signOut } = useAuth();
 
   return (
     <div className="profile-page">
@@ -57,28 +57,6 @@ export function ProfilePage() {
             </span>
           </div>
         </div>
-      </div>
-
-      <div className="panel-card mt-4">
-        <h2 className="text-lg font-bold mb-2">Sinh trắc học & Passkey</h2>
-        <p className="text-sm text-muted mb-3">
-          Đăng ký thiết bị hiện tại (Face ID / Touch ID / Vân tay) để đăng nhập
-          1 chạm nhanh chóng.
-        </p>
-        <button
-          type="button"
-          className="primary-button inline-flex items-center gap-2"
-          onClick={async () => {
-            try {
-              await registerPasskeyDevice();
-              alert('Đăng ký sinh trắc học thành công!');
-            } catch (err) {
-              alert(err instanceof Error ? err.message : String(err));
-            }
-          }}
-        >
-          Đăng ký thiết bị này
-        </button>
       </div>
 
       <div className="panel-card">

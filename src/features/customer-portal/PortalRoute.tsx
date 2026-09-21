@@ -24,8 +24,7 @@ export function PortalRoute() {
 
   const isCustomer =
     profile?.role === 'customer' || profile?.roles?.includes('customer');
-  const isSupplier =
-    profile?.roles?.includes('supplier') || Boolean(profile?.supplier_id);
+  const isSupplier = profile?.roles?.includes('supplier');
 
   if (!isCustomer && !isSupplier) {
     return <Navigate to="/unauthorized" replace />;

@@ -1,169 +1,112 @@
+import React, { PropsWithChildren } from 'react';
 import { NavLink } from 'react-router-dom';
+import { ChatWidget } from '@/features/chat/ChatWidget';
 
-import { useAuth } from '@/features/auth/AuthProvider';
-// eslint-disable-next-line boundaries/dependencies
-import {
-  ChatDrawer,
-  useChatNavigation,
-  useChatNavigationSync,
-} from '@/features/chat';
-import { Icon } from '@/shared/components';
-
-import { PushNotificationBanner } from './PushNotificationBanner';
-
-// We reuse the CSS from customer-portal for now.
-// Ideally it gets moved to portal-shared/styles/portal.css later.
-import '@/features/customer-portal/portal.css';
-
-/** Extract up to 2 initials from a full name, e.g. "Dương Thị Phi" → "DP" */
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '';
-  const first = parts[0] ?? '';
-  const last = parts[parts.length - 1] ?? '';
-  if (parts.length === 1) return first.charAt(0).toUpperCase();
-  return (first.charAt(0) + last.charAt(0)).toUpperCase();
-}
-
-export interface PortalNavItem {
+export interface PortalLayoutNavItem {
   to: string;
   label: string;
   end?: boolean;
-  icon?: string;
 }
 
-export interface PortalLayoutProps {
-  /** The subtitle next to the brand name (e.g. 'Cổng khách hàng' or 'Cổng nhà cung cấp') */
-  brandSub: string;
-  /** Navigation links */
-  navItems: PortalNavItem[];
-  /** React Router Outlet or other children */
-  children: React.ReactNode;
-
-  // -- Chat specific configs --
-  entityType?: 'customer' | 'supplier';
+export interface PortalLayoutProps extends PropsWithChildren {
+  brandSub?: string;
+  navItems?: PortalLayoutNavItem[];
+  entityType?: string;
   entityId?: string;
   chatTitle?: string;
-  chatSubtitle?: string;
   unreadChatCount?: number;
-
-  // -- Header specific configs --
   headerRightActions?: React.ReactNode;
 }
 
 export function PortalLayout({
-  brandSub,
-  navItems,
   children,
+  brandSub = 'Cổng đối tác',
+  navItems,
   entityType,
   entityId,
-  chatTitle,
-  chatSubtitle,
-  unreadChatCount = 0,
+  chatTitle = 'Hỗ trợ trực tuyến',
   headerRightActions,
 }: PortalLayoutProps) {
-  const { profile, signOut } = useAuth();
-
-  // Centralized Chat Navigation Controller (Single source of truth)
-  const { isOpen, activeIntent, openChatByEntity, closeChat } =
-    useChatNavigation();
-  useChatNavigationSync();
-
-  const handleOpenChat = () => {
-    if (entityType && entityId) {
-      openChatByEntity(entityType, entityId, chatTitle, chatSubtitle);
-    }
-  };
-
   return (
-    <div className="portal-shell">
-      {/* Header */}
-      <header className="portal-header">
-        <div className="portal-header-brand">
-          <span className="portal-brand-name">Vĩnh Phát ERP</span>
-          <span className="portal-brand-sep">|</span>
-          <span className="portal-brand-sub">{brandSub}</span>
-        </div>
-        <div className="portal-header-user">
-          {profile?.full_name && (
-            <span className="portal-user-avatar">
-              {getInitials(profile.full_name)}
-            </span>
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+      <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+              VP
+            </div>
+            <div>
+              <div className="font-semibold text-sm leading-tight text-slate-900 dark:text-slate-100">
+                Vĩnh Phát ERP
+              </div>
+              <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                {brandSub}
+              </div>
+            </div>
+          </div>
+
+          {navItems && navItems.length > 0 && (
+            <nav className="hidden md:flex items-center space-x-1">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60'
+                    }`
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
           )}
-          <span className="portal-username">{profile?.full_name}</span>
-          {headerRightActions}
-          <button
-            onClick={signOut}
-            className="portal-signout-btn"
-            title="Đăng xuất"
-            aria-label="Đăng xuất"
-          >
-            <Icon name="LogOut" size={14} />
-            <span className="portal-signout-text">Đăng xuất</span>
-          </button>
+
+          <div className="flex items-center gap-2">
+            {headerRightActions}
+          </div>
         </div>
+
+        {/* Mobile Navigation Row */}
+        {navItems && navItems.length > 0 && (
+          <div className="md:hidden border-t border-slate-100 dark:border-slate-800/80 px-4 py-2 flex items-center space-x-2 overflow-x-auto">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  `whitespace-nowrap px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60'
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        )}
       </header>
 
-      {/* Nav */}
-      <nav className="portal-nav">
-        {navItems.map(({ to, label, end, icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-              `portal-nav-item${isActive ? ' portal-nav-item--active' : ''}`
-            }
-          >
-            {icon && <Icon name={icon} className="mr-2 h-4 w-4" />}
-            {label}
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* Content */}
-      <main className="portal-content">
-        <div className="mb-4">
-          <PushNotificationBanner />
-        </div>
+      <main className="flex-1 p-4 sm:p-6 max-w-7xl mx-auto w-full">
         {children}
       </main>
 
-      {/* Floating chat button */}
-      {entityId && (
-        <button
-          type="button"
-          onClick={handleOpenChat}
-          className="portal-chat-fab"
-          aria-label="Nhắn tin với nhân viên"
-          title="Nhắn tin"
-        >
-          <Icon name="MessageSquare" size={24} strokeWidth={2} />
-          {unreadChatCount > 0 && (
-            <span className="portal-chat-fab-badge">
-              {unreadChatCount > 9 ? '9+' : unreadChatCount}
-            </span>
-          )}
-        </button>
-      )}
-
-      {/* Unified Chat Drawer Container */}
-      {(isOpen || activeIntent) && (
-        <ChatDrawer
-          open={isOpen}
-          onClose={closeChat}
-          roomId={activeIntent?.roomId}
-          messageId={activeIntent?.messageId}
-          entityType={activeIntent?.entityType || entityType}
-          entityId={activeIntent?.entityId || entityId}
-          title={activeIntent?.title || chatTitle || 'Hỗ trợ'}
-          subtitle={
-            activeIntent?.subtitle ||
-            chatSubtitle ||
-            'Chat trực tiếp với nhân viên'
-          }
+      {/* Floating Chat Widget for portal partner */}
+      {entityType && entityId && (
+        <ChatWidget
+          entityType={entityType}
+          entityId={entityId}
+          title={chatTitle}
         />
       )}
     </div>
   );
 }
+

@@ -1,7 +1,0 @@
-export * from './inventory.module';
-export {
-  useRawFabricInventory,
-  useFinishedFabricInventory,
-  useYarnInventory,
-  useAgingStock,
-} from '@/application/inventory';

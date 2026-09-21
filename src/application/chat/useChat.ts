@@ -19,7 +19,6 @@ import {
   removeReaction,
   searchMessages,
 } from '@/api/chat.api';
-import { extractChronologicalMessages } from '@/features/chat/chat.utils';
 import type {
   ChatMessage,
   ChatMention,
@@ -72,20 +71,9 @@ type InfiniteData = { pages: ChatMessage[][]; pageParams: unknown[] };
 
 function appendMessage(old: unknown, newMsg: ChatMessage): unknown {
   const data = old as InfiniteData | undefined;
-  if (!data || !Array.isArray(data.pages)) return data;
+  if (!data) return data;
 
-  const normalizedPages = data.pages.map((p) =>
-    Array.isArray(p)
-      ? p
-      : p &&
-          typeof p === 'object' &&
-          'messages' in p &&
-          Array.isArray((p as { messages: unknown }).messages)
-        ? (p as { messages: ChatMessage[] }).messages
-        : [],
-  );
-
-  const allMessages = normalizedPages.flat();
+  const allMessages = data.pages.flat();
   const existing = allMessages.find(
     (m) =>
       (Boolean(newMsg.client_id) && m.client_id === newMsg.client_id) ||
@@ -102,7 +90,7 @@ function appendMessage(old: unknown, newMsg: ChatMessage): unknown {
     // Replace optimistic / pending message with the confirmed real message
     return {
       ...data,
-      pages: normalizedPages.map((page) =>
+      pages: data.pages.map((page) =>
         page.map((m) =>
           (Boolean(newMsg.client_id) && m.client_id === newMsg.client_id) ||
           m.id === newMsg.id
@@ -113,11 +101,9 @@ function appendMessage(old: unknown, newMsg: ChatMessage): unknown {
     };
   }
 
-  const firstPage = normalizedPages[0] ?? [];
-
   return {
     ...data,
-    pages: [[newMsg, ...firstPage], ...normalizedPages.slice(1)],
+    pages: [[newMsg, ...(data.pages[0] ?? [])], ...data.pages.slice(1)],
   };
 }
 
@@ -201,34 +187,6 @@ export function useChatMessages(roomId: string | undefined) {
       if (!pageParam && messages.length > 0) {
         void saveCachedMessages(roomId!, messages);
       }
-      // Preserve local unsaved (pending or failed) messages from current cache when fetching page 0
-      if (!pageParam && roomId) {
-        const currentData = queryClient.getQueryData<InfiniteData>(
-          CHAT_KEYS.messages(roomId),
-        );
-        const currentFirstPage = currentData?.pages?.[0];
-        if (Array.isArray(currentFirstPage)) {
-          const unsaved = currentFirstPage.filter(
-            (m) =>
-              m.status === 'pending' ||
-              m.status === 'failed' ||
-              m.status === 'error' ||
-              '_optimistic' in m,
-          );
-          if (unsaved.length > 0) {
-            const serverIds = new Set(messages.map((m) => m.id));
-            const serverClientIds = new Set(
-              messages.map((m) => m.client_id).filter(Boolean),
-            );
-            const toKeep = unsaved.filter(
-              (m) =>
-                !serverIds.has(m.id) &&
-                (!m.client_id || !serverClientIds.has(m.client_id)),
-            );
-            return [...toKeep, ...messages];
-          }
-        }
-      }
       return messages;
     },
     initialPageParam: undefined as string | undefined,
@@ -238,21 +196,10 @@ export function useChatMessages(roomId: string | undefined) {
       return last ? last.created_at : undefined;
     },
     // Revalidate on mount to catch any messages sent while drawer was closed.
-    // Stale time 5s prevents rapid fetch loop when component re-renders.
-    staleTime: 5000,
+    // Stale time 0 ensures instant cached render + automatic background refresh.
+    staleTime: 0,
     refetchOnMount: true,
     gcTime: 30 * 60 * 1000,
-    retry: (failureCount, error) => {
-      if (failureCount >= 3) return false;
-      if (
-        error instanceof Error &&
-        (error.message.includes('403') || error.message.includes('401'))
-      ) {
-        return false;
-      }
-      return true;
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
   });
 }
 
@@ -355,34 +302,13 @@ export function useSendMessage(roomId: string | undefined) {
 
       queryClient.setQueryData(queryKey, (old: unknown) => {
         const data = old as InfiniteData | undefined;
-        if (!data || !Array.isArray(data.pages)) return data;
-        const normalizedPages = data.pages.map((p) =>
-          Array.isArray(p)
-            ? p
-            : p &&
-                typeof p === 'object' &&
-                'messages' in p &&
-                Array.isArray((p as { messages: unknown }).messages)
-              ? (p as { messages: ChatMessage[] }).messages
-              : [],
-        );
-        const firstPage = normalizedPages[0] ?? [];
-        const existingIdx = firstPage.findIndex(
-          (m) =>
-            (Boolean(params.clientId) && m.client_id === params.clientId) ||
-            m.id === params.clientId,
-        );
-
-        const updatedFirstPage =
-          existingIdx !== -1
-            ? firstPage.map((m, idx) =>
-                idx === existingIdx ? (optimisticMsg as ChatMessage) : m,
-              )
-            : [optimisticMsg as ChatMessage, ...firstPage];
-
+        if (!data) return data;
         return {
           ...data,
-          pages: [updatedFirstPage, ...normalizedPages.slice(1)],
+          pages: [
+            [optimisticMsg, ...(data.pages[0] ?? [])],
+            ...data.pages.slice(1),
+          ],
         };
       });
 
@@ -399,17 +325,15 @@ export function useSendMessage(roomId: string | undefined) {
       if (roomId) {
         queryClient.setQueryData(CHAT_KEYS.messages(roomId), (old: unknown) => {
           const data = old as InfiniteData | undefined;
-          if (!data || !Array.isArray(data.pages)) return data;
+          if (!data) return data;
           return {
             ...data,
             pages: data.pages.map((page) =>
-              Array.isArray(page)
-                ? page.map((m) =>
-                    m.client_id === variables.clientId
-                      ? { ...m, status: 'failed' as const, _optimistic: false }
-                      : m,
-                  )
-                : [],
+              page.map((m) =>
+                m.client_id === variables.clientId
+                  ? { ...m, status: 'failed' as const, _optimistic: false }
+                  : m,
+              ),
             ),
           };
         });
@@ -472,23 +396,19 @@ export function useTogglePin(roomId: string | undefined) {
 
       queryClient.setQueryData(queryKey, (old: unknown) => {
         const data = old as InfiniteData | undefined;
-        if (!data || !Array.isArray(data.pages)) return data;
+        if (!data) return data;
         return {
           ...data,
           pages: data.pages.map((page) =>
-            Array.isArray(page)
-              ? page.map((m) =>
-                  m.id === messageId
-                    ? {
-                        ...m,
-                        is_pinned: !m.is_pinned,
-                        pinned_at: !m.is_pinned
-                          ? new Date().toISOString()
-                          : null,
-                      }
-                    : m,
-                )
-              : [],
+            page.map((m) =>
+              m.id === messageId
+                ? {
+                    ...m,
+                    is_pinned: !m.is_pinned,
+                    pinned_at: !m.is_pinned ? new Date().toISOString() : null,
+                  }
+                : m,
+            ),
           ),
         };
       });
@@ -527,34 +447,32 @@ export function useAddReaction(roomId: string | undefined) {
 
       queryClient.setQueryData(queryKey, (old: unknown) => {
         const data = old as InfiniteData | undefined;
-        if (!data || !Array.isArray(data.pages)) return data;
+        if (!data) return data;
         return {
           ...data,
           pages: data.pages.map((page) =>
-            Array.isArray(page)
-              ? page.map((m) => {
-                  if (m.id !== messageId) return m;
-                  const current = m.reactions || [];
-                  const exists = current.some(
-                    (r) => r.emoji === emoji && r.user_id === user.id,
-                  );
-                  if (exists) return m;
-                  return {
-                    ...m,
-                    reactions: [
-                      ...current,
-                      {
-                        id: `opt-${Date.now()}`,
-                        message_id: messageId,
-                        user_id: user.id,
-                        user_name: profile?.full_name || 'Bạn',
-                        emoji,
-                        created_at: new Date().toISOString(),
-                      },
-                    ],
-                  };
-                })
-              : [],
+            page.map((m) => {
+              if (m.id !== messageId) return m;
+              const current = m.reactions || [];
+              const exists = current.some(
+                (r) => r.emoji === emoji && r.user_id === user.id,
+              );
+              if (exists) return m;
+              return {
+                ...m,
+                reactions: [
+                  ...current,
+                  {
+                    id: `opt-${Date.now()}`,
+                    message_id: messageId,
+                    user_id: user.id,
+                    user_name: profile?.full_name || 'Bạn',
+                    emoji,
+                    created_at: new Date().toISOString(),
+                  },
+                ],
+              };
+            }),
           ),
         };
       });
@@ -584,21 +502,19 @@ export function useRemoveReaction(roomId: string | undefined) {
 
       queryClient.setQueryData(queryKey, (old: unknown) => {
         const data = old as InfiniteData | undefined;
-        if (!data || !Array.isArray(data.pages)) return data;
+        if (!data) return data;
         return {
           ...data,
           pages: data.pages.map((page) =>
-            Array.isArray(page)
-              ? page.map((m) => {
-                  if (m.id !== messageId) return m;
-                  return {
-                    ...m,
-                    reactions: (m.reactions || []).filter(
-                      (r) => !(r.emoji === emoji && r.user_id === user.id),
-                    ),
-                  };
-                })
-              : [],
+            page.map((m) => {
+              if (m.id !== messageId) return m;
+              return {
+                ...m,
+                reactions: (m.reactions || []).filter(
+                  (r) => !(r.emoji === emoji && r.user_id === user.id),
+                ),
+              };
+            }),
           ),
         };
       });
@@ -778,15 +694,13 @@ export function useChatRealtime(roomId: string | undefined) {
             CHAT_KEYS.messages(roomId),
             (old: unknown) => {
               const data = old as InfiniteData | undefined;
-              if (!data || !Array.isArray(data.pages)) return data;
+              if (!data) return data;
               return {
                 ...data,
                 pages: data.pages.map((page) =>
-                  Array.isArray(page)
-                    ? page.map((m) =>
-                        m.id === updatedMsg.id ? { ...m, ...updatedMsg } : m,
-                      )
-                    : [],
+                  page.map((m) =>
+                    m.id === updatedMsg.id ? { ...m, ...updatedMsg } : m,
+                  ),
                 ),
               };
             },
@@ -817,50 +731,48 @@ export function useChatRealtime(roomId: string | undefined) {
             CHAT_KEYS.messages(roomId),
             (old: unknown) => {
               const data = old as InfiniteData | undefined;
-              if (!data || !Array.isArray(data.pages)) return data;
+              if (!data) return data;
               return {
                 ...data,
                 pages: data.pages.map((page) =>
-                  Array.isArray(page)
-                    ? page.map((m) => {
-                        if (m.id !== record.message_id) return m;
-                        const currentReactions = m.reactions || [];
-                        if (isInsert && record.emoji && record.user_id) {
-                          const exists = currentReactions.some(
-                            (r) =>
+                  page.map((m) => {
+                    if (m.id !== record.message_id) return m;
+                    const currentReactions = m.reactions || [];
+                    if (isInsert && record.emoji && record.user_id) {
+                      const exists = currentReactions.some(
+                        (r) =>
+                          r.emoji === record.emoji &&
+                          r.user_id === record.user_id,
+                      );
+                      if (exists) return m;
+                      return {
+                        ...m,
+                        reactions: [
+                          ...currentReactions,
+                          {
+                            id: record.id || `rxn-${Date.now()}`,
+                            message_id: record.message_id,
+                            user_id: record.user_id,
+                            user_name: record.user_name || 'Người dùng',
+                            emoji: record.emoji,
+                            created_at:
+                              record.created_at || new Date().toISOString(),
+                          },
+                        ],
+                      };
+                    } else {
+                      return {
+                        ...m,
+                        reactions: currentReactions.filter(
+                          (r) =>
+                            !(
                               r.emoji === record.emoji &&
-                              r.user_id === record.user_id,
-                          );
-                          if (exists) return m;
-                          return {
-                            ...m,
-                            reactions: [
-                              ...currentReactions,
-                              {
-                                id: record.id || `rxn-${Date.now()}`,
-                                message_id: record.message_id,
-                                user_id: record.user_id,
-                                user_name: record.user_name || 'Người dùng',
-                                emoji: record.emoji,
-                                created_at:
-                                  record.created_at || new Date().toISOString(),
-                              },
-                            ],
-                          };
-                        } else {
-                          return {
-                            ...m,
-                            reactions: currentReactions.filter(
-                              (r) =>
-                                !(
-                                  r.emoji === record.emoji &&
-                                  r.user_id === record.user_id
-                                ),
+                              r.user_id === record.user_id
                             ),
-                          };
-                        }
-                      })
-                    : [],
+                        ),
+                      };
+                    }
+                  }),
                 ),
               };
             },
@@ -876,8 +788,8 @@ export function useChatRealtime(roomId: string | undefined) {
           const cached = queryClient.getQueryData(
             CHAT_KEYS.messages(roomId),
           ) as InfiniteData | undefined;
-          const chronological = extractChronologicalMessages(cached?.pages);
-          const latestMsg = chronological[chronological.length - 1];
+          const allMessages = cached?.pages.flat() ?? [];
+          const latestMsg = allMessages[0]; // Newest is at index 0 of page 0
 
           if (latestMsg?.created_at) {
             void supabase
@@ -923,14 +835,10 @@ export function useChatRealtime(roomId: string | undefined) {
     retryCountRef.current = 0;
   }, []);
 
-  // Subscribe on mount with 150ms debounce to prevent channel thrashing on rapid room switching
+  // Subscribe on mount, unsubscribe on unmount
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      subscribe();
-    }, 150);
-
+    subscribe();
     return () => {
-      clearTimeout(debounceTimer);
       unsubscribe();
     };
   }, [subscribe, unsubscribe]);

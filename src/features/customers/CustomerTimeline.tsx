@@ -10,7 +10,7 @@ const TYPE_META = {
   },
   SAMPLE: {
     label: CUSTOMER_TIMELINE_LABELS.samplePrefix,
-    colorClass: 'bg-purple-soft text-purple-strong',
+    colorClass: 'bg-purple-100 text-purple-800',
   },
   CONTACT: {
     label: CUSTOMER_TIMELINE_LABELS.contactGeneral,
@@ -69,7 +69,7 @@ export function CustomerTimeline({ customerId }: CustomerTimelineProps) {
                 lead.type === 'RFQ'
                   ? 'bg-warning-soft text-warning'
                   : lead.type === 'SAMPLE'
-                    ? 'bg-purple-soft text-purple'
+                    ? 'bg-purple-100 text-purple-600'
                     : 'bg-info-soft text-info'
               }`}
             >

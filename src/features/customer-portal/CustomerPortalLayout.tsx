@@ -6,7 +6,7 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { PortalLayout } from '@/features/portal-shared/components/PortalLayout';
 import { useChatNotifications, usePortalChatUnread } from '@/application/chat';
 import { useAppBadging } from '@/shared/hooks/useAppBadging';
-// eslint-disable-next-line boundaries/dependencies
+import { customerPortalAudit } from './audit/customerQueryAuditLogger';
 
 import {
   NotificationProvider,
@@ -20,15 +20,53 @@ import './portal.css';
  * Inner layout — has access to NotificationContext
  */
 function PortalLayoutInner() {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
   const { addNotification, setConnectionWarning, unreadCount } =
     useNotifications();
   const location = useLocation();
+
+  // Audit Logging for Customer Portal Session & Context
+  useEffect(() => {
+    const tracker = customerPortalAudit.startQuery('customer-portal-session', {
+      caller: 'CustomerPortalLayout',
+      userId: user?.id,
+      email: user?.email,
+      role: profile?.role,
+      customerId: profile?.customer_id,
+      path: location.pathname,
+    });
+
+    if (!profile?.customer_id) {
+      tracker.logAnomaly({
+        type: 'CUSTOMER_ID_MISMATCH',
+        title: 'Customer Profile Missing customer_id',
+        observedValue: { profileRole: profile?.role, customerId: profile?.customer_id },
+        expectedBehavior: 'Authenticated portal user should have a valid profile.customer_id.',
+        uiSymptom: 'Customer queries will fail or execute without tenant scope, chat context will be blank.',
+        rootCause: 'User account in profiles table is not linked to any row in customers table.',
+        suggestedFix: 'Link profile.customer_id to the appropriate customer record.',
+      });
+    }
+
+    tracker.logComplete({ customerId: profile?.customer_id, status: 'INITIALIZED' });
+
+    // Output helpful console diagnostic guide
+    console.log(
+      '%c[Customer Portal Audit Logger Active]%c Run %cwindow.__CUSTOMER_PORTAL_AUDIT__.explainUIErrors()%c or %cwindow.__CUSTOMER_PORTAL_AUDIT__.printSummary()%c to inspect customer query lifecycle and diagnose UI anomalies.',
+      'background: #0284c7; color: #fff; padding: 2px 6px; border-radius: 3px; font-weight: bold;',
+      'color: inherit;',
+      'color: #0284c7; font-weight: bold;',
+      'color: inherit;',
+      'color: #0284c7; font-weight: bold;',
+      'color: inherit;',
+    );
+  }, [user?.id, user?.email, profile?.role, profile?.customer_id, location.pathname]);
 
   const unreadChatCount = usePortalChatUnread(
     profile?.customer_id ?? undefined,
     'customer',
   );
+
 
   // Enable global chat notifications (with sound)
   useChatNotifications({ soundEnabled: true });

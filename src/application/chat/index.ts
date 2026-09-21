@@ -30,5 +30,3 @@ export {
 
 export { useTotalUnread } from './useTotalUnread';
 export { useChatContext, type ChatEntityContext } from './useChatContext';
-
-export { chatNavigationStore } from '@/features/chat/controllers/chatNavigationStore';

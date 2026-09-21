@@ -14,8 +14,6 @@ const mockAuth: AuthContextValue = {
   isBlocked: false,
   signIn: vi.fn(),
   signInWithGoogle: vi.fn(),
-  signInWithPasskey: vi.fn(),
-  registerPasskeyDevice: vi.fn(),
   signOut: vi.fn(),
   signUp: vi.fn(),
   forgotPassword: vi.fn(),

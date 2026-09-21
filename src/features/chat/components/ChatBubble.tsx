@@ -1,10 +1,7 @@
-import { memo, useCallback, useMemo, useState, type MouseEvent } from 'react';
+import { memo, useCallback, useState, type MouseEvent } from 'react';
 
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
-import type {
-  ChatMessageViewModel,
-  MessagePresentation,
-} from '@/features/chat/chat.types';
+import type { ChatMessageViewModel } from '@/features/chat/chat.types';
 import { useAuth } from '@/shared/hooks/useAuth';
 import {
   useTogglePin,
@@ -23,20 +20,16 @@ import { ChatMessageMeta } from './ChatMessageMeta';
 
 interface ChatBubbleProps {
   viewModel: ChatMessageViewModel;
-  presentation?: MessagePresentation;
   isOptimistic?: boolean;
   onRetry?: (message: ChatMessage) => void;
   onQuoteReply?: (message: ChatMessage) => void;
-  onScrollToMessage?: (messageId: string) => void;
 }
 
 export const ChatBubble = memo(function ChatBubble({
   viewModel,
-  presentation,
   isOptimistic,
   onRetry,
   onQuoteReply,
-  onScrollToMessage,
 }: ChatBubbleProps) {
   const { message, position, isMine, timeFormatted, status } = viewModel;
   const { profile, user } = useAuth();
@@ -46,15 +39,6 @@ export const ChatBubble = memo(function ChatBubble({
   const togglePinMutation = useTogglePin(message.room_id);
   const addReactionMutation = useAddReaction(message.room_id);
   const removeReactionMutation = useRemoveReaction(message.room_id);
-
-  const showTimestamp = presentation ? presentation.showTimestamp : true;
-  const showDeliveryStatus = presentation
-    ? presentation.showDeliveryStatus
-    : isMine;
-  const fullTimestamp = presentation?.fullTimestampTooltip || timeFormatted;
-  const resolvedTime = showTimestamp ? timeFormatted : undefined;
-  const resolvedStatus = showDeliveryStatus ? status : undefined;
-  const hasMeta = Boolean(resolvedTime || (isMine && resolvedStatus));
 
   const canPin = profile?.role === 'admin' || profile?.role === 'manager';
 
@@ -109,47 +93,24 @@ export const ChatBubble = memo(function ChatBubble({
     [message.reactions, user?.id, handleAddReaction, handleRemoveReaction],
   );
 
-  const handleScrollToMessage = useCallback(
-    (targetMessageId?: string) => {
-      if (!targetMessageId) return;
-      if (onScrollToMessage) {
-        onScrollToMessage(targetMessageId);
-        return;
-      }
-      const targetElement = document.querySelector(
-        `[data-message-id="${targetMessageId}"]`,
-      );
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        targetElement.classList.add('chat-message-highlight');
-        setTimeout(() => {
-          targetElement.classList.remove('chat-message-highlight');
-        }, 2000);
-      }
-    },
-    [onScrollToMessage],
-  );
-
-  // Media geometry reservation (GOV-003): reserve intrinsic dimensions, 4:3 is fallback only
-  const imageAspectRatio = useMemo(() => {
-    if (!message.image_url) return '4 / 3';
-    try {
-      const url = new URL(message.image_url, 'https://dummy.local');
-      const w = url.searchParams.get('w') || url.searchParams.get('width');
-      const h = url.searchParams.get('h') || url.searchParams.get('height');
-      if (w && h && !isNaN(Number(w)) && !isNaN(Number(h)) && Number(h) > 0) {
-        return `${Number(w)} / ${Number(h)}`;
-      }
-    } catch {
-      // Fallback below
+  const handleScrollToMessage = useCallback((targetMessageId?: string) => {
+    if (!targetMessageId) return;
+    const targetElement = document.querySelector(
+      `[data-message-id="${targetMessageId}"]`,
+    );
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      targetElement.classList.add('chat-message-highlight');
+      setTimeout(() => {
+        targetElement.classList.remove('chat-message-highlight');
+      }, 2000);
     }
-    return '4 / 3';
-  }, [message.image_url]);
+  }, []);
 
   // System message (journey updates)
   if (message.message_type === 'system') {
     return (
-      <div className="chat-system-msg" title={fullTimestamp}>
+      <div className="chat-system-msg">
         <span className="chat-system-msg-text">{message.content}</span>
       </div>
     );
@@ -158,21 +119,14 @@ export const ChatBubble = memo(function ChatBubble({
   // ePOD important events (signature confirmation, delivery complete)
   if (message.message_type === 'system_epod') {
     return (
-      <div className="chat-system-epod" title={fullTimestamp}>
+      <div className="chat-system-epod">
         <div className="chat-system-epod-content">{message.content}</div>
         <div className="chat-system-epod-time">{timeFormatted}</div>
       </div>
     );
   }
 
-  const isSent =
-    message.status === 'sent' || status === 'sent' || status === 'read';
-  const isError =
-    !isOptimistic &&
-    !isSent &&
-    (message.status === 'error' ||
-      message.status === 'failed' ||
-      status === 'failed');
+  const isError = !isOptimistic && message.status === 'error';
   const statusClass = isOptimistic
     ? 'chat-bubble--pending'
     : isError
@@ -200,11 +154,6 @@ export const ChatBubble = memo(function ChatBubble({
     !message.reply_to_message &&
     !legacyQuoteSnippet;
 
-  const isMicroText =
-    isShortText &&
-    typeof displayContent === 'string' &&
-    displayContent.length <= 6;
-
   return (
     <>
       <div
@@ -228,8 +177,7 @@ export const ChatBubble = memo(function ChatBubble({
             isMine ? 'chat-bubble--mine' : 'chat-bubble--theirs'
           } ${statusClass} ${isImageOnly ? 'chat-bubble--image-only' : ''} ${
             viewModel.isEmojiOnly ? 'chat-bubble--emoji-only' : ''
-          } ${isMicroText ? 'chat-bubble--micro' : ''}`}
-          title={fullTimestamp}
+          }`}
         >
           {/* Pin indicator */}
           {message.is_pinned ? (
@@ -278,10 +226,7 @@ export const ChatBubble = memo(function ChatBubble({
 
           {/* Image */}
           {message.message_type === 'image' && message.image_url ? (
-            <div
-              className="chat-bubble-image-container"
-              style={{ aspectRatio: imageAspectRatio }}
-            >
+            <div className="chat-bubble-image-container">
               <img
                 src={getChatThumbnailUrl(message.image_url, 400, 400)}
                 alt={CHAT_LABELS.IMAGE}
@@ -290,8 +235,8 @@ export const ChatBubble = memo(function ChatBubble({
                 onClick={() => setPreviewImage(message.image_url)}
               />
               <ChatMessageMeta
-                time={resolvedTime}
-                status={resolvedStatus}
+                time={timeFormatted}
+                status={status}
                 isMine={isMine}
                 layoutMode="overlay"
               />
@@ -318,8 +263,8 @@ export const ChatBubble = memo(function ChatBubble({
                 </span>
               </div>
               <ChatMessageMeta
-                time={resolvedTime}
-                status={resolvedStatus}
+                time={timeFormatted}
+                status={status}
                 isMine={isMine}
                 layoutMode="side"
               />
@@ -329,27 +274,19 @@ export const ChatBubble = memo(function ChatBubble({
           {/* Text content with Mention / Quote parsing */}
           {displayContent ? (
             isShortText ? (
-              <div
-                className={
-                  hasMeta
-                    ? 'chat-bubble-compact-flow'
-                    : 'chat-bubble-text-only-row'
-                }
-              >
+              <div className="chat-bubble-compact-row">
                 <span className="chat-bubble-text-content">
                   <ChatMentionContent
                     content={displayContent}
                     mentions={message.mentions}
                   />
                 </span>
-                {hasMeta && (
-                  <ChatMessageMeta
-                    time={resolvedTime}
-                    status={resolvedStatus}
-                    isMine={isMine}
-                    layoutMode="side"
-                  />
-                )}
+                <ChatMessageMeta
+                  time={timeFormatted}
+                  status={status}
+                  isMine={isMine}
+                  layoutMode="side"
+                />
               </div>
             ) : (
               <div className="chat-bubble-standard-flow">
@@ -359,14 +296,12 @@ export const ChatBubble = memo(function ChatBubble({
                     mentions={message.mentions}
                   />
                 </span>
-                {hasMeta && (
-                  <ChatMessageMeta
-                    time={resolvedTime}
-                    status={resolvedStatus}
-                    isMine={isMine}
-                    layoutMode="inline"
-                  />
-                )}
+                <ChatMessageMeta
+                  time={timeFormatted}
+                  status={status}
+                  isMine={isMine}
+                  layoutMode="inline"
+                />
               </div>
             )
           ) : null}

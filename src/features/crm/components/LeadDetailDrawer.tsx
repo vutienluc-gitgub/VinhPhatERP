@@ -1,6 +1,6 @@
 import { useLead, useUpdateLeadStatus } from '@/application/crm/useCrm';
 import type { LeadStatus } from '@/domain/crm/crm.types';
-import { Icon, VPSelect } from '@/shared/components';
+import { Icon } from '@/shared/components/Icon';
 import {
   LEAD_STATUS_MAP,
   LEAD_TYPE_MAP,
@@ -77,20 +77,20 @@ export function LeadDetailDrawer({ leadId, onClose }: LeadDetailDrawerProps) {
               <span className="text-xs font-medium text-muted-foreground pl-2">
                 {LEAD_DETAIL_MESSAGES.STATUS_LABEL}
               </span>
-              <VPSelect
-                size="sm"
-                variant="ghost"
+              <select
                 value={lead.status}
-                onValueChange={(v) => handleStatusChange(v as LeadStatus)}
+                onChange={(e) =>
+                  handleStatusChange(e.target.value as LeadStatus)
+                }
                 disabled={isUpdating}
-                className={`font-medium ${statusMeta?.colorClass ?? ''}`}
-                options={Object.entries(LEAD_STATUS_MAP).map(
-                  ([status, meta]) => ({
-                    value: status as LeadStatus,
-                    label: `${meta.dot} ${meta.label}`,
-                  }),
-                )}
-              />
+                className={`text-sm border-0 bg-transparent py-1 pr-8 pl-2 font-medium focus:ring-0 ${statusMeta?.colorClass}`}
+              >
+                {Object.entries(LEAD_STATUS_MAP).map(([status, meta]) => (
+                  <option key={status} value={status}>
+                    {meta.dot} {meta.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

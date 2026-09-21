@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
-import { useAuth } from '@/shared/hooks/useAuth';
 import { computeStageOverdue } from '@/domain/portal/portal.utils';
+import { customerPortalAudit } from '@/features/customer-portal/audit/customerQueryAuditLogger';
 import type {
   OrderStatus,
   PortalOrder,
@@ -14,7 +14,6 @@ import type {
 const PAGE_SIZE = 20;
 
 export function usePortalOrders(orderId?: string) {
-  const { profile } = useAuth();
   const [orders, setOrders] = useState<PortalOrder[]>([]);
   const [order, setOrder] = useState<PortalOrder | null>(null);
   const [stages, setStages] = useState<PortalProgressStage[]>([]);
@@ -29,7 +28,7 @@ export function usePortalOrders(orderId?: string) {
       fetchOrders();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId, page, profile?.customer_id]);
+  }, [orderId, page]);
 
   async function fetchOrders() {
     setLoading(true);
@@ -37,80 +36,32 @@ export function usePortalOrders(orderId?: string) {
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
 
-    let query = supabase
+    const tracker = customerPortalAudit.startQuery('portal-orders', {
+      caller: 'usePortalOrders.fetchOrders',
+      page,
+      range: [from, to],
+    });
+
+    tracker.logFetch('orders', {
+      select: 'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id, order_items, shipments',
+      range: [from, to],
+      order: 'order_date DESC',
+    });
+
+    const { data, error: err } = await supabase
       .from('orders')
       .select(
         'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id, order_items(id, fabric_type, color_name, quantity, unit_price, amount), shipments(id, status)',
-      );
-
-    if (profile?.role === 'customer') {
-      if (!profile.customer_id) {
-        setOrders([]);
-        setLoading(false);
-        return;
-      }
-      query = query.eq('customer_id', profile.customer_id);
-    }
-
-    const { data, error: err } = await query
+      )
       .order('order_date', { ascending: false })
       .range(from, to);
 
     if (err) {
+      tracker.logError(err);
       setError(err.message);
     } else {
-      setOrders(
-        (data ?? []).map((o) => ({
-          id: o.id,
-          order_number: o.order_number,
-          order_date: o.order_date,
-          due_date: o.delivery_date,
-          total_amount: o.total_amount,
-          paid_amount: o.paid_amount,
-          status: o.status,
-          customer_id: o.customer_id,
-          items: (o.order_items ?? []).map((i) => ({
-            id: i.id,
-            fabric_name: i.fabric_type,
-            color: i.color_name,
-            quantity: i.quantity,
-            unit_price: i.unit_price,
-            amount: i.amount ?? i.quantity * i.unit_price,
-          })),
-          shipments:
-            ((o as Record<string, unknown>).shipments as
-              | PortalOrderShipmentSummary[]
-              | undefined) ?? [],
-        })),
-      );
-    }
-    setLoading(false);
-  }
-
-  async function fetchOrderDetail(id: string) {
-    setLoading(true);
-    setError(null);
-
-    const [orderRes, progressRes] = await Promise.all([
-      supabase
-        .from('orders')
-        .select(
-          'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id, order_items(id, fabric_type, color_name, quantity, unit_price, amount), shipments(id, status)',
-        )
-        .eq('id', id)
-        .single(),
-      supabase
-        .from('order_progress')
-        .select('id, stage, status, planned_date, actual_date')
-        .eq('order_id', id)
-        .order('stage'),
-    ]);
-
-    if (orderRes.error) {
-      setError(orderRes.error.message);
-    } else if (orderRes.data) {
-      const o = orderRes.data;
-      setOrder({
+      tracker.logResponse(data, null, data?.length ?? 0);
+      const mapped = (data ?? []).map((o) => ({
         id: o.id,
         order_number: o.order_number,
         order_date: o.order_date,
@@ -131,27 +82,96 @@ export function usePortalOrders(orderId?: string) {
           ((o as Record<string, unknown>).shipments as
             | PortalOrderShipmentSummary[]
             | undefined) ?? [],
-      });
+      }));
+
+      tracker.logTransform(data, mapped);
+      tracker.logComplete(mapped);
+      setOrders(mapped);
+    }
+    setLoading(false);
+  }
+
+  async function fetchOrderDetail(id: string) {
+    setLoading(true);
+    setError(null);
+
+    const tracker = customerPortalAudit.startQuery('portal-order-detail', {
+      caller: 'usePortalOrders.fetchOrderDetail',
+      orderId: id,
+    });
+
+    tracker.logFetch('orders', {
+      select: 'orders.*, order_progress.*',
+      filters: { id },
+    });
+
+    const [orderRes, progressRes] = await Promise.all([
+      supabase
+        .from('orders')
+        .select(
+          'id, order_number, order_date, delivery_date, total_amount, paid_amount, status, customer_id, order_items(id, fabric_type, color_name, quantity, unit_price, amount), shipments(id, status)',
+        )
+        .eq('id', id)
+        .single(),
+      supabase
+        .from('order_progress')
+        .select('id, stage, status, planned_date, actual_date')
+        .eq('order_id', id)
+        .order('stage'),
+    ]);
+
+    if (orderRes.error) {
+      tracker.logError(orderRes.error);
+      setError(orderRes.error.message);
+    } else if (orderRes.data) {
+      tracker.logResponse(orderRes.data, null, 1);
+      const o = orderRes.data;
+      const mappedOrder: PortalOrder = {
+        id: o.id,
+        order_number: o.order_number,
+        order_date: o.order_date,
+        due_date: o.delivery_date,
+        total_amount: o.total_amount,
+        paid_amount: o.paid_amount,
+        status: o.status,
+        customer_id: o.customer_id,
+        items: (o.order_items ?? []).map((i) => ({
+          id: i.id,
+          fabric_name: i.fabric_type,
+          color: i.color_name,
+          quantity: i.quantity,
+          unit_price: i.unit_price,
+          amount: i.amount ?? i.quantity * i.unit_price,
+        })),
+        shipments:
+          ((o as Record<string, unknown>).shipments as
+            | PortalOrderShipmentSummary[]
+            | undefined) ?? [],
+      };
+
+      tracker.logTransform(orderRes.data, mappedOrder);
+      setOrder(mappedOrder);
     }
 
     if (!progressRes.error && progressRes.data) {
-      setStages(
-        progressRes.data.map((s) => ({
-          id: s.id,
-          stage: s.stage,
-          status: s.status,
-          planned_date: s.planned_date,
+      const mappedStages = progressRes.data.map((s) => ({
+        id: s.id,
+        stage: s.stage,
+        status: s.status,
+        planned_date: s.planned_date,
+        actual_date: s.actual_date,
+        ...computeStageOverdue({
           actual_date: s.actual_date,
-          ...computeStageOverdue({
-            actual_date: s.actual_date,
-            planned_date: s.planned_date,
-          }),
-        })),
-      );
+          planned_date: s.planned_date,
+        }),
+      }));
+      setStages(mappedStages);
+      tracker.logComplete({ order: orderRes.data, stages: mappedStages });
     }
 
     setLoading(false);
   }
+
 
   return {
     orders,

@@ -37,16 +37,12 @@ function groupChatReactions(reactions?: ChatReaction[] | null) {
 }
 
 function renderReactionDisplay(codeOrEmoji: string) {
-  // Emoji ở đây là giá trị legacy do server trả về, phải so sánh nguyên văn
-  // để tương thích reaction cũ. Hiển thị đã dùng <Icon />.
-  /* eslint-disable no-restricted-syntax -- so sánh giá trị legacy từ server */
   if (codeOrEmoji === 'like' || codeOrEmoji === '👍') {
     return <Icon name="ThumbsUp" size={12} />;
   }
   if (codeOrEmoji === 'heart' || codeOrEmoji === '❤️') {
     return <Icon name="Heart" size={12} />;
   }
-  /* eslint-enable no-restricted-syntax */
   return <span className="chat-reaction-emoji">{codeOrEmoji}</span>;
 }
 

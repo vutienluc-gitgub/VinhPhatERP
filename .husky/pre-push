@@ -1,39 +1,14 @@
-# ─────────────────────────────────────────────────────────────
-# Pre-push FAST gate (mục tiêu < ~2 phút)
-#
-# Các check nặng (lint full, lint:css, Vitest, E2E, AI audit)
-# đã chuyển sang CI: .github/workflows/ci.yml
-#
-# Chiến lược theo .agents/rules/ui-architecture.md §6 (CI Iron Gate):
-#   pre-push = trải nghiệm dev nhanh.
-#   GitHub Required Status Checks (CI) = rào chắn bắt buộc.
-# ─────────────────────────────────────────────────────────────
-
-echo "📦 Checking Root package-lock.json sync..."
-npm ci --dry-run || { echo "❌ Root package-lock.json is out of sync! Run 'npm install'."; exit 1; }
-
-echo "📦 Checking Server package-lock.json sync..."
-(cd server && npm ci --dry-run) || { echo "❌ Server package-lock.json is out of sync! Run 'cd server && npm install'."; exit 1; }
 
 echo "🔍 Checking RPC sync..."
-# SKIP_RPC_CHECK=1 git push  → bỏ qua bước này khi DB không khả dụng (offline / .env sai mật khẩu).
-# Mặc định vẫn FAIL-CLOSED: không kết nối được DB thì không cho push.
-if [ "$SKIP_RPC_CHECK" = "1" ]; then
-  echo "⏭️  SKIP_RPC_CHECK=1 → skip rpc:check. Chạy 'npm run rpc:check' khi online để đảm bảo RPC sync!"
-else
-  npm run rpc:check || exit 1
-fi
+npm run rpc:check || exit 1
 
-echo "🔑 Checking VAPID sync..."
-npm run vapid:check || exit 1
+echo "🛡️ Running Full System Audit..."
+npm run audit:full || exit 1
 
-echo "🎨 Checking theme contract..."
-npm run theme:check || exit 1
+echo "🚀 Running AI Audit before push..."
+npm run ai:audit || exit 1
 
-echo "🧠 Typechecking frontend..."
-npm run typecheck || exit 1
+echo "🧪 Running E2E Tests before push..."
+npm run test:e2e || exit 1
 
-echo "🧠 Typechecking server..."
-npm run typecheck:server || exit 1
-
-echo "✅ Fast checks passed. Full lint / Vitest / E2E / AI audit run in CI."
+echo "✅ Push allowed."

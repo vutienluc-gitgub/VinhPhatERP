@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
-import { useAuth } from '@/shared/hooks/useAuth';
+import { customerPortalAudit } from '@/features/customer-portal/audit/customerQueryAuditLogger';
 import type { PortalShipment } from '@/domain/portal/types';
 
 export function usePortalShipments(shipmentId?: string) {
-  const { profile } = useAuth();
   const [shipments, setShipments] = useState<PortalShipment[]>([]);
   const [shipment, setShipment] = useState<PortalShipment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -18,46 +17,47 @@ export function usePortalShipments(shipmentId?: string) {
       fetchShipments();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shipmentId, profile?.customer_id]);
+  }, [shipmentId]);
 
   async function fetchShipments() {
     setLoading(true);
     setError(null);
 
-    let query = supabase
+    const tracker = customerPortalAudit.startQuery('portal-shipments', {
+      caller: 'usePortalShipments.fetchShipments',
+    });
+
+    tracker.logFetch('shipments', {
+      select: 'id, shipment_number, shipment_date, order_id, status, delivery_address, customer_id, orders',
+      order: 'shipment_date DESC',
+    });
+
+    const { data, error: err } = await supabase
       .from('shipments')
       .select(
         'id, shipment_number, shipment_date, order_id, status, delivery_address, customer_id, orders(order_number)',
-      );
-
-    if (profile?.role === 'customer') {
-      if (!profile.customer_id) {
-        setShipments([]);
-        setLoading(false);
-        return;
-      }
-      query = query.eq('customer_id', profile.customer_id);
-    }
-
-    const { data, error: err } = await query.order('shipment_date', {
-      ascending: false,
-    });
+      )
+      .order('shipment_date', { ascending: false });
 
     if (err) {
+      tracker.logError(err);
       setError(err.message);
     } else {
-      setShipments(
-        (data ?? []).map((s) => ({
-          id: s.id,
-          shipment_number: s.shipment_number,
-          shipment_date: s.shipment_date,
-          order_number:
-            (s.orders as { order_number: string } | null)?.order_number ?? null,
-          status: s.status,
-          delivery_address: s.delivery_address,
-          customer_id: s.customer_id,
-        })),
-      );
+      tracker.logResponse(data, null, data?.length ?? 0);
+      const mapped = (data ?? []).map((s) => ({
+        id: s.id,
+        shipment_number: s.shipment_number,
+        shipment_date: s.shipment_date,
+        order_number:
+          (s.orders as { order_number: string } | null)?.order_number ?? null,
+        status: s.status,
+        delivery_address: s.delivery_address,
+        customer_id: s.customer_id,
+      }));
+
+      tracker.logTransform(data, mapped);
+      tracker.logComplete(mapped);
+      setShipments(mapped);
     }
     setLoading(false);
   }
@@ -65,6 +65,16 @@ export function usePortalShipments(shipmentId?: string) {
   async function fetchShipmentDetail(id: string) {
     setLoading(true);
     setError(null);
+
+    const tracker = customerPortalAudit.startQuery('portal-shipment-detail', {
+      caller: 'usePortalShipments.fetchShipmentDetail',
+      shipmentId: id,
+    });
+
+    tracker.logFetch('shipments', {
+      select: 'shipments.*, shipment_items.*',
+      filters: { id },
+    });
 
     const { data, error: err } = await supabase
       .from('shipments')
@@ -75,9 +85,11 @@ export function usePortalShipments(shipmentId?: string) {
       .single();
 
     if (err) {
+      tracker.logError(err);
       setError(err.message);
     } else if (data) {
-      setShipment({
+      tracker.logResponse(data, null, 1);
+      const mapped = {
         id: data.id,
         shipment_number: data.shipment_number,
         shipment_date: data.shipment_date,
@@ -93,10 +105,15 @@ export function usePortalShipments(shipmentId?: string) {
           weight_kg: null,
           length_m: i.unit === 'm' ? i.quantity : null,
         })),
-      });
+      };
+
+      tracker.logTransform(data, mapped);
+      tracker.logComplete(mapped);
+      setShipment(mapped);
     }
     setLoading(false);
   }
+
 
   return {
     shipments,
