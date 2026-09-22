@@ -12,6 +12,12 @@ import suppliersRouter from './routes/suppliers.js';
 import webhooksRouter from './routes/webhooks.js';
 import yarnReceiptsRouter from './routes/yarn-receipts.js';
 import aiChatRouter from './routes/ai-chat.js';
+// Nạp biến môi trường từ .env nếu có (Node.js 20+)
+try {
+  process.loadEnvFile?.();
+} catch {
+  // Bỏ qua nếu .env không tồn tại
+}
 
 const app = new Hono();
 
@@ -60,7 +66,10 @@ api.route('/yarn-receipts', yarnReceiptsRouter);
 api.route('/chat', aiChatRouter);
 api.route('/ai/chat', aiChatRouter);
 
+// Hỗ trợ cả /api/v1 (chuẩn) và /v1 (khi proxy như Nginx cắt tiền tố /api/)
 app.route('/api/v1', api);
+app.route('/v1', api);
+app.route('/chat', aiChatRouter);
 
 // ──────────────────────────────────────────────
 // 404 fallback

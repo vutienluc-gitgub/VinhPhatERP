@@ -23,6 +23,26 @@ Nhiệm vụ của bạn:
 - Định dạng câu trả lời rõ ràng (dùng gạch đầu dòng, bảng số liệu khi cần).
 - Nếu không chắc chắn về số liệu mật hoặc nội bộ, hãy khuyên người dùng liên hệ phòng quản lý hoặc tra cứu trực tiếp trên hệ thống ERP.`;
 
+const CANDIDATE_MODELS = ['gemini-3.5-flash', 'gemini-3.6-flash'];
+
+function formatAIError(err: unknown): string {
+  if (err instanceof Error) {
+    const raw = err.message;
+    if (
+      raw.includes('503') ||
+      raw.includes('UNAVAILABLE') ||
+      raw.includes('high demand')
+    ) {
+      return 'Hệ thống AI đang chịu tải cao tạm thời. Vui lòng gửi lại câu hỏi sau giây lát.';
+    }
+    if (raw.includes('API key') || raw.includes('invalid_grant')) {
+      return 'Khóa API AI không hợp lệ. Vui lòng kiểm tra cấu hình máy chủ.';
+    }
+    return raw;
+  }
+  return 'Không thể kết nối đến AI. Vui lòng thử lại sau.';
+}
+
 /**
  * POST /api/v1/chat/stream
  * Stream Gemini AI response chunk-by-chunk using generateContentStream.
@@ -70,26 +90,46 @@ router.post(
     const ai = new GoogleGenAI({ apiKey });
 
     return streamText(c, async (stream) => {
-      try {
-        const responseStream = await ai.models.generateContentStream({
-          model: 'gemini-3.6-flash',
-          contents: formattedContents,
-          config: {
-            systemInstruction: systemInstruction || DEFAULT_SYSTEM_INSTRUCTION,
-          },
-        });
+      let streamedAny = false;
+      let lastError: unknown = null;
 
-        for await (const chunk of responseStream) {
-          const text = chunk.text;
-          if (text) {
-            await stream.write(text);
+      for (const modelName of CANDIDATE_MODELS) {
+        try {
+          const responseStream = await ai.models.generateContentStream({
+            model: modelName,
+            contents: formattedContents,
+            config: {
+              systemInstruction:
+                systemInstruction || DEFAULT_SYSTEM_INSTRUCTION,
+            },
+          });
+
+          for await (const chunk of responseStream) {
+            const text = chunk.text;
+            if (text) {
+              await stream.write(text);
+              streamedAny = true;
+            }
           }
+          return;
+        } catch (err) {
+          lastError = err;
+          if (streamedAny) {
+            break;
+          }
+          // eslint-disable-next-line no-console
+          console.warn(
+            `[AIChatStream] Model ${modelName} gặp sự cố, chuyển model dự phòng...`,
+            err,
+          );
         }
-      } catch (err) {
-        console.error('[AIChatStream error]', err);
-        const message =
-          err instanceof Error ? err.message : 'Không thể kết nối đến AI';
-        await stream.write(`\n[Lỗi kết nối AI: ${message}]`);
+      }
+
+      if (lastError) {
+        // eslint-disable-next-line no-console
+        console.error('[AIChatStream error]', lastError);
+        const userFriendlyMessage = formatAIError(lastError);
+        await stream.write(`\n[Lỗi kết nối AI: ${userFriendlyMessage}]`);
       }
     });
   },
@@ -136,24 +176,34 @@ router.post(
 
     const ai = new GoogleGenAI({ apiKey });
 
-    try {
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
-        contents: formattedContents,
-        config: {
-          systemInstruction: systemInstruction || DEFAULT_SYSTEM_INSTRUCTION,
-        },
-      });
+    let lastError: unknown = null;
+    for (const modelName of CANDIDATE_MODELS) {
+      try {
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: formattedContents,
+          config: {
+            systemInstruction: systemInstruction || DEFAULT_SYSTEM_INSTRUCTION,
+          },
+        });
 
-      return c.json({
-        reply: response.text ?? '',
-      });
-    } catch (err) {
-      console.error('[AIChat error]', err);
-      const message =
-        err instanceof Error ? err.message : 'Không thể kết nối đến AI';
-      return c.json({ error: message }, 500);
+        return c.json({
+          reply: response.text ?? '',
+        });
+      } catch (err) {
+        lastError = err;
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[AIChat] Model ${modelName} gặp sự cố, chuyển model dự phòng...`,
+          err,
+        );
+      }
     }
+
+    // eslint-disable-next-line no-console
+    console.error('[AIChat error]', lastError);
+    const message = formatAIError(lastError);
+    return c.json({ error: message }, 500);
   },
 );
 
