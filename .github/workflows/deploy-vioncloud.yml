@@ -67,6 +67,10 @@ jobs:
               docker cp "$APP_DIR/dist/." vinhphaterp-app:/usr/share/nginx/html/
               docker cp "$APP_DIR/server/dist/." vinhphaterp-app:/app/server/dist/
               docker cp "$APP_DIR/server/package.json" vinhphaterp-app:/app/server/package.json
+              if [ -f "$APP_DIR/.env" ]; then
+                docker cp "$APP_DIR/.env" vinhphaterp-app:/app/server/.env || true
+                docker cp "$APP_DIR/.env" vinhphaterp-app:/app/.env || true
+              fi
               docker exec vinhphaterp-app npm --prefix /app/server install --only=production || true
               docker restart vinhphaterp-app
             fi

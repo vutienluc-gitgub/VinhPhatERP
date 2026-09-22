@@ -113,4 +113,27 @@ describe('ai-chat router', () => {
     const data = (await res.json()) as { reply: string };
     expect(data.reply).toBe('Câu trả lời chuẩn');
   });
+
+  it('resolves routes correctly under both /api/v1 and /v1 prefixes', async () => {
+    const rootApp = new Hono();
+    const api = new Hono();
+    api.route('/chat', aiChatRouter);
+    rootApp.route('/api/v1', api);
+    rootApp.route('/v1', api);
+
+    const resApi = await rootApp.request('/api/v1/chat/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [] }),
+    });
+    // Status 400 means route was found and payload validation ran (NOT 404 Route not found)
+    expect(resApi.status).toBe(400);
+
+    const resV1 = await rootApp.request('/v1/chat/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [] }),
+    });
+    expect(resV1.status).toBe(400);
+  });
 });
