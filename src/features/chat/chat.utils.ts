@@ -83,7 +83,9 @@ export function deriveMessageStatus(
   msg: ChatMessage,
   isMine: boolean,
 ): MessageStatus {
-  if (msg.status === 'error') return 'failed';
+  // 'failed' is a first-class persisted failure state (set by useSendMessage.onError)
+  // and must surface as failed, otherwise the bubble renders a ✓ with no retry action.
+  if (msg.status === 'error' || msg.status === 'failed') return 'failed';
   if (msg.status === 'pending') return 'sending';
   if (isMine && msg.read_at) return 'read';
   return 'sent';
@@ -162,10 +164,6 @@ export function resolveSenderIdentity(
 export const MESSAGE_CLUSTER_GAP_MS = 5 * 60 * 1000; // 5 minutes max gap between messages
 export const MESSAGE_CLUSTER_MAX_DURATION_MS = 5 * 60 * 1000; // 5 minutes max total duration from first message
 
-/**
- * Transforms raw messages into structured DateMessageGroups and MessageClusters
- * with intelligent Admin vs Customer side alignment and derived ChatMessageViewModel.
- */
 // Cache for immutable past date groups (bounded to 100 date groups)
 const pastDateGroupCache = new Map<string, DateMessageGroup>();
 
