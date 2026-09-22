@@ -95,6 +95,7 @@ router.post(
 
       for (const modelName of CANDIDATE_MODELS) {
         try {
+          // eslint-disable-next-line no-await-in-loop
           const responseStream = await ai.models.generateContentStream({
             model: modelName,
             contents: formattedContents,
@@ -104,9 +105,11 @@ router.post(
             },
           });
 
+          // eslint-disable-next-line no-await-in-loop
           for await (const chunk of responseStream) {
             const text = chunk.text;
             if (text) {
+              // eslint-disable-next-line no-await-in-loop
               await stream.write(text);
               streamedAny = true;
             }
@@ -179,6 +182,7 @@ router.post(
     let lastError: unknown = null;
     for (const modelName of CANDIDATE_MODELS) {
       try {
+        // eslint-disable-next-line no-await-in-loop
         const response = await ai.models.generateContent({
           model: modelName,
           contents: formattedContents,
