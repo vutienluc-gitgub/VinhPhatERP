@@ -187,8 +187,8 @@ export const TopBar = React.memo(function TopBar({
               type="button"
               className="topbar-icon-btn topbar-ai-btn relative"
               onClick={() => setShowAIChat(true)}
-              title="Trợ lý AI Vịnh Phát"
-              aria-label="Trợ lý AI Vịnh Phát"
+              title="Trợ lý AI Vĩnh Phát"
+              aria-label="Trợ lý AI Vĩnh Phát"
             >
               <Icon
                 name="Sparkles"

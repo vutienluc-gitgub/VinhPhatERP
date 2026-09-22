@@ -61,6 +61,16 @@ jobs:
             fi
             pm2 save
 
+            # 5b. Đồng bộ mã nguồn & assets vào Docker container vinhphaterp-app (đang phục vụ port 80 & 3001)
+            echo "🐳 Updating Docker container vinhphaterp-app..."
+            if docker ps -q -f name=vinhphaterp-app | grep -q .; then
+              docker cp "$APP_DIR/dist/." vinhphaterp-app:/usr/share/nginx/html/
+              docker cp "$APP_DIR/server/dist/." vinhphaterp-app:/app/server/dist/
+              docker cp "$APP_DIR/server/package.json" vinhphaterp-app:/app/server/package.json
+              docker exec vinhphaterp-app npm --prefix /app/server install --only=production || true
+              docker restart vinhphaterp-app
+            fi
+
             # 6. Reload / Restart Nginx
             echo "🌐 Reloading Nginx..."
             sudo systemctl reload nginx || sudo systemctl restart nginx || echo "⚠️ Nginx reload/restart failed on VPS (check 'systemctl status nginx' or 'nginx -t'). Skipping Nginx restart."
