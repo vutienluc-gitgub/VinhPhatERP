@@ -60,7 +60,7 @@ console.log(
 // ---- Anthropic client ----
 const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
-const SYSTEM_PROMPT = `Bạn là Trợ lý AI nội bộ của công ty Vịnh Phát — chuyên sản xuất vải dệt kim.
+const SYSTEM_PROMPT = `Bạn là Trợ lý AI nội bộ của công ty Vĩnh Phát — chuyên sản xuất vải dệt kim.
 Bạn giúp nhân viên tra cứu đơn hàng, khách hàng, nhà cung cấp, nguyên liệu và tổng hợp kinh doanh.
 
 Nguyên tắc:
@@ -147,7 +147,7 @@ const rl = readline.createInterface({
 });
 
 console.log('\n╔══════════════════════════════════════╗');
-console.log('║   Vịnh Phát AI Agent  (gõ /exit)    ║');
+console.log('║   Vĩnh Phát AI Agent  (gõ /exit)    ║');
 console.log('╚══════════════════════════════════════╝\n');
 
 for (;;) {

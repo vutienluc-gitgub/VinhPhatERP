@@ -367,7 +367,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             }
           }}
           className="mx-3 my-2 p-2.5 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-between cursor-pointer group"
-          aria-label="Mở Trợ lý AI Vịnh Phát"
+          aria-label="Mở Trợ lý AI Vĩnh Phát"
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
@@ -376,7 +376,7 @@ export function ChatInboxDrawer({ open, onClose }: ChatInboxDrawerProps) {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-semibold text-foreground">
-                  Trợ lý AI Vịnh Phát
+                  Trợ lý AI Vĩnh Phát
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium">
                   Gemini 3.6

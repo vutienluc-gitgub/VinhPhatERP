@@ -114,7 +114,7 @@ export const AIChatDrawer = React.memo(function AIChatDrawer({
                   id="ai-chat-drawer-title"
                   className="text-sm font-semibold text-foreground truncate m-0"
                 >
-                  Trợ lý AI Vịnh Phát
+                  Trợ lý AI Vĩnh Phát
                 </h2>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-success/15 text-success font-medium shrink-0">
                   Gemini 3.6

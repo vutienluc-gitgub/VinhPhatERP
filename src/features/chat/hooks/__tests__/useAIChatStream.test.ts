@@ -13,7 +13,7 @@ describe('useAIChatStream hook', () => {
     expect(result.current.messages).toHaveLength(1);
     expect(result.current.messages[0]?.role).toBe('model');
     expect(result.current.messages[0]?.content).toContain(
-      'Trợ lý AI Vịnh Phát',
+      'Trợ lý AI Vĩnh Phát',
     );
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isStreaming).toBe(false);

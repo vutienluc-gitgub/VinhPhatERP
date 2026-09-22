@@ -16,7 +16,7 @@ const chatRequestSchema = z.object({
   systemInstruction: z.string().optional(),
 });
 
-const DEFAULT_SYSTEM_INSTRUCTION = `Bạn là Trợ lý AI thông minh của Công ty TNHH SX TM Dệt May Vịnh Phát (Vinh Phat ERP).
+const DEFAULT_SYSTEM_INSTRUCTION = `Bạn là Trợ lý AI thông minh của Công ty TNHH SX TM Dệt May Vĩnh Phát (Vinh Phat ERP).
 Nhiệm vụ của bạn:
 - Hỗ trợ nhân viên và khách hàng giải đáp thông tin về quy trình sản xuất dệt nhuộm, đơn hàng, vải mộc, sợi, hóa đơn và xuất nhập kho.
 - Luôn phản hồi lịch sự, chính xác, ngắn gọn và hữu ích bằng tiếng Việt.

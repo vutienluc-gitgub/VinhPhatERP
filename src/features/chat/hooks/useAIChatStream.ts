@@ -18,7 +18,7 @@ const DEFAULT_WELCOME_MESSAGE: AIChatMessage = {
   id: 'welcome-msg',
   role: 'model',
   content:
-    'Xin chào! Tôi là Trợ lý AI Vịnh Phát. Tôi có thể hỗ trợ bạn tra cứu thông tin quy trình dệt nhuộm, đơn hàng, vải mộc, sợi và xuất nhập kho. Bạn cần hỗ trợ gì hôm nay?',
+    'Xin chào! Tôi là Trợ lý AI Vĩnh Phát. Tôi có thể hỗ trợ bạn tra cứu thông tin quy trình dệt nhuộm, đơn hàng, vải mộc, sợi và xuất nhập kho. Bạn cần hỗ trợ gì hôm nay?',
   timestamp: new Date().toISOString(),
 };
 

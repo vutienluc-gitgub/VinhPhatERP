@@ -13,7 +13,6 @@ import {
 } from '@/application/analytics';
 import { useContextualGuide } from '@/features/guide-system/hooks/useContextualGuide';
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
-import { AIChatWidget } from '@/features/chat/components/AIChatWidget';
 
 import { DASHBOARD_LABELS } from './dashboard.constants';
 import { RevenueOverviewCard } from './RevenueOverviewCard';
@@ -42,7 +41,7 @@ export function DashboardPage() {
   const { data: transactions, isLoading: txLoading } = useRecentTransactions();
 
   return (
-    <div className="page-container pb-20">
+    <div className="page-container">
       <div className="flex items-center justify-between mb-4">
         <h1 className="sr-only">Dashboard</h1>
         <LiveIndicator label={DASHBOARD_LABELS.LIVE_UPDATE} />
@@ -189,7 +188,6 @@ export function DashboardPage() {
         </div>
       </div>
       <ContextualGuide activeGuides={activeGuides} />
-      <AIChatWidget />
     </div>
   );
 }
