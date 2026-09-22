@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
   server: {
@@ -71,6 +71,21 @@ export default defineConfig({
             }
             if (id.includes('node_modules/exceljs/')) {
               return 'vendor-exceljs';
+            }
+            if (id.includes('node_modules/jspdf/') || id.includes('node_modules/jspdf-autotable/')) {
+              return 'vendor-jspdf';
+            }
+            if (id.includes('node_modules/html2canvas/')) {
+              return 'vendor-html2canvas';
+            }
+            if (id.includes('node_modules/framer-motion/')) {
+              return 'vendor-framer-motion';
+            }
+            if (id.includes('node_modules/@google/genai/') || id.includes('node_modules/@anthropic-ai/sdk/')) {
+              return 'vendor-ai';
+            }
+            if (id.includes('node_modules/lucide-react/')) {
+              return 'vendor-lucide';
             }
           }
         },
