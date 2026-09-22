@@ -1,5 +1,10 @@
 // Service Worker — Web Push Notification & Deep Link Navigation for Vinh Phat ERP
 
+// Unified Badge API guard — consistent across all branches
+function canUseBadgeAPI() {
+  return typeof navigator !== 'undefined' && 'setAppBadge' in navigator;
+}
+
 self.addEventListener('install', () => {
   self.skipWaiting();
 });
@@ -55,9 +60,9 @@ self.addEventListener('push', (event) => {
         vibrate: [100, 50, 100],
       });
 
-      if ('setAppBadge' in navigator) {
+      if (canUseBadgeAPI()) {
         // @ts-ignore
-        navigator.setAppBadge(unreadCount).catch(() => {});
+        await navigator.setAppBadge(unreadCount).catch(() => {});
       }
       return;
     }
@@ -80,7 +85,7 @@ self.addEventListener('push', (event) => {
 
     const notifPromise = self.registration.showNotification(title, options);
     const badgePromise =
-      typeof navigator !== 'undefined' && 'setAppBadge' in navigator
+      canUseBadgeAPI()
         ? typeof payload.unread_count === 'number'
           // @ts-ignore
           ? navigator.setAppBadge(payload.unread_count).catch(() => {})
@@ -96,7 +101,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const notifData = event.notification.data || {};
 
-  if (typeof navigator !== 'undefined' && 'clearAppBadge' in navigator) {
+  if (canUseBadgeAPI()) {
     // @ts-ignore
     navigator.clearAppBadge().catch(() => {});
   }
