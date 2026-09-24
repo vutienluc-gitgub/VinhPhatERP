@@ -61,13 +61,15 @@ coverage
 *.sw?
 
 # =========================
-# 📁 TEMP
+# 📁 TEMP & PRIVATE
 # =========================
 tmp-*
 *.tmp
 *.cache
 scripts/junk/
 scratch/
+brain/
+private/
 
 # =========================
 # 📊 GENERATED REPORTS
