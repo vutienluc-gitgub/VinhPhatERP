@@ -18,7 +18,6 @@ export * from './infrastructure/vapid-key.client';
 export * from './infrastructure/platform-capability.client';
 export * from './infrastructure/permission.client';
 export * from './infrastructure/service-worker.client';
-export * from './infrastructure/push-subscription.repository';
 
 // Presentation
 export * from './presentation/hooks/useNotificationFacade';

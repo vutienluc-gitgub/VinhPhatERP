@@ -6,62 +6,18 @@ import { getServiceWorkerRegistration } from '@/shared/lib/serviceWorkerRegistra
 import {
   urlBase64ToUint8Array,
   getVapidPublicKey,
+  matchesAuthoritativeVapidKey,
 } from '@/shared/lib/vapidHelper';
 import { PushSubscriptionRepository } from '@/domains/notification/repositories/push-subscription-repository';
+import {
+  getOrCreateDeviceId,
+  detectPlatform,
+  detectBrowser,
+  isStandaloneDisplayMode,
+  isIOSNonStandalone,
+} from '@/shared/lib/pushDeviceInfo';
 
-function getOrCreateDeviceId(): string {
-  if (typeof window === 'undefined') return 'server';
-  const KEY = 'vp_device_id';
-  let id = localStorage.getItem(KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(KEY, id);
-  }
-  return id;
-}
-
-function detectPlatform(): string {
-  if (typeof navigator === 'undefined') return 'other';
-  const ua = navigator.userAgent.toLowerCase();
-  if (/iphone|ipad|ipod/.test(ua)) return 'ios';
-  if (/android/.test(ua)) return 'android';
-  if (/macintosh|mac os x/.test(ua)) return 'macos';
-  if (/windows/.test(ua)) return 'windows';
-  if (/linux/.test(ua)) return 'linux';
-  return 'other';
-}
-
-function detectBrowser(): string {
-  if (typeof navigator === 'undefined') return 'other';
-  const ua = navigator.userAgent.toLowerCase();
-  const isStandalone =
-    ('standalone' in navigator &&
-      (navigator as unknown as { standalone: boolean }).standalone) ||
-    (typeof window !== 'undefined' &&
-      window.matchMedia('(display-mode: standalone)').matches);
-
-  if (isStandalone && /iphone|ipad|ipod/.test(ua)) return 'safari-pwa';
-  if (/edg/.test(ua)) return 'edge';
-  if (/chrome/.test(ua) && !/edg/.test(ua)) return 'chrome';
-  if (/firefox/.test(ua)) return 'firefox';
-  if (/safari/.test(ua) && !/chrome/.test(ua)) return 'safari';
-  return 'other';
-}
-
-/**
- * Checks if current environment is iOS Safari non-PWA (needs Add to Home Screen first)
- */
-export function isIOSNonStandalone(): boolean {
-  if (typeof navigator === 'undefined') return false;
-  const ua = navigator.userAgent.toLowerCase();
-  const isIOS = /iphone|ipad|ipod/.test(ua);
-  const isStandalone =
-    ('standalone' in navigator &&
-      (navigator as unknown as { standalone: boolean }).standalone) ||
-    (typeof window !== 'undefined' &&
-      window.matchMedia('(display-mode: standalone)').matches);
-  return isIOS && !isStandalone;
-}
+export { isIOSNonStandalone };
 
 /**
  * Revokes current browser device push subscription on sign-out to prevent privacy leaks on shared devices
@@ -109,9 +65,28 @@ export function usePushSubscription() {
 
     async function checkAndResyncSubscription() {
       try {
+        // iOS Safari tab (non-standalone) cannot hold a valid push subscription.
+        // Auto-subscribing here would create a token the OS revokes immediately.
+        if (isIOSNonStandalone()) return;
+
         const reg = await getServiceWorkerRegistration();
         if (!reg) return;
-        const sub = await reg.pushManager.getSubscription();
+        let sub = await reg.pushManager.getSubscription();
+
+        // VAPID key rotation recovery: drop the stale browser subscription so the
+        // silent re-enroll below mints a fresh one signed with the current key.
+        if (
+          sub &&
+          !matchesAuthoritativeVapidKey(sub.options?.applicationServerKey)
+        ) {
+          // eslint-disable-next-line no-console
+          console.debug(
+            '[usePushSubscription] Stale VAPID key on device, re-subscribing.',
+          );
+          await sub.unsubscribe().catch(() => {});
+          sub = null;
+        }
+
         if (mounted) {
           setIsSubscribed(Boolean(sub));
           setPermission(Notification.permission);
@@ -164,6 +139,7 @@ export function usePushSubscription() {
                     ? navigator.userAgent
                     : undefined,
                 tenant_id: tenantId,
+                is_standalone: isStandaloneDisplayMode(),
               });
             }
           }
@@ -191,6 +167,15 @@ export function usePushSubscription() {
 
     if (!userId) {
       toast.error('Vui lòng đăng nhập để bật thông báo.');
+      return false;
+    }
+
+    // iOS (Safari tab) forbids Web Push: any subscription created here is
+    // immediately revoked by the OS. Require Add to Home Screen (standalone PWA).
+    if (isIOSNonStandalone()) {
+      toast.error(
+        'Trên iPhone, vui lòng thêm ứng dụng vào Màn hình chính (Add to Home Screen) rồi mở app từ biểu tượng để bật thông báo.',
+      );
       return false;
     }
 
@@ -243,6 +228,7 @@ export function usePushSubscription() {
         user_agent:
           typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
         tenant_id: tenantId,
+        is_standalone: isStandaloneDisplayMode(),
       });
 
       setIsSubscribed(true);

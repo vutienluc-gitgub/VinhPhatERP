@@ -13,16 +13,19 @@ export interface PushSubscriptionRecord {
   browser: string;
   user_agent?: string;
   tenant_id?: string | null;
+  is_standalone?: boolean;
 }
 
 export class PushSubscriptionRepository {
   /**
-   * Upsert a push subscription for a user device (idempotent by endpoint)
+   * Upsert a push subscription for a user device (idempotent by endpoint).
+   * Returns the persisted row so callers can read the generated id.
    */
   static async saveSubscription(
     data: PushSubscriptionRecord,
   ): Promise<PushSubscriptionRecord> {
     const id = data.id || crypto.randomUUID();
+    const now = new Date().toISOString();
     const result = await safeUpsertOne({
       table: 'push_subscriptions',
       data: {
@@ -37,11 +40,19 @@ export class PushSubscriptionRepository {
         browser: data.browser,
         user_agent: data.user_agent ?? null,
         tenant_id: data.tenant_id ?? null,
-        last_seen_at: new Date().toISOString(),
+        is_standalone: data.is_standalone ?? false,
+        last_seen_at: now,
+        updated_at: now,
         revoked_at: null,
       },
       conflictKey: 'endpoint',
     });
+
+    if (!result) {
+      throw new Error(
+        'Push subscription upsert returned no row (check push_subscriptions RLS/grant).',
+      );
+    }
 
     return result as PushSubscriptionRecord;
   }

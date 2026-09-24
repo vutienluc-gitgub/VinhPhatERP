@@ -8,7 +8,8 @@ import { PlatformCapabilityClient } from '@/features/notifications/infrastructur
 import { PermissionClient } from '@/features/notifications/infrastructure/permission.client';
 import { VapidKeyClient } from '@/features/notifications/infrastructure/vapid-key.client';
 import { ServiceWorkerClient } from '@/features/notifications/infrastructure/service-worker.client';
-import { PushSubscriptionRepository } from '@/features/notifications/infrastructure/push-subscription.repository';
+import { PushSubscriptionRepository } from '@/domains/notification/repositories/push-subscription-repository';
+import { matchesAuthoritativeVapidKey } from '@/shared/lib/vapidHelper';
 
 function getOrCreateDeviceId(): string {
   const STORAGE_KEY = 'vp_device_id';
@@ -76,7 +77,7 @@ export class PushSubscriptionService {
     }
 
     // 6. Save to Backend Database (Idempotent)
-    const savedId = await PushSubscriptionRepository.saveSubscription({
+    const saved = await PushSubscriptionRepository.saveSubscription({
       user_id: userId,
       endpoint: subscription.endpoint,
       p256dh,
@@ -87,7 +88,7 @@ export class PushSubscriptionService {
       is_standalone: caps.isStandalone,
     });
 
-    if (!savedId) {
+    if (!saved?.id) {
       throw new BackendRegistrationError(
         'Failed to save push subscription to backend database.',
       );
@@ -124,28 +125,7 @@ export class PushSubscriptionService {
    * Validates if the subscription's applicationServerKey matches the authoritative VAPID key
    */
   static isKeyMatchingAuthoritative(sub: PushSubscription): boolean {
-    if (!sub.options || !sub.options.applicationServerKey) {
-      return true; // Fallback for environments where applicationServerKey is not exposed on options
-    }
-
-    try {
-      const currentKeyBytes = new Uint8Array(sub.options.applicationServerKey);
-      const expectedKeyBytes = VapidKeyClient.getApplicationServerKey();
-
-      if (currentKeyBytes.length !== expectedKeyBytes.length) {
-        return false;
-      }
-
-      for (let i = 0; i < currentKeyBytes.length; i++) {
-        if (currentKeyBytes[i] !== expectedKeyBytes[i]) {
-          return false;
-        }
-      }
-
-      return true;
-    } catch {
-      return true;
-    }
+    return matchesAuthoritativeVapidKey(sub.options?.applicationServerKey);
   }
 
   /**

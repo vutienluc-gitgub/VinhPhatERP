@@ -45,22 +45,6 @@ export interface PushSubscriptionKeys {
   auth: string;
 }
 
-export interface PushSubscriptionRecord {
-  id?: string;
-  user_id: string;
-  endpoint: string;
-  p256dh: string;
-  auth: string;
-  device_id?: string;
-  platform?: 'ios' | 'android' | 'desktop' | 'unknown';
-  browser?: 'safari' | 'chrome' | 'firefox' | 'edge' | 'unknown';
-  user_agent?: string;
-  is_standalone?: boolean;
-  last_seen_at?: string;
-  created_at?: string;
-  revoked_at?: string | null;
-}
-
 export interface NotificationPreference {
   id: string;
   user_id: string;
