@@ -23,3 +23,39 @@ export function urlBase64ToUint8Array(base64String: string): Uint8Array {
 export function getVapidPublicKey(): string {
   return resolveVapidPublicKey();
 }
+
+/**
+ * True when an existing PushSubscription was minted with the currently
+ * authoritative VAPID key. After a key rotation the old subscription is
+ * useless: the push gateway answers VapidPkHashMismatch because the key hash in
+ * the VAPID header no longer matches the one the subscription was created with.
+ *
+ * A missing/undecodable key is treated as matching so we never destroy a
+ * subscription we cannot actually reason about.
+ */
+export function matchesAuthoritativeVapidKey(
+  appliedKey: ArrayBuffer | ArrayBufferView | null | undefined,
+): boolean {
+  if (!appliedKey) return true;
+
+  try {
+    const appliedBytes =
+      appliedKey instanceof ArrayBuffer
+        ? new Uint8Array(appliedKey)
+        : new Uint8Array(
+            appliedKey.buffer,
+            appliedKey.byteOffset,
+            appliedKey.byteLength,
+          );
+
+    const expectedBytes = urlBase64ToUint8Array(getVapidPublicKey());
+    if (appliedBytes.length !== expectedBytes.length) return false;
+
+    for (let i = 0; i < appliedBytes.length; i++) {
+      if (appliedBytes[i] !== expectedBytes[i]) return false;
+    }
+    return true;
+  } catch {
+    return true;
+  }
+}

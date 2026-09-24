@@ -6,7 +6,6 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { PortalLayout } from '@/features/portal-shared/components/PortalLayout';
 import { useChatNotifications, usePortalChatUnread } from '@/application/chat';
 import { useAppBadging } from '@/shared/hooks/useAppBadging';
-import { PushNotificationBanner } from '@/features/notifications/presentation/components/PushNotificationBanner';
 
 import {
   NotificationProvider,
@@ -74,7 +73,6 @@ function PortalLayoutInner() {
       unreadChatCount={unreadChatCount}
       headerRightActions={<NotificationBadge />}
     >
-      <PushNotificationBanner />
       <AnimatePresence mode="wait">
         <motion.div
           key={location.pathname}
