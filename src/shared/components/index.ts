@@ -113,3 +113,4 @@ export {
 } from './ConcurrencyConflictModal';
 export * from './notifications/NotificationSettingsCard';
 export * from './brand';
+export * from './fabric-roll';

@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
 
-import {
-  computeRollsTotalWeight,
-  splitRollsIntoColumns,
-} from '@/domain/portal/portal-payment.utils';
+import type { FabricRollPackingItem } from '@/domain/inventory/packing-list.types';
+import { computeRollsTotalWeight } from '@/domain/portal/portal-payment.utils';
 import type { FabricRollBreakdownItem } from '@/domain/portal/types';
+import { FabricRollMatrixTable } from '@/shared/components/fabric-roll/FabricRollMatrixTable';
 
 import { PORTAL_ORDER_DETAIL_TEXT } from './orders.constants';
 
@@ -15,8 +14,19 @@ interface PortalOrderPackingListProps {
 export const PortalOrderPackingList: React.FC<PortalOrderPackingListProps> = ({
   rolls,
 }) => {
-  const columns = useMemo(() => splitRollsIntoColumns(rolls, 2), [rolls]);
   const totalWeight = useMemo(() => computeRollsTotalWeight(rolls), [rolls]);
+
+  const packingRolls: FabricRollPackingItem[] = useMemo(
+    () =>
+      rolls.map((r) => ({
+        id: r.id,
+        roll_code: r.roll_code,
+        roll_sequence: r.display_index,
+        weight_kg: r.weight_kg,
+        length_meters: r.length_m,
+      })),
+    [rolls],
+  );
 
   if (rolls.length === 0) {
     return null;
@@ -35,7 +45,8 @@ export const PortalOrderPackingList: React.FC<PortalOrderPackingListProps> = ({
               marginTop: '0.2rem',
             }}
           >
-            {PORTAL_ORDER_DETAIL_TEXT.PACKING_LIST_SUBTITLE}
+            {PORTAL_ORDER_DETAIL_TEXT.PACKING_LIST_SUBTITLE} (Ma trận 10
+            cây/dòng)
           </div>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -49,65 +60,13 @@ export const PortalOrderPackingList: React.FC<PortalOrderPackingListProps> = ({
       </div>
 
       <div className="portal-card-body">
-        {/* 2-column Roll Breakdown Grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1rem',
-          }}
-        >
-          {columns.map((column, colIdx) => (
-            <div
-              key={`col-${colIdx}`}
-              style={{
-                border: '1px solid var(--border)',
-                borderRadius: '8px',
-                overflow: 'hidden',
-              }}
-            >
-              <table className="portal-table" style={{ fontSize: '0.82rem' }}>
-                <thead>
-                  <tr>
-                    <th style={{ width: '45px', textAlign: 'center' }}>
-                      {PORTAL_ORDER_DETAIL_TEXT.COL_INDEX}
-                    </th>
-                    <th>{PORTAL_ORDER_DETAIL_TEXT.COL_ROLL_CODE}</th>
-                    <th className="right">
-                      {PORTAL_ORDER_DETAIL_TEXT.COL_WEIGHT}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {column.map((roll) => (
-                    <tr key={roll.id}>
-                      <td
-                        style={{
-                          textAlign: 'center',
-                          color: 'var(--muted-foreground)',
-                          fontWeight: 500,
-                        }}
-                      >
-                        {roll.display_index}
-                      </td>
-                      <td
-                        style={{ fontWeight: 600, color: 'var(--foreground)' }}
-                      >
-                        {roll.roll_code}
-                      </td>
-                      <td
-                        className="right"
-                        style={{ fontWeight: 600, color: 'var(--primary)' }}
-                      >
-                        {roll.weight_kg.toFixed(1)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
-        </div>
+        {/* Decade Matrix Table (10 rolls per row) */}
+        <FabricRollMatrixTable
+          rolls={packingRolls}
+          rollsPerRow={10}
+          showSubtotal={true}
+          interactive={true}
+        />
 
         {/* Summary Footer Bar */}
         <div
@@ -155,7 +114,7 @@ export const PortalOrderPackingList: React.FC<PortalOrderPackingListProps> = ({
               fontStyle: 'italic',
             }}
           >
-            Quy cách thực cân điện tử Vĩnh Phát
+            Quy cách thực cân điện tử Vĩnh Phát — Chuẩn phiếu A5 4 liên
           </span>
         </div>
       </div>

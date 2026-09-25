@@ -100,3 +100,17 @@ Hệ thống PHẢI tự động gom nhóm danh sách cây vải theo Tên màu 
   - Phân đoạn 1: Muối Tiêu — 20 cây, 462.5 kg, TB: 23.1 kg/cây
   - Phân đoạn 2: Xanh Đen — 15 cây, 346.1 kg, TB: 23.0 kg/cây
 - **AND** Có thanh tổng kết toàn bộ phiếu xuất: 35 cây, 808.6 kg.
+
+---
+
+### REQ-INV-05: Chuẩn hóa Ma trận 10 cây/dòng và Mẫu in Giấy A5 4 liên nằm ngang (A5 Landscape)
+
+Hệ thống PHẢI cung cấp định dạng bảng kê **Ma trận 10 cây/dòng (Decade Weight Matrix)** dùng chung cho Web Customer Portal, Bảng kê Kho thành phẩm và Phiếu in giấy A5 4 liên:
+
+1. **Ma trận 10 cây/dòng**:
+   - Mỗi hàng hiển thị 10 ô cân nặng đại diện cho 10 cây vải kèm cột số thứ tự dải (`01 - 10`, `11 - 20`,...).
+   - Có cột **Cộng dòng (Subtotal kg)** cho từng hàng 10 cây để phục vụ đối soát nhanh khi giao nhận.
+   - 100 cây vải chỉ chiếm đúng 10 hàng bảng, không làm tràn trang web hay tràn giấy in.
+2. **Khổ in Giấy A5 4 liên nằm ngang (210mm x 148mm)**:
+   - CSS in ấn định dạng `@page { size: A5 landscape; margin: 6mm 8mm; }` chừa lề đục lỗ cho giấy in kim carbonless.
+   - Vừa khít toàn bộ thông tin Header, 100 cây vải và 4 chữ ký (Người lập, Thủ kho, Tài xế, Khách nhận) trong duy nhất 1 mặt giấy A5 ngang.

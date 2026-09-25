@@ -4,9 +4,8 @@ import type { FabricRollPackingItem } from '@/domain/inventory/packing-list.type
 import {
   calculatePackingSummary,
   groupRollsByColorAndBatch,
-  normalizeGrade,
-  roundWeight,
 } from '@/domain/inventory/packing-list.utils';
+import { FabricRollMatrixTable } from '@/shared/components/fabric-roll/FabricRollMatrixTable';
 
 export interface FabricPackingPrintTemplateProps {
   rolls: FabricRollPackingItem[];
@@ -31,38 +30,54 @@ export const FabricPackingPrintTemplate: React.FC<
   const groups = groupRollsByColorAndBatch(rolls);
 
   return (
-    <div className="p-8 bg-surface text-foreground font-sans text-xs max-w-4xl mx-auto print:p-0 print:max-w-none">
+    <div className="p-4 bg-surface text-foreground font-sans text-xs max-w-[210mm] mx-auto print:p-0 print:max-w-none print:w-full print:bg-white print:text-black">
+      <style>{`
+        @media print {
+          @page {
+            size: A5 landscape;
+            margin: 6mm 8mm;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .no-print {
+            display: none !important;
+          }
+        }
+      `}</style>
+
       {/* Header */}
-      <div className="flex justify-between items-start border-b border-border pb-4 mb-4">
+      <div className="flex justify-between items-start border-b border-border pb-2 mb-2">
         <div>
-          <h1 className="text-sm font-extrabold uppercase text-foreground">
+          <h1 className="text-xs font-black uppercase text-foreground">
             CÔNG TY TNHH SX TM DỆT MAY VĨNH PHÁT
           </h1>
-          <p className="text-[11px] text-muted mt-0.5">
-            Xưởng Dệt Nhuộm & Hoàn Tất Vải — Hotline: 0903.XXX.XXX
+          <p className="text-[10px] text-muted mt-0.5">
+            Xưởng Dệt Nhuộm & Hoàn Tất Vải — Bảng kê cây vải xuất xưởng
           </p>
         </div>
         <div className="text-right">
-          <div className="text-base font-black tracking-wide text-primary">
-            BẢNG KÊ CÂY VẢI
+          <div className="text-sm font-black tracking-wide text-primary">
+            BẢNG KÊ CÂY VẢI (PACKING LIST)
           </div>
-          <div className="text-[11px] text-muted mt-0.5">
-            Số: <strong>{documentNumber}</strong>
-          </div>
-          <div className="text-[11px] text-muted">
+          <div className="text-[10px] text-muted mt-0.5">
+            Số: <strong className="text-foreground">{documentNumber}</strong> —
             Ngày: {new Date().toLocaleDateString('vi-VN')}
           </div>
         </div>
       </div>
 
       {/* Meta Information */}
-      <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-lg border border-border bg-surface-secondary/40 text-[11px]">
+      <div className="grid grid-cols-2 gap-2 mb-2 p-2 rounded-lg border border-border bg-surface-secondary/40 text-[10.5px]">
         <div>
           <p>
             <span className="text-muted">Đơn vị nhận hàng:</span>{' '}
             <strong className="text-foreground">{customerName}</strong>
           </p>
-          <p className="mt-1">
+          <p className="mt-0.5">
             <span className="text-muted">Phương tiện vận chuyển:</span>{' '}
             <strong className="text-foreground">{licensePlate}</strong> (Tài xế:{' '}
             {driverName})
@@ -70,106 +85,67 @@ export const FabricPackingPrintTemplate: React.FC<
         </div>
         <div className="text-right">
           <p>
-            <span className="text-muted">Tổng số lượng xuất:</span>{' '}
+            <span className="text-muted">Tổng xuất:</span>{' '}
             <strong className="text-foreground">{summary.total_rolls}</strong>{' '}
-            cây ({summary.total_weight_kg} kg)
+            cây ({summary.total_weight_kg.toFixed(1)} kg)
           </p>
-          {notes && <p className="mt-1 text-muted italic">Ghi chú: {notes}</p>}
+          {notes && (
+            <p className="mt-0.5 text-muted italic">Ghi chú: {notes}</p>
+          )}
         </div>
       </div>
 
-      {/* Grouped Table */}
-      <div className="flex flex-col gap-4 mb-6">
+      {/* Grouped Decade Matrix Table(s) */}
+      <div className="flex flex-col gap-2.5 mb-3">
         {groups.map((group) => (
-          <div key={group.group_key}>
-            <div className="flex justify-between items-center bg-surface-secondary px-3 py-1.5 font-bold text-[11px] border border-border border-b-0">
+          <div key={group.group_key} className="flex flex-col gap-1">
+            <div className="flex justify-between items-center bg-surface-secondary/60 px-2.5 py-1 font-bold text-[10.5px] border border-border rounded-t-md">
               <span>
                 Mặt hàng: {group.fabric_type || 'Vải thành phẩm'} — Màu:{' '}
                 {group.color_name}{' '}
                 {group.lot_number ? `(Lô: ${group.lot_number})` : ''}
               </span>
               <span>
-                {group.total_rolls} cây • {group.total_weight_kg} kg • TB:{' '}
-                {group.average_weight_kg} kg/cây
+                {group.total_rolls} cây • {group.total_weight_kg.toFixed(1)} kg
+                • TB: {group.average_weight_kg.toFixed(1)} kg/cây
               </span>
             </div>
 
-            <table className="w-full border-collapse border border-border text-[11px]">
-              <thead>
-                <tr className="bg-surface-secondary/30 text-muted font-bold text-center">
-                  <th className="border border-border py-1 px-2 w-10">STT</th>
-                  <th className="border border-border py-1 px-2 text-left">
-                    Mã cây vải
-                  </th>
-                  <th className="border border-border py-1 px-2">Khổ vải</th>
-                  <th className="border border-border py-1 px-2 text-right">
-                    Cân nặng (kg)
-                  </th>
-                  <th className="border border-border py-1 px-2">Phẩm cấp</th>
-                  <th className="border border-border py-1 px-2">Ghi chú</th>
-                </tr>
-              </thead>
-              <tbody>
-                {group.rolls.map((roll, idx) => (
-                  <tr key={roll.id || roll.roll_code} className="text-center">
-                    <td className="border border-border py-1 px-2 text-muted">
-                      {roll.roll_sequence || idx + 1}
-                    </td>
-                    <td className="border border-border py-1 px-2 text-left font-semibold">
-                      {roll.roll_code}
-                    </td>
-                    <td className="border border-border py-1 px-2 text-muted">
-                      {roll.width_inch ? `${roll.width_inch}"` : '—'}
-                    </td>
-                    <td className="border border-border py-1 px-2 text-right font-bold">
-                      {roundWeight(roll.weight_kg).toFixed(1)}
-                    </td>
-                    <td className="border border-border py-1 px-2">
-                      Loại {normalizeGrade(roll.grade)}
-                    </td>
-                    <td className="border border-border py-1 px-2 text-muted text-left">
-                      {roll.notes || ''}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <FabricRollMatrixTable
+              rolls={group.rolls}
+              rollsPerRow={10}
+              compact={true}
+              showSubtotal={true}
+              interactive={false}
+              className="border-t-0 rounded-t-none"
+            />
           </div>
         ))}
       </div>
 
-      {/* Summary Total Box */}
-      <div className="p-3 border border-border rounded-lg bg-surface-secondary/50 flex justify-between items-center text-xs font-bold mb-8">
-        <span>TỔNG CỘNG TOÀN BỘ CHUYẾN HÀNG:</span>
-        <span className="text-sm text-primary">
-          {summary.total_rolls} cây vải — {summary.total_weight_kg} kg (TB:{' '}
-          {summary.average_weight_kg} kg/cây)
-        </span>
-      </div>
-
       {/* Signature Section */}
-      <div className="grid grid-cols-4 gap-4 text-center text-[11px] pt-4">
+      <div className="grid grid-cols-4 gap-2 text-center text-[10.5px] pt-1 border-t border-border/80">
         <div>
           <p className="font-bold">Người lập bảng</p>
-          <p className="text-[10px] text-muted italic mt-0.5">(Ký, họ tên)</p>
-          <div className="h-16" />
+          <p className="text-[9.5px] text-muted italic mt-0.5">(Ký, họ tên)</p>
+          <div className="h-10" />
         </div>
         <div>
           <p className="font-bold">Thủ kho xuất</p>
-          <p className="text-[10px] text-muted italic mt-0.5">(Ký, họ tên)</p>
-          <div className="h-16" />
+          <p className="text-[9.5px] text-muted italic mt-0.5">(Ký, họ tên)</p>
+          <div className="h-10" />
         </div>
         <div>
           <p className="font-bold">Tài xế giao nhận</p>
-          <p className="text-[10px] text-muted italic mt-0.5">(Ký, họ tên)</p>
-          <div className="h-16" />
+          <p className="text-[9.5px] text-muted italic mt-0.5">(Ký, họ tên)</p>
+          <div className="h-10" />
         </div>
         <div>
           <p className="font-bold">Đại diện khách hàng</p>
-          <p className="text-[10px] text-muted italic mt-0.5">
+          <p className="text-[9.5px] text-muted italic mt-0.5">
             (Ký, nhận đủ cây)
           </p>
-          <div className="h-16" />
+          <div className="h-10" />
         </div>
       </div>
     </div>
