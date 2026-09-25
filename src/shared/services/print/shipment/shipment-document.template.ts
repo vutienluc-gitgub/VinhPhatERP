@@ -1,7 +1,6 @@
 import QRCode from 'qrcode';
 
 import type { ShipmentDocument } from '@/domain/shipments/types';
-import { BRAND_ASSETS } from '@/shared/constants/brand';
 
 import {
   SHIPMENT_DOCUMENT_LABELS,
@@ -146,7 +145,7 @@ export async function buildShipmentPrintHtml(
 
     const showLogo = options.showLogo !== false;
     const showQr = options.showQr !== false;
-    const logoSrc = options.logoUrl || BRAND_ASSETS.COMPACT_POSITIVE;
+    const logoSrc = options.logoUrl || '/brand/logo-compact-positive.svg';
     const footerText =
       options.footerNote || SHIPMENT_DOCUMENT_LABELS.FOOTER_DISCLAIMER;
 

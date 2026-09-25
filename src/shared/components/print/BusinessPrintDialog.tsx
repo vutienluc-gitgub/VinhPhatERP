@@ -15,7 +15,6 @@ import {
 import { Button, Icon } from '@/shared/components';
 import { exportShipmentToPdf } from '@/shared/services/print/shipment';
 import type { ShipmentDocument } from '@/domain/shipments/types';
-import { BRAND_ASSETS } from '@/shared/constants/brand';
 import { sumBy } from '@/shared/utils/array.util';
 
 export interface BusinessPrintDialogProps {
@@ -140,7 +139,6 @@ export function BusinessPrintDialog({
         await exportShipmentToPdf(shipmentDoc, {
           format,
           companyName,
-          logoUrl: BRAND_ASSETS.COMPACT_POSITIVE,
           showLogo: true,
           showQr: true,
           footerNote:
