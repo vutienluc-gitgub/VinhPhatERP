@@ -78,10 +78,25 @@ Hệ thống PHẢI hỗ trợ thủ kho và tài xế quét mã QR/Barcode dán
 
 ### REQ-INV-03: Xuất và In Bảng kê (Print & Export)
 
-Hệ thống PHẢI hỗ trợ xuất bảng kê danh sách cây vải ra file PDF chuẩn A4/A5 và Excel (.xlsx).
+Hệ thống PHẢI hỗ trợ xuất bảng kê danh sách cây vải ra file PDF chuẩn A4/A5 và Excel (.csv / .xlsx).
 
 #### Scenario: In bảng kê xuất xưởng khổ A4
 
 - **GIVEN** Phiếu xuất kho đã được xác nhận (Confirmed)
 - **WHEN** Thủ kho bấm "In Bảng Kê Cây Vải"
 - **THEN** Bản in PDF được tạo gồm: Header thông tin công ty Dệt May Vĩnh Phát, Thông tin khách hàng, Bảng ma trận 35 cây vải, Tổng số cây, Tổng kg, và các chữ ký: Người lập bảng, Thủ kho, Tài xế, Đại diện khách hàng.
+
+---
+
+### REQ-INV-04: Phân nhóm Cây Vải theo Màu và Lô Nhuộm (Color & Dye Batch Grouping)
+
+Hệ thống PHẢI tự động gom nhóm danh sách cây vải theo Tên màu và Số lô nhuộm, tính toán số liệu thống kê độc lập (số cây, tổng kg, kg bình quân) cho từng nhóm màu trước khi hiển thị dòng tổng kết toàn bộ phiếu xuất.
+
+#### Scenario: Gom nhóm đơn hàng nhiều màu
+
+- **GIVEN** Phiếu xuất gồm 20 cây vải màu "Muối Tiêu" và 15 cây vải màu "Xanh Đen"
+- **WHEN** Người dùng xem Bảng kê danh sách cây vải
+- **THEN** Hệ thống phân tách thành 2 phân đoạn rõ ràng:
+  - Phân đoạn 1: Muối Tiêu — 20 cây, 462.5 kg, TB: 23.1 kg/cây
+  - Phân đoạn 2: Xanh Đen — 15 cây, 346.1 kg, TB: 23.0 kg/cây
+- **AND** Có thanh tổng kết toàn bộ phiếu xuất: 35 cây, 808.6 kg.
