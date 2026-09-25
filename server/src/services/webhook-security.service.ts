@@ -99,11 +99,17 @@ export class WebhookSecurityService {
       };
     }
 
-    if (timestamp) {
-      const timestampCheck = this.verifyTimestamp(timestamp);
-      if (!timestampCheck.isValid) {
-        return { success: false, error: timestampCheck.error };
-      }
+    // Mandatory timestamp verification for replay attack protection
+    if (!timestamp) {
+      return {
+        success: false,
+        error: 'MISSING_TIMESTAMP: x-webhook-timestamp header is required',
+      };
+    }
+
+    const timestampCheck = this.verifyTimestamp(timestamp);
+    if (!timestampCheck.isValid) {
+      return { success: false, error: timestampCheck.error };
     }
 
     const isSigValid = this.verifyHmacSignature(

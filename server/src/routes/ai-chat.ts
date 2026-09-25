@@ -1,8 +1,10 @@
+import { GoogleGenAI } from '@google/genai';
+import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { streamText } from 'hono/streaming';
-import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { GoogleGenAI } from '@google/genai';
+
+import { requireAuth } from '../middleware/auth.js';
 
 const router = new Hono();
 
@@ -13,7 +15,6 @@ const messageSchema = z.object({
 
 const chatRequestSchema = z.object({
   messages: z.array(messageSchema).min(1, 'Cần ít nhất một tin nhắn'),
-  systemInstruction: z.string().optional(),
 });
 
 const DEFAULT_SYSTEM_INSTRUCTION = `Bạn là Trợ lý AI thông minh của Công ty TNHH SX TM Dệt May Vĩnh Phát (Vinh Phat ERP).
@@ -50,6 +51,7 @@ function formatAIError(err: unknown): string {
  */
 router.post(
   '/stream',
+  requireAuth,
   zValidator('json', chatRequestSchema, (result, c) => {
     if (!result.success) {
       return c.json(
@@ -73,7 +75,7 @@ router.post(
       );
     }
 
-    const { messages, systemInstruction } = c.req.valid('json');
+    const { messages } = c.req.valid('json');
 
     // Giới hạn lịch sử hội thoại gửi lên Gemini API: chỉ lấy tối đa 8 tin nhắn gần nhất
     const recentMessages = messages.slice(-8);
@@ -100,8 +102,7 @@ router.post(
             model: modelName,
             contents: formattedContents,
             config: {
-              systemInstruction:
-                systemInstruction || DEFAULT_SYSTEM_INSTRUCTION,
+              systemInstruction: DEFAULT_SYSTEM_INSTRUCTION,
             },
           });
 
@@ -144,6 +145,7 @@ router.post(
  */
 router.post(
   '/',
+  requireAuth,
   zValidator('json', chatRequestSchema, (result, c) => {
     if (!result.success) {
       return c.json(
@@ -167,7 +169,7 @@ router.post(
       );
     }
 
-    const { messages, systemInstruction } = c.req.valid('json');
+    const { messages } = c.req.valid('json');
 
     // Giới hạn 8 tin nhắn gần nhất
     const recentMessages = messages.slice(-8);
@@ -187,7 +189,7 @@ router.post(
           model: modelName,
           contents: formattedContents,
           config: {
-            systemInstruction: systemInstruction || DEFAULT_SYSTEM_INSTRUCTION,
+            systemInstruction: DEFAULT_SYSTEM_INSTRUCTION,
           },
         });
 

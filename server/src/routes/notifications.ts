@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 
+import { requireAuth, requireManager } from '@/middleware/auth.js';
 import {
   WebPushService,
   type PushNotificationPayload,
@@ -11,7 +12,7 @@ const notificationsRouter = new Hono();
  * Dispatch Web Push Notification
  * POST /api/v1/notifications/push
  */
-notificationsRouter.post('/push', async (c) => {
+notificationsRouter.post('/push', requireAuth, requireManager, async (c) => {
   let body: PushNotificationPayload;
   try {
     body = await c.req.json();

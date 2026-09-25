@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Context, Next } from 'hono';
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl =
+  process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseServiceKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key';
 
 // Admin client dùng service_role — chỉ dùng ở server, không bao giờ expose ra client
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {

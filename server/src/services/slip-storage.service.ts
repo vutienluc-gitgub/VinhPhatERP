@@ -30,9 +30,7 @@ export class SlipStorageService {
    * If the primary bucket 'yarn-slips' fails, attempts fallback to 'public-media'.
    * Non-blocking graceful degradation: returns null on failure so OCR workflow continues.
    */
-  async uploadSlipImage(
-    params: UploadSlipImageParams,
-  ): Promise<{
+  async uploadSlipImage(params: UploadSlipImageParams): Promise<{
     publicUrl: string;
     bucket: string;
     storagePath: string;
@@ -52,11 +50,22 @@ export class SlipStorageService {
         });
 
       if (!primaryError) {
-        const { data } = serverSupabase.storage
-          .from(this.primaryBucket)
-          .getPublicUrl(storagePath);
+        const bucketRef = serverSupabase.storage.from(this.primaryBucket);
+        let secureUrl = bucketRef.getPublicUrl(storagePath).data.publicUrl;
+
+        // Create signed URL (valid for 7 days) since yarn-slips is a private bucket
+        if (typeof bucketRef.createSignedUrl === 'function') {
+          const { data: signedData } = await bucketRef.createSignedUrl(
+            storagePath,
+            60 * 60 * 24 * 7,
+          );
+          if (signedData?.signedUrl) {
+            secureUrl = signedData.signedUrl;
+          }
+        }
+
         return {
-          publicUrl: data.publicUrl,
+          publicUrl: secureUrl,
           bucket: this.primaryBucket,
           storagePath,
         };

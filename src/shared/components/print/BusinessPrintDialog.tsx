@@ -139,7 +139,6 @@ export function BusinessPrintDialog({
         await exportShipmentToPdf(shipmentDoc, {
           format,
           companyName,
-          logoUrl: '/favicon.svg',
           showLogo: true,
           showQr: true,
           footerNote:

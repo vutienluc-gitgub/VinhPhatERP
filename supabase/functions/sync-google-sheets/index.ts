@@ -431,6 +431,50 @@ async function processJobs(): Promise<{
 // -- HTTP Handler ------------------------------------------------------------
 
 Deno.serve(async (req: Request) => {
+  // Authorization Guard: Require valid Service Role or Admin Session
+  const authHeader = req.headers.get('Authorization') || '';
+  const apiKeyHeader = req.headers.get('apikey') || '';
+  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+
+  const isServiceRole =
+    Boolean(
+      SUPABASE_SERVICE_KEY &&
+      (token === SUPABASE_SERVICE_KEY || apiKeyHeader === SUPABASE_SERVICE_KEY),
+    ) ||
+    Boolean(
+      Deno.env.get('WEBHOOK_SECRET') &&
+      (token === Deno.env.get('WEBHOOK_SECRET') ||
+        apiKeyHeader === Deno.env.get('WEBHOOK_SECRET')),
+    );
+
+  if (!isServiceRole) {
+    const { data: userAuth, error: authErr } =
+      await supabase.auth.getUser(token);
+    if (authErr || !userAuth?.user) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized: Service role or admin token required',
+        }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, is_active')
+      .eq('id', userAuth.user.id)
+      .single();
+
+    if (!profile?.is_active || !['admin', 'manager'].includes(profile.role)) {
+      return new Response(
+        JSON.stringify({
+          error: 'Forbidden: Admin or manager privilege required',
+        }),
+        { status: 403, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+  }
+
   try {
     let body: { action?: string } = {};
     if (req.method === 'POST') {

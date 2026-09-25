@@ -18,3 +18,47 @@ export const PORTAL_ORDERS_TEXT = {
 } as const;
 
 export const MAX_PREVIEW_ITEMS = 2;
+
+export const PORTAL_ORDER_DETAIL_TEXT = {
+  BREADCRUMB_ORDERS: 'Đơn hàng',
+  LOADING: 'Đang tải…',
+  ERROR: 'Lỗi tải đơn hàng',
+  NOT_FOUND: 'Không tìm thấy đơn hàng.',
+  ORDER_DATE: 'Ngày đặt',
+  DELIVERY_DATE: 'Ngày giao',
+  TOTAL_AMOUNT: 'Tổng tiền hàng',
+  PAID_AMOUNT: 'Đã thanh toán',
+  REMAINING_AMOUNT: 'Còn lại cần thanh toán',
+  PRODUCTS_TITLE: 'Sản phẩm',
+  COL_FABRIC: 'Loại vải',
+  COL_COLOR: 'Màu',
+  COL_QUANTITY: 'Số lượng (kg)',
+  COL_UNIT_PRICE: 'Đơn giá',
+  COL_AMOUNT: 'Thành tiền',
+  PROGRESS_TITLE: 'Tiến độ sản xuất',
+  PAYMENT_TITLE: 'Bảng kê thanh toán & Thuế GTGT',
+  SUBTOTAL: 'Tiền hàng (chưa VAT)',
+  VAT_LABEL: 'Thuế GTGT (VAT 8%)',
+  GRAND_TOTAL: 'Tổng cộng thanh toán (có VAT)',
+  IN_WORDS_LABEL: 'Bằng chữ:',
+  QR_TITLE: 'Thanh toán nhanh qua VietQR',
+  QR_SUBTITLE:
+    'Mở ứng dụng ngân hàng và quét mã để thanh toán tự động đúng số tiền và nội dung',
+  BANK_NAME: 'Ngân hàng',
+  ACCOUNT_NUMBER: 'Số tài khoản',
+  ACCOUNT_NAME: 'Chủ tài khoản',
+  TRANSFER_MEMO: 'Nội dung chuyển khoản',
+  COPY_SUCCESS: 'Đã sao chép',
+  BTN_COPY: 'Sao chép',
+  PACKING_LIST_TITLE: 'Bảng kê chi tiết cây vải (Packing List)',
+  PACKING_LIST_SUBTITLE:
+    'Chi tiết khối lượng thực cân từng cây vải giao đợt này',
+  COL_INDEX: 'STT',
+  COL_ROLL_CODE: 'Mã cây',
+  COL_WEIGHT: 'Khối lượng (kg)',
+  TOTAL_ROLLS: 'Tổng số cây:',
+  TOTAL_WEIGHT: 'Tổng khối lượng:',
+  UNIT_ROLLS: 'cây',
+  UNIT_KG: 'kg',
+  NO_ROLLS_DATA: 'Chưa có dữ liệu bảng kê từng cây vải cho đơn này.',
+} as const;

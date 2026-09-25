@@ -41,6 +41,27 @@ const STORAGE_BUCKET = 'contract-pdfs';
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+/**
+ * Sanitizes contract HTML content to prevent Server-Side XSS, SSRF, and LFI
+ * via Chromium / Browserless / Puppeteer.
+ */
+function sanitizeContractHtml(html: string): string {
+  if (!html) return '';
+  return (
+    html
+      // Strip script tags and contents
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      // Strip iframes, objects, embeds, applets, meta, base
+      .replace(/<iframe\b[^>]*>(.*?)<\/iframe>/gi, '')
+      .replace(/<(object|embed|applet|meta|base)\b[^>]*>/gi, '')
+      // Neutralize dangerous URI protocols
+      .replace(/href\s*=\s*['"]?javascript:[^'"]*['"]?/gi, 'href="#"')
+      .replace(/src\s*=\s*['"]?file:[^'"]*['"]?/gi, 'src=""')
+      // Strip inline event handlers
+      .replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '')
+      .replace(/\son\w+\s*=\s*[^\s>]+/gi, '')
+  );
+}
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -295,7 +316,7 @@ serve(async (req: Request) => {
     // Kiểm tra profile
     const { data: profile, error: profileErr } = await supabaseAdmin
       .from('profiles')
-      .select('role, is_active')
+      .select('role, is_active, tenant_id, customer_id, supplier_id')
       .eq('id', user.id)
       .single();
 
@@ -322,7 +343,9 @@ serve(async (req: Request) => {
     // ── STEP 2: Lấy Contract từ database ───────────────────────────────
     const { data: contract, error: contractErr } = await supabaseAdmin
       .from('contracts')
-      .select('id, contract_number, status, content, pdf_url')
+      .select(
+        'id, contract_number, status, content, pdf_url, tenant_id, party_a_id, party_b_id',
+      )
       .eq('id', contract_id)
       .single();
 
@@ -333,8 +356,52 @@ serve(async (req: Request) => {
     // Lưu lại status gốc — KHÔNG được thay đổi nếu export thất bại
     const originalStatus = contract.status;
 
-    // ── STEP 3: Render HTML content đầy đủ ─────────────────────────────
-    const fullHtml = wrapHtmlForPdf(contract.content, contract.contract_number);
+    // ── STEP 2.1: Verify Tenant & Object Authorization (BOLA/IDOR Guard) ──
+    if (
+      profile.role !== 'admin' &&
+      profile.tenant_id &&
+      contract.tenant_id &&
+      profile.tenant_id !== contract.tenant_id
+    ) {
+      return errorResponse(
+        'FORBIDDEN',
+        'Bạn không có quyền truy cập hợp đồng của tổ chức khác',
+        null,
+        403,
+      );
+    }
+
+    if (profile.role === 'customer') {
+      const isOwner =
+        profile.customer_id &&
+        (contract.party_a_id === profile.customer_id ||
+          contract.party_b_id === profile.customer_id);
+      if (!isOwner) {
+        return errorResponse(
+          'FORBIDDEN',
+          'Bạn chỉ có quyền xuất hợp đồng của chính mình',
+          null,
+          403,
+        );
+      }
+    } else if (profile.role === 'supplier') {
+      const isOwner =
+        profile.supplier_id &&
+        (contract.party_a_id === profile.supplier_id ||
+          contract.party_b_id === profile.supplier_id);
+      if (!isOwner) {
+        return errorResponse(
+          'FORBIDDEN',
+          'Bạn chỉ có quyền xuất hợp đồng của chính mình',
+          null,
+          403,
+        );
+      }
+    }
+
+    // ── STEP 3: Render HTML content đầy đủ (Sanitized) ─────────────────
+    const sanitizedContent = sanitizeContractHtml(contract.content);
+    const fullHtml = wrapHtmlForPdf(sanitizedContent, contract.contract_number);
 
     // ── STEP 4: Tạo PDF từ HTML ─────────────────────────────────────────
     let pdfBytes: Uint8Array;

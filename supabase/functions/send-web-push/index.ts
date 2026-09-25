@@ -559,23 +559,22 @@ serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    // 2. Caller Authentication Guard
+    // 2. Caller Authentication Guard (Hardened: No hardcoded keys, no public anon bypass)
     const authHeader = req.headers.get('Authorization') || '';
     const apiKeyHeader = req.headers.get('apikey') || '';
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
-    const KNOWN_ANON_KEY =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4cGhpanJvZmxqeGtjY2R3dHViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MDk1NTksImV4cCI6MjA5MDA4NTU1OX0.8e-qbhqv6UgCZ46Yx7sa9FWGCdT50q27i4kAiMtCpxc';
+    const webhookSecret = Deno.env.get('WEBHOOK_SECRET');
 
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
     const isServiceRole =
-      (serviceRoleKey && token === serviceRoleKey) ||
-      (serviceRoleKey && apiKeyHeader === serviceRoleKey);
-    const isAnon =
-      (anonKey && token === anonKey) ||
-      token === KNOWN_ANON_KEY ||
-      apiKeyHeader === KNOWN_ANON_KEY ||
-      (anonKey && apiKeyHeader === anonKey);
+      Boolean(
+        serviceRoleKey &&
+        (token === serviceRoleKey || apiKeyHeader === serviceRoleKey),
+      ) ||
+      Boolean(
+        webhookSecret &&
+        (token === webhookSecret || apiKeyHeader === webhookSecret),
+      );
 
     if (!token && !apiKeyHeader) {
       return new Response(
@@ -589,16 +588,36 @@ serve(async (req: Request) => {
       );
     }
 
-    if (!isServiceRole && !isAnon) {
+    if (!isServiceRole) {
+      // Must be an authenticated user session
       const { data: userAuth, error: authErr } =
         await supabase.auth.getUser(token);
       if (authErr || !userAuth?.user) {
         return new Response(
           JSON.stringify({
-            error: 'Unauthorized: Invalid authentication token',
+            error: 'Unauthorized: Valid user session or service role required',
           }),
           {
             status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          },
+        );
+      }
+
+      // Verify caller is active
+      const { data: callerProfile, error: profileErr } = await supabase
+        .from('profiles')
+        .select('id, is_active')
+        .eq('id', userAuth.user.id)
+        .single();
+
+      if (profileErr || !callerProfile?.is_active) {
+        return new Response(
+          JSON.stringify({
+            error: 'Forbidden: Inactive or unauthorized profile',
+          }),
+          {
+            status: 403,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           },
         );

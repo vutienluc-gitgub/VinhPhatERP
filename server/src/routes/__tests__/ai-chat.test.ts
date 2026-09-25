@@ -18,6 +18,20 @@ vi.mock('@google/genai', () => {
   };
 });
 
+vi.mock('../../middleware/auth.js', () => ({
+  requireAuth: vi
+    .fn()
+    .mockImplementation(
+      async (
+        c: { set: (key: string, val: unknown) => void },
+        next: () => Promise<void>,
+      ) => {
+        c.set('user', { id: 'test-user-id' });
+        await next();
+      },
+    ),
+}));
+
 import aiChatRouter from '../ai-chat';
 
 describe('ai-chat router', () => {
