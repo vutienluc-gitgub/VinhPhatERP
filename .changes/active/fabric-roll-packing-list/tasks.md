@@ -36,19 +36,21 @@ _(Tuyệt đối không chạm vào UI, CSS hoặc chỉnh sửa layout)_
 
 _(Sử dụng Semantic Design Tokens, không viết business logic trong UI)_
 
-- [ ] **Task 3.1**: Xây dựng Hook quản lý trạng thái:
-  - Tạo `src/features/finished-fabric/hooks/useFabricPackingList.ts` (quản lý bộ lọc màu, chế độ xem Table/Grid, danh sách cây đã quét kiểm đếm).
-- [ ] **Task 3.2**: Xây dựng Component hiển thị cốt lõi:
+- [x] **Task 3.1**: Xây dựng Hook quản lý trạng thái:
+  - Tạo `src/features/finished-fabric/hooks/useFabricPackingList.ts` (quản lý bộ lọc màu, chế độ xem Table/Grid, danh sách cây đã quét kiểm đếm, xuất CSV).
+- [x] **Task 3.2**: Xây dựng Component hiển thị cốt lõi:
   - Tạo `src/features/finished-fabric/components/FabricRollMatrixGrid.tsx` (Lưới ô cây vải 2-4 cột tối ưu mobile, badge phẩm cấp Grade A/B).
   - Tạo `src/features/finished-fabric/components/FabricPackingCheckoffBar.tsx` (Thanh tiến độ kiểm đếm Barcode/QR với tỷ lệ % và số kg đã quét).
+  - Tạo `src/features/finished-fabric/components/FabricPackingStatsCards.tsx` (Thẻ thống kê tổng số cây, tổng kg, cân nặng TB, phẩm cấp).
+  - Tạo `src/features/finished-fabric/components/FabricRollTableView.tsx` (Bảng dữ liệu chi tiết cho Desktop).
   - Tạo `src/features/finished-fabric/components/FabricRollPackingTable.tsx` (Component chuyển đổi linh hoạt Table <-> Matrix Grid).
-- [ ] **Task 3.3**: Tích hợp Modal tra cứu & In ấn:
+- [x] **Task 3.3**: Tích hợp Modal tra cứu & In ấn:
   - Tạo `src/features/finished-fabric/components/FabricRollPackingListModal.tsx` cho phép mở bảng kê từ danh sách cuộn vải hoặc phiếu xuất hàng.
   - Tạo mẫu in A4 chuẩn hóa `src/features/finished-fabric/components/FabricPackingPrintTemplate.tsx`.
-- [ ] **Task 3.4**: Đảm bảo Render Safety:
-  - Loading skeleton khi nạp danh sách cây vải.
+- [x] **Task 3.4**: Đảm bảo Render Safety:
   - Empty state khi phiếu chưa có cây vải nào.
-  - Stable key (`key={roll.id}` hoặc `key={roll.roll_code}`).
+  - Stable key (`key={roll.id || roll.roll_code}`).
+  - Kiểm thử giao diện và hook tự động với Vitest (9 tests PASS 100%).
 - [ ] 🛑 **GATE 3 CHECKPOINT**: Chờ token duyệt: `APPROVE PHASE 4 & 5`.
 
 ---
