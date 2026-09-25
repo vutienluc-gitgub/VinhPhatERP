@@ -82,6 +82,23 @@ describe('FabricRollMatrixTable component', () => {
     expect(handleToggleCheck).toHaveBeenCalledWith(mockRolls[0]);
   });
 
+  it('triggers onToggleCheck on Enter key press for accessibility', () => {
+    const handleToggleCheck = vi.fn();
+    render(
+      <FabricRollMatrixTable
+        rolls={mockRolls}
+        onToggleCheck={handleToggleCheck}
+      />,
+    );
+
+    const cellWeight = screen.getByText('22.8');
+    const tdElement = cellWeight.closest('td')!;
+    fireEvent.keyDown(tdElement, { key: 'Enter', code: 'Enter' });
+
+    expect(handleToggleCheck).toHaveBeenCalledTimes(1);
+    expect(handleToggleCheck).toHaveBeenCalledWith(mockRolls[0]);
+  });
+
   it('renders compact mode without roll code subtitles for A5 print', () => {
     render(<FabricRollMatrixTable rolls={mockRolls} compact={true} />);
 

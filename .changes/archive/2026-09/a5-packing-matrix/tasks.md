@@ -1,14 +1,13 @@
-# Implementation Tasks: Bảng kê Cây vải Ma trận 10 cây/dòng chuẩn Giấy A5 Ngang (A5 Packing Matrix)
+# Implementation Tasks: Ma Trận Bảng Kê Cây Vải Khổ A5 (A5 Packing Matrix)
 
-- **Slug:** `a5-packing-matrix`
-- **Checklist tuân thủ nghiêm ngặt các Cổng phê duyệt tại [AI_WORKFLOW.md](file:///d:/VinhPhatERP_v3/AI_WORKFLOW.md)**.
+Checklist công việc tuần tự tuân thủ nghiêm ngặt các Cổng phê duyệt tại [AI_WORKFLOW.md](file:///d:/VinhPhatERP_v3/AI_WORKFLOW.md) và tiêu chuẩn thiết kế [erp-uiux-pro](file:///d:/VinhPhatERP_v3/.agents/skills/erp-uiux-pro/SKILL.md).
 
 ---
 
 ## 🛑 GATE 1: KHỞI TẠO & PHÊ DUYỆT BẢN KẾ HOẠCH
 
-- [x] Hoàn thiện `proposal.md` và `delta-spec.md`.
-- [ ] Người dùng duyệt Gate 1 bằng token chính xác: `APPROVE PHASE 2`.
+- [x] Hoàn thiện `proposal.md` theo chuẩn `erp-uiux-pro` (Đã hoàn tất).
+- [x] Người dùng nhập token duyệt: `APPROVE PHASE 2` (Đã phê duyệt).
 
 ---
 
@@ -16,33 +15,38 @@
 
 _(Nghiêm cấm chạm vào UI, CSS hoặc chỉnh sửa layout)_
 
-- [x] Task 2.1: Bổ sung kiểu dữ liệu ma trận `PackingMatrixRow`, `PackingMatrixCell` trong `src/domain/inventory/packing-list.types.ts`.
-- [x] Task 2.2: Triển khai hàm nghiệp vụ `buildPackingMatrixRows` (chia khối 10 cây, tính subtotal kg, xử lý dòng cuối lẻ cây) trong `src/domain/inventory/packing-list.utils.ts`.
-- [x] Task 2.3: Viết Unit Test Vitest (`src/domain/inventory/__tests__/packing-matrix.utils.test.ts`) kiểm thử toàn bộ trường hợp biên (0 cây, 3 cây, 10 cây, 43 cây, 100 cây, số thập phân kg).
-- [x] Chạy `npm run test` đảm bảo 100% test pass (23/23 tests passed, `npm run typecheck` passed 0 errors).
-- [ ] 🛑 **GATE 2 CHECKPOINT**: Dừng lại chờ người dùng nhập token duyệt: `APPROVE PHASE 3`.
+- [x] Task 2.1: Bổ sung TypeScript types cho ma trận đóng gói (`PackingMatrixRow`, `PackingMatrixCell`, `PackingMatrixGroup`) trong `src/domain/inventory/packing-list.types.ts`.
+- [x] Task 2.2: Triển khai domain helpers thuần túy (`buildPackingMatrixRows`, `buildPackingMatrixGroups`) trong `src/domain/inventory/packing-list.utils.ts`.
+- [x] Task 2.3: Viết Unit Test Vitest cho domain logic trong `src/domain/inventory/__tests__/packing-matrix.utils.test.ts` (100% tests pass: 23/23 tests passed).
+- [x] 🛑 **GATE 2 CHECKPOINT**: Người dùng nhập token duyệt: `APPROVE PHASE 3` (Đã phê duyệt).
 
 ---
 
-## 🎨 PHASE 3: UI / UX PRESENTATION & UNIVERSAL REUSABILITY
+## 🎨 PHASE 3: UI / UX PRESENTATION (Theo chuẩn `erp-uiux-pro`)
 
 _(Nghiêm cấm can thiệp hoặc thay đổi business logic)_
 
-- [x] Task 3.1: Xây dựng Component dùng chung `src/shared/components/fabric-roll/FabricRollMatrixTable.tsx` (hỗ trợ chế độ Web tương tác, Mobile cuộn ngang, và In ấn A5).
-- [x] Task 3.2: Tích hợp vào Mẫu in A5 ngang 4 liên `src/features/finished-fabric/components/FabricPackingPrintTemplate.tsx` với CSS `@page { size: A5 landscape; }` và bố cục 4 chữ ký.
-- [x] Task 3.3: Tích hợp vào Customer Portal `src/features/customer-portal/orders/PortalOrderPackingList.tsx` thay thế hiển thị 2 cột dài bằng ma trận 10 cây kèm thẻ tóm tắt.
-- [x] Task 3.4: Bổ sung tùy chọn xem Ma trận A5 trong Bảng kê ERP Kho `src/features/finished-fabric/components/FabricRollPackingTable.tsx`.
-- [x] Task 3.5: Viết component test cho `FabricRollMatrixTable` và kiểm tra Render Safety (null guards, stable keys) - 42/42 related tests passed.
-- [x] 🛑 **GATE 3 CHECKPOINT**: Người dùng duyệt với token: `APPROVE PHASE 4 & 5`.
+- [x] Task 3.1: Hoàn thiện Component dùng chung `FabricRollMatrixTable.tsx` tại `src/shared/components/fabric-roll/`:
+  - 10 cột STT cây (`01` đến `10`) + 1 cột STT hàng + 1 cột Tổng cộng (kg).
+  - Căn lề số liệu: Căn phải + `font-mono tabular-nums`.
+  - Hỗ trợ tooltip khi rê chuột vào ô cây vải (hiển thị mã cuộn, số mét, Grade).
+  - Hỗ trợ tương tác toggle tích chọn kiểm đếm (`onToggleCheck`).
+  - Hỗ trợ điều hướng bàn phím trợ năng (phím `Enter`/`Space` kích hoạt kiểm đếm + `focus-visible:ring-1`).
+  - Empty state có Icon SVG thân thiện (`PackageOpen`).
+- [x] Task 3.2: Tích hợp chế độ xem ma trận (Matrix View Toggle) vào `FabricRollPackingTable.tsx` (Quản trị kho).
+- [x] Task 3.3: Tích hợp chế độ xem ma trận vào Cổng khách hàng `PortalOrderPackingList.tsx`.
+- [x] Task 3.4: Tối ưu bản in A5 Landscape trong `FabricPackingPrintTemplate.tsx` (Vừa khít 100 cây / trang A5).
+- [x] Task 3.5: Áp dụng Semantic Design Tokens (`bg-surface`, `bg-surface-secondary`, `bg-success-soft`, `text-success`...).
+- [x] Task 3.6: Bổ sung trạng thái: Loading Skeleton, Empty State khi chưa có cây vải, Error state.
+- [x] 🛑 **GATE 3 CHECKPOINT**: Người dùng nhập token duyệt: `APPROVE PHASE 4 & 5` (Đã phê duyệt).
 
 ---
 
 ## 🧹 PHASE 4: CLEANUP & CODE POLISH
 
-- [x] Task 4.1: Đảm bảo toàn bộ văn bản Tiếng Việt đưa vào constants (`PACKING_LIST_TEXT`, `PORTAL_ORDER_DETAIL_TEXT`).
-- [x] Task 4.2: Kiểm tra Design Tokens (không hardcode màu tĩnh trong `.css`, đạt chuẩn `no-hardcoded-colors`).
-- [x] Task 4.3: Xóa debug log, kiểm tra import chuẩn (không cross-feature relative import, export qua `@/shared/components`).
-- [x] 🛑 **GATE 4 CHECKPOINT**: Người dùng duyệt với token: `APPROVE MERGE`.
+- [x] Task 4.1: Kiểm tra Architecture Guard: 0 emoji, 0 hardcoded colors trong toàn bộ các file mới. Thay thế import `lucide-react` trực tiếp bằng `<Icon />` chuẩn hệ thống.
+- [x] Task 4.2: Loại bỏ mã lặp, kiểm tra phím tắt Tab / Enter điều hướng mượt mà và kiểm tra 0 console.log.
+- [x] 🛑 **GATE 4 CHECKPOINT**: Người dùng nhập token duyệt: `APPROVE MERGE` (Đã phê duyệt chính thức).
 
 ---
 
@@ -50,10 +54,9 @@ _(Nghiêm cấm can thiệp hoặc thay đổi business logic)_
 
 Tuân thủ **Evidence Rule §1.2** (Ghi lại kết quả thực tế của lệnh chạy):
 
-- [x] `npm run rpc:check`: PASSED (Exit code 0, 101 rpc() calls in sync with 236 DB functions).
-- [x] `npm run typecheck`: PASSED (Exit code 0, 0 TypeScript errors).
-- [x] `npm run lint -- --max-warnings=0`: PASSED (Exit code 0, 0 errors, 0 warnings).
-- [x] `npm run lint:css`: PASSED (Exit code 0, 0 CSS/stylelint errors).
-- [x] `npm run test`: PASSED (Exit code 0, 135/135 test files passed, 845/845 tests passed 100%).
-- [x] Đồng bộ `delta-spec.md` vào `specs/inventory/spec.md`: Đã bổ sung `REQ-INV-05`.
-- [x] Lưu trữ Change (Archive) vào `.changes/archive/2026-09/a5-packing-matrix`.
+- [x] `npm run rpc:check`: PASS (Found 101 rpc() call(s), Found 236 function(s) in public schema. All RPC functions in sync).
+- [x] `npm run typecheck`: PASS (0 errors, frontend & server clean).
+- [x] `npm run lint -- --max-warnings=0`: PASS (0 errors, 0 warnings trên toàn bộ codebase).
+- [x] `npm run lint:css`: PASS (0 stylelint errors).
+- [x] `npm run test`: PASS (846 passed across 135 test files, 100% pass).
+- [x] Đồng bộ tài liệu và di chuyển `.changes/active/a5-packing-matrix` vào `.changes/archive/2026-09/a5-packing-matrix/` (Hoàn tất).

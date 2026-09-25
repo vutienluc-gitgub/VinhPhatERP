@@ -6,6 +6,7 @@ import {
   calculatePackingSummary,
   normalizeGrade,
 } from '@/domain/inventory/packing-list.utils';
+import { Icon } from '@/shared/components/Icon';
 import { cn } from '@/shared/utils/cn';
 
 export interface FabricRollMatrixTableProps {
@@ -38,8 +39,14 @@ export const FabricRollMatrixTable: React.FC<FabricRollMatrixTableProps> = ({
 
   if (!rolls || rolls.length === 0) {
     return (
-      <div className="py-6 text-center text-xs text-muted border border-dashed border-border rounded-lg bg-surface">
-        Không có dữ liệu cây vải.
+      <div className="flex flex-col items-center justify-center gap-1.5 py-6 text-center text-xs text-muted border border-dashed border-border rounded-lg bg-surface">
+        <Icon
+          name="PackageOpen"
+          size={20}
+          className="text-muted/60"
+          aria-hidden="true"
+        />
+        <span>Không có dữ liệu cây vải.</span>
       </div>
     );
   }
@@ -139,6 +146,7 @@ export const FabricRollMatrixTable: React.FC<FabricRollMatrixTableProps> = ({
                 }
 
                 const gradeNorm = normalizeGrade(roll.grade);
+                const isGradeB = gradeNorm === 'B';
                 const isChecked = Boolean(roll.checked);
 
                 return (
@@ -148,33 +156,51 @@ export const FabricRollMatrixTable: React.FC<FabricRollMatrixTableProps> = ({
                       roll.roll_code ||
                       `cell-${row.row_index}-${cell.col_index}`
                     }
+                    tabIndex={interactive ? 0 : undefined}
+                    role={interactive ? 'button' : undefined}
+                    aria-label={`Cây ${roll.roll_code}, ${cell.weight_kg?.toFixed(1)} kg, Grade ${gradeNorm}, ${isChecked ? 'Đã kiểm đếm' : 'Chưa kiểm đếm'}`}
                     onClick={() => {
                       if (!interactive) return;
                       if (onToggleCheck) onToggleCheck(roll);
                       else if (onRollClick) onRollClick(roll);
                     }}
+                    onKeyDown={(e) => {
+                      if (!interactive) return;
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (onToggleCheck) onToggleCheck(roll);
+                        else if (onRollClick) onRollClick(roll);
+                      }
+                    }}
                     title={
                       interactive
                         ? `Mã: ${roll.roll_code} | Grade: ${gradeNorm} | ${
                             isChecked ? 'Đã kiểm đếm' : 'Chưa kiểm'
-                          } (Click để đối soát)`
+                          } (Nhấn Enter hoặc Click để đối soát)`
                         : undefined
                     }
                     className={cn(
                       'border-r border-border text-center transition-colors',
                       compact ? 'py-1 px-1' : 'py-1.5 px-1.5',
                       interactive &&
-                        'cursor-pointer hover:bg-primary/10 active:scale-95',
+                        'cursor-pointer hover:bg-primary/10 active:scale-95 focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none',
                       isChecked &&
                         'bg-success-soft/20 text-success font-semibold dark:bg-success-soft/10',
+                      !isChecked &&
+                        isGradeB &&
+                        'bg-warning-soft/20 text-warning font-semibold dark:bg-warning-soft/10',
                     )}
                   >
                     <div className="flex flex-col items-center justify-center leading-tight">
                       <span
                         className={cn(
-                          'font-bold tracking-tight',
+                          'font-mono tabular-nums font-bold tracking-tight',
                           compact ? 'text-[10.5px]' : 'text-xs',
-                          isChecked ? 'text-success' : 'text-foreground',
+                          isChecked
+                            ? 'text-success'
+                            : isGradeB
+                              ? 'text-warning'
+                              : 'text-foreground',
                         )}
                       >
                         {cell.weight_kg?.toFixed(1)}
@@ -194,7 +220,7 @@ export const FabricRollMatrixTable: React.FC<FabricRollMatrixTableProps> = ({
               {showSubtotal && (
                 <td
                   className={cn(
-                    'font-bold text-foreground text-right whitespace-nowrap bg-surface-secondary/20',
+                    'font-mono tabular-nums font-bold text-foreground text-right whitespace-nowrap bg-surface-secondary/20',
                     compact ? 'py-1 px-2 text-[10.5px]' : 'py-1.5 px-3 text-xs',
                   )}
                 >
@@ -216,7 +242,7 @@ export const FabricRollMatrixTable: React.FC<FabricRollMatrixTableProps> = ({
             >
               <div className="flex items-center justify-between">
                 <span>TỔNG CỘNG:</span>
-                <span className="text-primary font-extrabold">
+                <span className="text-primary font-extrabold font-mono tabular-nums">
                   {summary.total_rolls} CÂY
                 </span>
               </div>
@@ -225,7 +251,7 @@ export const FabricRollMatrixTable: React.FC<FabricRollMatrixTableProps> = ({
             {showSubtotal && (
               <td
                 className={cn(
-                  'text-right text-primary font-extrabold whitespace-nowrap',
+                  'text-right text-primary font-extrabold font-mono tabular-nums whitespace-nowrap',
                   compact ? 'py-1 px-2 text-[11px]' : 'py-2 px-3 text-xs',
                 )}
               >
