@@ -57,9 +57,9 @@ _(Sử dụng Semantic Design Tokens, không viết business logic trong UI)_
 
 ## 🧹 PHASE 4: CLEANUP & CODE POLISH
 
-- [ ] **Task 4.1**: Trích xuất toàn bộ nhãn, thông báo, tiêu đề tiếng Việt vào `src/features/finished-fabric/packing-list.constants.ts`.
-- [ ] **Task 4.2**: Xóa mọi `console.log` debug, kiểm tra không còn kiểu `any`.
-- [ ] **Task 4.3**: Kiểm tra tuân thủ **Rule 11 Ratchet (< 300 dòng/file)** trên toàn bộ file mới tạo.
+- [x] **Task 4.1**: Trích xuất toàn bộ nhãn, thông báo, tiêu đề tiếng Việt vào `src/features/finished-fabric/packing-list.constants.ts`.
+- [x] **Task 4.2**: Xóa mọi `console.log` debug, kiểm tra không còn kiểu `any`.
+- [x] **Task 4.3**: Kiểm tra tuân thủ **Rule 11 Ratchet (< 300 dòng/file)** trên toàn bộ file mới tạo.
 
 ---
 
@@ -67,9 +67,11 @@ _(Sử dụng Semantic Design Tokens, không viết business logic trong UI)_
 
 _(Áp dụng nghiêm ngặt **Evidence Rule §1.2** — ghi nhận kết quả thực tế)_:
 
-- [ ] `npm run rpc:check`: [Ghi kết quả thực tế]
-- [ ] `npm run typecheck`: [Ghi kết quả thực tế]
-- [ ] `npm run lint -- --max-warnings=0`: [Ghi kết quả thực tế]
-- [ ] `npm run lint:css`: [Ghi kết quả thực tế]
-- [ ] `npm run test`: [Ghi kết quả thực tế]
+- [x] `npm run rpc:check`: PASS (101 rpc() calls khớp 236 DB functions)
+- [x] `npm run typecheck`: PASS (0 errors trên toàn bộ Frontend)
+- [x] `npm run typecheck:server`: PASS (0 errors trên toàn bộ Backend Hono)
+- [x] `npm run lint -- --max-warnings=0`: PASS (0 errors, 0 warnings)
+- [x] `npm run lint:css`: PASS (0 errors trên toàn bộ tệp CSS)
+- [x] `npm run test`: PASS (133/133 test files passed, 833/833 tests passed in 90.50s)
+- [x] `npm run vapid:check` & `npm run theme:check`: PASS 100%
 - [ ] 🛑 **GATE 4 CHECKPOINT**: Chờ token duyệt: `APPROVE MERGE`.
