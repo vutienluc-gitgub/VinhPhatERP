@@ -112,3 +112,4 @@ export {
   type ConcurrencyErrorType,
 } from './ConcurrencyConflictModal';
 export * from './notifications/NotificationSettingsCard';
+export * from './brand';
