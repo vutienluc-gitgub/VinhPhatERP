@@ -105,3 +105,33 @@ export interface PortalShipment {
   customer_id: string;
   items?: PortalShipmentItem[];
 }
+
+/** A single fabric roll in the packing list breakdown. */
+export interface FabricRollBreakdownItem {
+  id: string;
+  roll_code: string;
+  weight_kg: number;
+  length_m: number | null;
+  /** 1-based display index within the packing list */
+  display_index: number;
+}
+
+/** Payment summary for an order, including VAT breakdown. */
+export interface OrderPaymentSummary {
+  /** Subtotal before tax (sum of all order item amounts). */
+  subtotal: number;
+  /** VAT rate as a decimal, e.g. 0.08 for 8%. */
+  vatRate: number;
+  /** Computed VAT amount = round(subtotal * vatRate). */
+  vatAmount: number;
+  /** Grand total = subtotal + vatAmount. */
+  grandTotal: number;
+  /** Amount already paid by customer. */
+  paidAmount: number;
+  /** Remaining balance = grandTotal - paidAmount. */
+  remainingBalance: number;
+  /** Unit price per kg (derived from first order item, or 0). */
+  unitPricePerKg: number;
+  /** Total weight in kg (derived from order items quantity sum). */
+  totalWeightKg: number;
+}

@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { supabase } from '@/services/supabase/client';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { computeStageOverdue } from '@/domain/portal/portal.utils';
+import { computePaymentSummary } from '@/domain/portal/portal-payment.utils';
 import type {
+  FabricRollBreakdownItem,
+  OrderPaymentSummary,
   OrderStatus,
   PortalOrder,
   PortalOrderShipmentSummary,
@@ -18,6 +21,7 @@ export function usePortalOrders(orderId?: string) {
   const [orders, setOrders] = useState<PortalOrder[]>([]);
   const [order, setOrder] = useState<PortalOrder | null>(null);
   const [stages, setStages] = useState<PortalProgressStage[]>([]);
+  const [rolls, setRolls] = useState<FabricRollBreakdownItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -91,7 +95,7 @@ export function usePortalOrders(orderId?: string) {
     setLoading(true);
     setError(null);
 
-    const [orderRes, progressRes] = await Promise.all([
+    const [orderRes, progressRes, rollsRes] = await Promise.all([
       supabase
         .from('orders')
         .select(
@@ -104,6 +108,11 @@ export function usePortalOrders(orderId?: string) {
         .select('id, stage, status, planned_date, actual_date')
         .eq('order_id', id)
         .order('stage'),
+      supabase
+        .from('finished_fabric_rolls')
+        .select('id, roll_number, weight_kg, length_m')
+        .eq('reserved_for_order_id', id)
+        .order('roll_number'),
     ]);
 
     if (orderRes.error) {
@@ -150,13 +159,36 @@ export function usePortalOrders(orderId?: string) {
       );
     }
 
+    // Map finished_fabric_rolls to packing list breakdown
+    if (!rollsRes.error && rollsRes.data) {
+      setRolls(
+        rollsRes.data.map((r, idx) => ({
+          id: r.id,
+          roll_code: r.roll_number,
+          weight_kg: r.weight_kg ?? 0,
+          length_m: r.length_m,
+          display_index: idx + 1,
+        })),
+      );
+    } else {
+      setRolls([]);
+    }
+
     setLoading(false);
   }
+
+  // Compute payment summary from order items (pure domain logic)
+  const paymentSummary: OrderPaymentSummary | null = useMemo(() => {
+    if (!order?.items || order.items.length === 0) return null;
+    return computePaymentSummary(order.items, order.paid_amount);
+  }, [order]);
 
   return {
     orders,
     order,
     stages,
+    rolls,
+    paymentSummary,
     loading,
     error,
     page,
