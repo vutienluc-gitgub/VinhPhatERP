@@ -40,7 +40,7 @@ export const PortalOrderDetail: React.FC = () => {
     >
       {/* Breadcrumb */}
       <div className="portal-breadcrumb">
-        <Link to="/portal/orders">
+        <Link to="/portal/customer/orders">
           ← {PORTAL_ORDER_DETAIL_TEXT.BREADCRUMB_ORDERS}
         </Link>
         <span>/</span>

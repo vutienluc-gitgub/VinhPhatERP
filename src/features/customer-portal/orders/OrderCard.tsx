@@ -146,7 +146,7 @@ export function OrderCard({ order, onReorder }: OrderCardProps) {
       <div className="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-start justify-between gap-3">
         <div className="flex flex-col gap-1 min-w-0">
           <Link
-            to={`/portal/orders/${order.id}`}
+            to={`/portal/customer/orders/${order.id}`}
             className="font-bold text-sm text-foreground hover:text-primary transition-colors"
           >
             #{order.order_number}
@@ -207,7 +207,7 @@ export function OrderCard({ order, onReorder }: OrderCardProps) {
           </button>
         )}
         <Link
-          to={`/portal/orders/${order.id}`}
+          to={`/portal/customer/orders/${order.id}`}
           className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
         >
           <Icon name="FileText" size={14} />

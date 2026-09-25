@@ -1,69 +1,20 @@
 import { lazy } from 'react';
-import type { RouteObject } from 'react-router-dom';
+import { Navigate, type RouteObject } from 'react-router-dom';
 
 import { withSuspense } from '@/app/router/routeWrappers';
 import { CustomerPortalLayout } from '@/features/customer-portal/CustomerPortalLayout';
 import { PortalRoute } from '@/features/customer-portal/PortalRoute';
-import { SupplierPortalLayout } from '@/features/supplier-portal/SupplierPortalLayout';
-import { SupplierPOListPage } from '@/features/supplier-portal/SupplierPOListPage';
-import { SupplierPODetailPage } from '@/features/supplier-portal/SupplierPODetailPage';
-import { SupplierRFQListPage } from '@/features/supplier-portal/SupplierRFQListPage';
-import { SupplierRFQDetailPage } from '@/features/supplier-portal/SupplierRFQDetailPage';
-import { SupplierInvoicesPage } from '@/features/supplier-portal/SupplierInvoicesPage';
-import { SupplierDebtPage } from '@/features/supplier-portal/SupplierDebtPage';
-import { SupplierProfilePage } from '@/features/supplier-portal/SupplierProfilePage';
-import { SupplierEntitlementGuard } from '@/features/supplier-portal/components/SupplierEntitlementGuard';
 
-// --- Work Orders ---
-const SupplierWorkOrderListPage = lazy(() =>
-  import('@/features/supplier-portal/work-orders/SupplierWorkOrderListPage').then(
-    (m) => ({ default: m.SupplierWorkOrderListPage }),
-  ),
-);
-const WorkOrderWorkspace = lazy(() =>
-  import('@/features/supplier-portal/work-orders/components/WorkOrderWorkspace').then(
-    (m) => ({ default: m.WorkOrderWorkspace }),
-  ),
-);
-const OverviewDomain = lazy(() =>
-  import('@/features/supplier-portal/work-orders/components/Domains').then(
-    (m) => ({ default: m.OverviewDomain }),
-  ),
-);
-const ProductionDomain = lazy(() =>
-  import('@/features/supplier-portal/work-orders/components/Domains').then(
-    (m) => ({ default: m.ProductionDomain }),
-  ),
-);
-const MaterialDomain = lazy(() =>
-  import('@/features/supplier-portal/work-orders/components/Domains').then(
-    (m) => ({ default: m.MaterialDomain }),
-  ),
-);
-const QualityDomain = lazy(() =>
-  import('@/features/supplier-portal/work-orders/components/Domains').then(
-    (m) => ({ default: m.QualityDomain }),
-  ),
-);
-const DocumentsDomain = lazy(() =>
-  import('@/features/supplier-portal/work-orders/components/Domains').then(
-    (m) => ({ default: m.DocumentsDomain }),
-  ),
-);
-const TimelineDomain = lazy(() =>
-  import('@/features/supplier-portal/work-orders/components/Domains').then(
-    (m) => ({ default: m.TimelineDomain }),
-  ),
-);
+import {
+  PortalOrderIdRedirect,
+  PortalQuotationIdRedirect,
+  PortalShipmentIdRedirect,
+} from './resolvers/PortalRedirectResolvers';
+import { supplierPortalRoute } from './supplierRoutes';
 
 const PortalDashboardPage = lazy(() =>
   import('@/features/customer-portal/dashboard/PortalDashboardPage').then(
     (m) => ({ default: m.PortalDashboardPage }),
-  ),
-);
-const SupplierDashboardPage = lazy(() =>
-  import('@/features/supplier-portal/dashboard/SupplierDashboardPage').then(
-    (m) => ({ default: m.SupplierDashboardPage }),
   ),
 );
 
@@ -125,6 +76,47 @@ export const portalRoutes: RouteObject[] = [
     element: <PortalRoute />,
     children: [
       {
+        index: true,
+        element: <Navigate to="/portal/customer" replace />,
+      },
+      // Convenience/Backward-compatibility aliases for direct /portal/... URLs
+      {
+        path: 'orders',
+        element: <Navigate to="/portal/customer/orders" replace />,
+      },
+      {
+        path: 'orders/:id',
+        element: <PortalOrderIdRedirect />,
+      },
+      {
+        path: 'debt',
+        element: <Navigate to="/portal/customer/debt" replace />,
+      },
+      {
+        path: 'payments',
+        element: <Navigate to="/portal/customer/payments" replace />,
+      },
+      {
+        path: 'shipments',
+        element: <Navigate to="/portal/customer/shipments" replace />,
+      },
+      {
+        path: 'shipments/:id',
+        element: <PortalShipmentIdRedirect />,
+      },
+      {
+        path: 'fabric-catalog',
+        element: <Navigate to="/portal/customer/fabric-catalog" replace />,
+      },
+      {
+        path: 'quotations',
+        element: <Navigate to="/portal/customer/quotations" replace />,
+      },
+      {
+        path: 'quotations/:id',
+        element: <PortalQuotationIdRedirect />,
+      },
+      {
         path: 'customer',
         element: <CustomerPortalLayout />,
         children: [
@@ -170,118 +162,7 @@ export const portalRoutes: RouteObject[] = [
           },
         ],
       },
-      {
-        path: 'supplier',
-        element: <SupplierPortalLayout />,
-        children: [
-          {
-            index: true,
-            element: withSuspense(<SupplierDashboardPage />, portalFallback),
-          },
-          {
-            path: 'orders',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_PO">
-                <SupplierPOListPage />
-              </SupplierEntitlementGuard>
-            ),
-          },
-          {
-            path: 'orders/:id',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_PO">
-                <SupplierPODetailPage />
-              </SupplierEntitlementGuard>
-            ),
-          },
-          {
-            path: 'quotations',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_RFQ">
-                <SupplierRFQListPage />
-              </SupplierEntitlementGuard>
-            ),
-          },
-          {
-            path: 'quotations/:id',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_RFQ">
-                <SupplierRFQDetailPage />
-              </SupplierEntitlementGuard>
-            ),
-          },
-          {
-            path: 'invoices',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="SUBMIT_INVOICE">
-                <SupplierInvoicesPage />
-              </SupplierEntitlementGuard>
-            ),
-          },
-          {
-            path: 'debt',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_DEBT">
-                <SupplierDebtPage />
-              </SupplierEntitlementGuard>
-            ),
-          },
-          {
-            path: 'deliveries',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="CONFIRM_DELIVERY">
-                <div className="p-4">Danh sách Giao hàng - Đang xây dựng</div>
-              </SupplierEntitlementGuard>
-            ),
-          },
-          {
-            path: 'work-orders',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_WORK_ORDER">
-                {withSuspense(<SupplierWorkOrderListPage />, portalFallback)}
-              </SupplierEntitlementGuard>
-            ),
-          },
-          {
-            path: 'work-orders/:id',
-            element: (
-              <SupplierEntitlementGuard requiredEntitlement="VIEW_WORK_ORDER">
-                {withSuspense(<WorkOrderWorkspace />, portalFallback)}
-              </SupplierEntitlementGuard>
-            ),
-            children: [
-              {
-                path: 'overview',
-                element: withSuspense(<OverviewDomain />, portalFallback),
-              },
-              {
-                path: 'production',
-                element: withSuspense(<ProductionDomain />, portalFallback),
-              },
-              {
-                path: 'materials',
-                element: withSuspense(<MaterialDomain />, portalFallback),
-              },
-              {
-                path: 'quality',
-                element: withSuspense(<QualityDomain />, portalFallback),
-              },
-              {
-                path: 'documents',
-                element: withSuspense(<DocumentsDomain />, portalFallback),
-              },
-              {
-                path: 'timeline',
-                element: withSuspense(<TimelineDomain />, portalFallback),
-              },
-            ],
-          },
-          {
-            path: 'profile',
-            element: <SupplierProfilePage />,
-          },
-        ],
-      },
+      supplierPortalRoute,
     ],
   },
 ];
