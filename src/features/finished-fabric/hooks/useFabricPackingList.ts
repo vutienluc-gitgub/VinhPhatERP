@@ -12,7 +12,7 @@ import {
   processRollCheckoff,
 } from '@/domain/inventory/packing-list.utils';
 
-export type PackingListViewMode = 'table' | 'grid';
+export type PackingListViewMode = 'table' | 'grid' | 'matrix';
 
 export interface UseFabricPackingListProps {
   initialRolls: FabricRollPackingItem[];

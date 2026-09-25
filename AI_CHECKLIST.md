@@ -37,11 +37,13 @@ Every task, refactor, or new feature in VinhPhatERP v3 MUST satisfy every item i
 
 - [ ] **Zero Hardcoded Colors**: No `#hex`, `rgb()`, `text-gray-*`, or `bg-red-*` in CSS or JSX.
 - [ ] **Semantic Tokens Used**: Colors mapped to `text-foreground`, `text-muted`, `bg-surface`, `bg-danger-soft`, etc.
+- [ ] **No Emoji in UI**: Zero emoji in source code or UI elements (Use Lucide SVG icons).
+- [ ] **High-Density Data Alignment**: Numbers/quantities right-aligned with `tabular-nums`; codes/statuses centered; text left-aligned.
 - [ ] **Loading Skeletons**: Displayed during fetch — no flash of empty or default data.
 - [ ] **Error States**: Clear inline error display with retry options.
 - [ ] **Empty States**: Friendly empty illustration/message when datasets are empty (`[]`).
 - [ ] **Pending States**: Form submit and destructive buttons disabled with spinners during mutations.
-- [ ] **Basic Accessibility (a11y)**: Images have `alt`, interactive elements keyboard accessible.
+- [ ] **Basic Accessibility (a11y)**: Images have `alt`, interactive elements keyboard accessible (visible focus rings).
 
 ## 6. Security & RLS Compliance
 

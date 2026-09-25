@@ -91,3 +91,35 @@ export interface PackingListExportRow {
   trang_thai_kiem_dem: string;
   ghi_chu: string;
 }
+
+/**
+ * Decade Matrix Types for A5 Landscape Packing List (Ma trận 10 cây/dòng)
+ */
+export interface PackingMatrixCell {
+  col_index: number; // 1 to 10
+  roll?: FabricRollPackingItem;
+  weight_kg?: number;
+  roll_code?: string;
+  sequence_number?: number;
+  grade?: FabricGrade;
+  checked?: boolean;
+}
+
+export interface PackingMatrixRow {
+  row_index: number; // 0, 1, 2...
+  range_label: string; // ví dụ: "01 - 10", "11 - 20", "21 - 25"
+  cells: PackingMatrixCell[]; // đúng 10 ô (nếu thiếu cây thì roll/weight_kg là undefined)
+  roll_count: number; // số cây thực tế trong hàng (1 đến 10)
+  subtotal_weight_kg: number; // tổng cân nặng các cây trong hàng (kg)
+}
+
+export interface PackingMatrixGroup {
+  group_key: string;
+  color_name: string;
+  fabric_type?: string;
+  lot_number?: string | null;
+  total_rolls: number;
+  total_weight_kg: number;
+  average_weight_kg: number;
+  rows: PackingMatrixRow[];
+}

@@ -8,6 +8,9 @@ import type {
   FabricRollPackingItem,
   PackingGroupSummary,
   PackingListTotal,
+  PackingMatrixCell,
+  PackingMatrixGroup,
+  PackingMatrixRow,
 } from '@/domain/inventory/packing-list.types';
 
 // Re-export specialized utilities for seamless consumption across features
@@ -171,4 +174,84 @@ export function groupRollsByColorAndBatch(
   }
 
   return result;
+}
+
+/**
+ * Chuyển đổi danh sách cây vải thành các hàng ma trận 10 cây/dòng (hoặc số cột tùy chỉnh).
+ * Phục vụ cho mẫu in phiếu giao hàng A5 4 liên nằm ngang và hiển thị web dạng bảng ma trận gọn gàng.
+ */
+export function buildPackingMatrixRows(
+  rolls: FabricRollPackingItem[],
+  rollsPerRow: number = 10,
+): PackingMatrixRow[] {
+  if (!rolls || rolls.length === 0) {
+    return [];
+  }
+
+  const normalizedCols = Math.max(1, Math.min(rollsPerRow, 20));
+  const rows: PackingMatrixRow[] = [];
+  const totalRolls = rolls.length;
+  const numRows = Math.ceil(totalRolls / normalizedCols);
+
+  for (let rIdx = 0; rIdx < numRows; rIdx++) {
+    const startIdx = rIdx * normalizedCols;
+    const chunk = rolls.slice(startIdx, startIdx + normalizedCols);
+    const cells: PackingMatrixCell[] = [];
+    let rowWeight = 0;
+
+    for (let c = 0; c < normalizedCols; c++) {
+      const roll = chunk[c];
+      if (roll) {
+        const w = Number(roll.weight_kg) || 0;
+        rowWeight += w;
+        cells.push({
+          col_index: c + 1,
+          roll,
+          weight_kg: roundWeight(w),
+          roll_code: roll.roll_code,
+          sequence_number: roll.roll_sequence || startIdx + c + 1,
+          grade: roll.grade,
+          checked: roll.checked,
+        });
+      } else {
+        cells.push({
+          col_index: c + 1,
+        });
+      }
+    }
+
+    const startSeq = startIdx + 1;
+    const endSeq = startIdx + chunk.length;
+    const rangeLabel = `${String(startSeq).padStart(2, '0')} - ${String(endSeq).padStart(2, '0')}`;
+
+    rows.push({
+      row_index: rIdx,
+      range_label: rangeLabel,
+      cells,
+      roll_count: chunk.length,
+      subtotal_weight_kg: roundWeight(rowWeight),
+    });
+  }
+
+  return rows;
+}
+
+/**
+ * Gom nhóm cây vải theo Màu / Lô và tạo cấu trúc ma trận cho từng nhóm.
+ */
+export function buildPackingMatrixGroups(
+  rolls: FabricRollPackingItem[],
+  rollsPerRow: number = 10,
+): PackingMatrixGroup[] {
+  const groups = groupRollsByColorAndBatch(rolls);
+  return groups.map((g) => ({
+    group_key: g.group_key,
+    color_name: g.color_name,
+    fabric_type: g.fabric_type,
+    lot_number: g.lot_number,
+    total_rolls: g.total_rolls,
+    total_weight_kg: g.total_weight_kg,
+    average_weight_kg: g.average_weight_kg,
+    rows: buildPackingMatrixRows(g.rolls, rollsPerRow),
+  }));
 }

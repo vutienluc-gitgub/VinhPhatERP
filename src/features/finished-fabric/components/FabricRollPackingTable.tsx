@@ -5,6 +5,7 @@ import { FabricPackingCheckoffBar } from '@/features/finished-fabric/components/
 import { FabricPackingStatsCards } from '@/features/finished-fabric/components/FabricPackingStatsCards';
 import { FabricRollMatrixGrid } from '@/features/finished-fabric/components/FabricRollMatrixGrid';
 import { FabricRollTableView } from '@/features/finished-fabric/components/FabricRollTableView';
+import { FabricRollMatrixTable } from '@/shared/components/fabric-roll/FabricRollMatrixTable';
 import {
   useFabricPackingList,
   type PackingListViewMode,
@@ -95,7 +96,21 @@ export const FabricRollPackingTable: React.FC<FabricRollPackingTableProps> = ({
               title={PACKING_LIST_TEXT.VIEW_GRID}
             >
               <Icon name="Grid" size={13} />
-              <span className="hidden sm:inline">Lưới</span>
+              <span className="hidden sm:inline">Lưới thẻ</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('matrix')}
+              className={cn(
+                'flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all',
+                viewMode === 'matrix'
+                  ? 'bg-surface text-foreground shadow-xs'
+                  : 'text-muted hover:text-foreground',
+              )}
+              title={PACKING_LIST_TEXT.VIEW_A5_MATRIX}
+            >
+              <Icon name="LayoutGrid" size={13} />
+              <span className="hidden sm:inline">Ma trận A5</span>
             </button>
             <button
               type="button"
@@ -244,7 +259,16 @@ export const FabricRollPackingTable: React.FC<FabricRollPackingTableProps> = ({
             </div>
 
             {/* View Mode rendering */}
-            {viewMode === 'grid' ? (
+            {viewMode === 'matrix' ? (
+              <FabricRollMatrixTable
+                rolls={group.rolls}
+                rollsPerRow={10}
+                showSubtotal={true}
+                interactive={interactive}
+                onRollClick={onRollClick}
+                onToggleCheck={(roll) => handleScan(roll.roll_code)}
+              />
+            ) : viewMode === 'grid' ? (
               <FabricRollMatrixGrid
                 rolls={group.rolls}
                 onRollClick={onRollClick}
