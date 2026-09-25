@@ -1,4 +1,4 @@
-﻿---
+---
 name: vinhphat-copilot
 description: Chuyên gia tự động hóa và hỗ trợ phát triển toàn diện cho hệ thống Dệt May Vĩnh Phát (VinhPhatERP v3). Kích hoạt khi cần phân tích luồng dệt nhuộm, kiểm tra tồn kho vải, tạo migration Supabase, chạy kiểm thử tự động, hoặc audit bảo mật.
 ---
@@ -40,6 +40,11 @@ Skill này cung cấp các kịch bản tự động hóa chuyên biệt cho d�
      ```powershell
      node .agents/skills/security-audit/validate-coverage-ledger.cjs <path-to-ledger.json>
      ```
+
+5. **Phát triển hướng đặc tả (Spec-Driven Development)**:
+   - Tra cứu đặc tả nghiệp vụ dệt may chuẩn tại [specs/](file:///d:/VinhPhatERP_v3/specs/).
+   - Quản lý đề xuất và các Cổng phê duyệt tại [.changes/](file:///d:/VinhPhatERP_v3/.changes/).
+   - Thực thi workflow chuẩn qua [.agents/workflows/spec-driven-workflow.md](file:///d:/VinhPhatERP_v3/.agents/workflows/spec-driven-workflow.md).
 
 ## Nguyên tắc nghiệp vụ dệt may:
 
