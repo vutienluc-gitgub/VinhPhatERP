@@ -9,6 +9,7 @@ import {
   useChatNavigation,
   useChatNavigationSync,
 } from '@/features/chat';
+import { BrandLogo } from '@/shared/components/brand';
 import { Icon } from '@/shared/components/Icon';
 import { APP_SHELL_LABELS, USER_ROLE_LABELS } from '@/shared/constants/layout';
 import { GROUP_LABELS } from '@/shared/constants/navigation';
@@ -71,15 +72,17 @@ export const TopBar = React.memo(function TopBar({
       {/* App Launcher & Brand Block */}
       <div className="topbar-brand-block">
         <AppLauncher />
-        <NavLink to="/" className="topbar-brand-logo">
-          <img
-            src="/favicon.svg"
-            alt="Logo"
-            className="w-6 h-6 object-contain"
+        <NavLink
+          to="/"
+          className="topbar-brand-logo"
+          aria-label="Trang chủ Dệt May Vĩnh Phát"
+        >
+          <BrandLogo
+            layout="compact"
+            variant="positive"
+            responsiveText
+            className="h-7"
           />
-          <h1 className="hidden sm:block title-premium-gradient text-base font-black tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-strong to-primary">
-            {APP_SHELL_LABELS.BRAND_NAME}
-          </h1>
         </NavLink>
       </div>
 

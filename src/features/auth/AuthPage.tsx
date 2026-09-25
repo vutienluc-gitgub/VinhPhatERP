@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/shared/components/Button';
+import { BrandLogo } from '@/shared/components/brand';
 import { Icon } from '@/shared/components/Icon';
 
 import { useAuth } from './AuthProvider';
@@ -163,25 +164,15 @@ interface AuthBrandLogoProps {
 function AuthBrandLogo({ layout = 'row' }: AuthBrandLogoProps) {
   if (layout === 'col') {
     return (
-      <div className="lg:hidden mb-12 flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-500">
-        <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-strong rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 mb-4">
-          <Icon name="Layers" className="text-inverse-foreground" size={24} />
-        </div>
-        <span className="text-xl font-bold tracking-wider text-inverse-foreground">
-          VINH PHAT V3
-        </span>
+      <div className="lg:hidden mb-8 flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-500">
+        <BrandLogo layout="full" orientation="col" variant="negative" />
       </div>
     );
   }
 
   return (
-    <div className="relative z-10 flex items-center gap-3">
-      <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-strong rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-        <Icon name="Layers" className="text-inverse-foreground" size={24} />
-      </div>
-      <span className="text-2xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-inverse-foreground to-inverse-foreground/70">
-        VINH PHAT V3
-      </span>
+    <div className="relative z-10 flex items-center">
+      <BrandLogo layout="full" orientation="row" variant="negative" />
     </div>
   );
 }
