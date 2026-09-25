@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 
 import { serverSupabase } from '@/db/supabase.js';
+import { requireAuth, requireManager } from '@/middleware/auth.js';
 import { WebhookSecurityService } from '@/services/webhook-security.service.js';
 
 const webhooksRouter = new Hono();
@@ -98,7 +99,7 @@ webhooksRouter.post('/inbound/:source', async (c) => {
  * Webhook Monitoring & DLQ Metrics Endpoint
  * GET /api/v1/webhooks/metrics
  */
-webhooksRouter.get('/metrics', async (c) => {
+webhooksRouter.get('/metrics', requireAuth, requireManager, async (c) => {
   const hours = Number(c.req.query('hours') || '24');
 
   const { data, error } = await serverSupabase.rpc('rpc_get_webhook_metrics', {
@@ -119,7 +120,7 @@ webhooksRouter.get('/metrics', async (c) => {
  * List Dead Letter Events
  * GET /api/v1/webhooks/dead-letter
  */
-webhooksRouter.get('/dead-letter', async (c) => {
+webhooksRouter.get('/dead-letter', requireAuth, requireManager, async (c) => {
   const limit = Number(c.req.query('limit') || '50');
   const offset = Number(c.req.query('offset') || '0');
 
@@ -145,33 +146,38 @@ webhooksRouter.get('/dead-letter', async (c) => {
  * Replay Single Dead Letter Event
  * POST /api/v1/webhooks/replay/:eventId
  */
-webhooksRouter.post('/replay/:eventId', async (c) => {
-  const eventId = c.req.param('eventId');
-  const source = c.req.query('source') || '';
+webhooksRouter.post(
+  '/replay/:eventId',
+  requireAuth,
+  requireManager,
+  async (c) => {
+    const eventId = c.req.param('eventId');
+    const source = c.req.query('source') || '';
 
-  const { data, error } = await serverSupabase.rpc(
-    'rpc_replay_dead_letter_event',
-    {
-      p_event_id: eventId,
-      p_source: source,
-    },
-  );
-
-  if (error) {
-    return c.json(
-      { error: 'Failed to replay event', message: error.message },
-      500,
+    const { data, error } = await serverSupabase.rpc(
+      'rpc_replay_dead_letter_event',
+      {
+        p_event_id: eventId,
+        p_source: source,
+      },
     );
-  }
 
-  return c.json(data);
-});
+    if (error) {
+      return c.json(
+        { error: 'Failed to replay event', message: error.message },
+        500,
+      );
+    }
+
+    return c.json(data);
+  },
+);
 
 /**
  * Replay All Dead Letter Events
  * POST /api/v1/webhooks/replay-all
  */
-webhooksRouter.post('/replay-all', async (c) => {
+webhooksRouter.post('/replay-all', requireAuth, requireManager, async (c) => {
   const source = c.req.query('source') || null;
 
   const { data, error } = await serverSupabase.rpc(

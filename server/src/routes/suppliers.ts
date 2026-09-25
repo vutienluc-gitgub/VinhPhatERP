@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { db } from '@/db/client.js';
 import { suppliers } from '@/db/schema/index.js';
-import { requireAuth } from '@/middleware/auth.js';
+import { requireAuth, requireManager } from '@/middleware/auth.js';
 
 const router = new Hono();
 
@@ -81,7 +81,7 @@ router.patch(
   },
 );
 
-router.delete('/:id', requireAuth, async (c) => {
+router.delete('/:id', requireAuth, requireManager, async (c) => {
   const { id } = c.req.param();
   const [updated] = await db
     .update(suppliers)

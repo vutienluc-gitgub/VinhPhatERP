@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { db } from '@/db/client.js';
 import { orders, orderItems, orderProgress } from '@/db/schema/index.js';
-import { requireAuth } from '@/middleware/auth.js';
+import { requireAuth, requireManager } from '@/middleware/auth.js';
 
 const PRODUCTION_STAGES = [
   'warping',
@@ -138,7 +138,7 @@ router.patch(
 );
 
 // POST /orders/:id/confirm — xác nhận đơn: tính lại tổng, đổi trạng thái, tạo 7 công đoạn
-router.post('/:id/confirm', requireAuth, async (c) => {
+router.post('/:id/confirm', requireAuth, requireManager, async (c) => {
   const user = c.get('user') as { id: string };
   const { id } = c.req.param();
 
