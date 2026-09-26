@@ -40,7 +40,8 @@
     "rpc:fix": "tsx scripts/rpc-sync.ts --fix",
     "vapid:check": "tsx scripts/verify-vapid-sync.ts",
     "logistics:reconcile": "tsx scripts/logistics-reconciliation.ts",
-    "theme:check": "node scripts/check-theme-contract.cjs"
+    "theme:check": "node scripts/check-theme-contract.cjs",
+    "a11y:check": "node scripts/audit-wcag-contrast.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",

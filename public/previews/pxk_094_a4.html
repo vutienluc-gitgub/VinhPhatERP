@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>phieu_xuat_PXK-094_2026-09-26.pdf</title>
+<style>
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    color: #1a2533;
+    font-family: "Segoe UI", "Arial", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.5;
+    background: #fff;
+  }
+
+  /* ── Top accent bar ── */
+  .accent-bar {
+    height: 5px;
+    background: linear-gradient(90deg, #0f3460 0%, #1a6bb5 60%, #3da5e0 100%);
+  }
+
+  .page {
+    padding: 8mm 12mm 6mm;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 10mm;
+    margin-bottom: 6mm;
+    padding-bottom: 5mm;
+    border-bottom: 1.5px solid #dce6f0;
+  }
+  .brand-block {
+    display: flex;
+    align-items: center;
+    gap: 4mm;
+  }
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .brand-name {
+    font-size: 13pt;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0f3460;
+  }
+  .doc-title {
+    font-size: 20pt;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1a2533;
+    margin-top: 1mm;
+  }
+  .doc-subtitle {
+    font-size: 9pt;
+    color: #6b7d8f;
+    margin-top: 1mm;
+  }
+  .meta-block {
+    min-width: 60mm;
+    background: #f0f5fb;
+    border: 1px solid #cdd9e8;
+    border-left: 3.5px solid #1a6bb5;
+    border-radius: 4px;
+    padding: 3.5mm 4.5mm;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2mm;
+  }
+  .meta-row {
+    display: flex;
+    align-items: baseline;
+    gap: 2mm;
+    font-size: 9.5pt;
+  }
+  .meta-label {
+    min-width: 24mm;
+    color: #5b6f82;
+    font-size: 8.5pt;
+    flex-shrink: 0;
+  }
+  .meta-value {
+    color: #1a2533;
+    font-weight: 500;
+  }
+  .meta-value.strong {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0f3460;
+  }
+
+  /* ── Info cards ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4mm;
+    margin-bottom: 5mm;
+  }
+  .info-card {
+    border: 1px solid #dce6f0;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .info-card-header {
+    background: #0f3460;
+    color: #fff;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1.8mm 4mm;
+  }
+  .info-card-body {
+    padding: 3.5mm 4mm;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2mm;
+  }
+  .info-row {
+    display: flex;
+    gap: 2mm;
+    font-size: 9.5pt;
+  }
+  .info-key {
+    min-width: 26mm;
+    color: #6b7d8f;
+    font-size: 8.5pt;
+    flex-shrink: 0;
+  }
+  .info-val {
+    color: #1a2533;
+    font-weight: 500;
+  }
+  .info-val.large {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0f3460;
+  }
+
+  /* ── Table ── */
+  .table-wrap {
+    border: 1px solid #cdd9e8;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead tr {
+    background: #0f3460;
+    color: #fff;
+  }
+  th {
+    font-size: 9pt;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-align: left;
+    padding: 2.8mm 2.8mm;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  th:last-child { border-right: none; }
+  td {
+    font-size: 9.5pt;
+    padding: 2.4mm 2.8mm;
+    border-bottom: 1px solid #e8eef5;
+    border-right: 1px solid #e8eef5;
+    vertical-align: middle;
+  }
+  td:last-child { border-right: none; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) { background: #f6f9fd; }
+  tbody tr:hover { background: #edf3fb; }
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+  .font-bold { font-weight: 700; }
+  .idx-cell {
+    color: #8a9bb0;
+    font-size: 8.5pt;
+  }
+
+  /* ── Roll pills ── */
+  .roll-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5mm;
+  }
+  .roll-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 1mm;
+    background: #edf3fb;
+    border: 1px solid #cdd9e8;
+    border-radius: 3px;
+    padding: 0.5mm 2mm;
+    font-size: 8pt;
+    color: #1a2533;
+    white-space: nowrap;
+  }
+  .roll-qty {
+    color: #5b6f82;
+    font-size: 7.5pt;
+  }
+
+  /* ── QR block ── */
+  .qr-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5mm;
+    padding: 3mm;
+    border: 1px solid #dce6f0;
+    border-radius: 5px;
+    background: #f8fbff;
+  }
+  .qr-block img {
+    width: 22mm;
+    height: 22mm;
+    display: block;
+  }
+  .qr-label {
+    font-size: 7pt;
+    color: #6b7d8f;
+    text-align: center;
+  }
+  .qr-url {
+    font-size: 6.5pt;
+    color: #1a6bb5;
+    text-align: center;
+    word-break: break-all;
+  }
+
+  /* ── Summary bar ── */
+  .summary-bar {
+    margin-top: 4mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3mm 5mm;
+    background: #f0f5fb;
+    border: 1px solid #cdd9e8;
+    border-left: 3.5px solid #1a6bb5;
+    border-radius: 4px;
+    font-size: 9.5pt;
+  }
+  .summary-item { display: flex; gap: 2mm; align-items: baseline; }
+  .summary-label { color: #5b6f82; }
+  .summary-value { font-weight: 700; font-size: 11pt; color: #0f3460; }
+
+  /* ── Signature ── */
+  .signature-section {
+    margin-top: 8mm;
+  }
+  .signature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5mm;
+  }
+  .sign-cell {
+    border: 1px dashed #c0cdd9;
+    border-radius: 5px;
+    padding: 3mm 4mm;
+    text-align: center;
+    min-height: 32mm;
+  }
+  .sign-title {
+    font-size: 8.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #0f3460;
+    border-bottom: 1px solid #e0e8f0;
+    padding-bottom: 2mm;
+    margin-bottom: 2mm;
+  }
+  .sign-name {
+    font-size: 9pt;
+    color: #3a4d61;
+    min-height: 5mm;
+  }
+  .sign-note {
+    margin-top: 14mm;
+    font-size: 8pt;
+    color: #8a9bb0;
+    font-style: italic;
+  }
+
+  /* ── Footer ── */
+  .doc-footer {
+    margin-top: 6mm;
+    padding-top: 3mm;
+    border-top: 1px solid #e0e8f0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5pt;
+    color: #9aaab8;
+  }
+
+
+</style>
+</head>
+<body>
+  
+  <div class="page"><div class="accent-bar"></div>
+      <!-- HEADER -->
+      <div class="header">
+        <div class="brand-block">
+          <img src="/favicon.svg" alt="Logo" class="brand-logo" />
+          <div class="brand">
+            <div class="brand-name">CÔNG TY TNHH SX TM DỆT MAY VĨNH PHÁT</div>
+            <div class="doc-title">Phiếu xuất kho</div>
+            <div class="doc-subtitle">Chứng từ giao hàng & xuất kho thành phẩm</div>
+          </div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-row">
+            <span class="meta-label">Số phiếu</span>
+            <span class="meta-value strong">PXK-094</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Ngày giao</span>
+            <span class="meta-value">26/9/2026</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Đơn hàng</span>
+            <span class="meta-value">DH2609-0094</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">In lúc</span>
+            <span class="meta-value">17:09 26/09/2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFO CARDS -->
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-header">Thông tin khách hàng</div>
+          <div class="info-card-body">
+            <div class="info-row">
+              <span class="info-val large">Futuristic</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Mã khách:</span>
+              <span class="info-val">KH-025</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Người liên hệ:</span>
+              <span class="info-val">Nguyễn Thiên Phúc</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Số điện thoại:</span>
+              <span class="info-val">0919976462</span>
+            </div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-header">Thông tin giao hàng</div>
+          <div class="info-card-body">
+            <div class="info-row">
+              <span class="info-key">Địa chỉ giao:</span>
+              <span class="info-val">186 Phú Thọ Hòa</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Trạng thái:</span>
+              <span class="info-val">delivered</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Ghi chú:</span>
+              <span class="info-val">Phiếu xuất kho số 094 ngày 26/09/2026. Xuất bán 45 cây Vải nỉ cào xám tiêu (1.041,70 kg) + 4 cây Bo nỉ (84,00 kg). Xuất tại kho Vĩnh Phát.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:6%" class="text-center">STT</th>
+              <th style="width:22%">Loại vải</th>
+              <th style="width:12%">Màu</th>
+              <th style="width:38%">Mã cuộn</th>
+              <th style="width:11%" class="text-right">Tổng SL</th>
+              <th style="width:11%">Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="text-center idx-cell">1</td>
+            <td>Vải nỉ cào xám tiêu</td>
+            <td>Xám tiêu</td>
+            <td><div class="roll-pills"><span class="roll-pill">PXK094-NI-01<span class="roll-qty">22,8 kg</span></span><span class="roll-pill">PXK094-NI-02<span class="roll-qty">24,3 kg</span></span><span class="roll-pill">PXK094-NI-03<span class="roll-qty">23,9 kg</span></span><span class="roll-pill">PXK094-NI-04<span class="roll-qty">21,6 kg</span></span><span class="roll-pill">PXK094-NI-05<span class="roll-qty">23 kg</span></span><span class="roll-pill">PXK094-NI-06<span class="roll-qty">22,8 kg</span></span><span class="roll-pill">PXK094-NI-07<span class="roll-qty">23,4 kg</span></span><span class="roll-pill">PXK094-NI-08<span class="roll-qty">23,1 kg</span></span><span class="roll-pill">PXK094-NI-09<span class="roll-qty">24,5 kg</span></span><span class="roll-pill">PXK094-NI-10<span class="roll-qty">24,1 kg</span></span><span class="roll-pill">PXK094-NI-11<span class="roll-qty">23,8 kg</span></span><span class="roll-pill">PXK094-NI-12<span class="roll-qty">22,6 kg</span></span><span class="roll-pill">PXK094-NI-13<span class="roll-qty">23,7 kg</span></span><span class="roll-pill">PXK094-NI-14<span class="roll-qty">24 kg</span></span><span class="roll-pill">PXK094-NI-15<span class="roll-qty">23,8 kg</span></span><span class="roll-pill">PXK094-NI-16<span class="roll-qty">22,9 kg</span></span><span class="roll-pill">PXK094-NI-17<span class="roll-qty">23,5 kg</span></span><span class="roll-pill">PXK094-NI-18<span class="roll-qty">24,2 kg</span></span><span class="roll-pill">PXK094-NI-19<span class="roll-qty">22,5 kg</span></span><span class="roll-pill">PXK094-NI-20<span class="roll-qty">22 kg</span></span><span class="roll-pill">PXK094-NI-21<span class="roll-qty">24 kg</span></span><span class="roll-pill">PXK094-NI-22<span class="roll-qty">23,8 kg</span></span><span class="roll-pill">PXK094-NI-23<span class="roll-qty">22,7 kg</span></span><span class="roll-pill">PXK094-NI-24<span class="roll-qty">23,5 kg</span></span><span class="roll-pill">PXK094-NI-25<span class="roll-qty">22,9 kg</span></span><span class="roll-pill">PXK094-NI-26<span class="roll-qty">23,1 kg</span></span><span class="roll-pill">PXK094-NI-27<span class="roll-qty">22,8 kg</span></span><span class="roll-pill">PXK094-NI-28<span class="roll-qty">23,4 kg</span></span><span class="roll-pill">PXK094-NI-29<span class="roll-qty">24 kg</span></span><span class="roll-pill">PXK094-NI-30<span class="roll-qty">22,4 kg</span></span><span class="roll-pill">PXK094-NI-31<span class="roll-qty">24,3 kg</span></span><span class="roll-pill">PXK094-NI-32<span class="roll-qty">23,1 kg</span></span><span class="roll-pill">PXK094-NI-33<span class="roll-qty">22,8 kg</span></span><span class="roll-pill">PXK094-NI-34<span class="roll-qty">23,5 kg</span></span><span class="roll-pill">PXK094-NI-35<span class="roll-qty">22,9 kg</span></span><span class="roll-pill">PXK094-NI-36<span class="roll-qty">23,7 kg</span></span><span class="roll-pill">PXK094-NI-37<span class="roll-qty">22 kg</span></span><span class="roll-pill">PXK094-NI-38<span class="roll-qty">23,2 kg</span></span><span class="roll-pill">PXK094-NI-39<span class="roll-qty">23,6 kg</span></span><span class="roll-pill">PXK094-NI-40<span class="roll-qty">22,8 kg</span></span><span class="roll-pill">PXK094-NI-41<span class="roll-qty">22,7 kg</span></span><span class="roll-pill">PXK094-NI-42<span class="roll-qty">23 kg</span></span><span class="roll-pill">PXK094-NI-43<span class="roll-qty">22 kg</span></span><span class="roll-pill">PXK094-NI-44<span class="roll-qty">22 kg</span></span><span class="roll-pill">PXK094-NI-45<span class="roll-qty">21 kg</span></span></div></td>
+            <td class="text-right font-bold">1.041,7 kg</td>
+            <td>PXK094-NI-01 (22.8 kg)</td>
+          </tr>
+          <tr>
+            <td class="text-center idx-cell">2</td>
+            <td>Bo nỉ</td>
+            <td>Xám tiêu</td>
+            <td><div class="roll-pills"><span class="roll-pill">PXK094-BO-01<span class="roll-qty">21 kg</span></span><span class="roll-pill">PXK094-BO-02<span class="roll-qty">21 kg</span></span><span class="roll-pill">PXK094-BO-03<span class="roll-qty">21 kg</span></span><span class="roll-pill">PXK094-BO-04<span class="roll-qty">21 kg</span></span></div></td>
+            <td class="text-right font-bold">84 kg</td>
+            <td>PXK094-BO-01 (21 kg)</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      
+      <!-- SUMMARY -->
+      <div class="summary-bar">
+        <div class="summary-item">
+          <span class="summary-label">Số cuộn:</span>
+          <span class="summary-value">49</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Tổng số lượng:</span>
+          <span class="summary-value">1.125,7 kg</span>
+        </div>
+      </div>
+
+      <!-- SIGNATURES -->
+      <div class="signature-section">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:5mm;align-items:start">
+          <div class="sign-cell">
+            <div class="sign-title">Người lập phiếu</div>
+            <div class="sign-name">Trần Quốc Tài</div>
+            <div class="sign-note">Ký và ghi rõ họ tên</div>
+          </div>
+          <div class="sign-cell">
+            <div class="sign-title">Thủ kho</div>
+            <div class="sign-name"></div>
+            <div class="sign-note">Ký và ghi rõ họ tên</div>
+          </div>
+          <div class="sign-cell">
+            <div class="sign-title">Người nhận hàng</div>
+            <div class="sign-name"></div>
+            <div class="sign-note">Ký và ghi rõ họ tên</div>
+          </div>
+          
+          <div class="qr-block">
+            <img src="data:image/png;base64,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" alt="QR verify" />
+            <div class="qr-label">Quét để xác minh</div>
+            <div class="qr-url">https://quantri.detmayvinhphat.com/verify/PXK-094</div>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- FOOTER -->
+      <div class="doc-footer">
+        <span>CÔNG TY TNHH SX TM DỆT MAY VĨNH PHÁT — Vui lòng kiểm tra kỹ số lượng và chất lượng trước khi rời kho.</span>
+        <span>In lúc: 17:09 26/09/2026</span>
+      </div>
+    </div>
+</body>
+</html>

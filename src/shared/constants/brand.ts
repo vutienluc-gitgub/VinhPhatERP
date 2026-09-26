@@ -37,7 +37,20 @@ export const EXPORT_COLORS = {
 
 export const BRAND_INFO = {
   COMPANY_NAME: 'DỆT MAY VĨNH PHÁT',
+  LEGAL_NAME: 'CÔNG TY TNHH SẢN XUẤT THƯƠNG MẠI DỆT MAY VĨNH PHÁT',
+  SHORT_LEGAL_NAME: 'CÔNG TY TNHH SX TM DỆT MAY VĨNH PHÁT',
   BRAND_NAME: 'Vĩnh Phát',
+  TAX_CODE: '0318633734',
+  HEADQUARTERS:
+    '80A Trương Phước Phan, Phường Bình Trị Đông, Thành phố Hồ Chí Minh, Việt Nam',
+  SHORT_ADDRESS: '80A Trương Phước Phan, P. Bình Trị Đông, TP.HCM',
+  FACTORY_ADDRESS:
+    '57/3N ấp Tam Đông, Xã Thới Tam Thôn, Huyện Hóc Môn, TP. Hồ Chí Minh',
+  PHONE: '0975097499',
+  BANK_ACCOUNT: '80000346931',
+  BANK_NAME: 'Vietcombank (CN Tân Định)',
+  REPRESENTATIVE: 'VŨ TIẾN LỰC',
+  TITLE: 'Giám đốc',
   SLOGAN: 'Mỗi tấm vải - Một tấm lòng',
   VERSION: '3.0',
 } as const;

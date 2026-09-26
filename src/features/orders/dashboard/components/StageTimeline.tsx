@@ -25,7 +25,7 @@ export function StageTimeline({
 }: StageTimelineProps) {
   if (totalStages === 0) {
     return (
-      <span className="text-[10px] text-zinc-400 italic">Chưa có tiến độ</span>
+      <span className="text-[10px] text-muted italic">Chưa có tiến độ</span>
     );
   }
 
@@ -38,7 +38,7 @@ export function StageTimeline({
             key={stage}
             title={STAGE_LABELS[stage]}
             className={`h-2 flex-1 rounded-sm transition-colors ${
-              isDone ? 'bg-success-soft' : 'bg-zinc-200'
+              isDone ? 'bg-success' : 'bg-surface-secondary'
             }`}
           />
         );

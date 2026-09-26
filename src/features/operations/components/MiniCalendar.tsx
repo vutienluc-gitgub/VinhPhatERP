@@ -24,13 +24,13 @@ export function MiniCalendar({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-medium text-zinc-900">
+        <div className="text-sm font-semibold text-foreground">
           Tháng {String(month).padStart(2, '0')}/{year}
         </div>
       </div>
       <div className="grid grid-cols-7 gap-1 text-center">
         {labels.map((l) => (
-          <div key={l} className="text-[10px] font-medium text-zinc-400 py-1">
+          <div key={l} className="text-[10px] font-semibold text-muted py-1">
             {l}
           </div>
         ))}

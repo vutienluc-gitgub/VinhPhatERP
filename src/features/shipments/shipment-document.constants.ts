@@ -357,239 +357,187 @@ export const SHIPMENT_DOCUMENT_CSS = `
 
 export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
   @page {
-    size: 200mm 148mm;
+    size: 200mm 140mm;
     margin: 0;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     color: #000;
     font-family: Arial, "Segoe UI", sans-serif;
-    font-size: 8pt;
-    line-height: 1.3;
+    font-size: 7.5pt;
+    line-height: 1.2;
     background: #fff;
     margin: 0;
     padding: 0;
   }
 
   @media print {
-    body { margin: 0; padding: 0; }
-    .page, .a5-page { page-break-after: always; }
-    .page:last-child, .a5-page:last-child { page-break-after: auto; }
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      height: 140mm !important;
+      max-height: 140mm !important;
+      overflow: hidden !important;
+    }
+    .page, .a5-page {
+      page-break-after: avoid !important;
+      page-break-inside: avoid !important;
+      break-after: avoid !important;
+      break-inside: avoid !important;
+    }
   }
 
   .accent-bar { display: none; }
 
-  /* ── A5 Page wrapper for continuous printing (200mm x 148mm, margin 0mm, safe padding 3mm) ── */
+  /* ── A5 Page wrapper for continuous printing (200mm x 140mm, margin 0mm, safe padding 2mm) ── */
   .a5-page {
-    height: 148mm;
+    height: 140mm;
+    max-height: 140mm;
     width: 200mm;
     overflow: hidden;
-    padding: 2mm 3mm;
+    padding: 2mm 3.5mm;
     margin: 0;
-    page-break-inside: avoid;
-    break-inside: avoid;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
-  /* Hide original .page wrapper */
   .page { display: contents; }
 
-  /* ── Header ── */
-  .header {
+  /* ── Header tinh gọn (3 cột) ── */
+  .a5-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 1px solid #000;
-    padding-bottom: 1.5mm;
-    margin-bottom: 1.5mm;
+    align-items: center;
+    border-bottom: 1.5px solid #000;
+    padding-bottom: 1mm;
+    margin-bottom: 1.2mm;
   }
-  .brand-block {
+  .a5-header-left {
+    flex: 1.3;
     display: flex;
     align-items: center;
-    gap: 3mm;
+    gap: 2mm;
   }
-  .brand-logo {
-    width: 32px;
-    height: 32px;
+  .a5-brand-logo {
+    width: 8mm;
+    height: 8mm;
     object-fit: contain;
     flex-shrink: 0;
   }
-  .brand {
+  .a5-comp-info {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    min-width: 0;
   }
-  .brand-name {
-    font-size: 9pt;
-    font-weight: bold;
+  .a5-comp-name {
+    font-size: 8.5pt;
+    font-weight: 800;
     text-transform: uppercase;
+    line-height: 1.15;
   }
-  .doc-title {
-    font-size: 12pt;
-    font-weight: bold;
-    text-transform: uppercase;
+  .a5-comp-sub {
+    font-size: 7.5pt;
+    color: #222;
+    margin-top: 0.3mm;
+    line-height: 1.15;
   }
-  .doc-subtitle {
-    font-size: 8pt;
+  .a5-comp-meta {
+    font-size: 7.5pt;
+    color: #333;
+    line-height: 1.15;
   }
-  .meta-block {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-  .meta-row {
-    font-size: 8pt;
-    line-height: 1.4;
-  }
-  .meta-label {
-    display: inline-block;
-    width: 18mm;
-  }
-  .meta-value {
-    font-weight: bold;
-  }
-  .meta-value.strong {
-    font-size: 9pt;
-  }
-
-  /* ── Info cards ── */
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2mm;
-    margin-bottom: 1.5mm;
-  }
-  .info-card {
-    border: 1px solid #000;
-  }
-  .info-card-header {
-    border-bottom: 1px solid #000;
-    font-weight: bold;
-    padding: 0.5mm 1.5mm;
-    text-transform: uppercase;
-    font-size: 8pt;
-  }
-  .info-card-body {
-    padding: 0.5mm 1.5mm;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-  .info-row {
-    display: flex;
-    font-size: 8pt;
-    line-height: 1.4;
-  }
-  .info-key {
-    min-width: 22mm;
-    flex-shrink: 0;
-  }
-  .info-val {
-    font-weight: bold;
-  }
-  .info-val.large {
-    font-size: 9pt;
-  }
-
-  /* ── Table ── */
-  .table-wrap {
-    border: 1px solid #000;
-    margin-bottom: 1mm;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  thead tr {
-    border-bottom: 1px solid #000;
-  }
-  th {
-    font-size: 8pt;
-    font-weight: bold;
-    text-align: left;
-    padding: 0.5mm 1.5mm;
-    border-right: 1px solid #000;
-  }
-  th:last-child { border-right: none; }
-  td {
-    font-size: 8pt;
-    padding: 0.5mm 1.5mm;
-    border-bottom: 1px solid #000;
-    border-right: 1px solid #000;
-    vertical-align: top;
-  }
-  td:last-child { border-right: none; }
-  tbody tr:last-child td { border-bottom: none; }
-  .text-center { text-align: center; }
-  .text-right { text-align: right; }
-  .font-bold { font-weight: bold; }
-  .idx-cell { font-size: 8pt; }
-
-  /* ── Roll pills (plain text for dot matrix) ── */
-  .roll-pills {
-    display: inline;
-  }
-  .roll-pill {
-    font-size: 8pt;
-  }
-  .roll-pill:not(:last-child)::after {
-    content: ", ";
-  }
-  .roll-qty {
-    font-size: 7pt;
-  }
-
-  /* ── Summary bar ── */
-  .summary-bar {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8mm;
-    padding: 0.5mm 1.5mm;
-    border: 1px solid #000;
-    font-size: 9pt;
-    font-weight: bold;
-  }
-  .summary-item { display: flex; gap: 2mm; }
-  .summary-label {}
-  .summary-value {}
-
-  /* ── Signature ── */
-  .signature-section {
-    margin-top: 2mm;
-  }
-  .sign-cell {
+  .a5-header-center {
+    flex: 1.1;
     text-align: center;
   }
-  .sign-title {
-    font-size: 8pt;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-bottom: 1px dotted #000;
-    padding-bottom: 0.5mm;
-  }
-  .sign-name {
-    font-size: 8pt;
-    min-height: 2mm;
-  }
-  .sign-note {
-    font-size: 7pt;
-    font-style: italic;
-    margin-top: 8mm;
-  }
+  .a5-doc-title { font-size: 12pt; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
+  .a5-doc-sub { font-size: 7.5pt; font-weight: bold; color: #111; }
+  .a5-header-right { flex: 0.8; text-align: right; font-size: 7.5pt; line-height: 1.3; }
+  .a5-doc-no { font-size: 9pt; font-weight: 800; }
 
-  /* Hide QR block for dot matrix */
-  .qr-block { display: none; }
-
-  /* ── Footer ── */
-  .doc-footer {
-    margin-top: 1mm;
-    border-top: 1px solid #000;
-    padding-top: 0.5mm;
+  /* ── Info bar 2 cột (bỏ khung viền tăng tốc in kim) ── */
+  .a5-info-bar {
     display: flex;
     justify-content: space-between;
-    font-size: 7pt;
+    border: none;
+    padding: 0.5mm 0;
+    margin-bottom: 1.5mm;
+    font-size: 7.5pt;
+    line-height: 1.35;
+    background: transparent;
+  }
+  .a5-info-col { flex: 1; }
+
+  /* ── Lot Matrix Card (Lược bỏ toàn bộ viền ô để đầu kim in lướt nhanh) ── */
+  .a5-lot-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5mm;
+    overflow: hidden;
+  }
+  .a5-lot-card { border: none; background: transparent; }
+  .a5-lot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    padding: 0.4mm 0;
+    font-size: 8pt;
+  }
+  .a5-fabric-name { font-size: 8.5pt; font-weight: 800; text-transform: uppercase; }
+  .a5-color-badge { margin-left: 2mm; padding: 0; border: none; font-size: 7.5pt; font-weight: bold; }
+  .a5-lot-stats { font-size: 8pt; font-weight: bold; }
+
+  .a5-roll-matrix {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.8mm;
+    padding: 0.8mm 0;
+  }
+  .a5-matrix-cell { border: none; text-align: center; padding: 0.4mm 0; background: transparent; line-height: 1.1; }
+  .a5-roll-idx { display: block; font-size: 7.5pt; color: #444; }
+  .a5-roll-val { display: block; font-size: 8.5pt; font-weight: 800; }
+
+  /* ── Summary bar (hoàn toàn không đường kẻ để in kim nhanh tối đa) ── */
+  .a5-summary-bar {
+    display: flex;
+    justify-content: space-between;
+    border: none;
+    padding: 1mm 0;
+    font-size: 8.5pt;
+    font-weight: 800;
+    margin-top: 1.5mm;
+    margin-bottom: 1.5mm;
+    background: transparent;
   }
 
-  @media print {
-    body { margin: 0; padding: 0; }
+  /* ── Signatures 4 bên (thoáng, không kẻ khung) ── */
+  .a5-signatures { display: grid; grid-template-columns: repeat(4, 1fr); border: none; height: 16mm; }
+  .a5-sign-box { border: none; text-align: center; padding: 0.8mm; }
+  .a5-sign-box:last-child { border: none; }
+  .a5-sign-role { font-size: 8pt; font-weight: 800; text-transform: uppercase; }
+  .a5-sign-desc { font-size: 7.5pt; font-style: italic; color: #444; margin-top: 0.4mm; }
+
+  /* ── Footer ── */
+  .a5-footer {
+    display: flex;
+    justify-content: space-between;
+    border: none;
+    padding-top: 0.4mm;
+    margin-top: 0.8mm;
+    font-size: 7.5pt;
+    color: #333;
   }
+
+  /* Legacy fallback */
+  .qr-block { display: none; }
 `;

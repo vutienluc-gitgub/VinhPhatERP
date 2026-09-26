@@ -82,11 +82,9 @@ export function FulfillmentKpiCards({
           <div className={`text-2xl font-bold ${card.color} tabular-nums`}>
             {isLoading ? '—' : card.value}
           </div>
-          <div className="text-xs text-zinc-500 mt-0.5">{card.label}</div>
+          <div className="text-xs text-muted mt-0.5">{card.label}</div>
           {card.subtitle && (
-            <div className="text-[10px] text-zinc-400 mt-1">
-              {card.subtitle}
-            </div>
+            <div className="text-[10px] text-muted mt-1">{card.subtitle}</div>
           )}
         </div>
       ))}

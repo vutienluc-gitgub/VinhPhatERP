@@ -109,6 +109,11 @@
   color: var(--foreground);
 }
 
+.tab-item-underline[aria-selected='true'] {
+  color: var(--primary);
+  font-weight: 700;
+}
+
 .tab-item-underline::after {
   content: '';
   position: absolute;
@@ -119,6 +124,10 @@
   background: var(--primary);
   transform: scaleX(0);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-item-underline[aria-selected='true']::after {
+  transform: scaleX(1);
 }
 
 @media (width <= 639px) {

@@ -63,6 +63,7 @@ const PATH_TO_TAB: Record<string, SettingsTab> = {
   finance: 'finance',
   operations: 'operations',
   'print-templates': 'print_templates',
+  print: 'print_templates',
   system: 'system',
 };
 
