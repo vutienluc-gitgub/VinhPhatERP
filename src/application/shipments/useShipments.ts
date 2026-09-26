@@ -159,12 +159,15 @@ export function useExportShipmentPdf() {
       try {
         if (settings?.print_margin) margin = JSON.parse(settings.print_margin);
       } catch {
-        margin = undefined;
+        /* empty */
       }
 
       exportShipmentToPdf(shipment, {
         createdByName: profile?.full_name ?? undefined,
         companyName: settings?.company_name ?? undefined,
+        showLogo: settings?.print_show_logo !== 'false',
+        showQr: settings?.print_show_qr !== 'false',
+        logoUrl: settings?.print_logo_url || undefined,
         format:
           format ??
           (settings?.print_default_format === 'A5_DOT_MATRIX'
@@ -268,19 +271,15 @@ export function useOrderShipments(orderId: string | undefined) {
   });
 }
 
-/* ── Create ad-hoc shipment (without order) ── */
-
 export function useCreateAdHocShipment() {
   const [clientId, setClientId] = useState(() => crypto.randomUUID());
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (values: AdHocShipmentFormValues) => {
-      const reqPayload = {
+    mutationFn: (values: AdHocShipmentFormValues) =>
+      createAdHocShipment({
         id: clientId,
         ...mapAdHocShipmentFormToPayload(values),
-      };
-      return createAdHocShipment(reqPayload);
-    },
+      }),
     onSuccess: () => {
       setClientId(crypto.randomUUID());
       void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
