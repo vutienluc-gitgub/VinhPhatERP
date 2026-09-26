@@ -54,7 +54,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 0 var(--shell-inset) 5.5rem; /* INSET: tiêu thụ --shell-inset */
+  padding: 0 var(--shell-inset) calc(5.5rem + env(safe-area-inset-bottom, 0px)); /* INSET: tiêu thụ --shell-inset và safe-area đáy */
   min-width: 0;
 
   /* Chặn overscroll bounce làm nội dung "trôi nổi" trên mobile */
