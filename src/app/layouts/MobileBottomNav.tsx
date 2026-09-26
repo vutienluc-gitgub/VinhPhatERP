@@ -37,7 +37,7 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-40 md:hidden flex items-center justify-around px-2 py-1 bg-surface/90 backdrop-blur-md border-t border-border shadow-lg pb-[env(safe-area-inset-bottom,0px)]"
+      className="fixed bottom-0 inset-x-0 z-40 md:hidden flex items-center justify-around px-2 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] bg-surface/95 backdrop-blur-md border-t border-border shadow-lg"
       aria-label="Bottom navigation"
       role="tablist"
     >
@@ -61,10 +61,10 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
             role="tab"
             aria-selected={undefined}
             className={({ isActive }) =>
-              `relative flex flex-1 flex-col items-center justify-center min-w-0 py-1.5 px-1 rounded-xl active:scale-95 transition-all text-xs font-medium ${
+              `relative flex flex-1 flex-col items-center justify-center min-w-0 py-1.5 px-1.5 rounded-xl active:scale-95 transition-all text-xs ${
                 isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary/10 text-primary font-semibold'
+                  : 'text-muted-foreground hover:text-foreground font-medium'
               }`
             }
             onClick={handleTabClick}
@@ -77,10 +77,10 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
           >
             {({ isActive }) => (
               <>
-                {/* Active indicator — 2px bar on top */}
+                {/* Active indicator bar — pinned to top border of nav */}
                 {isActive && (
                   <span
-                    className="mobile-nav-active-indicator absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-primary"
+                    className="mobile-nav-active-indicator absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary"
                     aria-hidden="true"
                   />
                 )}
@@ -92,7 +92,7 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
                   />
                   {hasBadge && (
                     <span
-                      className="mobile-nav-badge absolute -top-1 -right-2 min-w-4 h-4 px-1 rounded-full bg-danger text-inverse-foreground text-[10px] font-bold leading-4 text-center whitespace-nowrap pointer-events-none tabular-nums shadow-[0_0_0_1.5px_var(--surface-strong)]"
+                      className="mobile-nav-badge absolute -top-1 -right-2.5 min-w-4 h-4 px-1 rounded-full bg-danger text-inverse-foreground text-[10px] font-bold leading-4 text-center whitespace-nowrap pointer-events-none tabular-nums shadow-[0_0_0_1.5px_var(--surface-strong)]"
                       aria-label={`${APP_SHELL_LABELS.NOTIFICATION_PREFIX} ${badgeText}`}
                     >
                       {badgeText}
@@ -100,12 +100,12 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
                   )}
                   {item.hasDot && !hasBadge && (
                     <span
-                      className="mobile-nav-dot absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-danger pointer-events-none shadow-[0_0_0_1.5px_var(--surface-strong)]"
+                      className="mobile-nav-dot absolute -top-0.5 -right-1 w-2 h-2 rounded-full bg-danger pointer-events-none shadow-[0_0_0_1.5px_var(--surface-strong)]"
                       aria-hidden="true"
                     />
                   )}
                 </span>
-                <span className="truncate max-w-full text-[11px] font-medium leading-tight mt-0.5">
+                <span className="truncate max-w-full text-[11px] leading-tight mt-1 select-none">
                   {item.shortLabel}
                 </span>
               </>
@@ -119,10 +119,10 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
         aria-selected={isDrawerActive}
         aria-haspopup="dialog"
         aria-expanded={isDrawerActive}
-        className={`relative flex flex-1 flex-col items-center justify-center min-w-0 py-1.5 px-1 rounded-xl active:scale-95 transition-all text-xs font-medium ${
+        className={`relative flex flex-1 flex-col items-center justify-center min-w-0 py-1.5 px-1.5 rounded-xl active:scale-95 transition-all text-xs ${
           isDrawerActive
-            ? 'bg-primary/10 text-primary'
-            : 'text-muted-foreground hover:text-foreground'
+            ? 'bg-primary/10 text-primary font-semibold'
+            : 'text-muted-foreground hover:text-foreground font-medium'
         }`}
         onClick={handleMenuClick}
         aria-label={
@@ -133,7 +133,7 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
       >
         {isDrawerActive && (
           <span
-            className="mobile-nav-active-indicator absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-primary"
+            className="mobile-nav-active-indicator absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary"
             aria-hidden="true"
           />
         )}
@@ -148,7 +148,7 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
             menuBadge !== 0 &&
             menuBadge !== '' && (
               <span
-                className="mobile-nav-badge absolute -top-1 -right-2 min-w-4 h-4 px-1 rounded-full bg-danger text-inverse-foreground text-[10px] font-bold leading-4 text-center whitespace-nowrap pointer-events-none tabular-nums shadow-[0_0_0_1.5px_var(--surface-strong)]"
+                className="mobile-nav-badge absolute -top-1 -right-2.5 min-w-4 h-4 px-1 rounded-full bg-danger text-inverse-foreground text-[10px] font-bold leading-4 text-center whitespace-nowrap pointer-events-none tabular-nums shadow-[0_0_0_1.5px_var(--surface-strong)]"
                 aria-label={`${APP_SHELL_LABELS.NOTIFICATION_PREFIX} ${menuBadge}`}
               >
                 {typeof menuBadge === 'number' && menuBadge > 99
@@ -158,12 +158,12 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
             )}
           {menuHasDot && !menuBadge && (
             <span
-              className="mobile-nav-dot absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-danger pointer-events-none shadow-[0_0_0_1.5px_var(--surface-strong)]"
+              className="mobile-nav-dot absolute -top-0.5 -right-1 w-2 h-2 rounded-full bg-danger pointer-events-none shadow-[0_0_0_1.5px_var(--surface-strong)]"
               aria-hidden="true"
             />
           )}
         </span>
-        <span className="truncate max-w-full text-[11px] font-medium leading-tight mt-0.5">
+        <span className="truncate max-w-full text-[11px] leading-tight mt-1 select-none">
           {APP_SHELL_LABELS.MENU}
         </span>
       </button>
