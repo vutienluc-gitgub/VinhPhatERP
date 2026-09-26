@@ -137,7 +137,7 @@ export function AppShell() {
             initials={initials}
           />
 
-          <main className="route-content pb-20 md:pb-6">
+          <main className="route-content pb-2 md:pb-6">
             <Suspense
               fallback={
                 <div className="flex-center p-10">
