@@ -4,7 +4,6 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useChatNotifications, useTotalUnread } from '@/application/chat';
 import { getNavigationItems, hasAccess } from '@/app/router/routes';
-import type { NavigationItem } from '@/app/router/routes';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import {
   PreferencesContext,
@@ -16,6 +15,7 @@ import { useNotifications } from '@/shared/hooks/useNotifications';
 import { useAppBadging } from '@/shared/hooks/useAppBadging';
 import { useNotificationDeepLink } from '@/shared/hooks/useNotificationDeepLink';
 import { usePushSubscription } from '@/shared/hooks/usePushSubscription';
+import { resolveRoleBottomTabs } from '@/app/layouts/resolvers/role-tabs.config';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
 import { TopBar } from './TopBar';
@@ -26,14 +26,6 @@ function getCurrentItem(pathname: string) {
     item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
   );
 }
-
-/** Paths của các tab cố định ở bottom nav (mobile). */
-const BOTTOM_TAB_PATHS = [
-  '/',
-  '/orders',
-  '/raw-fabric',
-  '/finished-fabric',
-] as const;
 
 export function AppShell() {
   const { pathname } = useLocation();
@@ -72,24 +64,26 @@ export function AppShell() {
     [navigationItems, userRole],
   );
 
-  // Fixed bottom nav tabs (high-frequency features)
+  // Dynamic role-based bottom nav tabs (high-frequency features per role)
   const bottomTabs = useMemo(
     () =>
-      BOTTOM_TAB_PATHS.map((p) =>
-        visibleNavItems.find((item) => item.path === p),
-      ).filter(
-        (item): item is NavigationItem => item !== null && item !== undefined,
-      ),
-    [visibleNavItems],
+      resolveRoleBottomTabs({
+        visibleNavItems,
+        userRole,
+        maxTabs: 4,
+      }),
+    [visibleNavItems, userRole],
   );
 
-  // All non-tab items for drawer (exclude bottom tabs to avoid duplicates)
+  const bottomTabPaths = useMemo(
+    () => new Set(bottomTabs.map((item) => item.path)),
+    [bottomTabs],
+  );
+
+  // All non-tab items for drawer (exclude active bottom tabs to avoid duplicates)
   const drawerItems = useMemo(
-    () =>
-      visibleNavItems.filter(
-        (item) => !(BOTTOM_TAB_PATHS as readonly string[]).includes(item.path),
-      ),
-    [visibleNavItems],
+    () => visibleNavItems.filter((item) => !bottomTabPaths.has(item.path)),
+    [visibleNavItems, bottomTabPaths],
   );
 
   // Check if active page is in the drawer (not in bottom tabs)
@@ -156,11 +150,15 @@ export function AppShell() {
           </main>
         </div>
 
-        {/* ── Mobile Bottom Nav (3 tabs + Menu) ── */}
+        {/* ── Mobile Bottom Nav (Role-aware tabs + Menu) ── */}
         <MobileBottomNav
           bottomTabs={bottomTabs}
           isDrawerActive={isDrawerActive}
           onOpenMore={() => setShowMore(true)}
+          menuBadge={
+            totalDeviceBadgeCount > 0 ? totalDeviceBadgeCount : undefined
+          }
+          menuHasDot={totalDeviceBadgeCount > 0}
         />
 
         {showMore && (

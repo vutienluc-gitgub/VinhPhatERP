@@ -13,9 +13,9 @@
   align-items: center;
 
   /* Safe-area insets for notched devices (iPhone X+) */
-  padding: 0.5rem calc(0.5rem + env(safe-area-inset-right))
-    calc(0.5rem + env(safe-area-inset-bottom))
-    calc(0.5rem + env(safe-area-inset-left));
+  padding: 0.5rem calc(0.5rem + env(safe-area-inset-right, 0px))
+    calc(0.5rem + env(safe-area-inset-bottom, 0px))
+    calc(0.5rem + env(safe-area-inset-left, 0px));
   border-top: 1px solid var(--border);
   background: var(--surface-strong);
   z-index: 100;
@@ -33,11 +33,50 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.mobile-nav-link span {
+.mobile-nav-link .mobile-nav-label {
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.mobile-nav-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background: var(--danger);
+  color: var(--inverse-foreground);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1rem;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 1.5px var(--surface-strong);
+}
+
+.mobile-nav-dot {
+  position: absolute;
+  top: -1px;
+  right: -2px;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--danger);
+  pointer-events: none;
+  box-shadow: 0 0 0 1.5px var(--surface-strong);
 }
 
 .mobile-nav-link {
