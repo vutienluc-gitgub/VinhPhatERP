@@ -37,7 +37,10 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-40 md:hidden flex items-center justify-around px-2 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] bg-surface/95 backdrop-blur-md border-t border-border shadow-lg"
+      className="mobile-nav fixed bottom-0 inset-x-0 z-50 md:hidden flex items-center justify-around px-2 pt-1.5 pb-2.5 bg-surface/95 backdrop-blur-md border-t border-border shadow-lg transform-gpu will-change-transform"
+      style={{
+        paddingBottom: 'calc(0.625rem + env(safe-area-inset-bottom, 0px))',
+      }}
       aria-label="Bottom navigation"
       role="tablist"
     >
@@ -80,7 +83,7 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
                 {/* Active indicator bar — pinned to top border of nav */}
                 {isActive && (
                   <span
-                    className="mobile-nav-active-indicator absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary"
+                    className="mobile-nav-active-indicator absolute -top-1.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary"
                     aria-hidden="true"
                   />
                 )}
@@ -133,7 +136,7 @@ export const MobileBottomNav = React.memo(function MobileBottomNav({
       >
         {isDrawerActive && (
           <span
-            className="mobile-nav-active-indicator absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary"
+            className="mobile-nav-active-indicator absolute -top-1.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary"
             aria-hidden="true"
           />
         )}
