@@ -33,8 +33,17 @@ export function PrintLivePreview({
   };
 
   // Convert mm margin string to preview px padding
-  const marginLeftNum = parseFloat(values.print_margin?.left || '3') || 3;
-  const marginRightNum = parseFloat(values.print_margin?.right || '3') || 3;
+  const marginTopNum = parseFloat(values.print_margin?.top || '2') || 2;
+  const marginBottomNum = parseFloat(values.print_margin?.bottom || '2') || 2;
+  const marginLeftNum = parseFloat(values.print_margin?.left || '3.5') || 3.5;
+  const marginRightNum = parseFloat(values.print_margin?.right || '3.5') || 3.5;
+
+  const dynamicPaddingTop = isA5
+    ? Math.max(8, marginTopNum * 2.2 + 6)
+    : undefined;
+  const dynamicPaddingBottom = isA5
+    ? Math.max(8, marginBottomNum * 2.2 + 6)
+    : undefined;
   const dynamicPaddingLeft = isA5
     ? Math.max(16, marginLeftNum * 2.2 + 10)
     : undefined;
@@ -108,6 +117,12 @@ export function PrintLivePreview({
           }`}
           style={{
             transform: `scale(${zoomLevel})`,
+            paddingTop: dynamicPaddingTop
+              ? `${dynamicPaddingTop}px`
+              : undefined,
+            paddingBottom: dynamicPaddingBottom
+              ? `${dynamicPaddingBottom}px`
+              : undefined,
             paddingLeft: dynamicPaddingLeft
               ? `${dynamicPaddingLeft}px`
               : undefined,

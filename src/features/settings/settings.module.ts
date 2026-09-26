@@ -86,6 +86,13 @@ export const settingsPlugin: FeaturePlugin = {
             })),
         },
         {
+          path: 'print',
+          component: () =>
+            import('./pages/PrintTemplatesSettingsPage').then((m) => ({
+              default: m.PrintTemplatesSettingsPage,
+            })),
+        },
+        {
           path: 'system',
           component: () =>
             import('./pages/SystemSettingsPage').then((m) => ({

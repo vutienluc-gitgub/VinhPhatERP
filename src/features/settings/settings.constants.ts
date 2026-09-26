@@ -152,6 +152,8 @@ export const SETTINGS_LABELS = {
   PRINT_A5_SPEC_SUB: '(Khổ ngang · Trừ lề an toàn)',
   PRINT_WIDTH_SHORT: 'Bề rộng',
   PRINT_HEIGHT_SHORT: 'Chiều cao',
+  PRINT_MARGIN_TOP_SHORT: 'Lề trên',
+  PRINT_MARGIN_BOTTOM_SHORT: 'Lề dưới',
   PRINT_MARGIN_LEFT_SHORT: 'Lề trái',
   PRINT_MARGIN_RIGHT_SHORT: 'Lề phải',
   PRINT_PRESET_LABEL: 'Khổ in mẫu nhanh',
@@ -175,6 +177,8 @@ export const SETTINGS_LABELS = {
   TAB_FINANCE: 'Tài chính',
   TAB_OPERATIONS: 'Vận hành',
   TAB_PRINT_TEMPLATES: 'Mẫu in',
+  PRINT_TAB_CONFIG: 'Cấu hình in ấn & Căn lề máy in',
+  PRINT_TAB_TEMPLATES: 'Kho mẫu in chứng từ',
   TAB_SYSTEM: 'Hệ thống',
   // Common buttons
   BTN_UNDO: 'Hoàn tác',

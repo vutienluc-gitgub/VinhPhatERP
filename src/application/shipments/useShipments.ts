@@ -155,10 +155,24 @@ export function useExportShipmentPdf() {
       format?: 'A4' | 'A5_DOT_MATRIX';
     }) => {
       const shipment = await fetchShipmentDocument(shipmentId);
+      let margin: Record<string, string> | undefined;
+      try {
+        if (settings?.print_margin) margin = JSON.parse(settings.print_margin);
+      } catch {
+        margin = undefined;
+      }
+
       exportShipmentToPdf(shipment, {
         createdByName: profile?.full_name ?? undefined,
         companyName: settings?.company_name ?? undefined,
-        format,
+        format:
+          format ??
+          (settings?.print_default_format === 'A5_DOT_MATRIX'
+            ? 'A5_DOT_MATRIX'
+            : undefined),
+        dotMatrixWidth: settings?.print_dot_matrix_width || undefined,
+        dotMatrixHeight: settings?.print_dot_matrix_height || undefined,
+        margin,
       });
       return shipment;
     },

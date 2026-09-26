@@ -15,6 +15,7 @@ import { exportShipmentToPdf } from '@/shared/services/print/shipment';
 import type { ShipmentDocument } from '@/domain/shipments/types';
 
 import { PrintLivePreview } from './PrintLivePreview';
+import { PrintMarginControls } from './PrintMarginControls';
 import { SETTINGS_LABELS, SETTINGS_MESSAGES } from './settings.constants';
 import { usePrintSettings, useUpdatePrintSettings } from './usePrintSettings';
 
@@ -387,7 +388,7 @@ export function PrintSettingsForm() {
                         className={`field-input h-8 text-xs font-semibold font-mono text-center pr-6 ${
                           errors.print_dot_matrix_height ? 'border-danger' : ''
                         }`}
-                        placeholder="148"
+                        placeholder="140"
                         {...register('print_dot_matrix_height')}
                       />
                       <span className="absolute right-2 text-[10px] text-muted font-mono pointer-events-none">
@@ -400,132 +401,14 @@ export function PrintSettingsForm() {
                       </span>
                     )}
                   </div>
-
-                  {/* Lề trái */}
-                  <div className="flex flex-col gap-1">
-                    <label
-                      htmlFor="margin-left"
-                      className="text-[11px] font-medium text-muted"
-                    >
-                      {SETTINGS_LABELS.PRINT_MARGIN_LEFT_SHORT}
-                    </label>
-                    <div className="relative flex items-center">
-                      <input
-                        id="margin-left"
-                        type="text"
-                        className={`field-input h-8 text-xs font-semibold font-mono text-center pr-6 ${
-                          errors.print_margin?.left ? 'border-danger' : ''
-                        }`}
-                        placeholder="3"
-                        {...register('print_margin.left')}
-                      />
-                      <span className="absolute right-2 text-[10px] text-muted font-mono pointer-events-none">
-                        mm
-                      </span>
-                    </div>
-                    {errors.print_margin?.left && (
-                      <span className="text-[10px] text-danger">
-                        {errors.print_margin.left.message}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Lề phải */}
-                  <div className="flex flex-col gap-1">
-                    <label
-                      htmlFor="margin-right"
-                      className="text-[11px] font-medium text-muted"
-                    >
-                      {SETTINGS_LABELS.PRINT_MARGIN_RIGHT_SHORT}
-                    </label>
-                    <div className="relative flex items-center">
-                      <input
-                        id="margin-right"
-                        type="text"
-                        className={`field-input h-8 text-xs font-semibold font-mono text-center pr-6 ${
-                          errors.print_margin?.right ? 'border-danger' : ''
-                        }`}
-                        placeholder="3"
-                        {...register('print_margin.right')}
-                      />
-                      <span className="absolute right-2 text-[10px] text-muted font-mono pointer-events-none">
-                        mm
-                      </span>
-                    </div>
-                    {errors.print_margin?.right && (
-                      <span className="text-[10px] text-danger">
-                        {errors.print_margin.right.message}
-                      </span>
-                    )}
-                  </div>
                 </div>
 
-                {/* Quick Presets Bar */}
-                <div className="flex items-center gap-1.5 flex-wrap pt-1.5 border-t border-default/40">
-                  <span className="text-[10px] text-muted font-medium">
-                    {SETTINGS_LABELS.PRINT_PRESET_LABEL}:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setValue('print_dot_matrix_width', '200mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_dot_matrix_height', '148mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_margin.left', '3mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_margin.right', '3mm', {
-                        shouldDirty: true,
-                      });
-                    }}
-                    className="px-2 py-0.5 rounded text-[10px] font-semibold bg-surface border border-default hover:bg-surface-secondary text-foreground transition-colors"
-                  >
-                    200 × 148 mm
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setValue('print_dot_matrix_width', '210mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_dot_matrix_height', '148mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_margin.left', '3mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_margin.right', '3mm', {
-                        shouldDirty: true,
-                      });
-                    }}
-                    className="px-2 py-0.5 rounded text-[10px] font-semibold bg-surface border border-default hover:bg-surface-secondary text-foreground transition-colors"
-                  >
-                    210 × 148 mm (ISO)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setValue('print_dot_matrix_width', '190mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_dot_matrix_height', '140mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_margin.left', '3mm', {
-                        shouldDirty: true,
-                      });
-                      setValue('print_margin.right', '3mm', {
-                        shouldDirty: true,
-                      });
-                    }}
-                    className="px-2 py-0.5 rounded text-[10px] font-semibold bg-surface border border-default hover:bg-surface-secondary text-foreground transition-colors"
-                  >
-                    190 × 140 mm (Hẹp)
-                  </button>
-                </div>
+                {/* Căn lề & Presets (Sub-component) */}
+                <PrintMarginControls
+                  register={register}
+                  errors={errors}
+                  setValue={setValue}
+                />
               </div>
             )}
 
