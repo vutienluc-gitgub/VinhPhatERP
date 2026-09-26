@@ -117,8 +117,8 @@ export function buildMarginToolbarHtml(
   }
   .ctrl-label {
     font-size: 10px;
-    color: #94a3b8;
-    font-weight: 500;
+    color: #e2e8f0;
+    font-weight: 600;
   }
   .ctrl-stepper {
     display: flex;
@@ -162,7 +162,7 @@ export function buildMarginToolbarHtml(
     margin: 0;
   }
   .ctrl-unit {
-    color: #64748b;
+    color: #94a3b8;
     font-size: 9px;
     padding-right: 4px;
   }
@@ -176,7 +176,7 @@ export function buildMarginToolbarHtml(
   .ctrl-presets button {
     background: #1e293b;
     border: 1px solid #475569;
-    color: #cbd5e1;
+    color: #f1f5f9;
     font-size: 9px;
     padding: 3px 6px;
     border-radius: 4px;

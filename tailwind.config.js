@@ -85,6 +85,12 @@ export default {
       },
     },
     extend: {
+      textColor: {
+        muted: 'var(--muted-foreground)',
+      },
+      backgroundColor: {
+        muted: 'var(--surface-subtle)',
+      },
       borderRadius: {
         sm: 'var(--radius-sm)',
         md: 'var(--radius-md)',

@@ -27,8 +27,8 @@
   --border-danger: rgba(var(--danger-rgb), 0.4);
 
   --foreground: #eef7ff;
-  --muted-foreground: #94a3b8;
-  --disabled-foreground: #64748b;
+  --muted-foreground: #9eb4ce;
+  --disabled-foreground: #8fa1b8;
   --inverse-foreground: #091524;
 
   --primary: #4a8fd4;

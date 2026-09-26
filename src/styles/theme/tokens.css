@@ -52,8 +52,8 @@
 
   /* ── Text ───────────────────────────────────────────────────── */
   --foreground: rgb(var(--base-rgb));
-  --muted-foreground: #5c6f88;
-  --disabled-foreground: #8899aa;
+  --muted-foreground: #475569;
+  --disabled-foreground: #64748b;
   --inverse-foreground: #ffffff;
 
   /* ── Semantic Colors ───────────────────────────────────────── */
@@ -121,4 +121,9 @@
       transparent 28%
     ),
     linear-gradient(180deg, #f6fbff 0%, #edf4fb 100%);
+}
+
+/* Accessibility & WCAG AA Contrast Guarantee */
+.text-muted {
+  color: var(--muted-foreground);
 }
