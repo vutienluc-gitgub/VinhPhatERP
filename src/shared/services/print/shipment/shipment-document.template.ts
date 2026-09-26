@@ -1,6 +1,7 @@
 import QRCode from 'qrcode';
 
 import type { ShipmentDocument } from '@/domain/shipments/types';
+import { VP_SYMBOL_SVG_DATA_URI } from '@/shared/constants/brand';
 
 import {
   SHIPMENT_DOCUMENT_LABELS,
@@ -76,9 +77,7 @@ export async function buildShipmentPrintHtml(
     options.createdByName ?? SHIPMENT_DOCUMENT_LABELS.EMPTY_VALUE;
 
   // QR code for digital verification
-  const verifyUrl = `${
-    options.verifyBaseUrl ?? VERIFY_BASE_URL
-  }/${encodeURIComponent(shipment.shipment_number)}`;
+  const verifyUrl = `${options.verifyBaseUrl ?? VERIFY_BASE_URL}/${encodeURIComponent(shipment.shipment_number)}`;
   const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
     width: 96,
     margin: 1,
@@ -145,7 +144,7 @@ export async function buildShipmentPrintHtml(
 
     const showLogo = options.showLogo !== false;
     const showQr = options.showQr !== false;
-    const logoSrc = options.logoUrl || '/brand/logo-compact-positive.svg';
+    const logoSrc = options.logoUrl || VP_SYMBOL_SVG_DATA_URI;
     const footerText =
       options.footerNote || SHIPMENT_DOCUMENT_LABELS.FOOTER_DISCLAIMER;
 

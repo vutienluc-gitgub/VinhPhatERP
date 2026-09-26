@@ -47,9 +47,28 @@ export async function exportShipmentToPdf(
   };
 
   let printed = false;
-  const triggerPrint = () => {
+  const triggerPrint = async () => {
     if (printed) return;
     printed = true;
+
+    // Đảm bảo toàn bộ hình ảnh (logo, QR) đã nạp và giải mã xong trước khi mở hộp thoại in
+    try {
+      const images = Array.from(frameWindow.document.images);
+      await Promise.all(
+        images.map(
+          (img) =>
+            img.decode?.().catch(() => {}) ??
+            (img.complete
+              ? Promise.resolve()
+              : new Promise<void>((resolve) => {
+                  img.onload = () => resolve();
+                  img.onerror = () => resolve();
+                })),
+        ),
+      );
+    } catch {
+      // Tiếp tục in nếu có lỗi phụ
+    }
 
     frameWindow.focus();
     frameWindow.print();
@@ -57,13 +76,16 @@ export async function exportShipmentToPdf(
   };
 
   frameWindow.addEventListener('afterprint', cleanup, { once: true });
-  printFrame.addEventListener('load', triggerPrint, { once: true });
+  printFrame.addEventListener('load', () => void triggerPrint(), {
+    once: true,
+  });
 
   frameWindow.document.open();
   frameWindow.document.write(html);
   frameWindow.document.close();
 
-  if (frameWindow.document.readyState === 'complete') {
-    triggerPrint();
-  }
+  // Nhường 1 microtask/tick để iframe hoàn tất parse DOM & ảnh
+  setTimeout(() => {
+    void triggerPrint();
+  }, 100);
 }

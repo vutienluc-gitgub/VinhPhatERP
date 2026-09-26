@@ -17,6 +17,8 @@ import { exportShipmentToPdf } from '@/shared/services/print/shipment';
 import type { ShipmentDocument } from '@/domain/shipments/types';
 import { sumBy } from '@/shared/utils/array.util';
 
+import { type PrintItem, DEFAULT_PRINT_ITEMS } from './print-dialog.constants';
+
 export interface BusinessPrintDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -99,34 +101,10 @@ export function BusinessPrintDialog({
     (documentData?.carrier as string) ||
     'Xe tải Vĩnh Phát (51C-123.45)';
 
-  type PrintItem = {
-    roll_number: string | null;
-    fabric_type: string;
-    color_name: string | null;
-    quantity: number;
-  };
-
-  const items: PrintItem[] = shipmentDoc?.shipment_items ||
-    (documentData?.items as PrintItem[]) || [
-      {
-        roll_number: 'C01',
-        fabric_type: 'Vải Cotton 100% 2 chiều 230gsm',
-        color_name: 'Trắng Sứ (W-01)',
-        quantity: 120.5,
-      },
-      {
-        roll_number: 'C02',
-        fabric_type: 'Vải Cotton 100% 2 chiều 230gsm',
-        color_name: 'Trắng Sứ (W-01)',
-        quantity: 118.0,
-      },
-      {
-        roll_number: 'C03',
-        fabric_type: 'Vải CVC 65/35 Cá Sấu 4 chiều',
-        color_name: 'Xanh Navy (NV-09)',
-        quantity: 145.2,
-      },
-    ];
+  const items: PrintItem[] =
+    shipmentDoc?.shipment_items ||
+    (documentData?.items as PrintItem[]) ||
+    DEFAULT_PRINT_ITEMS;
 
   const totalQuantity = sumBy(items, (item) => Number(item.quantity) || 0);
 
@@ -298,16 +276,23 @@ export function BusinessPrintDialog({
             <div className="flex flex-col gap-3">
               {/* Header */}
               <div className="flex items-start justify-between border-b border-default pb-3">
-                <div className="flex flex-col">
-                  <span className="font-extrabold text-sm uppercase tracking-wide">
-                    {companyName}
-                  </span>
-                  <span className="text-[11px] text-muted">
-                    Lô 12 Đường Số 3, KCN Tân Bình, P. Tây Thạnh, TP.HCM
-                  </span>
-                  <span className="text-[11px] text-muted">
-                    MST: 0314567890 • Hotline: 028 3815 1234
-                  </span>
+                <div className="flex items-center gap-3">
+                  <img
+                    src="/brand/logo-symbol-monochrome-black.svg"
+                    alt="Logo"
+                    className="w-8 h-8 object-contain shrink-0"
+                  />
+                  <div className="flex flex-col">
+                    <span className="font-extrabold text-sm uppercase tracking-wide">
+                      {companyName}
+                    </span>
+                    <span className="text-[11px] text-muted">
+                      80A Trương Phước Phan, P. Bình Trị Đông, TP.HCM
+                    </span>
+                    <span className="text-[11px] text-muted">
+                      MST: 0318633734 • Hotline: 0975097499
+                    </span>
+                  </div>
                 </div>
                 <QRCodeSVG value={docNumber} size={42} />
               </div>

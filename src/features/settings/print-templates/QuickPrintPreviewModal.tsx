@@ -4,106 +4,11 @@ import { QRCodeSVG } from 'qrcode.react';
 import type { PrintTemplateEntity } from '@/domain/print';
 import { Button, Icon } from '@/shared/components';
 import { exportShipmentToPdf } from '@/shared/services/print/shipment';
-import type { ShipmentDocument } from '@/domain/shipments/types';
 
-import { PRINT_TEMPLATE_LABELS } from './print-templates.constants';
-
-const PREVIEW_SHIPMENT_FIXTURE: ShipmentDocument = {
-  id: 'fixture-shipment-preview',
-  shipment_number: 'XK2604-0001',
-  order_id: 'order-1',
-  customer_id: 'customer-1',
-  shipment_date: '2026-04-02',
-  delivery_address: '123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP.HCM',
-  carrier: 'Xe tải Vĩnh Phát (51C-123.45)',
-  tracking_number: null,
-  status: 'shipped',
-  notes: 'Giao trong giờ hành chính. Liên hệ trước khi đến 15 phút.',
-  created_by: null,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-  last_chat_at: null,
-  delivery_staff_id: null,
-  shipping_rate_id: null,
-  shipping_cost: 0,
-  loading_fee: 0,
-  total_weight_kg: null,
-  total_meters: null,
-  vehicle_info: null,
-  prepared_at: null,
-  shipped_at: null,
-  delivered_at: null,
-  delivery_proof: null,
-  receiver_name: 'Trần Văn B',
-  receiver_phone: '0909 888 999',
-  employee_id: null,
-  tenant_id: null,
-  journey_status: null,
-  signed_at: null,
-  customer_signature_url: null,
-  proof_photos: null,
-  orders: { order_number: 'DH2604-0012' },
-  customers: {
-    name: 'Công ty TNHH May Mặc Thời Trang Á Đông',
-    code: 'KH-ADONG-01',
-    address: '456 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP.HCM',
-    phone: '0909 123 456',
-    contact_person: 'Nguyễn Thị Thu',
-  },
-  shipment_items: [
-    {
-      id: 'item-1',
-      shipment_id: 'fixture-shipment-preview',
-      finished_roll_id: 'roll-101',
-      fabric_type: 'Vải Cotton 100% 2 chiều 230gsm',
-      color_name: 'Trắng Sứ (W-01)',
-      quantity: 120.5,
-      unit: 'm',
-      roll_number: 'C01',
-      roll_length_m: null,
-      warehouse_location: null,
-      notes: 'Đạt chuẩn kiểm kim',
-      price_per_meter: null,
-      sort_order: 1,
-      tenant_id: null,
-      total_amount: null,
-    },
-    {
-      id: 'item-2',
-      shipment_id: 'fixture-shipment-preview',
-      finished_roll_id: 'roll-102',
-      fabric_type: 'Vải Cotton 100% 2 chiều 230gsm',
-      color_name: 'Trắng Sứ (W-01)',
-      quantity: 118.0,
-      unit: 'm',
-      roll_number: 'C02',
-      roll_length_m: null,
-      warehouse_location: null,
-      notes: null,
-      price_per_meter: null,
-      sort_order: 2,
-      tenant_id: null,
-      total_amount: null,
-    },
-    {
-      id: 'item-3',
-      shipment_id: 'fixture-shipment-preview',
-      finished_roll_id: 'roll-103',
-      fabric_type: 'Vải CVC 65/35 Cá Sấu 4 chiều',
-      color_name: 'Xanh Navy (NV-09)',
-      quantity: 145.2,
-      unit: 'm',
-      roll_number: 'C03',
-      roll_length_m: null,
-      warehouse_location: null,
-      notes: null,
-      price_per_meter: null,
-      sort_order: 3,
-      tenant_id: null,
-      total_amount: null,
-    },
-  ],
-};
+import {
+  PRINT_TEMPLATE_LABELS,
+  PREVIEW_SHIPMENT_FIXTURE,
+} from './print-templates.constants';
 
 interface QuickPrintPreviewModalProps {
   template: PrintTemplateEntity | null;
@@ -240,16 +145,23 @@ export function QuickPrintPreviewModal({
             {/* Header Area */}
             <div className={`flex flex-col gap-2 ${isDotMatrix ? 'px-6' : ''}`}>
               <div className="flex items-start justify-between border-b border-default pb-3">
-                <div className="flex flex-col">
-                  <span className="font-extrabold text-sm uppercase tracking-wide text-foreground">
-                    CÔNG TY TNHH DỆT MAY VĨNH PHÁT
-                  </span>
-                  <span className="text-[11px] text-muted">
-                    Lô 12 Đường Số 3, KCN Tân Bình, P. Tây Thạnh, TP.HCM
-                  </span>
-                  <span className="text-[11px] text-muted">
-                    MST: 0314567890 • Hotline: 028 3815 1234
-                  </span>
+                <div className="flex items-center gap-3">
+                  <img
+                    src="/brand/logo-symbol-monochrome-black.svg"
+                    alt="Logo"
+                    className="w-8 h-8 object-contain shrink-0"
+                  />
+                  <div className="flex flex-col">
+                    <span className="font-extrabold text-sm uppercase tracking-wide text-foreground">
+                      CÔNG TY TNHH SX TM DỆT MAY VĨNH PHÁT
+                    </span>
+                    <span className="text-[11px] text-muted">
+                      80A Trương Phước Phan, P. Bình Trị Đông, TP.HCM
+                    </span>
+                    <span className="text-[11px] text-muted">
+                      MST: 0318633734 • Hotline: 0975097499
+                    </span>
+                  </div>
                 </div>
                 <QRCodeSVG value="XK2604-0001" size={44} />
               </div>

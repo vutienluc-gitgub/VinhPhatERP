@@ -12,6 +12,7 @@ import {
   type PrintSettingsFormValues,
 } from '@/schema/company-settings.schema';
 import { exportShipmentToPdf } from '@/shared/services/print/shipment';
+import { VP_SYMBOL_SVG_DATA_URI } from '@/shared/constants/brand';
 import type { ShipmentDocument } from '@/domain/shipments/types';
 
 import { PrintLivePreview } from './PrintLivePreview';
@@ -150,9 +151,9 @@ export function PrintSettingsForm() {
       format,
       companyName:
         companySettings?.company_name || 'CÔNG TY TNHH DỆT MAY VĨNH PHÁT',
-      logoUrl: companySettings?.print_logo_url || '/favicon.svg',
-      showLogo: watchedValues.print_show_logo,
-      showQr: watchedValues.print_show_qr,
+      logoUrl: companySettings?.print_logo_url || VP_SYMBOL_SVG_DATA_URI,
+      showLogo: watchedValues.print_show_logo !== false,
+      showQr: watchedValues.print_show_qr !== false,
       footerNote: watchedValues.print_footer_note,
       dotMatrixWidth: watchedValues.print_dot_matrix_width,
       dotMatrixHeight: watchedValues.print_dot_matrix_height,

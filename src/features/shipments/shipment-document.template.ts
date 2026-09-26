@@ -4,7 +4,7 @@ import type { ShipmentDocument } from '@/domain/shipments/types';
 import { renderA4PageHtml } from '@/features/shipments/shipment-document-a4';
 import { renderA5LotMatrixHtml } from '@/features/shipments/shipment-document-a5';
 import { buildMarginToolbarHtml } from '@/features/shipments/shipment-document-toolbar';
-import { BRAND_INFO } from '@/shared/constants/brand';
+import { BRAND_INFO, VP_SYMBOL_SVG_DATA_URI } from '@/shared/constants/brand';
 
 import {
   SHIPMENT_DOCUMENT_LABELS,
@@ -108,7 +108,7 @@ export async function buildShipmentPrintHtml(
 
   const showLogo = options.showLogo !== false;
   const showQr = options.showQr !== false;
-  const logoSrc = options.logoUrl || '/brand/logo-symbol-monochrome-black.svg';
+  const logoSrc = options.logoUrl || VP_SYMBOL_SVG_DATA_URI;
   const footerText =
     options.footerNote || SHIPMENT_DOCUMENT_LABELS.FOOTER_DISCLAIMER;
 
