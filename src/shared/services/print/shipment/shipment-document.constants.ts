@@ -570,25 +570,11 @@ export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
     font-size: 8pt;
     min-height: 2mm;
   }
-  .sign-note {
-    font-size: 7pt;
-    font-style: italic;
-    margin-top: 8mm;
-  }
-
+  .sign-note { font-family: Arial, "Segoe UI", sans-serif; font-size: 8pt; color: #000; margin-top: 8mm; }
   /* Hide QR block for dot matrix */
   .qr-block { display: none; }
-
   /* ── Footer ── */
-  .doc-footer {
-    margin-top: 1mm;
-    border-top: 1px solid #000;
-    padding-top: 0.5mm;
-    display: flex;
-    justify-content: space-between;
-    font-size: 7pt;
-  }
-
+  .doc-footer { margin-top: 1mm; border-top: 1px solid #000; padding-top: 0.5mm; display: flex; justify-content: space-between; font-family: Arial, "Segoe UI", sans-serif; font-size: 8pt; color: #000; }
   @media print {
     body { margin: 0; padding: 0; }
   }

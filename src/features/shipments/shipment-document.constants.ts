@@ -499,13 +499,13 @@ export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
 
   .a5-roll-matrix {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 0.8mm;
-    padding: 0.8mm 0;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 0.6mm;
+    padding: 0.6mm 0;
   }
-  .a5-matrix-cell { border: none; text-align: center; padding: 0.4mm 0; background: transparent; line-height: 1.1; }
-  .a5-roll-idx { display: block; font-size: 7.5pt; color: #444; }
-  .a5-roll-val { display: block; font-size: 8.5pt; font-weight: 800; }
+  .a5-matrix-cell { border: none; text-align: left; padding: 0.3mm 0; background: transparent; line-height: 1.1; }
+  .a5-roll-idx { display: block; font-family: Arial, "Segoe UI", sans-serif; font-size: 7.5pt; color: #000; text-align: left; }
+  .a5-roll-val { display: block; font-size: 8.5pt; font-weight: 800; color: #000; text-align: left; }
 
   /* ── Summary bar (hoàn toàn không đường kẻ để in kim nhanh tối đa) ── */
   .a5-summary-bar {
@@ -525,7 +525,7 @@ export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
   .a5-sign-box { border: none; text-align: center; padding: 0.8mm; }
   .a5-sign-box:last-child { border: none; }
   .a5-sign-role { font-size: 8pt; font-weight: 800; text-transform: uppercase; }
-  .a5-sign-desc { font-size: 7.5pt; font-style: italic; color: #444; margin-top: 0.4mm; }
+  .a5-sign-desc { font-family: Arial, "Segoe UI", sans-serif; font-size: 7.5pt; color: #000; margin-top: 0.4mm; }
 
   /* ── Footer ── */
   .a5-footer {
@@ -534,8 +534,9 @@ export const SHIPMENT_DOCUMENT_A5_DOT_MATRIX_CSS = `
     border: none;
     padding-top: 0.4mm;
     margin-top: 0.8mm;
+    font-family: Arial, "Segoe UI", sans-serif;
     font-size: 7.5pt;
-    color: #333;
+    color: #000;
   }
 
   /* Legacy fallback */
