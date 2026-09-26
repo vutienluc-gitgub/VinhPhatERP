@@ -11,7 +11,6 @@ export const SETTINGS_MESSAGES = {
 export const SETTINGS_LABELS = {
   PAGE_TITLE: 'Cài đặt hệ thống',
   PAGE_SUBTITLE: 'Quản lý cấu hình công ty và các tham số vận hành.',
-  // Company info panel
   COMPANY_INFO_TITLE: 'Thông tin công ty',
   COMPANY_INFO_SUBTITLE:
     'Cấu hình thông tin pháp nhân công ty và thông tin tài khoản ngân hàng.',
@@ -24,7 +23,6 @@ export const SETTINGS_LABELS = {
   LOGO_URL: 'Link logo',
   BANK_NAME: 'Tên ngân hàng',
   BANK_ACCOUNT: 'Số tài khoản',
-  // System display panel
   SYSTEM_DISPLAY_TITLE: 'Hiển thị hệ thống',
   SYSTEM_DISPLAY_SUBTITLE:
     'Thiết lập bố cục hiển thị toàn màn hình và vai trò người dùng mặc định.',
@@ -32,7 +30,6 @@ export const SETTINGS_LABELS = {
   FLUID_LAYOUT_DESC:
     'Bật công tắc này để giao diện mở rộng 100% diện tích màn hình.',
   DEFAULT_USER_ROLE: 'Vai trò mặc định cho người dùng mới',
-  // Finance panel
   FINANCE_TITLE: 'Cài đặt tài chính',
   FINANCE_SUBTITLE:
     'Thiết lập tiền tệ gốc, thuế suất VAT, hạn nợ và hạn mức tín dụng.',
@@ -40,7 +37,6 @@ export const SETTINGS_LABELS = {
   DEFAULT_VAT_RATE: 'Thuế VAT mặc định (%)',
   DEFAULT_PAYMENT_TERMS: 'Hạn thanh toán mặc định (ngày)',
   DEFAULT_CREDIT_LIMIT: 'Hạn mức tín dụng mặc định (VNĐ)',
-  // Numbering panel
   NUMBERING_TITLE: 'Đánh số chứng từ',
   NUMBERING_SUBTITLE:
     'Quy chuẩn tiền tố mã chứng từ và chu kỳ đánh số tự động.',
@@ -52,7 +48,6 @@ export const SETTINGS_LABELS = {
   NUMBERING_RESET_YEARLY: 'Reset số thứ tự theo năm',
   NUMBERING_RESET_YEARLY_DESC:
     'Bật để số chứng từ tự động reset về 001 vào đầu năm mới.',
-  // Notification panel
   NOTIFICATION_TITLE: 'Thông báo hệ thống',
   NOTIFICATION_SUBTITLE:
     'Cấu hình cảnh báo tự động về đơn hàng, công nợ và ngưỡng an toàn tồn kho.',
@@ -71,21 +66,18 @@ export const SETTINGS_LABELS = {
   PUSH_STATUS_OFF: 'Chưa kích hoạt thông báo trên thiết bị này',
   BTN_ENABLE_PUSH: 'Bật thông báo ngay',
   BTN_DISABLE_PUSH: 'Tắt thông báo',
-  // Production & Warehouse panel
   PRODUCTION_TITLE: 'Sản xuất & Kho',
   PRODUCTION_SUBTITLE:
     'Cấu hình đơn vị mặc định, định mức hao hụt và tiến độ sản xuất.',
   DEFAULT_UNIT: 'Đơn vị đo lường mặc định',
   DEFAULT_WASTE_RATE: 'Tỷ lệ hao hụt mặc định (%)',
   DEFAULT_PRODUCTION_DAYS: 'Số ngày sản xuất dự kiến',
-  // Shipment panel
   SHIPMENT_TITLE: 'Giao hàng & Vận chuyển',
   SHIPMENT_SUBTITLE:
     'Cấu hình đơn vị tính cước, khu vực giao nhận và thời gian cam kết.',
   DEFAULT_SHIPPING_UNIT: 'Đơn vị cước vận chuyển',
   DEFAULT_SHIPPING_REGION: 'Khu vực giao hàng mặc định',
   DEFAULT_DELIVERY_DAYS: 'Thời gian giao hàng ước tính (ngày)',
-  // User management panel
   USER_MGMT_TITLE: 'Quản lý người dùng',
   USER_MGMT_SUBTITLE:
     'Chính sách đăng ký tài khoản, phiên đăng nhập và giới hạn thiết bị.',
@@ -95,14 +87,12 @@ export const SETTINGS_LABELS = {
   REQUIRE_APPROVAL_DESC: 'Admin phải duyệt trước khi tài khoản được kích hoạt.',
   SESSION_TIMEOUT: 'Thời gian hết phiên (phút)',
   MAX_DEVICES: 'Số thiết bị đăng nhập đồng thời',
-  // Report panel
   REPORT_TITLE: 'Báo cáo & Hiển thị',
   REPORT_SUBTITLE:
     'Múi giờ vận hành, ngày bắt đầu năm tài chính và định dạng ngày tháng.',
   TIMEZONE: 'Múi giờ',
   FISCAL_YEAR_START: 'Ngày bắt đầu năm tài chính',
   DATE_FORMAT: 'Định dạng ngày',
-  // Integration panel
   INTEGRATION_TITLE: 'Tích hợp & Kết nối',
   INTEGRATION_SUBTITLE:
     'Cấu hình Webhook sự kiện và máy chủ gửi email giao dịch (SMTP).',
@@ -111,7 +101,6 @@ export const SETTINGS_LABELS = {
   SMTP_HOST: 'SMTP Server',
   SMTP_PORT: 'SMTP Port',
   SMTP_FROM_EMAIL: 'Email gửi đi',
-  // UI panel
   UI_TITLE: 'Giao diện & Ngôn ngữ',
   UI_SUBTITLE:
     'Tùy biến chủ đề hiển thị, ngôn ngữ và bộ nhận diện thương hiệu.',
@@ -119,7 +108,6 @@ export const SETTINGS_LABELS = {
   LANGUAGE: 'Ngôn ngữ hiển thị',
   PRINT_LOGO_URL: 'Logo cho hóa đơn in',
   BRAND_COLOR: 'Màu chủ đạo',
-  // Print Customizer panel
   PRINT_TITLE: 'Tùy biến Mẫu In Chứng Từ',
   PRINT_SUBTITLE:
     'Cấu hình định dạng in ấn, khổ giấy in kim, logo và ghi chú chân trang.',
