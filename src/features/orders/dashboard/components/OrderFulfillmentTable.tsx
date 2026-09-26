@@ -192,10 +192,7 @@ export function OrderFulfillmentTable({
           <tbody className="divide-y divide-zinc-50">
             {sortedData.length === 0 && (
               <tr>
-                <td
-                  colSpan={7}
-                  className="text-center py-12 text-zinc-400 italic"
-                >
+                <td colSpan={7} className="text-center py-12 text-muted italic">
                   {ORDERS_LIST_LABELS.EMPTY_NO_DATA_TITLE}
                 </td>
               </tr>
@@ -203,12 +200,12 @@ export function OrderFulfillmentTable({
             {sortedData.map((row) => (
               <tr
                 key={row.order_id}
-                className={`hover:bg-zinc-50/50 transition-colors ${row.is_overdue ? 'bg-red-50/30' : ''}`}
+                className={`hover:bg-surface-secondary/50 transition-colors ${row.is_overdue ? 'bg-danger-soft/30' : ''}`}
               >
-                <td className="py-2.5 px-4 font-bold text-zinc-800">
+                <td className="py-2.5 px-4 font-bold text-foreground">
                   {row.order_number}
                 </td>
-                <td className="py-2.5 px-4 text-zinc-600 truncate max-w-[150px]">
+                <td className="py-2.5 px-4 text-muted truncate max-w-[150px]">
                   {row.customer_name ?? '—'}
                 </td>
                 <td className="py-2.5 px-4">
@@ -228,11 +225,11 @@ export function OrderFulfillmentTable({
                 <td className="py-2.5 px-4">
                   <FulfillmentProgressBar value={row.fulfillment_pct} />
                 </td>
-                <td className="py-2.5 px-4 text-zinc-500 tabular-nums">
-                  <span className="font-bold text-zinc-700">
+                <td className="py-2.5 px-4 text-muted tabular-nums">
+                  <span className="font-bold text-foreground">
                     {row.wo_completed}
                   </span>
-                  <span className="text-zinc-400">/{row.wo_count}</span>
+                  <span className="text-muted">/{row.wo_count}</span>
                 </td>
                 <td className="py-2.5 px-4">
                   <StageTimeline
@@ -246,7 +243,7 @@ export function OrderFulfillmentTable({
                       className={
                         row.is_overdue
                           ? 'text-danger font-bold'
-                          : 'text-zinc-600'
+                          : 'text-foreground'
                       }
                     >
                       {row.delivery_date.slice(5)}
@@ -259,7 +256,7 @@ export function OrderFulfillmentTable({
                       )}
                     </span>
                   ) : (
-                    <span className="text-zinc-300">—</span>
+                    <span className="text-muted">—</span>
                   )}
                 </td>
               </tr>

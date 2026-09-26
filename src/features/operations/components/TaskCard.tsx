@@ -110,7 +110,7 @@ export const TaskCard = forwardRef(function TaskCard(
               event.stopPropagation();
               onTapMove(task);
             }}
-            className="p-1 text-zinc-400 hover:text-info transition-colors"
+            className="p-1 text-muted hover:text-info transition-colors"
             aria-label="Chuyển trạng thái"
           >
             →
@@ -122,14 +122,15 @@ export const TaskCard = forwardRef(function TaskCard(
             event.stopPropagation();
             onClick();
           }}
-          className="p-1 text-zinc-400 hover:text-foreground transition-colors font-bold"
+          className="p-1 text-muted hover:text-foreground transition-colors font-bold"
           title="Thao tác"
+          aria-label="Thao tác nhiệm vụ"
         >
           ⋯
         </button>
       </div>
 
-      <div className="font-semibold text-zinc-900 leading-snug group-hover:text-info mb-2 pr-10">
+      <div className="font-semibold text-foreground leading-snug group-hover:text-info mb-2 pr-10">
         {task.title}
       </div>
 
@@ -142,7 +143,7 @@ export const TaskCard = forwardRef(function TaskCard(
         )}
       </div>
 
-      <div className="flex items-center justify-between text-[10px] text-zinc-500 mb-2">
+      <div className="flex items-center justify-between text-[10px] text-muted mb-2">
         <div className="flex items-center gap-1.5">
           {assignee ? (
             <div className="flex items-center gap-1">
@@ -154,24 +155,24 @@ export const TaskCard = forwardRef(function TaskCard(
               </span>
             </div>
           ) : (
-            <span className="text-zinc-400 font-medium italic">Chưa giao</span>
+            <span className="text-muted font-medium italic">Chưa giao</span>
           )}
         </div>
-        <span className="font-medium text-zinc-400 bg-zinc-50 px-1.5 rounded">
+        <span className="font-medium text-foreground bg-surface-secondary px-1.5 rounded">
           {task.due_date?.slice(5) ?? '—'}
         </span>
       </div>
 
       {/* Progress Bar */}
       {task.estimated_hours || task.actual_hours ? (
-        <div className="flex items-center gap-2 mt-3 pt-2 border-t border-zinc-100/60">
-          <div className="flex-1 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+        <div className="flex items-center gap-2 mt-3 pt-2 border-t border-border-muted">
+          <div className="flex-1 h-1.5 bg-surface-secondary rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${progressPercent >= 100 ? 'bg-success' : 'bg-primary'}`}
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <span className="text-[9px] font-medium text-zinc-400 w-6 text-right">
+          <span className="text-[9px] font-semibold text-muted w-6 text-right">
             {progressPercent}%
           </span>
         </div>

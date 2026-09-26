@@ -134,7 +134,7 @@ export const FabricRollMatrixTable: React.FC<FabricRollMatrixTableProps> = ({
                     <td
                       key={`empty-${row.row_index}-${cell.col_index}`}
                       className={cn(
-                        'border-r border-border text-center text-muted/40 select-none',
+                        'border-r border-border text-center text-muted select-none',
                         compact
                           ? 'py-1 px-1 text-[10px]'
                           : 'py-1.5 px-1.5 text-xs',

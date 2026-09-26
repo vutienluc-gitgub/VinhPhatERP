@@ -132,7 +132,7 @@ export function KanbanColumn({
           className={`text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm flex items-center gap-1 ${
             wipLimit && count > wipLimit
               ? 'bg-danger text-inverse-foreground border-danger'
-              : 'text-zinc-400 bg-surface border-zinc-100'
+              : 'text-muted bg-surface border-default'
           }`}
         >
           {wipLimit && count > wipLimit && (
@@ -148,23 +148,18 @@ export function KanbanColumn({
         className={`flex-1 space-y-3 p-3 rounded-2xl min-h-[500px] transition-colors ${getColumnClasses()}`}
       >
         {blockedReason && (
-          <div className="rounded-lg border border-danger bg-rose-50 px-2.5 py-1.5 text-[11px] font-medium text-danger">
+          <div className="rounded-lg border border-danger bg-danger-soft px-2.5 py-1.5 text-[11px] font-medium text-danger">
             {blockedReason}
           </div>
         )}
         {renderCards()}
         {tasks.length === 0 && (
           <div className="h-32 flex flex-col items-center justify-center text-center rounded-xl bg-surface/50 border border-dashed border-border/60">
-            <Icon
-              name="Inbox"
-              className="h-8 w-8 text-zinc-400 mb-2 opacity-80"
-            />
-            <span className="text-xs font-bold text-zinc-500 mb-0.5">
+            <Icon name="Inbox" className="h-8 w-8 text-muted mb-2 opacity-80" />
+            <span className="text-xs font-bold text-foreground mb-0.5">
               No task
             </span>
-            <span className="text-[11px] text-zinc-400 italic">
-              {emptyLabel}
-            </span>
+            <span className="text-[11px] text-muted italic">{emptyLabel}</span>
           </div>
         )}
         {hasMore && onShowMore && (

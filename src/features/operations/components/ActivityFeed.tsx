@@ -21,11 +21,11 @@ export function ActivityFeed({
             {a.actor.slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1">
-            <div className="text-sm text-zinc-800">
-              <span className="font-medium text-zinc-900">{a.actor}</span>{' '}
-              <span className="text-zinc-600">{a.action}</span>
+            <div className="text-sm text-foreground">
+              <span className="font-semibold text-foreground">{a.actor}</span>{' '}
+              <span className="text-muted">{a.action}</span>
             </div>
-            <div className="text-xs text-zinc-400 mt-0.5">{a.time}</div>
+            <div className="text-xs text-muted mt-0.5">{a.time}</div>
           </div>
         </li>
       ))}
