@@ -40,6 +40,14 @@ jobs:
             git fetch --all
             git reset --hard origin/main
 
+            # Untracked files from older revisions survive `reset --hard`, and
+            # Tailwind scans the whole checkout — so a stale .tsx anywhere
+            # injects its classes into the production stylesheet. `-d` without
+            # `-x` drops those files while keeping gitignored paths (.env,
+            # node_modules) intact.
+            echo "🗑️  Removing stale untracked files..."
+            git clean -fd
+
             # 3. Build Frontend React
             echo "📦 Building Frontend..."
             npm install --production=false
