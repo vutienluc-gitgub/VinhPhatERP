@@ -58,10 +58,10 @@ export const BrandLogo = React.memo(function BrandLogo({
   // Xác định màu sắc chữ tên công ty
   const textColorClass = React.useMemo(() => {
     if (variant === 'negative') {
-      return 'text-inverse-foreground';
+      return 'text-on-dark-foreground';
     }
     if (variant === 'monochrome' && monochromeTone === 'white') {
-      return 'text-inverse-foreground';
+      return 'text-on-dark-foreground';
     }
     return 'text-foreground';
   }, [variant, monochromeTone]);
@@ -69,10 +69,10 @@ export const BrandLogo = React.memo(function BrandLogo({
   // Xác định màu sắc chữ slogan
   const sloganColorClass = React.useMemo(() => {
     if (variant === 'negative') {
-      return 'text-inverse-foreground/80';
+      return 'text-on-dark-foreground/80';
     }
     if (variant === 'monochrome' && monochromeTone === 'white') {
-      return 'text-inverse-foreground/70';
+      return 'text-on-dark-foreground/70';
     }
     if (variant === 'monochrome') {
       return 'text-foreground/80';

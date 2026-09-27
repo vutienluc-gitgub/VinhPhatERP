@@ -55,6 +55,10 @@
   --muted-foreground: #475569;
   --disabled-foreground: #64748b;
   --inverse-foreground: #ffffff;
+  /* Foreground for surfaces that stay dark in BOTH themes (auth pages).
+     Unlike --inverse-foreground (which flips with --primary), this is
+     theme-invariant so it cannot collapse into the dark backdrop. */
+  --on-dark-foreground: #ffffff;
 
   /* ── Semantic Colors ───────────────────────────────────────── */
   --warning: #b45309;
