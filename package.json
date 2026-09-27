@@ -41,6 +41,7 @@
     "vapid:check": "tsx scripts/verify-vapid-sync.ts",
     "logistics:reconcile": "tsx scripts/logistics-reconciliation.ts",
     "theme:check": "node scripts/check-theme-contract.cjs",
+    "dark:check": "node scripts/check-dark-variant.cjs",
     "a11y:check": "node scripts/audit-wcag-contrast.mjs"
   },
   "dependencies": {
