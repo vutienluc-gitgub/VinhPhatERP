@@ -10,14 +10,22 @@ export interface FloatingDockItem {
   icon: IconName;
   /** Số huy hiệu; 0/undefined nghĩa là không hiển thị. */
   badge?: number | string;
+  /** Chấm trạng thái; chỉ hiện khi không có badge. */
+  hasDot?: boolean;
 }
 
-/** Mô tả nút hành động nhanh (Integrated FAB) gắn cuối dock. */
+/** Nút hành động gắn cuối dock (Menu hoặc FAB). */
 export interface FloatingDockAction {
   icon: IconName;
+  /** Nhãn hiển thị dưới icon. */
+  label: string;
   /** Nhãn trợ năng bắt buộc — dùng cho aria-label. */
   ariaLabel: string;
   onTrigger: () => void;
+  badge?: number | string;
+  hasDot?: boolean;
+  /** Đánh dấu nút đang là mục điều hướng hiện hành. */
+  isActive?: boolean;
 }
 
 export interface FloatingDockProps {
@@ -25,4 +33,5 @@ export interface FloatingDockProps {
   activeId?: string;
   onSelect: (id: string) => void;
   action?: FloatingDockAction;
+  className?: string;
 }

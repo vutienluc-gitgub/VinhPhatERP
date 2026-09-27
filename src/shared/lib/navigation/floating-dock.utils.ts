@@ -12,6 +12,8 @@ export interface DockSourceItem {
   label: string;
   shortLabel?: string;
   icon?: string;
+  badge?: number | string;
+  hasDot?: boolean;
 }
 
 export const DOCK_MAX_TABS = 4;
@@ -39,6 +41,8 @@ export function toDockItems(
       id: source.path,
       label: source.shortLabel || source.label,
       icon: (source.icon || 'Component') as IconName,
+      badge: source.badge,
+      hasDot: source.hasDot,
     });
   }
 
