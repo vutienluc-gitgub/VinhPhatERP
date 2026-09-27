@@ -73,4 +73,27 @@ describe('useBodyScrollLock', () => {
     expect(document.documentElement.style.overscrollBehavior).toBe('');
     expect(scrollToSpy).toHaveBeenCalledWith(0, 240);
   });
+
+  it('handles .shell-layout scroll container when present', () => {
+    const shellDiv = document.createElement('div');
+    shellDiv.className = 'shell-layout';
+    shellDiv.scrollTop = 150;
+    document.body.appendChild(shellDiv);
+
+    const { rerender } = renderHook(
+      ({ locked }) =>
+        useBodyScrollLock(locked, { preserveScrollPosition: true }),
+      { initialProps: { locked: true } },
+    );
+
+    expect(shellDiv.style.overflow).toBe('hidden');
+    expect(document.body.style.top).toBe('-150px');
+
+    rerender({ locked: false });
+
+    expect(shellDiv.style.overflow).toBe('');
+    expect(shellDiv.scrollTop).toBe(150);
+
+    document.body.removeChild(shellDiv);
+  });
 });

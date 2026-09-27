@@ -24,17 +24,37 @@ export function useBodyScrollLock(
     if (!isLocked) return;
 
     const { body, documentElement } = document;
+    const shellLayout = document.querySelector<HTMLElement>('.shell-layout');
+
     // Lưu lại giá trị cũ để phục hồi thay vì gán cứng 'unset'
     const originalOverflow = body.style.overflow;
+    const originalShellOverflow = shellLayout ? shellLayout.style.overflow : '';
+
+    const isShellScroller = Boolean(
+      shellLayout &&
+        (shellLayout.scrollTop > 0 ||
+          window.getComputedStyle(shellLayout).overflowY === 'auto' ||
+          window.getComputedStyle(shellLayout).overflowY === 'scroll'),
+    );
 
     if (!preserveScrollPosition) {
       body.style.overflow = 'hidden';
+      if (shellLayout) {
+        shellLayout.style.overflow = 'hidden';
+      }
       return () => {
         body.style.overflow = originalOverflow;
+        if (shellLayout) {
+          shellLayout.style.overflow = originalShellOverflow;
+        }
       };
     }
 
-    const scrollY = window.scrollY;
+    const scrollY =
+      isShellScroller && shellLayout
+        ? shellLayout.scrollTop
+        : window.scrollY;
+
     const originalBodyStyles = {
       position: body.style.position,
       top: body.style.top,
@@ -45,6 +65,9 @@ export function useBodyScrollLock(
     const originalHtmlOverscroll = documentElement.style.overscrollBehavior;
 
     body.style.overflow = 'hidden';
+    if (shellLayout) {
+      shellLayout.style.overflow = 'hidden';
+    }
     body.style.position = 'fixed';
     body.style.top = `-${scrollY}px`;
     body.style.left = '0';
@@ -52,11 +75,23 @@ export function useBodyScrollLock(
     body.style.width = '100%';
     documentElement.style.overscrollBehavior = 'none';
 
+    if (isShellScroller && shellLayout) {
+      shellLayout.scrollTop = 0;
+    }
+
     return () => {
       body.style.overflow = originalOverflow;
+      if (shellLayout) {
+        shellLayout.style.overflow = originalShellOverflow;
+      }
       Object.assign(body.style, originalBodyStyles);
       documentElement.style.overscrollBehavior = originalHtmlOverscroll;
-      window.scrollTo(0, scrollY);
+
+      if (isShellScroller && shellLayout) {
+        shellLayout.scrollTop = scrollY;
+      } else {
+        window.scrollTo(0, scrollY);
+      }
     };
   }, [isLocked, preserveScrollPosition]);
 }

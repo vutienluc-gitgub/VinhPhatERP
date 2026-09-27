@@ -32,8 +32,9 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  /* Prevent pull-to-refresh & overscroll bounce on mobile browsers without locking vertical wheel scroll */
-  overscroll-behavior: auto;
+  /* clip horizontal overflow without making html a scroll container; iOS Safari ignores overscroll-behavior on root scroller */
+  overflow-x: clip;
+  overscroll-behavior: none;
 }
 
 .shell-layout {
@@ -45,6 +46,22 @@ body {
 
   /* Đảm bảo không lộ khoảng trắng khi overscroll bounce trên iOS */
   background: var(--surface-strong);
+}
+
+@media (width < 768px) {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .shell-layout {
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .content-shell {
