@@ -14,11 +14,9 @@ import type {
 
 import styles from './FloatingDock.module.css';
 
-export type FloatingDockSource = DockSourceItem;
-
 interface FloatingDockProps {
   /** Danh sách tab (thường là bottomTabs đã resolve theo role). */
-  items: FloatingDockSource[];
+  items: DockSourceItem[];
   /** Tab đang hoạt động theo `id` (chính là `path`). */
   activeId?: string;
   onSelect: (id: string) => void;
@@ -149,5 +147,3 @@ export const FloatingDock = memo(function FloatingDock({
     </nav>
   );
 });
-
-export type { FloatingDockAction, FloatingDockItem };
