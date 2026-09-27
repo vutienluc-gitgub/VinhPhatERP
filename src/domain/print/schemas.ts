@@ -133,6 +133,7 @@ export const printTemplateSchema = z.object({
     'payment_receipt',
     'fabric_inspection',
     'roll_tag',
+    'packing_list',
   ]),
   targetPrinterProfile: z.enum([
     'laser',

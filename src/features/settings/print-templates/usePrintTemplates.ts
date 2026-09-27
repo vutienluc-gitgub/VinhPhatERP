@@ -41,6 +41,8 @@ function getStoredDefaults(): PrintDefaultsMap {
       const initialMap: PrintDefaultsMap = {
         'shipment_delivery:dot_matrix:A5': 'tpl-shipment-a5-dot-matrix',
         'shipment_delivery:laser:A4': 'tpl-shipment-a4-laser',
+        'packing_list:laser:A5': 'tpl-packing-list-a5-laser',
+        'packing_list:dot_matrix:A5': 'tpl-packing-list-a5-dot-matrix',
         'roll_tag:thermal_label:DECAL_CUSTOM': 'tpl-roll-tag-barcode',
         'inventory_receipt:laser:A4': 'tpl-inventory-receipt-a4',
         'production_order:laser:A4': 'tpl-production-order-a4',

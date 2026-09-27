@@ -13,6 +13,8 @@ export const FINISHED_FABRIC_LIST_LABELS = {
   BTN_NEW: 'Nhập mới',
   BTN_BULK_NEW: 'Nhập mẻ',
   BTN_EXPORT: 'Xuất Excel',
+  BTN_EXPORTING: 'Đang xuất...',
+  BTN_PACKING_LIST: 'Bảng kê cây vải',
   FILTER_FABRIC_LABEL: 'Loại vải',
   FILTER_FABRIC_PLACEHOLDER: 'Tìm loại vải...',
   FILTER_STATUS_LABEL: 'Trạng thái',

@@ -17,5 +17,6 @@ export type {
   TraceYarnReceipt,
 } from './useFinishedFabric';
 export * from './useFinishedFabricExport';
+export * from './useFinishedFabricPackingList';
 export * from './useInventory';
 export * from './useYarnReceipts';

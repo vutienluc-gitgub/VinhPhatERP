@@ -4,15 +4,12 @@ import { useConfirm } from '@/shared/components/ConfirmDialog';
 import {
   Icon,
   DataTableAdvanced,
-  ViewToggle,
   type ViewMode,
-  AddButton,
   FilterBar,
   type FilterFieldConfig,
   KpiCard,
   PageHeader,
   TableSection,
-  ActionBar,
 } from '@/shared/components';
 import { TableSkeleton } from '@/shared/components/TableSkeleton';
 import { useUrlFilterState } from '@/shared/hooks/useUrlFilterState';
@@ -41,6 +38,8 @@ import {
   getFinishedFabricColumns,
   renderFinishedFabricMobileCard,
 } from './FinishedFabricColumns';
+import { FinishedFabricListActions } from './FinishedFabricListActions';
+import { FinishedFabricPackingListDrawer } from './FinishedFabricPackingListDrawer';
 import { groupRollsByLot } from './finished-fabric.utils';
 import {
   FINISHED_FABRIC_PAGE_LABELS as MSG,
@@ -109,6 +108,7 @@ export function FinishedFabricList({
   const { exportExcel } = useFinishedFabricExport();
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [showPackingList, setShowPackingList] = useState(false);
 
   const handleDelete = useCallback(
     async (roll: FinishedFabricRoll) => {
@@ -159,29 +159,15 @@ export function FinishedFabricList({
         title={MSG.PAGE_TITLE}
         subtitle={MSG.PAGE_SUBTITLE}
         actions={
-          <div className="flex items-center gap-4">
-            <ViewToggle value={viewMode} onChange={setViewMode} />
-
-            <div className="flex items-center gap-2 flex-wrap">
-              <AddButton onClick={onNew} label={LIST_MSG.BTN_NEW} />
-
-              <ActionBar
-                actions={[
-                  {
-                    icon: 'Zap',
-                    title: LIST_MSG.BTN_BULK_NEW,
-                    onClick: onBulkNew,
-                  },
-                  {
-                    icon: 'FileSpreadsheet',
-                    title: isExporting ? 'Đang xuất...' : LIST_MSG.BTN_EXPORT,
-                    onClick: handleExportExcel,
-                    disabled: isExporting,
-                  },
-                ]}
-              />
-            </div>
-          </div>
+          <FinishedFabricListActions
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            onNew={onNew}
+            onBulkNew={onBulkNew}
+            onPackingList={() => setShowPackingList(true)}
+            onExport={handleExportExcel}
+            isExporting={isExporting}
+          />
         }
       />
 
@@ -326,6 +312,13 @@ export function FinishedFabricList({
           />
         )}
       </TableSection>
+
+      <FinishedFabricPackingListDrawer
+        open={showPackingList}
+        onClose={() => setShowPackingList(false)}
+        filters={filters as FinishedFabricFilter}
+        fallbackRolls={rolls}
+      />
     </>
   );
 }

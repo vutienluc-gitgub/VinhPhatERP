@@ -92,6 +92,14 @@ export interface PackingListExportRow {
   ghi_chu: string;
 }
 
+/** Export row variant for .xlsx where weight stays numeric for Excel formulas. */
+export interface PackingListExcelRow extends Omit<
+  PackingListExportRow,
+  'can_nang_kg'
+> {
+  can_nang_kg: number | '';
+}
+
 /**
  * Decade Matrix Types for A5 Landscape Packing List (Ma trận 10 cây/dòng)
  */
