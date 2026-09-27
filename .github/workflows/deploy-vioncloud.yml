@@ -50,13 +50,20 @@ jobs:
 
             # 3. Build Frontend React
             echo "📦 Building Frontend..."
-            npm install --production=false
+            # `npm ci` removes node_modules and installs exactly the versions
+            # pinned in the lockfile, so every deploy builds from the same
+            # dependency tree. Plain `npm install` keeps whatever is already on
+            # disk, so a stale package left by an older deploy can change
+            # Tailwind's output and leak classes into the production stylesheet.
+            # `--include=dev` is required because vite/tsc/tailwind live in
+            # devDependencies, and NODE_ENV=production would otherwise skip them.
+            npm ci --include=dev
             npm run build
 
             # 4. Build Backend Hono API
             echo "⚙️ Building Backend Server..."
             cd server
-            npm install --production=false
+            npm ci --include=dev
             npm run build
             cd ..
 
