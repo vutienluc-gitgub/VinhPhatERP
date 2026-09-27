@@ -1,6 +1,6 @@
 # Implementation Tasks: Floating Navigation Dock
 
-Checklist công việc tuần tự tuân thủ nghiêm ngặt các Cổng phê duyệt tại [AI_WORKFLOW.md](../../../AI_WORKFLOW.md).
+Checklist công việc tuần tự tuân thủ nghiêm ngặt các Cổng phê duyệt tại [AI_WORKFLOW.md](../../../../AI_WORKFLOW.md).
 
 ---
 
@@ -36,7 +36,7 @@ Checklist công việc tuần tự tuân thủ nghiêm ngặt các Cổng phê d
 
 - [x] Task 4.1: Xoá alias trùng `FloatingDockSource = DockSourceItem`.
 - [x] Task 4.2: Xoá re-export chết `export type { FloatingDockAction, FloatingDockItem }`; chuyển nhãn ARIA vào `APP_SHELL_LABELS`.
-- [x] Task 4.3: Tạo biên bản SDD `.changes/active/floating-navigation-dock/`.
+- [x] Task 4.3: Tạo biên bản SDD `.changes/active/floating-navigation-dock/` (nay đã archive sang `.changes/archive/2026-09/floating-navigation-dock/`).
 - [ ] 🛑 **GATE 4**: `APPROVE MERGE` (phương án C) — đã nhận.
 
 ---
@@ -54,7 +54,7 @@ Tuân thủ **Evidence Rule §1.2** (ghi kết quả thực tế của lệnh ch
 - [x] `npm run theme:check`: **PASS** — Theme Contract mirrored.
 - [ ] Xác minh browser (mobile viewport): **`[NOT VERIFIED]`** — trang đăng nhập có Cloudflare Turnstile và không có `E2E_EMAIL`/`E2E_PASSWORD`; không tự ý dùng credential test trên DB thật.
 - [x] **PR đã mở:** [#41](https://github.com/vutienluc-gitgub/VinhPhatERP/pull/41) — base `fix/warning-contrast-a11y` ← head `feat/floating-dock`; 11 file; `mergeable_state: clean`.
-- [ ] Di chuyển sang `.changes/archive/` sau khi PR merge.
+- [x] Di chuyển sang `.changes/archive/` — đã archive sang `.changes/archive/2026-09/floating-navigation-dock/` (theo yêu cầu người dùng, làm ngay thay vì chờ merge).
 
 ---
 

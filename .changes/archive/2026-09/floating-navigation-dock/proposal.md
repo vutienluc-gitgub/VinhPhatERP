@@ -2,7 +2,7 @@
 
 - **Slug:** `floating-navigation-dock`
 - **Author:** AI Agent (OpenHands) — theo Issue [#40](https://github.com/vutienluc-gitgub/VinhPhatERP/issues/40)
-- **Trạng thái:** IN PROGRESS (chờ Gate 4)
+- **Trạng thái:** ARCHIVED — PR [#41](https://github.com/vutienluc-gitgub/VinhPhatERP/pull/41) đang mở (chờ merge)
 - **Domain:** ui-navigation (shared layer — không thuộc domain nghiệp vụ)
 
 ---
@@ -11,7 +11,7 @@
 
 - **Vấn đề:** Thanh điều hướng mobile hiện tại (`MobileBottomNav`) là dải full-width dính sát đáy màn hình. Bản thiết kế mới muốn dạng **pill nổi (Floating Dock)** + **Integrated Action Button** (lối vào Menu), tối ưu vùng ngón tay (thumb zone) và hiện đại hơn.
 - **Hành vi mong đợi:** Dưới 768px hiển thị dock nổi neo đáy (tôn trọng safe-area), giữ nguyên tab theo role, badge thông báo, nút Menu và haptics. Desktop không đổi (vẫn Sidebar).
-- **Nguồn:** bản nháp ngoài repo `floating_navigation_bar_implementation_guide.md` là template của dự án khác (module `glucose`, import `lucide-react` trực tiếp, màu `slate/rose/emerald`). Đã hiệu chỉnh theo chuẩn VinhPhatERP — xem [`docs/architecture/floating-navigation-dock-spec.md`](../../../docs/architecture/floating-navigation-dock-spec.md).
+- **Nguồn:** bản nháp ngoài repo `floating_navigation_bar_implementation_guide.md` là template của dự án khác (module `glucose`, import `lucide-react` trực tiếp, màu `slate/rose/emerald`). Đã hiệu chỉnh theo chuẩn VinhPhatERP — xem [`docs/architecture/floating-navigation-dock-spec.md`](../../../../docs/architecture/floating-navigation-dock-spec.md).
 
 ---
 
