@@ -93,8 +93,6 @@ export const FloatingDock = memo(function FloatingDock({
 
   if (dockItems.length === 0) return null;
 
-  const fabBadge = formatDockBadge(fab?.badge);
-
   return (
     <>
       <nav
@@ -136,11 +134,7 @@ export const FloatingDock = memo(function FloatingDock({
           type="button"
           className={styles.fab}
           onClick={fab.onTrigger}
-          aria-label={
-            fabBadge
-              ? `${fab.ariaLabel ?? fab.label}, ${fabBadge} ${APP_SHELL_LABELS.TASKS_PENDING_SUFFIX}`
-              : (fab.ariaLabel ?? fab.label)
-          }
+          aria-label={fab.ariaLabel ?? fab.label}
           aria-haspopup="dialog"
         >
           <Icon
@@ -149,11 +143,6 @@ export const FloatingDock = memo(function FloatingDock({
             strokeWidth={2.2}
             aria-hidden="true"
           />
-          {fabBadge && (
-            <span className={styles.fabBadge} aria-hidden="true">
-              {fabBadge}
-            </span>
-          )}
         </button>
       )}
     </>

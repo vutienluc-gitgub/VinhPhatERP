@@ -105,26 +105,6 @@
   outline-offset: 3px;
 }
 
-.fabBadge {
-  position: absolute;
-  top: -0.25rem;
-  right: -0.25rem;
-  min-width: 1.25rem;
-  height: 1.25rem;
-  padding: 0 0.3125rem;
-  border-radius: 9999px;
-  background: var(--danger);
-  color: var(--inverse-foreground);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  line-height: 1.25rem;
-  text-align: center;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  pointer-events: none;
-  box-shadow: 0 0 0 1.5px var(--surface-strong);
-}
-
 .badge {
   position: absolute;
   top: -0.25rem;
