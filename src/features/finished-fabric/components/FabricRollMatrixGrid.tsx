@@ -42,7 +42,7 @@ export const FabricRollMatrixGrid: React.FC<FabricRollMatrixGridProps> = ({
             className={cn(
               'group relative flex flex-col justify-between p-3 rounded-xl border transition-all select-none',
               isChecked
-                ? 'bg-success-soft/20 border-success/40 dark:bg-success-soft/10'
+                ? 'bg-success-soft/20 border-success/40'
                 : 'bg-surface border-border hover:border-primary/50 hover:shadow-sm',
             )}
           >

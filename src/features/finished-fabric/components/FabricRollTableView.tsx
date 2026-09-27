@@ -68,7 +68,7 @@ export const FabricRollTableView: React.FC<FabricRollTableViewProps> = ({
                 className={cn(
                   'transition-colors',
                   isChecked
-                    ? 'bg-success-soft/10 dark:bg-success-soft/5'
+                    ? 'bg-success-soft/10'
                     : 'hover:bg-surface-secondary/40',
                   interactive && 'cursor-pointer',
                 )}

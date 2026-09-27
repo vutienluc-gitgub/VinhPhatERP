@@ -40,3 +40,8 @@
 @config "../../tailwind.config.js";
 
 @source "../";
+
+/* Docs under .agents/ contain Tailwind snippets as examples. Tailwind v4
+   scans markdown too, so without this it emits CSS for classes that only ever
+   appear in documentation (e.g. the shadcn `dark:` toggle example). */
+@source not "../../.agents";

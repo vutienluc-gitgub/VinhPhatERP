@@ -10,13 +10,13 @@ export function ShipmentSaaSBadge({ status }: { status: ShipmentStatus }) {
   const label = SHIPMENT_STATUS_LABELS[status];
 
   const styles: Record<string, string> = {
-    shipped: 'bg-info-soft/10 text-info dark:text-info ring-blue-500/20',
+    shipped: 'bg-info-soft/10 text-info ring-blue-500/20',
     delivered:
-      'bg-success-soft/10 text-success dark:text-success ring-emerald-500/20',
+      'bg-success-soft/10 text-success ring-emerald-500/20',
     partially_returned: 'bg-purple-soft text-purple ring-purple/20',
-    returned: 'bg-danger-soft/10 text-danger dark:text-danger ring-red-500/20',
+    returned: 'bg-danger-soft/10 text-danger ring-red-500/20',
     preparing:
-      'bg-warning-soft/10 text-warning-strong dark:text-warning ring-amber-500/20',
+      'bg-warning-soft/10 text-warning-strong ring-amber-500/20',
   };
   const dotColors: Record<string, string> = {
     shipped: 'bg-info-soft',
@@ -28,7 +28,7 @@ export function ShipmentSaaSBadge({ status }: { status: ShipmentStatus }) {
 
   const currentStyle =
     styles[status] ||
-    'bg-surface-strong/10 text-muted-foreground dark:text-muted-foreground ring-slate-500/20';
+    'bg-surface-strong/10 text-muted-foreground ring-slate-500/20';
   const currentDot = dotColors[status] || 'bg-surface-strong';
 
   return (

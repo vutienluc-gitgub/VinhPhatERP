@@ -84,27 +84,27 @@ export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
         {/* Technical Badges */}
         <div className="flex flex-wrap gap-1.5 mt-1">
           {loom.diameter_inch ? (
-            <span className="px-2 py-1 bg-blue-50 dark:bg-info-soft/10 text-info dark:text-info rounded-md text-xs font-semibold">
+            <span className="px-2 py-1 bg-blue-50 text-info rounded-md text-xs font-semibold">
               {loom.diameter_inch}"
             </span>
           ) : null}
           {loom.gauge ? (
-            <span className="px-2 py-1 bg-blue-50 dark:bg-info-soft/10 text-info dark:text-info rounded-md text-xs font-semibold">
+            <span className="px-2 py-1 bg-blue-50 text-info rounded-md text-xs font-semibold">
               {loom.gauge}G
             </span>
           ) : null}
           {loom.feeders ? (
-            <span className="px-2 py-1 bg-indigo-50 dark:bg-info-soft/10 text-info dark:text-info rounded-md text-xs font-semibold">
+            <span className="px-2 py-1 bg-indigo-50 text-info rounded-md text-xs font-semibold">
               {loom.feeders}F
             </span>
           ) : null}
           {loom.needles ? (
-            <span className="px-2 py-1 bg-surface-secondary dark:bg-surface-strong text-muted-foreground dark:text-muted-foreground rounded-md text-xs font-semibold">
+            <span className="px-2 py-1 bg-surface-secondary text-muted-foreground rounded-md text-xs font-semibold">
               {loom.needles} N
             </span>
           ) : null}
           {loom.max_speed_rpm ? (
-            <span className="px-2 py-1 bg-amber-50 dark:bg-warning-soft/10 text-warning-strong dark:text-warning rounded-md text-xs font-semibold">
+            <span className="px-2 py-1 bg-amber-50 text-warning-strong rounded-md text-xs font-semibold">
               {loom.max_speed_rpm} RPM
             </span>
           ) : null}
@@ -123,7 +123,7 @@ export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
               <Icon name="Scale" size={14} className="text-muted-foreground" />
               <span>GSM: {loom.gsm_range || 'N/A'}</span>
             </div>
-            <div className="font-bold text-success dark:text-success">
+            <div className="font-bold text-success">
               {loom.daily_capacity_kg
                 ? `${loom.daily_capacity_kg} kg/day`
                 : 'N/A'}
@@ -133,16 +133,16 @@ export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
 
         {/* Realtime KPI */}
         {loom.status === 'running' && loom.production_state && (
-          <div className="mt-2 p-2 bg-emerald-50 dark:bg-success-soft/10 rounded-lg flex flex-col gap-1">
+          <div className="mt-2 p-2 bg-emerald-50 rounded-lg flex flex-col gap-1">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-success dark:text-success font-medium">
+              <span className="text-success font-medium">
                 Efficiency
               </span>
-              <span className="text-success dark:text-success font-bold">
+              <span className="text-success font-bold">
                 {loom.production_state.efficiency_pct ?? 0}%
               </span>
             </div>
-            <div className="w-full bg-success-soft dark:bg-success-soft rounded-full h-1.5">
+            <div className="w-full bg-success-soft rounded-full h-1.5">
               <div
                 className="bg-success-soft h-1.5 rounded-full"
                 style={{
@@ -152,7 +152,7 @@ export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
             </div>
             {loom.production_state.current_work_order && (
               <div
-                className="text-[0.65rem] text-success/80 dark:text-success/80 mt-1 truncate"
+                className="text-[0.65rem] text-success/80 mt-1 truncate"
                 title={`Lệnh sản xuất: ${loom.production_state.current_work_order.work_order_number}`}
               >
                 Lệnh:{' '}

@@ -96,7 +96,7 @@ export const GuideSidebar = memo(function GuideSidebar({
                   <span className="truncate pr-2">{section.title}</span>
                   <div
                     className={cn(
-                      'flex items-center justify-center w-6 h-6 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors',
+                      'flex items-center justify-center w-6 h-6 rounded-md hover:bg-black/10 transition-colors',
                     )}
                     onClick={(e) => toggleExpand(e, section.id)}
                   >
