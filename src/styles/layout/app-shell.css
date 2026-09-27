@@ -32,8 +32,28 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  /* Prevent pull-to-refresh & overscroll bounce on mobile browsers without locking vertical wheel scroll */
-  overscroll-behavior: auto;
+  overflow-x: clip; /* Prevent horizontal scroll without creating a scroll container context */
+  /* Prevent pull-to-refresh & overscroll bounce on non-root scrollers (iOS Safari ignores overscroll-behavior on root scroller) */
+  overscroll-behavior: none;
+}
+
+/* ── Mobile Scroll Container & Bounce Fix ──
+   Transfer scroll ownership to .shell-layout on mobile screens so iOS Safari
+   scrolling happens inside a sub-scroller where overscroll-behavior-y: contain is respected,
+   completely preventing rubber-band bounce into document root without affecting desktop wheel scroll. */
+@media (width < 768px) {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .shell-layout {
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .shell-layout {
