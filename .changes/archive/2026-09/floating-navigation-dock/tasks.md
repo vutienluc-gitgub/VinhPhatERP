@@ -65,15 +65,17 @@ Tuân thủ **Evidence Rule §1.2** (ghi kết quả thực tế của lệnh ch
 
 Yêu cầu người dùng: *"thêm cạnh nút Menu (thành 6 nút) VÀ không có chữ"*.
 
-- [x] Task 5.1: Đổi `FloatingDockProps.action?` → `actions?: FloatingDockAction[]`; thêm `variant?: 'default' | 'primary'`.
+- [x] Task 5.1: Đổi `FloatingDockProps.action?` → `actions?: FloatingDockAction[]`; thêm `fab?: FloatingDockAction` (FAB tách riêng).
 - [x] Task 5.2: Dock chuyển sang **icon-only** — bỏ render nhãn chữ, nhãn chỉ dùng `aria-label`.
-- [x] Task 5.3: Thêm nút **"+" (`Plus`, variant `primary`)** đứng trước Menu; thứ tự: 4 tab → `+` → Menu.
+- [x] Task 5.3: Thêm nút **"+" (`Plus`)** — chốt lại thành **FAB nổi tách riêng** ngoài pill (kiểu Material, 56px, góc phải dưới), không nằm trong `role="tablist"`.
 - [x] Task 5.4: Tạo `QuickActionsSheet.tsx` — `AdaptiveSheet` liệt kê 5 `QUICK_ACTIONS`, chọn xong điều hướng.
 - [x] Task 5.5: Thêm CSS `.quick-create-row*` vào `src/styles/layout/app-launcher.css` (không tạo file CSS mới).
-- [x] Task 5.6: Test mới — tổng 17 test cho dock + utils (thêm 2: thứ tự nút, icon-only không render nhãn).
+- [x] Task 5.6: Test mới — tổng 18 test cho dock + utils (thêm 3: FAB tách riêng + không có `role=tab`, không render FAB khi thiếu prop, icon-only không render nhãn).
 - [x] Task 5.7: Vùng chạm `.tab` ≥ 2.75rem (44px) để đạt ngưỡng a11y mobile khi bỏ nhãn.
+- [x] Task 5.8: Hợp nhất `FloatingDockProps` trùng lặp (types.ts vs FloatingDock.tsx) về một nguồn duy nhất.
+- [x] Task 5.9: `.fab:focus-visible` dùng `--primary-strong` theo convention `.btn-primary` sẵn có (không tự đặt token mới).
 
-**Kết quả gate sau bổ sung:** typecheck PASS · lint PASS · lint:css PASS · theme:check PASS · size:check PASS · test 884/884 · build PASS · ai:audit PASSED.
+**Kết quả gate sau bổ sung:** typecheck PASS · lint PASS · lint:css PASS · theme:check PASS · size:check PASS · test 884/884 · build PASS · ai:audit PASSED · CI PR #44 xanh.
 
 ---
 

@@ -81,34 +81,49 @@ describe('FloatingDock', () => {
     expect(onTrigger).toHaveBeenCalledTimes(1);
   });
 
-  it('render nút "+" tạo mới cạnh Menu, đúng thứ tự', () => {
+  it('giữ Menu trong pill và tách "+" thành FAB nổi riêng', () => {
     const onQuickCreate = vi.fn();
     const onMenu = vi.fn();
     render(
       <FloatingDock
         items={ITEMS}
         onSelect={() => {}}
-        actions={[
-          {
-            icon: 'Plus',
-            label: 'Tạo mới nhanh',
-            onTrigger: onQuickCreate,
-            variant: 'primary',
-          },
-          { icon: 'LayoutGrid', label: 'Menu', onTrigger: onMenu },
-        ]}
+        actions={[{ icon: 'LayoutGrid', label: 'Menu', onTrigger: onMenu }]}
+        fab={{
+          icon: 'Plus',
+          label: 'Tạo mới nhanh',
+          onTrigger: onQuickCreate,
+        }}
       />,
     );
 
+    // Pill chỉ còn 4 tab + Menu; "+" không nằm trong tablist
     const tabs = screen.getAllByRole('tab');
-    expect(tabs).toHaveLength(ITEMS.length + 2);
-    // Hai nút hành động nằm cuối dock, "+" đứng trước Menu
-    expect(tabs[tabs.length - 2]).toHaveAccessibleName('Tạo mới nhanh');
+    expect(tabs).toHaveLength(ITEMS.length + 1);
     expect(tabs[tabs.length - 1]).toHaveAccessibleName('Menu');
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Tạo mới nhanh' }));
+    const fab = screen.getByRole('button', { name: 'Tạo mới nhanh' });
+    expect(fab).toHaveAttribute('aria-haspopup', 'dialog');
+    expect(fab).not.toHaveAttribute('role', 'tab');
+
+    fireEvent.click(fab);
     expect(onQuickCreate).toHaveBeenCalledTimes(1);
     expect(onMenu).not.toHaveBeenCalled();
+  });
+
+  it('không render FAB khi không truyền fab', () => {
+    render(
+      <FloatingDock
+        items={ITEMS}
+        onSelect={() => {}}
+        actions={[{ icon: 'LayoutGrid', label: 'Menu', onTrigger: () => {} }]}
+      />,
+    );
+
+    expect(screen.getAllByRole('tab')).toHaveLength(ITEMS.length + 1);
+    expect(
+      screen.queryByRole('button', { name: 'Tạo mới nhanh' }),
+    ).not.toBeInTheDocument();
   });
 
   it('dock chỉ hiển thị icon, nhãn chữ không render ra giao diện', () => {
@@ -116,9 +131,7 @@ describe('FloatingDock', () => {
       <FloatingDock
         items={ITEMS}
         onSelect={() => {}}
-        actions={[
-          { icon: 'Plus', label: 'Tạo mới nhanh', onTrigger: () => {} },
-        ]}
+        fab={{ icon: 'Plus', label: 'Tạo mới nhanh', onTrigger: () => {} }}
       />,
     );
 
@@ -126,7 +139,7 @@ describe('FloatingDock', () => {
     expect(screen.queryByText('Home')).not.toBeInTheDocument();
     expect(screen.queryByText('Tạo mới nhanh')).not.toBeInTheDocument();
     expect(
-      screen.getByRole('tab', { name: 'Tạo mới nhanh' }),
+      screen.getByRole('button', { name: 'Tạo mới nhanh' }),
     ).toBeInTheDocument();
   });
 

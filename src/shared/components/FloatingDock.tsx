@@ -4,26 +4,14 @@ import { APP_SHELL_LABELS } from '@/shared/constants/layout';
 import { Icon } from '@/shared/components/Icon';
 import {
   formatDockBadge,
-  type DockSourceItem,
   toDockItems,
 } from '@/shared/lib/navigation/floating-dock.utils';
 import type {
-  FloatingDockAction,
   FloatingDockItem,
+  FloatingDockProps,
 } from '@/shared/lib/navigation/floating-dock.types';
 
 import styles from './FloatingDock.module.css';
-
-interface FloatingDockProps {
-  /** Danh sách tab (thường là bottomTabs đã resolve theo role). */
-  items: DockSourceItem[];
-  /** Tab đang hoạt động theo `id` (chính là `path`). */
-  activeId?: string;
-  onSelect: (id: string) => void;
-  /** Nút hành động hiển thị sau các tab, theo thứ tự truyền vào. */
-  actions?: FloatingDockAction[];
-  className?: string;
-}
 
 interface DockIconButtonProps {
   icon: FloatingDockItem['icon'];
@@ -32,7 +20,6 @@ interface DockIconButtonProps {
   badge?: number | string;
   hasDot?: boolean;
   isActive?: boolean;
-  isPrimary?: boolean;
   onClick: () => void;
   /** Nút Menu mở drawer dạng dialog. */
   isDialogTrigger?: boolean;
@@ -48,7 +35,6 @@ const DockIconButton = memo(function DockIconButton({
   badge,
   hasDot,
   isActive,
-  isPrimary,
   onClick,
   isDialogTrigger,
 }: DockIconButtonProps) {
@@ -57,7 +43,6 @@ const DockIconButton = memo(function DockIconButton({
 
   const classes = [styles.tab];
   if (isActive) classes.push(styles.isActive);
-  if (isPrimary) classes.push(styles.isPrimary);
 
   return (
     <button
@@ -96,6 +81,7 @@ export const FloatingDock = memo(function FloatingDock({
   activeId,
   onSelect,
   actions,
+  fab,
   className,
 }: FloatingDockProps) {
   const dockItems = toDockItems(items);
@@ -107,39 +93,69 @@ export const FloatingDock = memo(function FloatingDock({
 
   if (dockItems.length === 0) return null;
 
-  return (
-    <nav
-      className={`${styles.dock}${className ? ` ${className}` : ''}`}
-      aria-label={APP_SHELL_LABELS.DOCK_NAV_ARIA}
-      role="tablist"
-    >
-      <div className={styles.surface}>
-        {dockItems.map((item) => (
-          <DockIconButton
-            key={item.id}
-            icon={item.icon}
-            ariaLabel={item.label}
-            badge={item.badge}
-            hasDot={item.hasDot}
-            isActive={activeId === item.id}
-            onClick={handleSelect(item.id)}
-          />
-        ))}
+  const fabBadge = formatDockBadge(fab?.badge);
 
-        {actions?.map((action) => (
-          <DockIconButton
-            key={action.label}
-            icon={action.icon}
-            ariaLabel={action.ariaLabel ?? action.label}
-            badge={action.badge}
-            hasDot={action.hasDot}
-            isActive={action.isActive}
-            isPrimary={action.variant === 'primary'}
-            isDialogTrigger
-            onClick={action.onTrigger}
+  return (
+    <>
+      <nav
+        className={`${styles.dock}${className ? ` ${className}` : ''}`}
+        aria-label={APP_SHELL_LABELS.DOCK_NAV_ARIA}
+        role="tablist"
+      >
+        <div className={styles.surface}>
+          {dockItems.map((item) => (
+            <DockIconButton
+              key={item.id}
+              icon={item.icon}
+              ariaLabel={item.label}
+              badge={item.badge}
+              hasDot={item.hasDot}
+              isActive={activeId === item.id}
+              onClick={handleSelect(item.id)}
+            />
+          ))}
+
+          {actions?.map((action) => (
+            <DockIconButton
+              key={action.label}
+              icon={action.icon}
+              ariaLabel={action.ariaLabel ?? action.label}
+              badge={action.badge}
+              hasDot={action.hasDot}
+              isActive={action.isActive}
+              isDialogTrigger
+              onClick={action.onTrigger}
+            />
+          ))}
+        </div>
+      </nav>
+
+      {/* FAB nổi tách riêng — nằm ngoài pill, neo góc phải dưới */}
+      {fab && (
+        <button
+          type="button"
+          className={styles.fab}
+          onClick={fab.onTrigger}
+          aria-label={
+            fabBadge
+              ? `${fab.ariaLabel ?? fab.label}, ${fabBadge} ${APP_SHELL_LABELS.TASKS_PENDING_SUFFIX}`
+              : (fab.ariaLabel ?? fab.label)
+          }
+          aria-haspopup="dialog"
+        >
+          <Icon
+            name={fab.icon}
+            size={26}
+            strokeWidth={2.2}
+            aria-hidden="true"
           />
-        ))}
-      </div>
-    </nav>
+          {fabBadge && (
+            <span className={styles.fabBadge} aria-hidden="true">
+              {fabBadge}
+            </span>
+          )}
+        </button>
+      )}
+    </>
   );
 });

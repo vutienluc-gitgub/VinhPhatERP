@@ -177,18 +177,12 @@ export function AppShell() {
           </main>
         </div>
 
-        {/* ── Floating Dock (Role-aware tabs + "+" tạo mới + Menu) ── */}
+        {/* ── Floating Dock (Role-aware tabs + Menu) + FAB "+" tách riêng ── */}
         <FloatingDock
           items={bottomTabs}
           activeId={activeDockId}
           onSelect={navigateToDock}
           actions={[
-            {
-              icon: 'Plus',
-              label: APP_SHELL_LABELS.QUICK_CREATE,
-              onTrigger: openQuickActions,
-              variant: 'primary',
-            },
             {
               icon: 'LayoutGrid',
               label: APP_SHELL_LABELS.MENU,
@@ -203,6 +197,11 @@ export function AppShell() {
               isActive: isDrawerActive,
             },
           ]}
+          fab={{
+            icon: 'Plus',
+            label: APP_SHELL_LABELS.QUICK_CREATE,
+            onTrigger: openQuickActions,
+          }}
         />
 
         <QuickActionsSheet

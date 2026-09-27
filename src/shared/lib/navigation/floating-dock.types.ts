@@ -1,5 +1,7 @@
 import type { IconName } from '@/shared/components/Icon';
 
+import type { DockSourceItem } from './floating-dock.utils';
+
 /** Một tab hiển thị trên Floating Dock. */
 export interface FloatingDockItem {
   /** Định danh duy nhất của tab (route path hoặc khoá chức năng). */
@@ -26,15 +28,20 @@ export interface FloatingDockAction {
   hasDot?: boolean;
   /** Đánh dấu nút đang là mục điều hướng hiện hành. */
   isActive?: boolean;
-  /** `primary` tô nền để làm nổi bật nút tạo mới (FAB "+"). */
-  variant?: 'default' | 'primary';
 }
 
 export interface FloatingDockProps {
-  items: FloatingDockItem[];
+  /** Danh sách tab (thường là bottomTabs đã resolve theo role). */
+  items: DockSourceItem[];
+  /** Tab đang hoạt động theo `id` (chính là `path`). */
   activeId?: string;
   onSelect: (id: string) => void;
-  /** Nút hành động hiển thị sau các tab, theo thứ tự truyền vào. */
+  /** Nút hành động nằm trong pill, sau các tab, theo thứ tự truyền vào. */
   actions?: FloatingDockAction[];
+  /**
+   * FAB nổi tách riêng khỏi pill (kiểu Material), neo góc phải dưới,
+   * nằm trên dock. Dùng cho hành động tạo mới.
+   */
+  fab?: FloatingDockAction;
   className?: string;
 }
