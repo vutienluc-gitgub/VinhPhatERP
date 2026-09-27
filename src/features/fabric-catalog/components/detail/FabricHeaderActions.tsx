@@ -62,7 +62,7 @@ export function FabricHeaderActions({
         >
           <Icon name="ShoppingCart" className="w-5 h-5" />
           {inquiryCartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-danger-soft text-inverse-foreground text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-danger text-inverse-foreground text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
               {inquiryCartCount}
             </span>
           )}

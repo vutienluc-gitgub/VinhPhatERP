@@ -13,12 +13,16 @@ type Props = {
 };
 
 export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
-  // Status colors based on MES standard
+  // Status colors based on MES standard — solid fill + inverse foreground,
+  // same pairing as btn-primary. The previous soft fills paired with
+  // text-inverse-foreground collapsed to 1.00-1.48:1 in BOTH themes: the
+  // token is white in light mode and #091524 in dark mode, so it never
+  // matched a pale fill.
   const statusColorMap = {
-    running: 'bg-success-soft text-inverse-foreground',
-    idle: 'bg-surface-strong text-inverse-foreground',
-    maintenance: 'bg-warning-soft text-inverse-foreground',
-    breakdown: 'bg-danger-soft text-inverse-foreground',
+    running: 'bg-success text-inverse-foreground',
+    idle: 'bg-surface-secondary text-muted-foreground',
+    maintenance: 'bg-warning text-inverse-foreground',
+    breakdown: 'bg-danger text-inverse-foreground',
     setup: 'bg-purple text-inverse-foreground',
   };
 

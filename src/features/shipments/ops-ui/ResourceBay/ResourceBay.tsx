@@ -47,7 +47,7 @@ export function ResourceBay({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {icon && (
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface-strong text-inverse-foreground shadow-inner">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-surface-strong text-foreground shadow-inner">
               {icon}
             </div>
           )}
