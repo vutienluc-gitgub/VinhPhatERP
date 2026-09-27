@@ -23,7 +23,7 @@ export function AuthPage() {
       <div className="min-h-screen w-full flex items-center justify-center bg-auth-bg">
         <div className="flex flex-col items-center gap-4">
           <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-          <p className="text-inverse-foreground/60 font-medium">
+          <p className="text-on-dark-foreground/60 font-medium">
             Đang kiểm tra phiên đăng nhập…
           </p>
         </div>
@@ -33,7 +33,7 @@ export function AuthPage() {
 
   if (session) {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-auth-bg p-4 text-inverse-foreground">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-auth-bg p-4 text-on-dark-foreground">
         <div className="max-w-md w-full bg-surface-strong/10 border border-transparent/10 p-8 rounded-2xl backdrop-blur-xl animate-in fade-in zoom-in duration-500">
           <div className="text-center mb-8">
             <span className="text-foreground font-semibold tracking-wider uppercase text-xs mb-2 block">
@@ -43,7 +43,7 @@ export function AuthPage() {
               Xin chào, {session.user.email ?? 'Thành viên'}
             </h2>
           </div>
-          <p className="text-center mb-8 text-inverse-foreground/50 text-sm">
+          <p className="text-center mb-8 text-on-dark-foreground/50 text-sm">
             Bạn đã đăng nhập thành công vào hệ thống.
           </p>
           <div className="flex flex-col gap-3">
@@ -58,7 +58,7 @@ export function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-auth-bg text-inverse-foreground overflow-hidden font-sans">
+    <div className="flex min-h-screen w-full bg-auth-bg text-on-dark-foreground overflow-hidden font-sans">
       {/* ── Left Panel (Branding / Art) ── */}
       <div className="hidden lg:flex w-5/12 xl:w-[45%] relative flex-col justify-between p-12 lg:p-16 border-r border-transparent/5">
         {/* Background Gradients & Glows */}
@@ -72,31 +72,31 @@ export function AuthPage() {
 
         {/* Middle: Value Prop */}
         <div className="relative z-10 max-w-lg mt-auto mb-auto">
-          <h1 className="text-4xl xl:text-5xl font-bold text-inverse-foreground mb-6 leading-[1.15]">
+          <h1 className="text-4xl xl:text-5xl font-bold text-on-dark-foreground mb-6 leading-[1.15]">
             Hệ thống Quản trị <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-info to-purple">
               Nguồn lực Toàn diện
             </span>
           </h1>
-          <p className="text-lg text-inverse-foreground/60 mb-8 max-w-md leading-relaxed">
+          <p className="text-lg text-on-dark-foreground/60 mb-8 max-w-md leading-relaxed">
             Nâng tầm hiệu suất vận hành với thiết kế Premium. Tối ưu, bảo mật,
             thông minh và được thiết kế dành riêng cho bạn.
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-on-dark-foreground/80">
               <Icon name="Zap" size={14} /> Tốc độ cao
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-on-dark-foreground/80">
               <Icon name="ShieldCheck" size={14} /> Bảo mật SSL
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-inverse-foreground/80">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface/5 border border-transparent/10 rounded-full text-xs font-medium tracking-wide text-on-dark-foreground/80">
               <Icon name="Rocket" size={14} /> Premium UI
             </span>
           </div>
         </div>
 
         {/* Bottom: Footer */}
-        <div className="relative z-10 flex items-center justify-between text-xs text-inverse-foreground/40 font-medium tracking-wide uppercase">
+        <div className="relative z-10 flex items-center justify-between text-xs text-on-dark-foreground/40 font-medium tracking-wide uppercase">
           <span>© 2026 Vinh Phat Enterprise</span>
           <span>Version 3.0.0</span>
         </div>
@@ -118,12 +118,12 @@ export function AuthPage() {
                 <LoginForm
                   onForgotPassword={() => setMode('forgot-password')}
                 />
-                <div className="mt-6 text-center text-sm text-inverse-foreground/50">
+                <div className="mt-6 text-center text-sm text-on-dark-foreground/50">
                   Chưa có tài khoản?{' '}
                   <button
                     type="button"
                     onClick={() => setMode('register')}
-                    className="text-link hover:text-inverse-foreground font-semibold transition-colors duration-200"
+                    className="text-link hover:text-on-dark-foreground font-semibold transition-colors duration-200"
                   >
                     Đăng ký ngay
                   </button>
@@ -134,12 +134,12 @@ export function AuthPage() {
             {mode === 'register' && (
               <>
                 <RegisterForm onSuccess={() => setMode('login')} />
-                <div className="mt-6 text-center text-sm text-inverse-foreground/50">
+                <div className="mt-6 text-center text-sm text-on-dark-foreground/50">
                   Đã có tài khoản?{' '}
                   <button
                     type="button"
                     onClick={() => setMode('login')}
-                    className="text-link hover:text-inverse-foreground font-semibold transition-colors duration-200"
+                    className="text-link hover:text-on-dark-foreground font-semibold transition-colors duration-200"
                   >
                     Đăng nhập
                   </button>
@@ -194,7 +194,7 @@ function SignOutButton() {
     <Button
       variant="ghost"
       size="lg"
-      className="border border-transparent/20 text-inverse-foreground hover:bg-inverse-foreground/10"
+      className="border border-transparent/20 text-on-dark-foreground hover:bg-on-dark-foreground/10"
       onClick={handleSignOut}
       disabled={isSigningOut}
     >

@@ -158,3 +158,35 @@ describe('WCAG token contrast — dark mode', () => {
     expect(contrastRatio(warning, bg)).toBeGreaterThanOrEqual(AA_NORMAL);
   });
 });
+
+describe('WCAG token contrast — fixed dark surfaces (auth)', () => {
+  // Auth pages keep a dark backdrop (--auth-bg) in BOTH themes, so their text
+  // token must not flip with the theme. Regression guard: --inverse-foreground
+  // turns #091524 in dark mode, which collapses into that backdrop (~1.0:1).
+  const authBg = {
+    light: readVar(TOKENS, 'auth-bg'),
+    dark: readVar(DARK, 'auth-bg'),
+  };
+
+  it('declares the theme-invariant text token in both themes', () => {
+    expect(() => readVar(TOKENS, 'on-dark-foreground')).not.toThrow();
+    expect(() => readVar(DARK, 'on-dark-foreground')).not.toThrow();
+  });
+
+  it('keeps auth text readable on the dark backdrop in both themes', () => {
+    expect(
+      contrastRatio(readVar(TOKENS, 'on-dark-foreground'), authBg.light),
+    ).toBeGreaterThanOrEqual(AA_NORMAL);
+    expect(
+      contrastRatio(readVar(DARK, 'on-dark-foreground'), authBg.dark),
+    ).toBeGreaterThanOrEqual(AA_NORMAL);
+  });
+
+  it('would break if the auth text token flipped with the theme', () => {
+    // Documents the exact defect this token exists to prevent: reusing the
+    // theme-flipping token on the fixed-dark auth backdrop.
+    expect(
+      contrastRatio(readVar(DARK, 'inverse-foreground'), authBg.dark),
+    ).toBeLessThan(AA_NORMAL);
+  });
+});
