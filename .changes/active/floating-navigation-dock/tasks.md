@@ -59,6 +59,9 @@ Tuân thủ **Evidence Rule §1.2** (ghi kết quả thực tế của lệnh ch
 
 ## 🔎 Tech-debt phát hiện ngoài phạm vi (không xử lý trong change này)
 
+- ⚠️ **Nhánh base không phải `main`:** `feat/floating-dock` được tạo từ `fix/warning-contrast-a11y` (`3357050`), nhánh này **chưa** merge vào `origin/main` (`99e1020`). Vì vậy `git diff origin/main...HEAD` chứa thêm 5 file không liên quan đến tính năng dock:
+  `src/features/customer-portal/portal.css`, `src/styles/base/animations.css`, `src/styles/components/perm-matrix.css`, `src/styles/theme/tokens.css`, `src/styles/theme/theme-contrast.test.ts`.
+  **Cần quyết định trước khi mở PR:** (a) merge `fix/warning-contrast-a11y` vào `main` trước rồi mở PR dock, hoặc (b) `git rebase origin/main` (viết lại lịch sử — cần xác nhận), hoặc (c) để PR dock target nhánh `fix/warning-contrast-a11y`.
 - `src/styles/layout/mobile-nav.css` chỉ còn được dùng bởi `MobileBottomNav` (giữ cho rollback + test).
 - `mobile-overflow.spec.ts` (Playwright) có thể còn phụ thuộc layout nav full-width — cần cập nhật khi chạy E2E thật.
 - `hono` thiếu trong `server/` làm `server/src/routes/__tests__/ai-chat.test.ts` fail — lỗi hạ tầng có sẵn, không liên quan.
