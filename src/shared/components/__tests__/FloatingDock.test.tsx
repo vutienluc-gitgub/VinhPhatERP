@@ -57,18 +57,20 @@ describe('FloatingDock', () => {
     expect(tab).toHaveTextContent('99+');
   });
 
-  it('render nút Menu với aria-haspopup và xử lý trigger', () => {
+  it('render nút Menu qua actions với aria-haspopup và xử lý trigger', () => {
     const onTrigger = vi.fn();
     render(
       <FloatingDock
         items={ITEMS}
         onSelect={() => {}}
-        action={{
-          icon: 'LayoutGrid',
-          label: 'Menu',
-          ariaLabel: 'Menu, 5 việc cần xử lý',
-          onTrigger,
-        }}
+        actions={[
+          {
+            icon: 'LayoutGrid',
+            label: 'Menu',
+            ariaLabel: 'Menu, 5 việc cần xử lý',
+            onTrigger,
+          },
+        ]}
       />,
     );
 
@@ -77,6 +79,55 @@ describe('FloatingDock', () => {
 
     fireEvent.click(menu);
     expect(onTrigger).toHaveBeenCalledTimes(1);
+  });
+
+  it('render nút "+" tạo mới cạnh Menu, đúng thứ tự', () => {
+    const onQuickCreate = vi.fn();
+    const onMenu = vi.fn();
+    render(
+      <FloatingDock
+        items={ITEMS}
+        onSelect={() => {}}
+        actions={[
+          {
+            icon: 'Plus',
+            label: 'Tạo mới nhanh',
+            onTrigger: onQuickCreate,
+            variant: 'primary',
+          },
+          { icon: 'LayoutGrid', label: 'Menu', onTrigger: onMenu },
+        ]}
+      />,
+    );
+
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(ITEMS.length + 2);
+    // Hai nút hành động nằm cuối dock, "+" đứng trước Menu
+    expect(tabs[tabs.length - 2]).toHaveAccessibleName('Tạo mới nhanh');
+    expect(tabs[tabs.length - 1]).toHaveAccessibleName('Menu');
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Tạo mới nhanh' }));
+    expect(onQuickCreate).toHaveBeenCalledTimes(1);
+    expect(onMenu).not.toHaveBeenCalled();
+  });
+
+  it('dock chỉ hiển thị icon, nhãn chữ không render ra giao diện', () => {
+    render(
+      <FloatingDock
+        items={ITEMS}
+        onSelect={() => {}}
+        actions={[
+          { icon: 'Plus', label: 'Tạo mới nhanh', onTrigger: () => {} },
+        ]}
+      />,
+    );
+
+    // Nhãn nằm trong aria-label, không phải text node hiển thị
+    expect(screen.queryByText('Home')).not.toBeInTheDocument();
+    expect(screen.queryByText('Tạo mới nhanh')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('tab', { name: 'Tạo mới nhanh' }),
+    ).toBeInTheDocument();
   });
 
   it('dùng nhãn điều hướng cho nav và trả về null khi rỗng', () => {

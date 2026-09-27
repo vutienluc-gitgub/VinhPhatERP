@@ -49,12 +49,31 @@ Tuân thủ **Evidence Rule §1.2** (ghi kết quả thực tế của lệnh ch
 - [x] `npm run typecheck`: **PASS** — exit 0, 0 lỗi.
 - [x] `npm run lint -- --max-warnings=0`: **PASS** — exit 0, 0 error / 0 warning.
 - [x] `npm run lint:css`: **PASS** — exit 0, 0 vi phạm màu.
-- [x] `npm run test`: **882 passed / 882** (140 file pass); 1 file fail là `server/src/routes/__tests__/ai-chat.test.ts` — thiếu module `hono`, lỗi hạ tầng có sẵn, không liên quan change này.
-- [x] `npm run build`: **PASS** — `✓ built in 3.16s`.
+- [x] `npm run test`: **884 passed / 884** (140 file pass); 1 file fail là `server/src/routes/__tests__/ai-chat.test.ts` — thiếu module `hono`, lỗi hạ tầng có sẵn, không liên quan change này.
+- [x] `npm run build`: **PASS** — `✓ built in 3.15s`.
 - [x] `npm run theme:check`: **PASS** — Theme Contract mirrored.
+- [x] `npm run size:check`: **PASS** — exit 0 (file size ratchet, không hồi quy).
+- [x] `npm run ai:audit`: **AUDIT PASSED**.
+- [x] Prettier `--check`: **PASS** — all matched files.
 - [ ] Xác minh browser (mobile viewport): **`[NOT VERIFIED]`** — trang đăng nhập có Cloudflare Turnstile và không có `E2E_EMAIL`/`E2E_PASSWORD`; không tự ý dùng credential test trên DB thật.
-- [x] **PR đã mở:** [#41](https://github.com/vutienluc-gitgub/VinhPhatERP/pull/41) — base `fix/warning-contrast-a11y` ← head `feat/floating-dock`; 11 file; `mergeable_state: clean`.
+- [x] **PR đã mở:** [#41](https://github.com/vutienluc-gitgub/VinhPhatERP/pull/41) — base `fix/warning-contrast-a11y` ← head `feat/floating-dock`; `mergeable_state: clean`.
 - [x] Di chuyển sang `.changes/archive/` — đã archive sang `.changes/archive/2026-09/floating-navigation-dock/` (theo yêu cầu người dùng, làm ngay thay vì chờ merge).
+
+---
+
+## ➕ GATE 5: BỔ SUNG NÚT "+" & ICON-ONLY
+
+Yêu cầu người dùng: *"thêm cạnh nút Menu (thành 6 nút) VÀ không có chữ"*.
+
+- [x] Task 5.1: Đổi `FloatingDockProps.action?` → `actions?: FloatingDockAction[]`; thêm `variant?: 'default' | 'primary'`.
+- [x] Task 5.2: Dock chuyển sang **icon-only** — bỏ render nhãn chữ, nhãn chỉ dùng `aria-label`.
+- [x] Task 5.3: Thêm nút **"+" (`Plus`, variant `primary`)** đứng trước Menu; thứ tự: 4 tab → `+` → Menu.
+- [x] Task 5.4: Tạo `QuickActionsSheet.tsx` — `AdaptiveSheet` liệt kê 5 `QUICK_ACTIONS`, chọn xong điều hướng.
+- [x] Task 5.5: Thêm CSS `.quick-create-row*` vào `src/styles/layout/app-launcher.css` (không tạo file CSS mới).
+- [x] Task 5.6: Test mới — tổng 17 test cho dock + utils (thêm 2: thứ tự nút, icon-only không render nhãn).
+- [x] Task 5.7: Vùng chạm `.tab` ≥ 2.75rem (44px) để đạt ngưỡng a11y mobile khi bỏ nhãn.
+
+**Kết quả gate sau bổ sung:** typecheck PASS · lint PASS · lint:css PASS · theme:check PASS · size:check PASS · test 884/884 · build PASS · ai:audit PASSED.
 
 ---
 
