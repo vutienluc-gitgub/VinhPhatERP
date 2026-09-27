@@ -51,7 +51,7 @@ export function GlobalErrorElement() {
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <button
             onClick={() => window.location.reload()}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-info-soft px-5 py-2.5 text-sm font-medium text-inverse-foreground transition-colors hover:bg-info-soft"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-info px-5 py-2.5 text-sm font-medium text-inverse-foreground transition-colors hover:bg-info"
           >
             <Icon name="RefreshCw" className="h-4 w-4" />
             Tải lại trang

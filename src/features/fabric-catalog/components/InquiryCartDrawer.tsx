@@ -112,14 +112,14 @@ export function InquiryCartDrawer({
           <div className="p-4 border-t border-default bg-surface space-y-2">
             <button
               onClick={onRequestSample}
-              className="w-full bg-success-soft hover:bg-success-soft text-inverse-foreground font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
+              className="w-full bg-success hover:bg-success text-inverse-foreground font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
             >
               <Icon name="PackageSearch" className="w-4 h-4" />
               {LABELS.requestSampleTitle}
             </button>
             <button
               onClick={onRequestRFQ}
-              className="w-full bg-info-soft hover:bg-info-soft text-inverse-foreground font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
+              className="w-full bg-info hover:bg-info text-inverse-foreground font-semibold py-2.5 rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
             >
               <Icon name="FileText" className="w-4 h-4" />
               {LABELS.rfqBtn}

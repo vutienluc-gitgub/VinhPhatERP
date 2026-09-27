@@ -190,3 +190,90 @@ describe('WCAG token contrast — fixed dark surfaces (auth)', () => {
     ).toBeLessThan(AA_NORMAL);
   });
 });
+
+/**
+ * Loom status badges (LoomCompactCard) previously paired pale `bg-X-soft`
+ * fills with `text-inverse-foreground` — white in light mode, #091524 in dark
+ * mode — giving 1.00-1.48:1, i.e. invisible in BOTH themes. They now use a
+ * solid fill with the inverse foreground, the same pairing as btn-primary.
+ */
+describe('loom status badge contrast', () => {
+  type Pair = { inverse: string; solid: string };
+
+  const PAIRS: Record<string, Pair> = {
+    running: { inverse: 'inverse-foreground', solid: 'success' },
+    maintenance: { inverse: 'inverse-foreground', solid: 'warning' },
+    breakdown: { inverse: 'inverse-foreground', solid: 'danger' },
+    setup: { inverse: 'inverse-foreground', solid: 'purple' },
+  };
+
+  it('keeps every loom status readable in light mode', () => {
+    for (const [status, pair] of Object.entries(PAIRS)) {
+      const fg = readVar(TOKENS, pair.inverse);
+      const bg = readVar(TOKENS, pair.solid);
+      expect(
+        contrastRatio(fg, bg),
+        `${status} (light): text-${pair.inverse} on bg-${pair.solid}`,
+      ).toBeGreaterThanOrEqual(AA_NORMAL);
+    }
+  });
+
+  it('keeps every loom status readable in dark mode', () => {
+    for (const [status, pair] of Object.entries(PAIRS)) {
+      const fg = readVar(DARK, pair.inverse);
+      const bg = readVar(DARK, pair.solid);
+      expect(
+        contrastRatio(fg, bg),
+        `${status} (dark): text-${pair.inverse} on bg-${pair.solid}`,
+      ).toBeGreaterThanOrEqual(AA_NORMAL);
+    }
+  });
+
+  it('keeps the idle status readable on its neutral surface', () => {
+    expect(
+      contrastRatio(
+        readVar(TOKENS, 'muted-foreground'),
+        readVar(TOKENS, 'surface-secondary'),
+      ),
+    ).toBeGreaterThanOrEqual(AA_NORMAL);
+
+    // Dark --surface-secondary is translucent, so composite it over the page.
+    const raw = resolveRaw(loadVars(DARK), 'surface-secondary');
+    const onPage = composit(
+      parseColor(raw),
+      parseAlpha(raw),
+      readVar(DARK, 'background'),
+    );
+    expect(
+      contrastRatio(readVar(DARK, 'muted-foreground'), onPage),
+    ).toBeGreaterThanOrEqual(AA_NORMAL);
+  });
+
+  it('keeps inverse text readable on every solid status fill', () => {
+    // Shared pattern: text-inverse-foreground on a solid brand/status colour.
+    // Used by buttons, badges and the error boundaries after the audit.
+    const solids = ['success', 'danger', 'warning', 'info', 'purple', 'primary'];
+    for (const theme of [
+      { label: 'light', file: TOKENS },
+      { label: 'dark', file: DARK },
+    ]) {
+      const fg = readVar(theme.file, 'inverse-foreground');
+      for (const solid of solids) {
+        expect(
+          contrastRatio(fg, readVar(theme.file, solid)),
+          `${solid} (${theme.label}): inverse-foreground on ${solid}`,
+        ).toBeGreaterThanOrEqual(AA_NORMAL);
+      }
+    }
+  });
+
+  it('registers the reported regression: inverse-foreground on pale fills', () => {
+    // White on the light soft fills is what made the badges unreadable.
+    expect(
+      contrastRatio(
+        readVar(TOKENS, 'inverse-foreground'),
+        readVar(TOKENS, 'success-soft'),
+      ),
+    ).toBeLessThan(AA_NORMAL);
+  });
+});
