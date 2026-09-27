@@ -21,6 +21,7 @@ import { FloatingDock } from '@/shared/components/FloatingDock';
 import { HAPTIC_PATTERNS, triggerHapticFeedback } from '@/shared/lib/haptics';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
+import { QuickActionsSheet } from './QuickActionsSheet';
 import { TopBar } from './TopBar';
 
 function getCurrentItem(pathname: string) {
@@ -45,6 +46,12 @@ export function AppShell() {
   const [showMore, setShowMore] = useState(false);
   const closeMoreDrawer = useCallback(() => setShowMore(false), []);
   const openMoreDrawer = useCallback(() => setShowMore(true), []);
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const closeQuickActions = useCallback(() => setShowQuickActions(false), []);
+  const openQuickActions = useCallback(() => {
+    triggerHapticFeedback(HAPTIC_PATTERNS.SELECTION);
+    setShowQuickActions(true);
+  }, []);
   const [showCostingModal, setShowCostingModal] = useState(false);
   const navigationItems = useMemo(() => getNavigationItems(), []);
   const currentItem = useMemo(() => getCurrentItem(pathname), [pathname]);
@@ -170,24 +177,37 @@ export function AppShell() {
           </main>
         </div>
 
-        {/* ── Floating Dock (Role-aware tabs + Menu) ── */}
+        {/* ── Floating Dock (Role-aware tabs + Menu) + FAB "+" tách riêng ── */}
         <FloatingDock
           items={bottomTabs}
           activeId={activeDockId}
           onSelect={navigateToDock}
-          action={{
-            icon: 'LayoutGrid',
-            label: APP_SHELL_LABELS.MENU,
-            ariaLabel:
-              totalDeviceBadgeCount > 0
-                ? `${APP_SHELL_LABELS.MENU}, ${totalDeviceBadgeCount} ${APP_SHELL_LABELS.TASKS_PENDING_SUFFIX}`
-                : APP_SHELL_LABELS.MENU,
-            onTrigger: openMoreDrawer,
-            badge:
-              totalDeviceBadgeCount > 0 ? totalDeviceBadgeCount : undefined,
-            hasDot: totalDeviceBadgeCount > 0,
-            isActive: isDrawerActive,
+          actions={[
+            {
+              icon: 'LayoutGrid',
+              label: APP_SHELL_LABELS.MENU,
+              ariaLabel:
+                totalDeviceBadgeCount > 0
+                  ? `${APP_SHELL_LABELS.MENU}, ${totalDeviceBadgeCount} ${APP_SHELL_LABELS.TASKS_PENDING_SUFFIX}`
+                  : APP_SHELL_LABELS.MENU,
+              onTrigger: openMoreDrawer,
+              badge:
+                totalDeviceBadgeCount > 0 ? totalDeviceBadgeCount : undefined,
+              hasDot: totalDeviceBadgeCount > 0,
+              isActive: isDrawerActive,
+            },
+          ]}
+          fab={{
+            icon: 'Plus',
+            label: APP_SHELL_LABELS.QUICK_CREATE,
+            onTrigger: openQuickActions,
           }}
+        />
+
+        <QuickActionsSheet
+          open={showQuickActions}
+          onClose={closeQuickActions}
+          onSelect={navigate}
         />
 
         {showMore && (

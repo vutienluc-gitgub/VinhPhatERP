@@ -58,4 +58,21 @@ Không có mục nào là "CÓ" → không cần `delta-spec.md` nghiệp vụ.
 | Màu | Chỉ semantic token; badge dùng `--danger` (5.44:1 — đạt AA) thay `rose-500` (3.67:1 — fail) |
 | Bù padding đáy | Không cần sửa: `.content-shell` đã có `calc(5.5rem + safe-area-inset-bottom)` |
 | `MobileBottomNav` | **Giữ lại** làm đường rollback 1 dòng. `AppShell` không còn import nên Vite tree-shake khỏi bundle production; chỉ còn chạy trong test suite. |
-| FAB | Giữ phạm vi là nút **Menu** (không mở rộng sang quick-create) để không trùng `AppLauncher`/`QuickCreateModal` |
+| FAB | **Bổ sung tại Gate 5 (theo yêu cầu người dùng):** nút **"+"** tạo mới, tách hẳn khỏi pill thành **FAB nổi riêng kiểu Material** (neo góc phải dưới, `right: 1rem`, `bottom: 5.5rem`, `z-index: 60`). Trước đó phạm vi chỉ là nút Menu. |
+| Nhãn trên dock | **Icon-only** (theo yêu cầu người dùng). Nhãn chữ chỉ dùng cho `aria-label`, không render. |
+| Thứ tự nút | Pill: 4 tab theo role → `Menu` (giữ nguyên vị trí cũ). FAB "+" nằm ngoài pill, góc phải dưới. |
+
+### 4.1 Bổ sung phạm vi sau Gate 4 (Gate 5)
+
+| File | Thay đổi |
+| --- | --- |
+| `floating-dock.types.ts` | `action?` → `actions?: FloatingDockAction[]`; thêm `fab?: FloatingDockAction`. **Hợp nhất** `FloatingDockProps` về một nguồn duy nhất (trước đây trùng lặp giữa types.ts và FloatingDock.tsx). |
+| `FloatingDock.tsx` | Gộp `DockButton`/`DockAction` thành `DockIconButton`; bỏ render nhãn chữ; thêm nhánh render FAB ngoài `nav` |
+| `FloatingDock.module.css` | Bỏ `.label`/`.iconWrap`/`.isPrimary`; thêm `.fab` + `.fabBadge`; `.tab` icon-only với `min-width/min-height: 2.75rem` (44px) |
+| `QuickActionsSheet.tsx` | **Mới** — sheet liệt kê `QUICK_ACTIONS`, chọn xong điều hướng |
+| `app-launcher.css` | Thêm `.quick-create-row*` (tái dùng file CSS layout sẵn có, không tạo file mới) |
+| `AppShell.tsx` | Truyền `actions=[Menu]` + `fab={Plus}`; thêm state `showQuickActions` + haptics khi mở |
+
+**Vị trí FAB & xung đột lớp:** FAB `z-index: 60` > dock `50`; `AIChatWidget` (`z-index: 110`, cùng góc phải) hiện **chưa được mount** ở đâu trong app nên chưa có chồng lấn. Nếu sau này mount `AIChatWidget`, cần nâng FAB lên trên hoặc lệch trục — ghi lại làm tech-debt.
+
+**Cỡ FAB:** 3.5rem (56px) — đúng chuẩn Material, và đáy `5.5rem` khớp `padding-bottom` của `.content-shell` nên không đè nội dung.
