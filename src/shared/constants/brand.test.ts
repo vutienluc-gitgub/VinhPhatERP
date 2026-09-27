@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -7,6 +10,17 @@ import {
   VP_SYMBOL_PATH_DATA,
   getBrandAssetUrl,
 } from './brand';
+
+/** Fills used by the symbol SVG, in document order. */
+function symbolFills(variant: 'positive' | 'negative'): string[] {
+  const file = path.resolve(
+    process.cwd(),
+    `public/brand/logo-symbol-${variant}.svg`,
+  );
+  return [...readFileSync(file, 'utf8').matchAll(/fill="([^"]+)"/g)].map(
+    (m) => m[1]!,
+  );
+}
 
 describe('Brand Identity Standards v3.0 Constants', () => {
   it('defines the official Viettel Red brand color', () => {
@@ -83,5 +97,19 @@ describe('Brand Identity Standards v3.0 Constants', () => {
     expect(getBrandAssetUrl('full', 'monochrome')).toBe(
       '/brand/logo-full-monochrome.svg',
     );
+  });
+});
+
+describe('brand SVG variants follow the positive/negative convention', () => {
+  // "Negative" means the mark is inverted to white so it stays visible on a
+  // dark backdrop; "positive" is the red mark for light backdrops. Keeping
+  // them distinct matters because both are referenced by getBrandAssetUrl.
+  it('uses white for the negative mark and red for the positive mark', () => {
+    expect(symbolFills('negative')).toEqual([BRAND_COLORS.WHITE]);
+    expect(symbolFills('positive')).toEqual([BRAND_COLORS.PRIMARY]);
+  });
+
+  it('never lets negative and positive collapse to the same asset', () => {
+    expect(symbolFills('negative')).not.toEqual(symbolFills('positive'));
   });
 });
