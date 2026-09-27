@@ -48,7 +48,7 @@ export const FabricRollPackingTable: React.FC<FabricRollPackingTableProps> = ({
     scanNotification,
     handleScan,
     handleResetCheckoff,
-    handleExportCsv,
+    handleExportExcel,
   } = useFabricPackingList({ initialRolls, defaultViewMode });
 
   if (initialRolls.length === 0) {
@@ -130,7 +130,7 @@ export const FabricRollPackingTable: React.FC<FabricRollPackingTableProps> = ({
 
           <button
             type="button"
-            onClick={() => handleExportCsv(title)}
+            onClick={() => void handleExportExcel(title)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs font-semibold text-foreground hover:bg-surface-secondary transition-colors"
           >
             <Icon name="Download" size={14} />

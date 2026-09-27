@@ -3,6 +3,7 @@ import type { VPOption } from '@/shared/components';
 
 export const DOC_TYPE_OPTIONS: VPOption<DocumentType>[] = [
   { value: 'shipment_delivery', label: 'Phiếu Xuất Kho' },
+  { value: 'packing_list', label: 'Bảng Kê Cây Vải' },
   { value: 'inventory_receipt', label: 'Phiếu Nhập Kho' },
   { value: 'production_order', label: 'Lệnh Sản Xuất' },
   { value: 'roll_tag', label: 'Tem Cây Vải' },
@@ -69,6 +70,7 @@ export const PRINT_TEMPLATE_LABELS = {
 export const PRINT_DOC_TABS = [
   { key: 'ALL', label: 'Tất cả' },
   { key: 'shipment_delivery', label: 'Phiếu Xuất Kho' },
+  { key: 'packing_list', label: 'Bảng Kê Cây Vải' },
   { key: 'inventory_receipt', label: 'Phiếu Nhập Kho' },
   { key: 'production_order', label: 'Lệnh Sản Xuất' },
   { key: 'roll_tag', label: 'Tem Cây Vải' },

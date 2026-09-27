@@ -3,6 +3,7 @@ import React from 'react';
 import type { FabricRollPackingItem } from '@/domain/inventory/packing-list.types';
 import { FabricRollPackingTable } from '@/features/finished-fabric/components/FabricRollPackingTable';
 import { PACKING_LIST_TEXT } from '@/features/finished-fabric/packing-list.constants';
+import { printPackingList } from '@/shared/services/print/packing-list';
 import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 
 export interface FabricRollPackingListModalProps {
@@ -24,6 +25,8 @@ export const FabricRollPackingListModal: React.FC<
   subtitle = PACKING_LIST_TEXT.SUBTITLE,
   onPrint,
 }) => {
+  const handlePrint = onPrint ?? (() => printPackingList(rolls));
+
   return (
     <AdaptiveSheet open={open} onClose={onClose} title={title} size="xl">
       <div className="py-2">
@@ -31,7 +34,7 @@ export const FabricRollPackingListModal: React.FC<
           rolls={rolls}
           title={title}
           subtitle={subtitle}
-          onPrint={onPrint}
+          onPrint={handlePrint}
         />
       </div>
     </AdaptiveSheet>

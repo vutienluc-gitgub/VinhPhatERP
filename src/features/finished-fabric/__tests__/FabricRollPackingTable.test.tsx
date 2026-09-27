@@ -1,8 +1,17 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { FabricRollPackingItem } from '@/domain/inventory/packing-list.types';
 import { FabricRollPackingTable } from '@/features/finished-fabric/components/FabricRollPackingTable';
+import { exportPackingListToExcel } from '@/shared/services/print/packing-list';
+
+vi.mock('@/shared/services/print/packing-list', async (importOriginal) => {
+  const actual =
+    await importOriginal<
+      typeof import('@/shared/services/print/packing-list')
+    >();
+  return { ...actual, exportPackingListToExcel: vi.fn() };
+});
 
 const mockRolls: FabricRollPackingItem[] = [
   {
@@ -28,6 +37,10 @@ const mockRolls: FabricRollPackingItem[] = [
 ];
 
 describe('FabricRollPackingTable component', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('renders empty state when rolls array is empty', () => {
     render(<FabricRollPackingTable rolls={[]} />);
     expect(
@@ -62,5 +75,19 @@ describe('FabricRollPackingTable component', () => {
 
     // In table view, table headers are visible
     expect(screen.getByText('Khổ (inch)')).toBeInTheDocument();
+  });
+
+  it('exports the current rolls to Excel when clicking the export button', async () => {
+    render(<FabricRollPackingTable rolls={mockRolls} title="Bảng kê test" />);
+
+    fireEvent.click(screen.getByText('Xuất file Excel'));
+
+    await waitFor(() => {
+      expect(exportPackingListToExcel).toHaveBeenCalledTimes(1);
+    });
+    expect(exportPackingListToExcel).toHaveBeenCalledWith(
+      mockRolls,
+      expect.objectContaining({ title: 'Bảng kê test' }),
+    );
   });
 });

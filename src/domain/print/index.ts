@@ -1,6 +1,7 @@
 export * from './types';
 export * from './schemas';
 export * from './field-registry';
+export * from './template-seed';
 export * from './resolver';
 export * from './print-job.service';
 export * from './usePrintJobs';

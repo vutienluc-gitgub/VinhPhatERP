@@ -6,11 +6,11 @@ import type {
 } from '@/domain/inventory/packing-list.types';
 import {
   calculatePackingSummary,
-  exportPackingListToCsvContent,
   filterPackingRolls,
   groupRollsByColorAndBatch,
   processRollCheckoff,
 } from '@/domain/inventory/packing-list.utils';
+import { exportPackingListToExcel } from '@/shared/services/print/packing-list';
 
 export type PackingListViewMode = 'table' | 'grid' | 'matrix';
 
@@ -99,18 +99,9 @@ export function useFabricPackingList({
     setScanNotification(null);
   }, []);
 
-  const handleExportCsv = useCallback(
-    (customTitle?: string) => {
-      const csv = exportPackingListToCsvContent(filteredRolls, customTitle);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `packing-list-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+  const handleExportExcel = useCallback(
+    async (customTitle?: string) => {
+      await exportPackingListToExcel(filteredRolls, { title: customTitle });
     },
     [filteredRolls],
   );
@@ -137,6 +128,6 @@ export function useFabricPackingList({
     scanNotification,
     handleScan,
     handleResetCheckoff,
-    handleExportCsv,
+    handleExportExcel,
   };
 }
