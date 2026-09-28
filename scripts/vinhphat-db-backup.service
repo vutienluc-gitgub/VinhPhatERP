@@ -1,0 +1,8 @@
+[Unit]
+Description=VinhPhatERP Supabase DB Backup Service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/root/backup-db.sh
+User=root
