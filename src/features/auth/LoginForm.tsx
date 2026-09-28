@@ -112,14 +112,16 @@ export function LoginForm({
             setAuthMode('passkey');
             setServerError(null);
           }}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-0 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
             authMode === 'passkey'
               ? 'bg-[#6366f1] text-on-dark-foreground shadow-md'
               : 'text-on-dark-foreground/60 hover:text-on-dark-foreground'
           }`}
         >
           <Icon name="Fingerprint" size={16} className="shrink-0" />
-          <span>{AUTH_LABELS.passkeyTabPasskey}</span>
+          <span className="min-w-0 leading-tight">
+            {AUTH_LABELS.passkeyTabPasskey}
+          </span>
         </button>
         <button
           role="tab"
@@ -129,14 +131,16 @@ export function LoginForm({
             setAuthMode('password');
             setServerError(null);
           }}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-0 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
             authMode === 'password'
               ? 'bg-[#6366f1] text-on-dark-foreground shadow-md'
               : 'text-on-dark-foreground/60 hover:text-on-dark-foreground'
           }`}
         >
           <Icon name="KeyRound" size={16} className="shrink-0" />
-          <span>{AUTH_LABELS.passkeyTabPassword}</span>
+          <span className="min-w-0 leading-tight">
+            {AUTH_LABELS.passkeyTabPassword}
+          </span>
         </button>
       </div>
 

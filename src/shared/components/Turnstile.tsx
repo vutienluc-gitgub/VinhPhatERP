@@ -8,6 +8,21 @@ interface TurnstileProps {
   };
 }
 
+/* Cloudflare renders 'normal' as a fixed 300px widget. Below this viewport
+   width the auth card's inner width drops under 300px, so the widget would
+   force the whole card wider than the screen → horizontal clipping. */
+const COMPACT_BREAKPOINT = 400;
+
+function resolveSize(
+  size: 'normal' | 'compact' | undefined,
+): 'normal' | 'compact' {
+  if (size) return size;
+  if (typeof window !== 'undefined' && window.innerWidth < COMPACT_BREAKPOINT) {
+    return 'compact';
+  }
+  return 'normal';
+}
+
 export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
@@ -34,7 +49,7 @@ export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
           sitekey,
           callback: onVerify,
           theme: options?.theme || 'light',
-          size: options?.size || 'normal',
+          size: resolveSize(options?.size),
         });
       }
     };
@@ -52,7 +67,7 @@ export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
   return (
     <div
       ref={containerRef}
-      className="turnstile-wrapper my-4 flex justify-center"
+      className="turnstile-wrapper my-4 flex justify-center w-full max-w-full overflow-hidden"
     />
   );
 };
