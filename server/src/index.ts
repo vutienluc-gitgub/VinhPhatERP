@@ -1,4 +1,4 @@
-import { serve } from '@hono/node-server';
+﻿import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
@@ -12,6 +12,7 @@ import suppliersRouter from './routes/suppliers.js';
 import webhooksRouter from './routes/webhooks.js';
 import yarnReceiptsRouter from './routes/yarn-receipts.js';
 import aiChatRouter from './routes/ai-chat.js';
+import passkeyRouter from './routes/passkey.js';
 // Nạp biến môi trường từ .env nếu có (Node.js 20+)
 try {
   process.loadEnvFile?.();
@@ -64,6 +65,7 @@ api.route('/webhooks', webhooksRouter);
 api.route('/notifications', notificationsRouter);
 api.route('/yarn-receipts', yarnReceiptsRouter);
 api.route('/chat', aiChatRouter);
+api.route('/auth/passkey', passkeyRouter);
 api.route('/ai/chat', aiChatRouter);
 
 // Hỗ trợ cả /api/v1 (chuẩn) và /v1 (khi proxy như Nginx cắt tiền tố /api/)
