@@ -79,4 +79,55 @@ jobs:
             echo "🌐 Reloading Nginx..."
             sudo systemctl reload nginx || sudo systemctl restart nginx || echo "⚠️ Nginx reload/restart failed on VPS (check 'systemctl status nginx' or 'nginx -t'). Skipping Nginx restart."
 
-            echo "✅ Deployment finished successfully!"
+            # 7. Smoke Test & Health Guard Verification (Bảo vệ tự động sau triển khai)
+            echo "🛡️ Starting Automated Post-Deployment Smoke Tests..."
+
+            # 7a. Kiểm tra trạng thái các Docker container Supabase nòng cốt
+            echo "🔍 [Check 1/5] Verifying Supabase core containers..."
+            for container in supabase-db supabase-rest supabase-auth supabase-envoy; do
+              if ! docker ps --filter "name=$container" --filter "status=running" | grep -q "$container"; then
+                echo "❌ CRITICAL: Container $container is not running!"
+                exit 1
+              fi
+            done
+            echo "✅ Core containers are running."
+
+            # 7b. Kiểm tra truy vấn Database thực tế
+            echo "🔍 [Check 2/5] Verifying Postgres Database connectivity & query..."
+            if ! docker exec supabase-db psql -U postgres -d postgres -c "SELECT count(*) FROM customers;" > /dev/null 2>&1; then
+              echo "❌ CRITICAL: Postgres database query failed!"
+              exit 1
+            fi
+            echo "✅ Postgres database query passed."
+
+            # 7c. Kiểm tra PostgREST API endpoint
+            echo "🔍 [Check 3/5] Verifying PostgREST API (/rest/v1/customers)..."
+            API_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/rest/v1/customers")
+            if [ "$API_CODE" != "200" ]; then
+              echo "❌ CRITICAL: PostgREST API returned HTTP $API_CODE instead of 200!"
+              exit 1
+            fi
+            echo "✅ PostgREST API responded HTTP 200."
+
+            # 7d. Kiểm tra GoTrue Google OAuth authorize endpoint
+            echo "🔍 [Check 4/5] Verifying Google OAuth endpoint (/auth/v1/authorize)..."
+            AUTH_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/auth/v1/authorize?provider=google&redirect_to=https://quantri.detmayvinhphat.com/auth/callback")
+            if [ "$AUTH_CODE" != "302" ]; then
+              echo "❌ CRITICAL: Google OAuth returned HTTP $AUTH_CODE instead of 302!"
+              exit 1
+            fi
+            echo "✅ Google OAuth endpoint responded HTTP 302 redirect."
+
+            # 7e. Kiểm tra GoTrue Schema Scan Integrity (Không được có NULL trong auth.users email_change)
+            echo "🔍 [Check 5/5] Verifying GoTrue auth.users NULL-safety scan..."
+            NULL_USERS=$(docker exec -e PGPASSWORD=6e7801c38c7a835ff234849259f3689a supabase-db psql -h 127.0.0.1 -U supabase_admin -d postgres -t -A -c "SELECT count(*) FROM auth.users WHERE email_change IS NULL;")
+            if [ "$NULL_USERS" != "0" ]; then
+              echo "❌ CRITICAL: Detected $NULL_USERS users with NULL email_change in auth.users!"
+              exit 1
+            fi
+            echo "✅ GoTrue schema null-safety verified (0 nulls)."
+
+            echo "======================================================"
+            echo "🎉 ALL POST-DEPLOYMENT SMOKE TESTS PASSED (5/5)!"
+            echo "✅ Deployment finished and verified successfully!"
+            echo "======================================================"
