@@ -1,101 +1,101 @@
-# WIP Registry â€” PhÃ¢n chia viá»‡c giá»¯a NgÆ°á»i vÃ  AI
+# WIP Registry Ã¢â‚¬â€ PhÃƒÂ¢n chia viÃ¡Â»â€¡c giÃ¡Â»Â¯a NgÃ†Â°Ã¡Â»Âi vÃƒÂ  AI
 
-> **Má»¥c Ä‘Ã­ch:** má»™t nguá»“n sá»± tháº­t duy nháº¥t tráº£ lá»i _"viá»‡c nÃ y ai Ä‘ang lÃ m?"_ vÃ  _"cÃ³ Ä‘ang bá»‹ Ä‘á»¥ng trÃ¹ng khÃ´ng?"_.
-> KhÃ´ng cÃ³ file nÃ y, hai bÃªn dá»… cÃ¹ng sá»­a má»™t module, hoáº·c cÃ¹ng chá» nhau.
+> **MÃ¡Â»Â¥c Ã„â€˜ÃƒÂ­ch:** mÃ¡Â»â„¢t nguÃ¡Â»â€œn sÃ¡Â»Â± thÃ¡ÂºÂ­t duy nhÃ¡ÂºÂ¥t trÃ¡ÂºÂ£ lÃ¡Â»Âi _"viÃ¡Â»â€¡c nÃƒÂ y ai Ã„â€˜ang lÃƒÂ m?"_ vÃƒÂ  _"cÃƒÂ³ Ã„â€˜ang bÃ¡Â»â€¹ Ã„â€˜Ã¡Â»Â¥ng trÃƒÂ¹ng khÃƒÂ´ng?"_.
+> KhÃƒÂ´ng cÃƒÂ³ file nÃƒÂ y, hai bÃƒÂªn dÃ¡Â»â€¦ cÃƒÂ¹ng sÃ¡Â»Â­a mÃ¡Â»â„¢t module, hoÃ¡ÂºÂ·c cÃƒÂ¹ng chÃ¡Â»Â nhau.
 >
-> Cáº­p nháº­t file nÃ y **trÆ°á»›c khi** báº¯t Ä‘áº§u má»™t viá»‡c, khÃ´ng pháº£i sau.
+> CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t file nÃƒÂ y **trÃ†Â°Ã¡Â»â€ºc khi** bÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u mÃ¡Â»â„¢t viÃ¡Â»â€¡c, khÃƒÂ´ng phÃ¡ÂºÂ£i sau.
 
 ---
 
-## 1. Quy Æ°á»›c nháº­n biáº¿t viá»‡c cá»§a AI
+## 1. Quy Ã†Â°Ã¡Â»â€ºc nhÃ¡ÂºÂ­n biÃ¡ÂºÂ¿t viÃ¡Â»â€¡c cÃ¡Â»Â§a AI
 
-Cá»™t `author` trÃªn GitHub luÃ´n hiá»‡n chá»§ token Ä‘Ã£ push, nÃªn **khÃ´ng** dÃ¹ng nÃ³ Ä‘á»ƒ phÃ¢n biá»‡t. DÃ¹ng 3 dáº¥u hiá»‡u sau:
+CÃ¡Â»â„¢t `author` trÃƒÂªn GitHub luÃƒÂ´n hiÃ¡Â»â€¡n chÃ¡Â»Â§ token Ã„â€˜ÃƒÂ£ push, nÃƒÂªn **khÃƒÂ´ng** dÃƒÂ¹ng nÃƒÂ³ Ã„â€˜Ã¡Â»Æ’ phÃƒÂ¢n biÃ¡Â»â€¡t. DÃƒÂ¹ng 3 dÃ¡ÂºÂ¥u hiÃ¡Â»â€¡u sau:
 
-| Dáº¥u hiá»‡u      | GiÃ¡ trá»‹ cá»§a AI                                   |
-| ----------------- | ----------------------------------------------------- |
-| Label PR          | `ai:openhands`                                        |
-| Tiá»n tá»‘ branch | `ai/`                                                 |
-| Commit trailer    | `Co-authored-by: openhands <openhands@all-hands.dev>` |
-| Commit author     | `openhands <openhands@all-hands.dev>`                 |
+| DÃ¡ÂºÂ¥u hiÃ¡Â»â€¡u      | GiÃƒÂ¡ trÃ¡Â»â€¹ cÃ¡Â»Â§a AI                          |
+| ------------------------ | ----------------------------------------------------- |
+| Label PR                 | `ai:openhands`                                        |
+| TiÃ¡Â»Ân tÃ¡Â»â€˜ branch | `ai/`                                                 |
+| Commit trailer           | `Co-authored-by: openhands <openhands@all-hands.dev>` |
+| Commit author            | `openhands <openhands@all-hands.dev>`                 |
 
-Lá»c nhanh:
+LÃ¡Â»Âc nhanh:
 
 ```bash
-gh pr list --label ai:openhands        # má»i PR do AI má»Ÿ
-gh pr list --label wip                 # viá»‡c AI Ä‘ang lÃ m dá»Ÿ, chÆ°a merge-ready
+gh pr list --label ai:openhands        # mÃ¡Â»Âi PR do AI mÃ¡Â»Å¸
+gh pr list --label wip                 # viÃ¡Â»â€¡c AI Ã„â€˜ang lÃƒÂ m dÃ¡Â»Å¸, chÃ†Â°a merge-ready
 ```
 
 ---
 
-## 2. Quy táº¯c vÃ¹ng sá»Ÿ há»¯u (Ownership)
+## 2. Quy tÃ¡ÂºÂ¯c vÃƒÂ¹ng sÃ¡Â»Å¸ hÃ¡Â»Â¯u (Ownership)
 
-Má»™t module táº¡i má»™t thá»i Ä‘iá»ƒm **chá»‰ cÃ³ má»™t chá»§**. Chá»§ sá»Ÿ há»¯u lÃ  bÃªn Ä‘ang cÃ³ branch má»Ÿ Ä‘á»¥ng module Ä‘Ã³.
+MÃ¡Â»â„¢t module tÃ¡ÂºÂ¡i mÃ¡Â»â„¢t thÃ¡Â»Âi Ã„â€˜iÃ¡Â»Æ’m **chÃ¡Â»â€° cÃƒÂ³ mÃ¡Â»â„¢t chÃ¡Â»Â§**. ChÃ¡Â»Â§ sÃ¡Â»Å¸ hÃ¡Â»Â¯u lÃƒÂ  bÃƒÂªn Ã„â€˜ang cÃƒÂ³ branch mÃ¡Â»Å¸ Ã„â€˜Ã¡Â»Â¥ng module Ã„â€˜ÃƒÂ³.
 
-| VÃ¹ng                                                            | Chá»§                    | Ghi chÃº                                                                                      |
-| ---------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------- |
-| `src/features/chat/**`                                           | AI                       | Module chat. Äang trong giai Ä‘oáº¡n cá»§ng cá»‘ Zero Message Loss.                           |
-| `src/application/chat/**`, `src/api/chat.api.ts`                 | AI                       | Táº§ng application/API cá»§a chat.                                                            |
-| `src/shared/lib/chat-*.ts`                                       | AI                       | Offline queue, typing indicator cá»§a chat.                                                   |
-| `supabase/migrations/**`                                         | **NgÆ°á»i**              | Migration khÃ´ng sá»­a file Ä‘Ã£ push. AI chá»‰ táº¡o file má»›i khi Ä‘Æ°á»£c yÃªu cáº§u.     |
-| `.github/workflows/**`, `.husky/**`                              | **NgÆ°á»i**              | Háº¡ táº§ng CI. AI khÃ´ng Ä‘Æ°a vÃ o commit tÃ­nh nÄƒng (xem `AGENT.md`).                     |
-| `AI_WORKFLOW.md`, `.erp-rules.md`, `AI_CHECKLIST.md`, `AGENT.md` | **Cáº§n thoáº£ thuáº­n** | Bá»™ tÃ i liá»‡u governance ná»n táº£ng. Sá»­a qua PR `chore(workflow)` riÃªng, khÃ´ng gá»™p. |
-| `src/features/auth/**`                                           | **AI** (Táº¡m thá»i)     | ÄÃ£ má»Ÿ Gate 2 (APPROVE PHASE 3): Triá»ƒn khai Passkeys / WebAuthn UI & Hook.                |
-| CÃ¡c module cÃ²n láº¡i trong `src/features/`                     | **ChÆ°a Ä‘Äƒng kÃ½**     | Ai báº¯t Ä‘áº§u thÃ¬ Ä‘Äƒng kÃ½ vÃ o Â§3 trÆ°á»›c.                                            |
+| VÃƒÂ¹ng                                                          | ChÃ¡Â»Â§                          | Ghi chÃƒÂº                                                                                                                  |
+| ---------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/chat/**`                                           | AI                                | Module chat. Ã„Âang trong giai Ã„â€˜oÃ¡ÂºÂ¡n cÃ¡Â»Â§ng cÃ¡Â»â€˜ Zero Message Loss.                                          |
+| `src/application/chat/**`, `src/api/chat.api.ts`                 | AI                                | TÃ¡ÂºÂ§ng application/API cÃ¡Â»Â§a chat.                                                                                    |
+| `src/shared/lib/chat-*.ts`                                       | AI                                | Offline queue, typing indicator cÃ¡Â»Â§a chat.                                                                              |
+| `supabase/migrations/**`                                         | **NgÃ†Â°Ã¡Â»Âi**                  | Migration khÃƒÂ´ng sÃ¡Â»Â­a file Ã„â€˜ÃƒÂ£ push. AI chÃ¡Â»â€° tÃ¡ÂºÂ¡o file mÃ¡Â»â€ºi khi Ã„â€˜Ã†Â°Ã¡Â»Â£c yÃƒÂªu cÃ¡ÂºÂ§u. |
+| `.github/workflows/**`, `.husky/**`                              | **NgÃ†Â°Ã¡Â»Âi**                  | HÃ¡ÂºÂ¡ tÃ¡ÂºÂ§ng CI. AI khÃƒÂ´ng Ã„â€˜Ã†Â°a vÃƒÂ o commit tÃƒÂ­nh nÃ„Æ’ng (xem `AGENT.md`).                                |
+| `AI_WORKFLOW.md`, `.erp-rules.md`, `AI_CHECKLIST.md`, `AGENT.md` | **CÃ¡ÂºÂ§n thoÃ¡ÂºÂ£ thuÃ¡ÂºÂ­n** | BÃ¡Â»â„¢ tÃƒÂ i liÃ¡Â»â€¡u governance nÃ¡Â»Ân tÃ¡ÂºÂ£ng. SÃ¡Â»Â­a qua PR `chore(workflow)` riÃƒÂªng, khÃƒÂ´ng gÃ¡Â»â„¢p.    |
+| `src/features/auth/**`                                           | **AI** (TÃ¡ÂºÂ¡m thÃ¡Â»Âi)        | Ã„ÂÃƒÂ£ mÃ¡Â»Å¸ Gate 2 (APPROVE PHASE 3): TriÃ¡Â»Æ’n khai Passkeys / WebAuthn UI & Hook.                                    |
+| CÃƒÂ¡c module cÃƒÂ²n lÃ¡ÂºÂ¡i trong `src/features/`              | **ChÃ†Â°a Ã„â€˜Ã„Æ’ng kÃƒÂ½**     | Ai bÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u thÃƒÂ¬ Ã„â€˜Ã„Æ’ng kÃƒÂ½ vÃƒÂ o Ã‚Â§3 trÃ†Â°Ã¡Â»â€ºc.                                              |
 
-**Náº¿u báº¯t Ä‘áº§u viá»‡c Ä‘á»¥ng vÃ¹ng Ä‘Ã£ cÃ³ chá»§:** dá»«ng láº¡i, Ä‘á»ƒ chá»§ cÅ© xá»­ lÃ½, hoáº·c Ä‘Äƒng kÃ½ chuyá»ƒn chá»§ vÃ o Â§3.
-
----
-
-## 3. Viá»‡c Ä‘ang lÃ m
-
-| Viá»‡c                                             | Chá»§ | Branch                     | Tráº¡ng thÃ¡i        | PR  |
-| -------------------------------------------------- | ----- | -------------------------- | -------------------- | --- |
-| Registry phÃ¢n chia viá»‡c                         | AI    | `ai/docs-wip-registry`     | Ä‘ang lÃ m           | â€” |
-| Passkeys / WebAuthn tá»± lÆ°u trá»¯ (Phase 2 Core) | AI    | `ai/passkey-webauthn-auth` | Ä‘ang lÃ m (Phase 2) | â€” |
-
-> Äiá»n vÃ o báº£ng nÃ y trÆ°á»›c khi táº¡o branch. XoÃ¡ dÃ²ng khi PR Ä‘Ã£ merge.
+**NÃ¡ÂºÂ¿u bÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u viÃ¡Â»â€¡c Ã„â€˜Ã¡Â»Â¥ng vÃƒÂ¹ng Ã„â€˜ÃƒÂ£ cÃƒÂ³ chÃ¡Â»Â§:** dÃ¡Â»Â«ng lÃ¡ÂºÂ¡i, Ã„â€˜Ã¡Â»Æ’ chÃ¡Â»Â§ cÃ…Â© xÃ¡Â»Â­ lÃƒÂ½, hoÃ¡ÂºÂ·c Ã„â€˜Ã„Æ’ng kÃƒÂ½ chuyÃ¡Â»Æ’n chÃ¡Â»Â§ vÃƒÂ o Ã‚Â§3.
 
 ---
 
-## 4. Viá»‡c Ä‘ang chá» Gate
+## 3. ViÃ¡Â»â€¡c Ã„â€˜ang lÃƒÂ m
 
-Tráº¡ng thÃ¡i `wip` + `draft` nghÄ©a lÃ  **chÆ°a merge-ready**. Gate chá»‰ má»Ÿ báº±ng token chÃ­nh xÃ¡c trong `AI_WORKFLOW.md` Â§1.1.
+| ViÃ¡Â»â€¡c                                                 | ChÃ¡Â»Â§ | Branch                     | TrÃ¡ÂºÂ¡ng thÃƒÂ¡i        | PR      |
+| ---------------------------------------------------------- | -------- | -------------------------- | ------------------------- | ------- |
+| Registry phÃƒÂ¢n chia viÃ¡Â»â€¡c                           | AI       | `ai/docs-wip-registry`     | Ã„â€˜ang lÃƒÂ m           | Ã¢â‚¬â€ |
+| Passkeys / WebAuthn tÃ¡Â»Â± lÃ†Â°u trÃ¡Â»Â¯ (Phase 2 Core) | AI       | `ai/passkey-webauthn-auth` | Ã„â€˜ang lÃƒÂ m (Phase 2) | Ã¢â‚¬â€ |
 
-| PR  | Viá»‡c | Chá»§ | Gate Ä‘ang chá» | Token cáº§n |
-| --- | ------ | ----- | --------------- | ----------- |
-| â€” | â€”    | â€”   | â€”             | â€”         |
-
----
-
-## 5. ÄÃ£ xong (lÆ°u ngáº¯n háº¡n)
-
-Chá»‰ giá»¯ cÃ¡c má»¥c gáº§n Ä‘Ã¢y; pháº§n lá»‹ch sá»­ xa náº±m á»Ÿ git log.
-
-| Viá»‡c                                       | Chá»§ | PR                                                             | Merge commit |
-| -------------------------------------------- | ----- | -------------------------------------------------------------- | ------------ |
-| Fix chat: tráº¡ng thÃ¡i `failed` giá»¯ retry | AI    | [#12](https://github.com/vutienluc-gitgub/VinhPhatERP/pull/12) | `5c24abe`    |
-| Cáº£nh bÃ¡o stale-snapshot CI (AGENT.md)     | AI    | [#3](https://github.com/vutienluc-gitgub/VinhPhatERP/pull/3)   | `13bb8ae`    |
+> Ã„ÂiÃ¡Â»Ân vÃƒÂ o bÃ¡ÂºÂ£ng nÃƒÂ y trÃ†Â°Ã¡Â»â€ºc khi tÃ¡ÂºÂ¡o branch. XoÃƒÂ¡ dÃƒÂ²ng khi PR Ã„â€˜ÃƒÂ£ merge.
 
 ---
 
-## 6. Rá»§i ro chÆ°a xá»­ lÃ½
+## 4. ViÃ¡Â»â€¡c Ã„â€˜ang chÃ¡Â»Â Gate
 
-| Rá»§i ro                                           | Má»©c | Ghi chÃº                                                                                                                                                                         |
-| -------------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `main` khÃ´ng Ä‘Æ°á»£c báº£o vá»‡                  | Cao   | `protected: false`. KhÃ´ng required checks, khÃ´ng cáº¥m force-push. Cáº§n báº­t á»Ÿ Settings â†’ Branches.                                                                      |
-| `rpc:check` khÃ´ng Ä‘Æ°á»£c enforce                | Vá»«a | Local cáº§n `DATABASE_URL`; job CI `rpc-sync` bá»‹ `skipped` theo cáº¥u hÃ¬nh. Guard tá»“n táº¡i nhÆ°ng khÃ´ng cháº¡y.                                                           |
-| PR #2 (`perf(chat)` cá»§a bot `google-labs-jules`) | Vá»«a | Conflict vá»›i `main` á»Ÿ `server/src/index.ts`, `AI_WORKFLOW.md`, `src/application/chat/useChat.ts`. Äá»¥ng vÃ¹ng chat do AI sá»Ÿ há»¯u â†’ cáº§n AI review trÆ°á»›c khi merge. |
+TrÃ¡ÂºÂ¡ng thÃƒÂ¡i `wip` + `draft` nghÃ„Â©a lÃƒÂ  **chÃ†Â°a merge-ready**. Gate chÃ¡Â»â€° mÃ¡Â»Å¸ bÃ¡ÂºÂ±ng token chÃƒÂ­nh xÃƒÂ¡c trong `AI_WORKFLOW.md` Ã‚Â§1.1.
+
+| PR      | ViÃ¡Â»â€¡c | ChÃ¡Â»Â§ | Gate Ã„â€˜ang chÃ¡Â»Â | Token cÃ¡ÂºÂ§n |
+| ------- | ---------- | -------- | --------------------- | -------------- |
+| Ã¢â‚¬â€ | Ã¢â‚¬â€    | Ã¢â‚¬â€  | Ã¢â‚¬â€               | Ã¢â‚¬â€        |
 
 ---
 
-## 7. CÃ¡ch dÃ¹ng file nÃ y
+## 5. Ã„ÂÃƒÂ£ xong (lÃ†Â°u ngÃ¡ÂºÂ¯n hÃ¡ÂºÂ¡n)
 
-**TrÆ°á»›c khi báº¯t Ä‘áº§u viá»‡c:**
+ChÃ¡Â»â€° giÃ¡Â»Â¯ cÃƒÂ¡c mÃ¡Â»Â¥c gÃ¡ÂºÂ§n Ã„â€˜ÃƒÂ¢y; phÃ¡ÂºÂ§n lÃ¡Â»â€¹ch sÃ¡Â»Â­ xa nÃ¡ÂºÂ±m Ã¡Â»Å¸ git log.
 
-1. Äá»c Â§2 â€” vÃ¹ng mÃ¬nh Ä‘á»‹nh Ä‘á»¥ng cÃ³ chá»§ chÆ°a?
-2. CÃ³ rá»“i â†’ liÃªn há»‡ chá»§ cÅ©, hoáº·c Ä‘á» xuáº¥t chuyá»ƒn chá»§.
-3. ChÆ°a cÃ³ â†’ thÃªm dÃ²ng vÃ o Â§3, ghi rÃµ branch.
+| ViÃ¡Â»â€¡c                                           | ChÃ¡Â»Â§ | PR                                                             | Merge commit |
+| ---------------------------------------------------- | -------- | -------------------------------------------------------------- | ------------ |
+| Fix chat: trÃ¡ÂºÂ¡ng thÃƒÂ¡i `failed` giÃ¡Â»Â¯ retry | AI       | [#12](https://github.com/vutienluc-gitgub/VinhPhatERP/pull/12) | `5c24abe`    |
+| CÃ¡ÂºÂ£nh bÃƒÂ¡o stale-snapshot CI (AGENT.md)        | AI       | [#3](https://github.com/vutienluc-gitgub/VinhPhatERP/pull/3)   | `13bb8ae`    |
 
-**Khi má»Ÿ PR:** chuyá»ƒn dÃ²ng tá»« Â§3 sang Â§4 (náº¿u chá» Gate) hoáº·c Â§5 (khi Ä‘Ã£ merge). KhÃ´ng Ä‘á»ƒ dÃ²ng má»“ cÃ´i.
+---
 
-**Khi phÃ¡t hiá»‡n rá»§i ro:** thÃªm vÃ o Â§6. Rá»§i ro khÃ´ng xá»­ lÃ½ Ä‘Æ°á»£c ngay váº«n pháº£i Ä‘Æ°á»£c ghi láº¡i â€” im láº·ng lÃ  cÃ¡ch nÃ³ biáº¿n thÃ nh sá»± cá»‘.
+## 6. RÃ¡Â»Â§i ro chÃ†Â°a xÃ¡Â»Â­ lÃƒÂ½
+
+| RÃ¡Â»Â§i ro                                           | MÃ¡Â»Â©c | Ghi chÃƒÂº                                                                                                                                                                                                         |
+| ----------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `main` khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c bÃ¡ÂºÂ£o vÃ¡Â»â€¡    | Cao      | `protected: false`. KhÃƒÂ´ng required checks, khÃƒÂ´ng cÃ¡ÂºÂ¥m force-push. CÃ¡ÂºÂ§n bÃ¡ÂºÂ­t Ã¡Â»Å¸ Settings Ã¢â€ â€™ Branches.                                                                                   |
+| `rpc:check` khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c enforce         | VÃ¡Â»Â«a | Local cÃ¡ÂºÂ§n `DATABASE_URL`; job CI `rpc-sync` bÃ¡Â»â€¹ `skipped` theo cÃ¡ÂºÂ¥u hÃƒÂ¬nh. Guard tÃ¡Â»â€œn tÃ¡ÂºÂ¡i nhÃ†Â°ng khÃƒÂ´ng chÃ¡ÂºÂ¡y.                                                                   |
+| PR #2 (`perf(chat)` cÃ¡Â»Â§a bot `google-labs-jules`) | VÃ¡Â»Â«a | Conflict vÃ¡Â»â€ºi `main` Ã¡Â»Å¸ `server/src/index.ts`, `AI_WORKFLOW.md`, `src/application/chat/useChat.ts`. Ã„ÂÃ¡Â»Â¥ng vÃƒÂ¹ng chat do AI sÃ¡Â»Å¸ hÃ¡Â»Â¯u Ã¢â€ â€™ cÃ¡ÂºÂ§n AI review trÃ†Â°Ã¡Â»â€ºc khi merge. |
+
+---
+
+## 7. CÃƒÂ¡ch dÃƒÂ¹ng file nÃƒÂ y
+
+**TrÃ†Â°Ã¡Â»â€ºc khi bÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u viÃ¡Â»â€¡c:**
+
+1. Ã„ÂÃ¡Â»Âc Ã‚Â§2 Ã¢â‚¬â€ vÃƒÂ¹ng mÃƒÂ¬nh Ã„â€˜Ã¡Â»â€¹nh Ã„â€˜Ã¡Â»Â¥ng cÃƒÂ³ chÃ¡Â»Â§ chÃ†Â°a?
+2. CÃƒÂ³ rÃ¡Â»â€œi Ã¢â€ â€™ liÃƒÂªn hÃ¡Â»â€¡ chÃ¡Â»Â§ cÃ…Â©, hoÃ¡ÂºÂ·c Ã„â€˜Ã¡Â»Â xuÃ¡ÂºÂ¥t chuyÃ¡Â»Æ’n chÃ¡Â»Â§.
+3. ChÃ†Â°a cÃƒÂ³ Ã¢â€ â€™ thÃƒÂªm dÃƒÂ²ng vÃƒÂ o Ã‚Â§3, ghi rÃƒÂµ branch.
+
+**Khi mÃ¡Â»Å¸ PR:** chuyÃ¡Â»Æ’n dÃƒÂ²ng tÃ¡Â»Â« Ã‚Â§3 sang Ã‚Â§4 (nÃ¡ÂºÂ¿u chÃ¡Â»Â Gate) hoÃ¡ÂºÂ·c Ã‚Â§5 (khi Ã„â€˜ÃƒÂ£ merge). KhÃƒÂ´ng Ã„â€˜Ã¡Â»Æ’ dÃƒÂ²ng mÃ¡Â»â€œ cÃƒÂ´i.
+
+**Khi phÃƒÂ¡t hiÃ¡Â»â€¡n rÃ¡Â»Â§i ro:** thÃƒÂªm vÃƒÂ o Ã‚Â§6. RÃ¡Â»Â§i ro khÃƒÂ´ng xÃ¡Â»Â­ lÃƒÂ½ Ã„â€˜Ã†Â°Ã¡Â»Â£c ngay vÃ¡ÂºÂ«n phÃ¡ÂºÂ£i Ã„â€˜Ã†Â°Ã¡Â»Â£c ghi lÃ¡ÂºÂ¡i Ã¢â‚¬â€ im lÃ¡ÂºÂ·ng lÃƒÂ  cÃƒÂ¡ch nÃƒÂ³ biÃ¡ÂºÂ¿n thÃƒÂ nh sÃ¡Â»Â± cÃ¡Â»â€˜.
