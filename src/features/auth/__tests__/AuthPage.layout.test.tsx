@@ -81,7 +81,7 @@ describe('Auth Mobile Layout & Order Reproduction Tests', () => {
     ).toBeTruthy();
   });
 
-  it('reproduces failure: Forgot password button should prevent text truncation with whitespace-nowrap or shrink-0', () => {
+  it('allows the forgot-password button to wrap instead of forcing horizontal overflow', () => {
     render(
       <MemoryRouter>
         <LoginForm onForgotPassword={vi.fn()} />
@@ -89,7 +89,50 @@ describe('Auth Mobile Layout & Order Reproduction Tests', () => {
     );
 
     const forgotBtn = screen.getByRole('button', { name: /quên mật khẩu/i });
-    expect(forgotBtn.className).toMatch(/whitespace-nowrap|shrink-0/);
+    // shrink-0 + whitespace-nowrap forced the button's min-content width onto the
+    // card, clipping it on narrow viewports / large accessibility font sizes.
+    expect(forgotBtn.className).not.toMatch(/\bwhitespace-nowrap\b/);
+    expect(forgotBtn.className).not.toMatch(/\bshrink-0\b/);
+
+    // The remember/forgot row must be allowed to wrap on narrow screens.
+    const row = forgotBtn.parentElement as HTMLElement;
+    expect(row.className).toMatch(/\bflex-wrap\b/);
+
+    // "Ghi nhớ" label must not rely on truncate for its intrinsic width.
+    const remember = screen.getByText(/ghi nhớ/i);
+    expect(remember.className).not.toMatch(/\btruncate\b/);
+  });
+
+  it('reduces card padding and tablist spacing on narrow viewports', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <AuthPage />
+      </MemoryRouter>,
+    );
+
+    const card = container.querySelector('.rounded-3xl') as HTMLElement;
+    expect(card.className).toContain('p-4');
+    expect(card.className).toContain('sm:p-10');
+    expect(card.className).not.toContain('p-6');
+
+    const tablist = screen.getByRole('tablist');
+    expect(tablist.className).toContain('p-0.5');
+    expect(tablist.className).toContain('sm:p-1');
+  });
+
+  it('hides decorative tab icons at the narrowest breakpoint to protect min-content width', () => {
+    render(
+      <MemoryRouter>
+        <LoginForm />
+      </MemoryRouter>,
+    );
+
+    const tabs = screen.getAllByRole('tab');
+    for (const tab of tabs) {
+      const icon = tab.querySelector('svg');
+      expect(icon?.getAttribute('class')).toContain('max-[359px]:hidden');
+      expect(icon?.getAttribute('aria-hidden')).toBe('true');
+    }
   });
 
   it('prevents horizontal overflow: auth tabs must be allowed to shrink below their content width', () => {

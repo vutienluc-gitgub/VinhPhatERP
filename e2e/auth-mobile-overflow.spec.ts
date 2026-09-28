@@ -90,3 +90,58 @@ for (const width of VIEWPORTS) {
     expect(metrics.sizes).toContain('compact');
   });
 }
+
+/**
+ * Regression: large accessibility font sizes (iOS/Android text scaling,
+ * browser zoom) must not reintroduce horizontal overflow. The card's
+ * min-content width scales with the root font size, so a viewport that is fine
+ * at 100% can still clip at 125–150%.
+ */
+const FONT_SCALES = [
+  { rootPx: 20, label: '125%' },
+  { rootPx: 24, label: '150%' },
+];
+
+for (const width of VIEWPORTS) {
+  for (const { rootPx, label } of FONT_SCALES) {
+    test(`auth card does not overflow @ ${width}px / root ${label}`, async ({
+      page,
+    }) => {
+      await mockTurnstile(page);
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/auth', { waitUntil: 'domcontentloaded' });
+
+      await page.addStyleTag({
+        content: `html { font-size: ${rootPx}px !important; }`,
+      });
+      await page.fill('input#email', 'user@example.com');
+      await page.waitForSelector('.turnstile-wrapper > div', {
+        timeout: 10_000,
+      });
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(200);
+
+      const metrics = await page.evaluate(() => {
+        let maxRight = 0;
+        let culprit = '';
+        document.querySelectorAll('*').forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          if (rect.width > 0 && rect.right > maxRight) {
+            maxRight = rect.right;
+            culprit = `${el.tagName.toLowerCase()}.${String(el.className).slice(0, 80)}`;
+          }
+        });
+        return {
+          innerW: window.innerWidth,
+          maxRight: Math.round(maxRight),
+          culprit,
+        };
+      });
+
+      expect(
+        metrics.maxRight,
+        `Element overflows viewport at ${width}px / root ${label}: ${metrics.culprit}`,
+      ).toBeLessThanOrEqual(metrics.innerW + 1);
+    });
+  }
+}

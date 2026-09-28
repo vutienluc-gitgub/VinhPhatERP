@@ -73,4 +73,26 @@ describe('<BrandLogo /> Component', () => {
     });
     expect(logoContainer).toBeInTheDocument();
   });
+
+  it('keeps the company name on one line by default', () => {
+    render(<BrandLogo layout="full" />);
+
+    expect(screen.getByText(BRAND_INFO.COMPANY_NAME).className).toContain(
+      'whitespace-nowrap',
+    );
+    expect(screen.getByText(BRAND_INFO.SLOGAN).className).toContain(
+      'whitespace-nowrap',
+    );
+  });
+
+  it('allows the wordmark and slogan to wrap when textWrap is enabled', () => {
+    render(<BrandLogo layout="full" textWrap />);
+
+    expect(screen.getByText(BRAND_INFO.COMPANY_NAME).className).not.toContain(
+      'whitespace-nowrap',
+    );
+    expect(screen.getByText(BRAND_INFO.SLOGAN).className).not.toContain(
+      'whitespace-nowrap',
+    );
+  });
 });

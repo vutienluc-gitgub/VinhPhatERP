@@ -30,6 +30,8 @@ export interface BrandLogoProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: number | string;
   /** Kèm tiêu đề truy cập a11y */
   alt?: string;
+  /** Cho phép tên công ty/slogan xuống dòng (dùng cho layout hẹp, cỡ chữ lớn) */
+  textWrap?: boolean;
 }
 
 export const BrandLogo = React.memo(function BrandLogo({
@@ -43,6 +45,7 @@ export const BrandLogo = React.memo(function BrandLogo({
   size,
   className,
   alt = 'Logo Dệt May Vĩnh Phát',
+  textWrap = false,
   ...restProps
 }: BrandLogoProps) {
   // Xác định màu sắc biểu tượng icon theo quy chuẩn v3.0
@@ -145,7 +148,8 @@ export const BrandLogo = React.memo(function BrandLogo({
         >
           <span
             className={cn(
-              'font-black tracking-tight uppercase whitespace-nowrap',
+              'font-black tracking-tight uppercase',
+              !textWrap && 'whitespace-nowrap',
               layout === 'full'
                 ? 'text-base sm:text-lg'
                 : 'text-sm sm:text-base',
@@ -158,7 +162,8 @@ export const BrandLogo = React.memo(function BrandLogo({
           {layout === 'full' && (
             <span
               className={cn(
-                'text-xs tracking-normal font-medium mt-0.5 whitespace-nowrap',
+                'text-xs tracking-normal font-medium mt-0.5',
+                !textWrap && 'whitespace-nowrap',
                 sloganColorClass,
               )}
             >

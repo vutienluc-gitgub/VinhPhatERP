@@ -109,10 +109,10 @@ export function AuthPage() {
           <div className="absolute top-0 right-0 w-full h-[50%] bg-primary/10 blur-[100px]" />
         </div>
 
-        <div className="w-full max-w-[400px] mx-auto relative z-10">
+        <div className="w-full max-w-[400px] min-w-0 mx-auto relative z-10">
           <AuthBrandLogo layout="col" />
 
-          <div className="bg-surface/5 backdrop-blur-2xl border border-transparent/10 rounded-3xl p-6 sm:p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="bg-surface/5 backdrop-blur-2xl border border-transparent/10 rounded-3xl p-4 sm:p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
             {mode === 'login' && (
               <>
                 <LoginForm
@@ -165,7 +165,13 @@ function AuthBrandLogo({ layout = 'row' }: AuthBrandLogoProps) {
   if (layout === 'col') {
     return (
       <div className="lg:hidden mb-8 flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-500">
-        <BrandLogo layout="full" orientation="col" variant="negative" />
+        <BrandLogo
+          layout="full"
+          orientation="col"
+          variant="negative"
+          textWrap
+          className="max-w-full"
+        />
       </div>
     );
   }

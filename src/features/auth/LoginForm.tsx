@@ -102,7 +102,7 @@ export function LoginForm({
       <div
         role="tablist"
         aria-label={AUTH_LABELS.authMethodTabList}
-        className="flex p-1 bg-foreground/10 rounded-xl border border-transparent/10"
+        className="flex p-0.5 sm:p-1 bg-foreground/10 rounded-xl border border-transparent/10"
       >
         <button
           role="tab"
@@ -112,13 +112,17 @@ export function LoginForm({
             setAuthMode('passkey');
             setServerError(null);
           }}
-          className={`flex-1 min-w-0 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+          className={`flex-1 min-w-0 flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
             authMode === 'passkey'
               ? 'bg-[#6366f1] text-on-dark-foreground shadow-md'
               : 'text-on-dark-foreground/60 hover:text-on-dark-foreground'
           }`}
         >
-          <Icon name="Fingerprint" size={16} className="shrink-0" />
+          <Icon
+            name="Fingerprint"
+            size={16}
+            className="shrink-0 max-[359px]:hidden"
+          />
           <span className="min-w-0 leading-tight">
             {AUTH_LABELS.passkeyTabPasskey}
           </span>
@@ -131,13 +135,17 @@ export function LoginForm({
             setAuthMode('password');
             setServerError(null);
           }}
-          className={`flex-1 min-w-0 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+          className={`flex-1 min-w-0 flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
             authMode === 'password'
               ? 'bg-[#6366f1] text-on-dark-foreground shadow-md'
               : 'text-on-dark-foreground/60 hover:text-on-dark-foreground'
           }`}
         >
-          <Icon name="KeyRound" size={16} className="shrink-0" />
+          <Icon
+            name="KeyRound"
+            size={16}
+            className="shrink-0 max-[359px]:hidden"
+          />
           <span className="min-w-0 leading-tight">
             {AUTH_LABELS.passkeyTabPassword}
           </span>
@@ -224,7 +232,7 @@ export function LoginForm({
             </div>
 
             {/* Remember + Forgot */}
-            <div className="flex items-center justify-between gap-2 px-1">
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 px-1">
               <label
                 htmlFor="rememberMe"
                 className="flex items-center gap-2 min-w-0 min-h-[44px] py-1 cursor-pointer select-none"
@@ -236,7 +244,7 @@ export function LoginForm({
                   className="w-4 h-4 rounded border-transparent/20 bg-foreground/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                   {...register('rememberMe')}
                 />
-                <span className="text-sm text-on-dark-foreground/75 truncate">
+                <span className="text-sm text-on-dark-foreground/75">
                   {AUTH_LABELS.rememberMe}
                 </span>
               </label>
@@ -246,7 +254,7 @@ export function LoginForm({
                   type="button"
                   onClick={onForgotPassword}
                   disabled={isLocked}
-                  className="text-[#818cf8] hover:text-on-dark-foreground text-sm font-medium transition-colors min-h-[44px] py-1 flex items-center disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap cursor-pointer"
+                  className="text-[#818cf8] hover:text-on-dark-foreground text-sm font-medium transition-colors min-h-[44px] py-1 flex items-center text-left disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {AUTH_LABELS.forgotPassword}
                 </button>
