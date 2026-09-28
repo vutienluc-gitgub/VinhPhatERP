@@ -1,7 +1,8 @@
-﻿import {
+import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
   type AuthenticationResponseJSON,
+  type AuthenticatorTransport,
 } from '@simplewebauthn/server';
 import { isoBase64URL } from '@simplewebauthn/server/helpers';
 
@@ -81,14 +82,18 @@ export class PasskeyAuthenticationService {
    */
   static async getLoginOptions(identifier?: string) {
     const { rpID } = getWebAuthnConfig();
-    let allowCredentials: { id: string; transports?: any[] }[] | undefined;
+    let allowCredentials:
+      | { id: string; transports?: AuthenticatorTransport[] }[]
+      | undefined;
     let userId: string | null = null;
     let employeeCode: string | null = null;
 
     if (identifier) {
       const user = await this.findUserByIdentifier(identifier);
       if (!user) {
-        throw new Error('Không tìm thấy tài khoản với mã định danh đã nhập.');
+        throw new Error(
+          'KhÃ´ng tÃ¬m tháº¥y tÃ i khoáº£n vá»›i mÃ£ Ä‘á»‹nh danh Ä‘Ã£ nháº­p.',
+        );
       }
 
       userId = user.userId;
@@ -101,7 +106,7 @@ export class PasskeyAuthenticationService {
 
       if (!creds || creds.length === 0) {
         throw new Error(
-          'Tài khoản này chưa đăng ký khóa Passkey. Vui lòng đăng nhập bằng mật khẩu hoặc Google trước.',
+          'TÃ i khoáº£n nÃ y chÆ°a Ä‘Äƒng kÃ½ khÃ³a Passkey. Vui lÃ²ng Ä‘Äƒng nháº­p báº±ng máº­t kháº©u hoáº·c Google trÆ°á»›c.',
         );
       }
 
@@ -142,7 +147,9 @@ export class PasskeyAuthenticationService {
       .maybeSingle();
 
     if (!cred) {
-      throw new Error('Khóa bảo mật không tồn tại hoặc đã bị thu hồi.');
+      throw new Error(
+        'KhÃ³a báº£o máº­t khÃ´ng tá»“n táº¡i hoáº·c Ä‘Ã£ bá»‹ thu há»“i.',
+      );
     }
 
     const { data: challengeRow } = await serverSupabase
@@ -155,7 +162,9 @@ export class PasskeyAuthenticationService {
       .maybeSingle();
 
     if (!challengeRow) {
-      throw new Error('Phiên xác thực đã hết hạn. Vui lòng thử lại.');
+      throw new Error(
+        'PhiÃªn xÃ¡c thá»±c Ä‘Ã£ háº¿t háº¡n. Vui lÃ²ng thá»­ láº¡i.',
+      );
     }
 
     const verification = await verifyAuthenticationResponse({
@@ -173,7 +182,7 @@ export class PasskeyAuthenticationService {
     });
 
     if (!verification.verified) {
-      throw new Error('Xác thực chữ ký Passkey không hợp lệ.');
+      throw new Error('XÃ¡c thá»±c chá»¯ kÃ½ Passkey khÃ´ng há»£p lá»‡.');
     }
 
     // Update counter & last_used_at

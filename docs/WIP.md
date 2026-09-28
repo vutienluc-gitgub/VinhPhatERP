@@ -1,4 +1,4 @@
-﻿# WIP Registry — Phân chia việc giữa Người và AI
+# WIP Registry — Phân chia việc giữa Người và AI
 
 > **Mục đích:** một nguồn sự thật duy nhất trả lời _"việc này ai đang làm?"_ và _"có đang bị đụng trùng không?"_.
 > Không có file này, hai bên dễ cùng sửa một module, hoặc cùng chờ nhau.
@@ -39,7 +39,7 @@ Một module tại một thời điểm **chỉ có một chủ**. Chủ sở h�
 | `supabase/migrations/**`                                         | **Người**          | Migration không sửa file đã push. AI chỉ tạo file mới khi được yêu cầu.         |
 | `.github/workflows/**`, `.husky/**`                              | **Người**          | Hạ tầng CI. AI không đưa vào commit tính năng (xem `AGENT.md`).                 |
 | `AI_WORKFLOW.md`, `.erp-rules.md`, `AI_CHECKLIST.md`, `AGENT.md` | **Cần thoả thuận** | Bộ tài liệu governance nền tảng. Sửa qua PR `chore(workflow)` riêng, không gộp. |
-| `src/features/auth/**`                                           | **AI** (Tạm thời)  | Đã mở Gate 1 (APPROVE PHASE 2): Triển khai Passkeys / WebAuthn tự lưu trữ.      |
+| `src/features/auth/**`                                           | **AI** (Tạm thời)  | Đã mở Gate 2 (APPROVE PHASE 3): Triển khai Passkeys / WebAuthn UI & Hook.       |
 | Các module còn lại trong `src/features/`                         | **Chưa đăng ký**   | Ai bắt đầu thì đăng ký vào §3 trước.                                            |
 
 **Nếu bắt đầu việc đụng vùng đã có chủ:** dừng lại, để chủ cũ xử lý, hoặc đăng ký chuyển chủ vào §3.

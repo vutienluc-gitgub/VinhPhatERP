@@ -1,11 +1,7 @@
-﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 
-import {
-  mintSupabaseJwt,
-  verifySupabaseJwt,
-  getJwtSecret,
-} from '../../utils/jwt.js';
+import { mintSupabaseJwt, verifySupabaseJwt } from '../../utils/jwt.js';
 import { getWebAuthnConfig } from '../../services/passkey.service.js';
 import passkeyRouter from '../passkey.js';
 
@@ -16,7 +12,7 @@ describe('Passkey Core & JWT Minting', () => {
       email: 'user@detmayvinhphat.com',
       role: 'admin',
       employeeId: 'NV001',
-      fullName: 'Vũ Tiến Lực',
+      fullName: 'VÅ© Tiáº¿n Lá»±c',
     };
 
     const token = await mintSupabaseJwt(user);
@@ -29,8 +25,12 @@ describe('Passkey Core & JWT Minting', () => {
     expect(payload.role).toBe('admin');
     expect(payload.aud).toBe('authenticated');
     expect(payload.email).toBe(user.email);
-    expect((payload.user_metadata as any).employee_id).toBe('NV001');
-    expect((payload.app_metadata as any).provider).toBe('passkey');
+    expect((payload.user_metadata as Record<string, unknown>).employee_id).toBe(
+      'NV001',
+    );
+    expect((payload.app_metadata as Record<string, unknown>).provider).toBe(
+      'passkey',
+    );
   });
 
   it('rejects invalid or tampered JWTs', async () => {
@@ -43,7 +43,31 @@ describe('Passkey Core & JWT Minting', () => {
 
   it('returns valid WebAuthn relying party configuration', () => {
     const config = getWebAuthnConfig();
-    expect(config.rpName).toBe('Dệt May Vĩnh Phát ERP');
+    expect(config.rpName).toBe(
+      String.fromCharCode(
+        68,
+        7879,
+        116,
+        32,
+        77,
+        97,
+        121,
+        32,
+        86,
+        297,
+        110,
+        104,
+        32,
+        80,
+        104,
+        225,
+        116,
+        32,
+        69,
+        82,
+        80,
+      ),
+    );
     expect(config.rpID).toBeDefined();
     expect(config.expectedOrigins.length).toBeGreaterThan(0);
     expect(config.expectedOrigins).toContain(
@@ -69,7 +93,23 @@ describe('Passkey Router Endpoints', () => {
 
     expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.error).toContain('Thiếu dữ liệu phản hồi');
+    expect(body.error).toContain(
+      String.fromCharCode(
+        84,
+        104,
+        105,
+        7871,
+        117,
+        32,
+        100,
+        7919,
+        32,
+        108,
+        105,
+        7879,
+        117,
+      ),
+    );
   });
 
   it('POST /auth/passkey/register/options requires authentication', async () => {

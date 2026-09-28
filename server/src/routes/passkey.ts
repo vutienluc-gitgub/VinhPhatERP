@@ -1,4 +1,4 @@
-﻿import { Hono } from 'hono';
+import { Hono } from 'hono';
 
 import { serverSupabase } from '../db/supabase.js';
 import { requireAuth } from '../middleware/auth.js';
@@ -22,8 +22,15 @@ passkeyRouter.post('/register/options', requireAuth, async (c) => {
   try {
     const options = await PasskeyService.getRegistrationOptions(user.id);
     return c.json(options);
-  } catch (err: any) {
-    return c.json({ error: err.message || 'Lỗi sinh tham số đăng ký' }, 400);
+  } catch (err: unknown) {
+    return c.json(
+      {
+        error:
+          (err instanceof Error ? err.message : String(err)) ||
+          'Lỗi sinh tham số đăng ký',
+      },
+      400,
+    );
   }
 });
 
@@ -52,8 +59,15 @@ passkeyRouter.post('/register/verify', requireAuth, async (c) => {
       body.friendlyName,
     );
     return c.json(result);
-  } catch (err: any) {
-    return c.json({ error: err.message || 'Xác thực đăng ký thất bại' }, 400);
+  } catch (err: unknown) {
+    return c.json(
+      {
+        error:
+          (err instanceof Error ? err.message : String(err)) ||
+          'Xác thực đăng ký thất bại',
+      },
+      400,
+    );
   }
 });
 
@@ -73,9 +87,13 @@ passkeyRouter.post('/login/options', async (c) => {
 
     const options = await PasskeyService.getLoginOptions(identifier);
     return c.json(options);
-  } catch (err: any) {
+  } catch (err: unknown) {
     return c.json(
-      { error: err.message || 'Lỗi sinh tham số đăng nhập Passkey' },
+      {
+        error:
+          (err instanceof Error ? err.message : String(err)) ||
+          'Lỗi sinh tham số đăng nhập Passkey',
+      },
       400,
     );
   }
@@ -94,8 +112,15 @@ passkeyRouter.post('/login/verify', async (c) => {
 
     const result = await PasskeyService.verifyLogin(body.response);
     return c.json(result);
-  } catch (err: any) {
-    return c.json({ error: err.message || 'Xác thực đăng nhập thất bại' }, 400);
+  } catch (err: unknown) {
+    return c.json(
+      {
+        error:
+          (err instanceof Error ? err.message : String(err)) ||
+          'Xác thực đăng nhập thất bại',
+      },
+      400,
+    );
   }
 });
 
