@@ -20,10 +20,10 @@ import { vietnameseAuthError } from './utils';
 /* -- Shared Styles -------------------------------------------------- */
 
 const FLOATING_INPUT =
-  'peer w-full px-4 pt-5 pb-2 bg-foreground/20 border border-transparent/10 rounded-xl text-on-dark-foreground placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all duration-200';
+  'peer w-full px-4 pt-5 pb-2 bg-foreground/15 border border-transparent/15 rounded-xl text-on-dark-foreground placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:bg-foreground/25 transition-all duration-200';
 
 const FLOATING_LABEL =
-  'absolute left-4 top-1/2 -translate-y-1/2 text-on-dark-foreground/40 text-sm pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-on-dark-foreground/80 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-on-dark-foreground/80';
+  'absolute left-4 top-1/2 -translate-y-1/2 text-on-dark-foreground/75 text-sm pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-on-dark-foreground/90 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-on-dark-foreground/90';
 
 /* -- Component ------------------------------------------------------ */
 
@@ -40,6 +40,7 @@ export function LoginForm({
   const [isCapsLock, setIsCapsLock] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -98,35 +99,43 @@ export function LoginForm({
       className={`space-y-4 ${serverError ? 'auth-shake' : ''}`}
     >
       {/* -- Tabs Dual-Stack (Passkey / M?t kh?u) --------------- */}
-      <div className="flex p-1 bg-foreground/10 rounded-xl border border-transparent/10">
+      <div
+        role="tablist"
+        aria-label={AUTH_LABELS.authMethodTabList}
+        className="flex p-1 bg-foreground/10 rounded-xl border border-transparent/10"
+      >
         <button
+          role="tab"
+          aria-selected={authMode === 'passkey'}
           type="button"
           onClick={() => {
             setAuthMode('passkey');
             setServerError(null);
           }}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
             authMode === 'passkey'
               ? 'bg-[#6366f1] text-on-dark-foreground shadow-md'
               : 'text-on-dark-foreground/60 hover:text-on-dark-foreground'
           }`}
         >
-          <Icon name="Fingerprint" size={16} />
+          <Icon name="Fingerprint" size={16} className="shrink-0" />
           <span>{AUTH_LABELS.passkeyTabPasskey}</span>
         </button>
         <button
+          role="tab"
+          aria-selected={authMode === 'password'}
           type="button"
           onClick={() => {
             setAuthMode('password');
             setServerError(null);
           }}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
             authMode === 'password'
               ? 'bg-[#6366f1] text-on-dark-foreground shadow-md'
               : 'text-on-dark-foreground/60 hover:text-on-dark-foreground'
           }`}
         >
-          <Icon name="KeyRound" size={16} />
+          <Icon name="KeyRound" size={16} className="shrink-0" />
           <span>{AUTH_LABELS.passkeyTabPassword}</span>
         </button>
       </div>
@@ -171,11 +180,11 @@ export function LoginForm({
               <div className="relative">
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   placeholder=" "
                   aria-invalid={Boolean(errors.password)}
-                  className={FLOATING_INPUT}
+                  className={`${FLOATING_INPUT} pr-11`}
                   onKeyUp={handlePasswordKeyEvent}
                   onKeyDown={handlePasswordKeyEvent}
                   {...register('password')}
@@ -183,6 +192,19 @@ export function LoginForm({
                 <label htmlFor="password" className={FLOATING_LABEL}>
                   {AUTH_LABELS.password}
                 </label>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label={
+                    showPassword
+                      ? AUTH_LABELS.hidePassword
+                      : AUTH_LABELS.showPassword
+                  }
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-on-dark-foreground/60 hover:text-on-dark-foreground p-1 rounded-md transition-colors cursor-pointer"
+                >
+                  <Icon name={showPassword ? 'EyeOff' : 'Eye'} size={18} />
+                </button>
               </div>
               {isCapsLock && (
                 <div className="auth-caps-warning">
@@ -199,7 +221,10 @@ export function LoginForm({
 
             {/* Remember + Forgot */}
             <div className="flex items-center justify-between gap-2 px-1">
-              <div className="flex items-center gap-2 min-w-0">
+              <label
+                htmlFor="rememberMe"
+                className="flex items-center gap-2 min-w-0 min-h-[44px] py-1 cursor-pointer select-none"
+              >
                 <input
                   type="checkbox"
                   id="rememberMe"
@@ -207,20 +232,17 @@ export function LoginForm({
                   className="w-4 h-4 rounded border-transparent/20 bg-foreground/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                   {...register('rememberMe')}
                 />
-                <label
-                  htmlFor="rememberMe"
-                  className="text-sm text-on-dark-foreground/70 cursor-pointer select-none truncate"
-                >
+                <span className="text-sm text-on-dark-foreground/75 truncate">
                   {AUTH_LABELS.rememberMe}
-                </label>
-              </div>
+                </span>
+              </label>
 
               {onForgotPassword && (
                 <button
                   type="button"
                   onClick={onForgotPassword}
                   disabled={isLocked}
-                  className="text-[#818cf8] hover:text-on-dark-foreground text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap"
+                  className="text-[#818cf8] hover:text-on-dark-foreground text-sm font-medium transition-colors min-h-[44px] py-1 flex items-center disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap cursor-pointer"
                 >
                   {AUTH_LABELS.forgotPassword}
                 </button>

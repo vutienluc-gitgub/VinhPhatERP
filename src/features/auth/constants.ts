@@ -52,6 +52,7 @@ export const AUTH_MESSAGES = {
     'Đăng ký khóa Passkey thành công! Từ nay bạn có thể đăng nhập bằng sinh trắc học.',
   passkeyRevokeSuccess: 'Đã thu hồi khóa bảo mật thành công.',
   passkeyRevokeError: 'Xóa khóa bảo mật thất bại.',
+  passkeyHint: 'Chạm cảm biến vân tay hoặc Face ID để đăng nhập',
 };
 
 export const AUTH_LABELS = {
@@ -68,4 +69,7 @@ export const AUTH_LABELS = {
     'VD: MacBook Touch ID, iPhone Face ID, YubiKey 5...',
   passkeyTabPasskey: 'Passkey / Mã NV',
   passkeyTabPassword: 'Email & Mật khẩu',
+  authMethodTabList: 'Phương thức đăng nhập',
+  showPassword: 'Hiện mật khẩu',
+  hidePassword: 'Ẩn mật khẩu',
 };

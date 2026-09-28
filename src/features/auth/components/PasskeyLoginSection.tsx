@@ -38,6 +38,9 @@ export function PasskeyLoginSection({
 
   return (
     <form onSubmit={handlePasskeyLogin} className="space-y-3">
+      <p className="text-xs text-on-dark-foreground/70 text-center px-1">
+        {AUTH_MESSAGES.passkeyHint}
+      </p>
       <div className="relative">
         <input
           type="text"
@@ -46,7 +49,7 @@ export function PasskeyLoginSection({
           onChange={(e) => setIdentifier(e.target.value)}
           placeholder={AUTH_LABELS.passkeyIdentifierPlaceholder}
           disabled={isLoading}
-          className="w-full px-4 py-3 bg-foreground/20 border border-transparent/10 rounded-xl text-on-dark-foreground placeholder:text-on-dark-foreground/40 text-sm focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all"
+          className="w-full px-4 py-3 bg-foreground/15 border border-transparent/15 rounded-xl text-on-dark-foreground placeholder:text-on-dark-foreground/50 text-sm focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:bg-foreground/25 transition-all"
         />
       </div>
 
