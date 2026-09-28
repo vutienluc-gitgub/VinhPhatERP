@@ -1,0 +1,10 @@
+[Unit]
+Description=Run VinhPhatERP Supabase DB Backup daily
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+OnCalendar=*-*-* 14:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
