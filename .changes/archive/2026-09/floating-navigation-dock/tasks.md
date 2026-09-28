@@ -63,7 +63,7 @@ Tuân thủ **Evidence Rule §1.2** (ghi kết quả thực tế của lệnh ch
 
 ## ➕ GATE 5: BỔ SUNG NÚT "+" & ICON-ONLY
 
-Yêu cầu người dùng: *"thêm cạnh nút Menu (thành 6 nút) VÀ không có chữ"*.
+Yêu cầu người dùng: _"thêm cạnh nút Menu (thành 6 nút) VÀ không có chữ"_.
 
 - [x] Task 5.1: Đổi `FloatingDockProps.action?` → `actions?: FloatingDockAction[]`; thêm `fab?: FloatingDockAction` (FAB tách riêng).
 - [x] Task 5.2: Dock chuyển sang **icon-only** — bỏ render nhãn chữ, nhãn chỉ dùng `aria-label`.

@@ -11,12 +11,10 @@ export function ShipmentSaaSBadge({ status }: { status: ShipmentStatus }) {
 
   const styles: Record<string, string> = {
     shipped: 'bg-info-soft/10 text-info ring-blue-500/20',
-    delivered:
-      'bg-success-soft/10 text-success ring-emerald-500/20',
+    delivered: 'bg-success-soft/10 text-success ring-emerald-500/20',
     partially_returned: 'bg-purple-soft text-purple ring-purple/20',
     returned: 'bg-danger-soft/10 text-danger ring-red-500/20',
-    preparing:
-      'bg-warning-soft/10 text-warning-strong ring-amber-500/20',
+    preparing: 'bg-warning-soft/10 text-warning-strong ring-amber-500/20',
   };
   const dotColors: Record<string, string> = {
     shipped: 'bg-info-soft',

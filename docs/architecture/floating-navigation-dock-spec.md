@@ -15,32 +15,32 @@ Bản nháp gốc là template của một dự án khác (có module `glucose`,
 
 ## 1. Delta: bản nháp → chuẩn dự án
 
-| # | Bản nháp (SAI) | Chuẩn VinhPhatERP | Rule |
-| --- | --- | --- | --- |
-| 1 | Tạo mới `src/shared/components/AdaptiveSheet.tsx` | **Tái dùng** `src/shared/components/AdaptiveSheet.tsx` (đã có: `open`, `header`, `subHeader`, `footer`, `stepInfo`, `size`, portal, swipe-dismiss) | 1, 12 |
-| 2 | `import { LucideIcon } from "lucide-react"`, render `<Icon />` thô | **Cấm** import trực tiếp lucide (ESLint `no-restricted-imports`). Dùng `<Icon name={IconName} />`, icon là **chuỗi** | icon-system |
-| 3 | `bg-white/95`, `slate-*`, `emerald-*`, `#142d25` | Chỉ **semantic token**: `bg-surface-strong`, `border-border`, `text-primary`, `bg-primary/10`… | 17 |
-| 4 | Badge `bg-rose-500 text-white` (3.67:1 — **FAIL** AA) | `bg-danger text-inverse-foreground` (`#c0392b`, **5.44:1 — PASS**) | 21 |
-| 5 | Tạo mới `src/shared/types/navigation.ts` | **Dùng lại** `NavigationItem` (`src/app/router/routes.tsx`) + `BottomTabItem` (`src/app/layouts/MobileBottomNav.tsx`) | 1 |
-| 6 | `src/app/AppShell.tsx` | `src/app/layouts/AppShell.tsx` | — |
-| 7 | `console.log("Submit reading payload:", values)` | Cấm log debug production | 18 |
-| 8 | Nhãn tiếng Anh (`Home`, `Log`, `Insight`) | Chuỗi tập trung + tiếng Việt: `APP_SHELL_LABELS`, `UI_LABELS` | 2 |
-| 9 | Module mẫu `features/glucose/` (đường huyết) | **Không có domain này**. Thay bằng quick-action ERP thật: `QUICK_ACTIONS` | 5, 15 |
-| 10 | Không có test | Bắt buộc regression test | 22 |
-| 11 | Dock luôn hiển thị | Phải `md:hidden` (nếu không sẽ nổi đè desktop) | 17, 21 |
+| #   | Bản nháp (SAI)                                                     | Chuẩn VinhPhatERP                                                                                                                                  | Rule        |
+| --- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 1   | Tạo mới `src/shared/components/AdaptiveSheet.tsx`                  | **Tái dùng** `src/shared/components/AdaptiveSheet.tsx` (đã có: `open`, `header`, `subHeader`, `footer`, `stepInfo`, `size`, portal, swipe-dismiss) | 1, 12       |
+| 2   | `import { LucideIcon } from "lucide-react"`, render `<Icon />` thô | **Cấm** import trực tiếp lucide (ESLint `no-restricted-imports`). Dùng `<Icon name={IconName} />`, icon là **chuỗi**                               | icon-system |
+| 3   | `bg-white/95`, `slate-*`, `emerald-*`, `#142d25`                   | Chỉ **semantic token**: `bg-surface-strong`, `border-border`, `text-primary`, `bg-primary/10`…                                                     | 17          |
+| 4   | Badge `bg-rose-500 text-white` (3.67:1 — **FAIL** AA)              | `bg-danger text-inverse-foreground` (`#c0392b`, **5.44:1 — PASS**)                                                                                 | 21          |
+| 5   | Tạo mới `src/shared/types/navigation.ts`                           | **Dùng lại** `NavigationItem` (`src/app/router/routes.tsx`) + `BottomTabItem` (`src/app/layouts/MobileBottomNav.tsx`)                              | 1           |
+| 6   | `src/app/AppShell.tsx`                                             | `src/app/layouts/AppShell.tsx`                                                                                                                     | —           |
+| 7   | `console.log("Submit reading payload:", values)`                   | Cấm log debug production                                                                                                                           | 18          |
+| 8   | Nhãn tiếng Anh (`Home`, `Log`, `Insight`)                          | Chuỗi tập trung + tiếng Việt: `APP_SHELL_LABELS`, `UI_LABELS`                                                                                      | 2           |
+| 9   | Module mẫu `features/glucose/` (đường huyết)                       | **Không có domain này**. Thay bằng quick-action ERP thật: `QUICK_ACTIONS`                                                                          | 5, 15       |
+| 10  | Không có test                                                      | Bắt buộc regression test                                                                                                                           | 22          |
+| 11  | Dock luôn hiển thị                                                 | Phải `md:hidden` (nếu không sẽ nổi đè desktop)                                                                                                     | 17, 21      |
 
 ---
 
 ## 2. Thành phần đã có — KHÔNG tạo lại
 
-| Thành phần | Đường dẫn | Vai trò trong tính năng |
-| --- | --- | --- |
-| `AdaptiveSheet` | `src/shared/components/AdaptiveSheet.tsx` | Bottom sheet (mobile) / modal (desktop). **Container duy nhất được dùng.** |
-| `Icon` | `src/shared/components/Icon.tsx` | Render mọi icon qua `<Icon name="..." />` |
-| `NavigationItem` | `src/app/router/routes.tsx` | Contract điều hướng (path, label, shortLabel, icon, requiredRoles, primaryMobile) |
-| `MobileBottomNav` | `src/app/layouts/MobileBottomNav.tsx` | Nav mobile hiện tại (fixed đáy full-width, badge, haptics) |
-| `AppLauncher` + `QuickCreateModal` | `src/app/layouts/` | FAB "tạo nhanh" đã có, dùng `AdaptiveSheet` + `QUICK_ACTIONS` |
-| `QUICK_ACTIONS` | `src/shared/constants/layout.ts` | Danh sách tác vụ nhanh (Nhập Sợi, Nhập Mộc, Nhập Vải…) |
+| Thành phần                         | Đường dẫn                                 | Vai trò trong tính năng                                                           |
+| ---------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------- |
+| `AdaptiveSheet`                    | `src/shared/components/AdaptiveSheet.tsx` | Bottom sheet (mobile) / modal (desktop). **Container duy nhất được dùng.**        |
+| `Icon`                             | `src/shared/components/Icon.tsx`          | Render mọi icon qua `<Icon name="..." />`                                         |
+| `NavigationItem`                   | `src/app/router/routes.tsx`               | Contract điều hướng (path, label, shortLabel, icon, requiredRoles, primaryMobile) |
+| `MobileBottomNav`                  | `src/app/layouts/MobileBottomNav.tsx`     | Nav mobile hiện tại (fixed đáy full-width, badge, haptics)                        |
+| `AppLauncher` + `QuickCreateModal` | `src/app/layouts/`                        | FAB "tạo nhanh" đã có, dùng `AdaptiveSheet` + `QUICK_ACTIONS`                     |
+| `QUICK_ACTIONS`                    | `src/shared/constants/layout.ts`          | Danh sách tác vụ nhanh (Nhập Sợi, Nhập Mộc, Nhập Vải…)                            |
 
 > **Kết luận thiết kế:** dock nổi chỉ là **biến thể trình bày** của `MobileBottomNav`. FAB chỉ là **lối vào** `QuickCreateModal`. Không sinh component song song.
 
@@ -67,6 +67,7 @@ Dock nổi tái dùng chính `BottomTabItem[]`, nên `AppShell` truyền dữ li
 ### 4.1 `FloatingDock` (presentational, `src/shared/components/FloatingDock.tsx`)
 
 Yêu cầu:
+
 - Chỉ hiển thị mobile: `md:hidden`.
 - Neo đáy giữa màn hình, tôn trọng safe-area iOS.
 - Icon qua `<Icon name>`, màu qua token.
@@ -107,10 +108,7 @@ export const FloatingDock = React.memo(function FloatingDock({
   );
 
   return (
-    <nav
-      aria-label="Điều hướng nhanh"
-      className="floating-dock md:hidden"
-    >
+    <nav aria-label="Điều hướng nhanh" className="floating-dock md:hidden">
       <div className="floating-dock__surface">
         {items.map((item) => {
           const isActive = activeId === item.id;
@@ -264,7 +262,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
   size="md"
 >
   {/* form */}
-</AdaptiveSheet>
+</AdaptiveSheet>;
 ```
 
 > Bản nháp tự viết lại `AdaptiveSheet` với prop `isOpen` + `document.body.style.overflow`. **Không làm** — component hiện tại đã xử lý portal, khoá scroll, swipe-dismiss, a11y (`role="dialog"`, `aria-labelledby`).
@@ -283,6 +281,7 @@ import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
 ```
 
 Nếu chuyển sang dock nổi, thay bằng `FloatingDock` với cùng nguồn `bottomTabs`, và:
+
 - bù padding đáy cho `<main className="route-content">`;
 - chỉnh offset AI Chat FAB (`AIChatWidget`) để không chồng lên dock;
 - giữ nguyên `MobileMoreDrawer`, haptics, badge.
@@ -338,9 +337,9 @@ Không có token chính xác thì **không mở gate**; nhánh làm việc `feat
 
 ## 8. Việc cần quyết trước khi code
 
-| # | Câu hỏi | Phương án |
-| --- | --- | --- |
-| 1 | Thay hay mở rộng nav mobile? | **(A)** Thay `MobileBottomNav` bằng dock nổi · **(B)** Thêm `variant="floating" \| "edge"` · **(C)** Tạo `FloatingDock` ở `shared/` nhưng chưa gắn AppShell |
-| 2 | FAB làm gì? | Tái dùng `QuickCreateModal` + `QUICK_ACTIONS` (khuyến nghị) |
-| 3 | Icon/token nào? | Bảng semantic mapping trong `.agents/context/icon-system.md` |
-| 4 | Có đưa file này vào repo không? | `docs/architecture/floating-navigation-dock-spec.md` (khuyến nghị) |
+| #   | Câu hỏi                         | Phương án                                                                                                                                                   |
+| --- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Thay hay mở rộng nav mobile?    | **(A)** Thay `MobileBottomNav` bằng dock nổi · **(B)** Thêm `variant="floating" \| "edge"` · **(C)** Tạo `FloatingDock` ở `shared/` nhưng chưa gắn AppShell |
+| 2   | FAB làm gì?                     | Tái dùng `QuickCreateModal` + `QUICK_ACTIONS` (khuyến nghị)                                                                                                 |
+| 3   | Icon/token nào?                 | Bảng semantic mapping trong `.agents/context/icon-system.md`                                                                                                |
+| 4   | Có đưa file này vào repo không? | `docs/architecture/floating-navigation-dock-spec.md` (khuyến nghị)                                                                                          |

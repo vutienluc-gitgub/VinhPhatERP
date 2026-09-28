@@ -8,11 +8,15 @@ VinhPhat ERP: internal B2B ERP for a textile/fabric manufacturer (yarn intake â†
 
 The repo has its own mandatory AI process. It is not optional background reading:
 
-- [.erp-rules.md](.erp-rules.md): the 22 engineering rules and the **ERP Safety Rule**. Any change that touches pricing/tax, stock quantities or unit conversions (kg/m/rolls), AR/AP debt, payments/invoicing, order status flow, reservation/allocation concurrency, accounting, or permissions/RLS must be flagged `[BUSINESS BEHAVIOR CHANGE]`. Stop and wait for explicit approval before editing.
+- [.erp-rules.md](.erp-rules.md): the **24 engineering rules** and the **ERP Safety Rule**. Any change that touches pricing/tax, stock quantities or unit conversions (kg/m/rolls), AR/AP debt, payments/invoicing, order status flow, reservation/allocation concurrency, accounting, or permissions/RLS must be flagged `[BUSINESS BEHAVIOR CHANGE]`. Stop and wait for explicit approval before editing.
+- **Rule 23 (Host-Persistence Guard):** NEVER place persistent database storage volumes (`volumes/db/data`) inside the Git repository workspace (`/var/www/vinhphaterp`). Persistent volumes MUST reside in `/opt/supabase/` or `/var/lib/vinhphat-supabase/` or named Docker volumes so that Git resets/cleans never touch production data. Never run destructive Git commands (`git clean -xdf`, `rm -rf`) on directories containing Docker infrastructure configs or database volumes.
+- **Rule 24 (GoTrue Auth Schema Null-Safety Guard):** The GoTrue authentication engine maps `auth.users` string columns (`email_change`, `phone_change`, `confirmation_token`, `recovery_token`, etc.) directly into primitive Go `string` types. NEVER allow `NULL` values in string fields of `auth.users`. Any migration or direct seed MUST set `DEFAULT ''` and insert `''` (empty string) instead of `NULL`. Violation triggers runtime Go `sql: Scan error on column ...: converting NULL to string is unsupported` and crashes OAuth/login flows.
 - [AI_WORKFLOW.md](AI_WORKFLOW.md): the phased workflow with approval gates. A gate opens only on the exact literal token (`APPROVE PHASE 2`, `APPROVE PHASE 3`, `APPROVE PHASE 4 & 5`, `APPROVE MERGE`). "ok" or "looks good" does not open a gate. Use one commit per approved phase on a `fix/<scope>` or `chore/<scope>` branch, never on `main`.
 - **Evidence rule:** never report a check as passing unless it ran in this session. Report unrun checks as `[NOT RUN]` and checks that can't run (e.g. no DB) as `[NOT VERIFIED]`.
 - [AI_CHECKLIST.md](AI_CHECKLIST.md): the pre-close checklist. [AGENT.md](AGENT.md) lists which actions are safe and which need confirmation. [docs/do-not-touch.md](docs/do-not-touch.md) lists files reserved for maintainers (app shell CSS, `App.tsx`, `main.tsx`, design tokens, core shared components).
 - `.agents/rules/` has detailed UI/architecture/WCAG rules. `agent/ai-tool.md` has overrides for the `agent/` package.
+- **Automated DB Backups:** VPS runs `vinhphat-db-backup.timer` twice daily (02:00 and 14:00) saving compressed `.sql.gz` snapshots to `/var/backups/vinhphaterp/`.
+- **Post-Deployment Smoke Tests:** `.github/workflows/deploy-vioncloud.yml` enforces 5 automated smoke checks post-deploy (core containers, database query, PostgREST HTTP 200, Google OAuth HTTP 302, and GoTrue 0-null scan).
 
 ## Commands
 

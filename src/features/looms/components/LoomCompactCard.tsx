@@ -135,9 +135,7 @@ export function LoomCompactCard({ loom, onEdit, onDelete, isDeleting }: Props) {
         {loom.status === 'running' && loom.production_state && (
           <div className="mt-2 p-2 bg-emerald-50 rounded-lg flex flex-col gap-1">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-success font-medium">
-                Efficiency
-              </span>
+              <span className="text-success font-medium">Efficiency</span>
               <span className="text-success font-bold">
                 {loom.production_state.efficiency_pct ?? 0}%
               </span>

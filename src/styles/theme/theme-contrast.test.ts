@@ -252,7 +252,14 @@ describe('loom status badge contrast', () => {
   it('keeps inverse text readable on every solid status fill', () => {
     // Shared pattern: text-inverse-foreground on a solid brand/status colour.
     // Used by buttons, badges and the error boundaries after the audit.
-    const solids = ['success', 'danger', 'warning', 'info', 'purple', 'primary'];
+    const solids = [
+      'success',
+      'danger',
+      'warning',
+      'info',
+      'purple',
+      'primary',
+    ];
     for (const theme of [
       { label: 'light', file: TOKENS },
       { label: 'dark', file: DARK },
