@@ -338,6 +338,12 @@
   overflow: hidden;
 }
 
+/* Widget Turnstile là iframe do Cloudflare render (fixed 300px 'normal').
+   Cho iframe co lại thay vì tràn khi vùng chứa hẹp hơn widget. */
+.turnstile-wrapper iframe {
+  max-width: 100%;
+}
+
 .auth-divider {
   display: flex;
   align-items: center;
