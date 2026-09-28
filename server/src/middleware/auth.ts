@@ -1,5 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+﻿import { createClient } from '@supabase/supabase-js';
 import type { Context, Next } from 'hono';
+
+import { verifySupabaseJwt } from '../utils/jwt.js';
 
 const supabaseUrl =
   process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
@@ -15,8 +17,8 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 });
 
 /**
- * Middleware xác thực JWT Supabase.
- * Đọc Bearer token từ Authorization header, verify qua Supabase,
+ * Middleware xác thực JWT Supabase & Passkey tokens.
+ * Đọc Bearer token từ Authorization header, verify qua Supabase hoặc JWT secret,
  * gán user vào context.
  */
 export async function requireAuth(c: Context, next: Next) {
@@ -26,14 +28,33 @@ export async function requireAuth(c: Context, next: Next) {
   }
 
   const token = authHeader.slice(7);
-  const { data, error } = await supabaseAdmin.auth.getUser(token);
 
-  if (error || !data.user) {
-    return c.json({ error: 'Invalid or expired token' }, 401);
+  // 1. Thử verify qua GoTrue (dành cho session OAuth / password)
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (!error && data?.user) {
+    c.set('user', data.user);
+    await next();
+    return;
   }
 
-  c.set('user', data.user);
-  await next();
+  // 2. Thử verify JWT ký bằng JWT_SECRET (dành cho Passkey session)
+  try {
+    const payload = await verifySupabaseJwt(token);
+    if (payload?.sub) {
+      c.set('user', {
+        id: payload.sub as string,
+        email: (payload.email as string) || '',
+        role: (payload.role as string) || 'authenticated',
+        user_metadata: (payload.user_metadata as Record<string, unknown>) || {},
+      });
+      await next();
+      return;
+    }
+  } catch {
+    // Token không hợp lệ ở cả 2 cơ chế
+  }
+
+  return c.json({ error: 'Invalid or expired token' }, 401);
 }
 
 /**

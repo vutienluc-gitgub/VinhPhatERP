@@ -1,184 +1,255 @@
+import {
+  startRegistration,
+  startAuthentication,
+  browserSupportsWebAuthn,
+  platformAuthenticatorIsAvailable,
+} from '@simplewebauthn/browser';
 import { useState, useCallback, useEffect } from 'react';
 
 import { supabase } from '@/services/supabase/client';
 
+export interface PasskeyCredentialInfo {
+  id: string;
+  credential_id: string;
+  friendly_name: string;
+  device_type: string;
+  backed_up: boolean;
+  created_at: string;
+  last_used_at: string | null;
+}
+
 /**
- * Helper to check if WebAuthn / Passkey is supported on current device
+ * Check if WebAuthn / Passkeys is supported by current browser
  */
 export function isPasskeySupported(): boolean {
-  if (typeof window === 'undefined') return false;
-  return (
-    'PublicKeyCredential' in window &&
-    typeof window.PublicKeyCredential === 'function'
-  );
+  return browserSupportsWebAuthn();
 }
 
 /**
- * Generates a cryptographically secure 32-byte challenge
- */
-export function generatePasskeyChallenge(): Uint8Array {
-  const challenge = new Uint8Array(32);
-  if (typeof window !== 'undefined' && window.crypto) {
-    window.crypto.getRandomValues(challenge);
-  } else {
-    for (let i = 0; i < 32; i += 1) {
-      challenge[i] = Math.floor(Math.random() * 256);
-    }
-  }
-  return challenge;
-}
-
-/**
- * Convert ArrayBuffer / Uint8Array to Base64URL string
- */
-export function bufferToBase64Url(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
-  let binary = '';
-  for (let i = 0; i < bytes.byteLength; i += 1) {
-    const val = bytes[i];
-    if (val !== undefined) {
-      binary += String.fromCharCode(val);
-    }
-  }
-  const base64 = btoa(binary);
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-/**
- * Register a new Passkey device for user
+ * Register a new Passkey device for the logged-in user
  */
 export async function registerPasskey(
-  userEmail: string,
-  userId: string,
-): Promise<{ credentialId: string; rawId: string }> {
-  if (!isPasskeySupported()) {
+  friendlyName?: string,
+): Promise<{ verified: boolean; credentialId: string }> {
+  if (!browserSupportsWebAuthn()) {
     throw new Error(
-      'Thiết bị này không hỗ trợ sinh trắc học (Passkey / WebAuthn).',
+      'Thiết bị hoặc trình duyệt này không hỗ trợ Passkey / WebAuthn.',
     );
   }
 
-  const challengeBytes = generatePasskeyChallenge();
-  const creationOptions: CredentialCreationOptions = {
-    publicKey: {
-      challenge: challengeBytes.buffer as BufferSource,
-      rp: {
-        name: 'VinhPhatERP',
-        id: window.location.hostname,
-      },
-      user: {
-        id: new TextEncoder().encode(userId),
-        name: userEmail,
-        displayName: userEmail.split('@')[0] || 'User',
-      },
-      pubKeyCredParams: [
-        { alg: -7, type: 'public-key' }, // ES256
-        { alg: -257, type: 'public-key' }, // RS256
-      ],
-      authenticatorSelection: {
-        authenticatorAttachment: 'platform',
-        userVerification: 'required',
-        residentKey: 'preferred',
-      },
-      timeout: 60000,
-      attestation: 'none',
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    throw new Error('Vui lòng đăng nhập trước khi đăng ký thiết bị bảo mật.');
+  }
+
+  // 1. Get registration options from server
+  const optionsRes = await fetch('/api/v1/auth/passkey/register/options', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
     },
-  };
+  });
 
-  const credential = (await navigator.credentials.create(
-    creationOptions,
-  )) as PublicKeyCredential | null;
-
-  if (!credential) {
-    throw new Error('Đăng ký sinh trắc học bị hủy.');
+  if (!optionsRes.ok) {
+    const err = await optionsRes.json().catch(() => ({}));
+    throw new Error(err.error || 'Lỗi khi khởi tạo đăng ký Passkey');
   }
 
-  const rawId = bufferToBase64Url(credential.rawId);
-  const { error } = await supabase
-    .from('profiles')
-    .update({
-      updated_at: new Date().toISOString(),
-    } as Record<string, unknown>)
-    .eq('id', userId);
+  const options = await optionsRes.json();
 
-  if (error) {
-    console.error('[Passkey] Failed to save credential metadata:', error);
+  // 2. Prompt browser authenticator (Touch ID, Face ID, Windows Hello, YubiKey)
+  let regResponse;
+  try {
+    regResponse = await startRegistration({ optionsJSON: options });
+  } catch (err: unknown) {
+    if (
+      err &&
+      typeof err === 'object' &&
+      'name' in err &&
+      (err as { name: string }).name === 'NotAllowedError'
+    ) {
+      throw new Error('Đã hủy thao tác sinh trắc học hoặc hết thời gian chờ.');
+    }
+    const msg =
+      err instanceof Error ? err.message : 'Lỗi thiết bị sinh trắc học.';
+    throw new Error(msg);
   }
 
-  return {
-    credentialId: credential.id,
-    rawId,
-  };
+  // 3. Send authenticator assertion to server for verification and storage
+  const verifyRes = await fetch('/api/v1/auth/passkey/register/verify', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({
+      response: regResponse,
+      friendlyName: friendlyName || 'Thiết bị bảo mật',
+    }),
+  });
+
+  if (!verifyRes.ok) {
+    const err = await verifyRes.json().catch(() => ({}));
+    throw new Error(err.error || 'Xác thực đăng ký Passkey thất bại');
+  }
+
+  return await verifyRes.json();
 }
 
 /**
- * Authenticate user using Passkey (Face ID / Touch ID / Windows Hello)
+ * Authenticate user with Passkey (1-touch Face ID / Touch ID / Windows Hello)
  */
-export async function signInWithPasskey(): Promise<{
-  credentialId: string;
-  rawId: string;
-}> {
-  if (!isPasskeySupported()) {
+export async function signInWithPasskey(
+  identifier?: string,
+): Promise<{ verified: boolean; credentialId?: string }> {
+  if (!browserSupportsWebAuthn()) {
     throw new Error(
-      'Thiết bị này không hỗ trợ sinh trắc học (Passkey / WebAuthn).',
+      'Thiết bị hoặc trình duyệt này không hỗ trợ Passkey / WebAuthn.',
     );
   }
 
-  const challengeBytes = generatePasskeyChallenge();
-  const requestOptions: CredentialRequestOptions = {
-    publicKey: {
-      challenge: challengeBytes.buffer as BufferSource,
-      rpId: window.location.hostname,
-      userVerification: 'required',
-      timeout: 60000,
-    },
-  };
+  // 1. Get authentication options from server
+  const optionsRes = await fetch('/api/v1/auth/passkey/login/options', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ identifier }),
+  });
 
-  const credential = (await navigator.credentials.get(
-    requestOptions,
-  )) as PublicKeyCredential | null;
-
-  if (!credential) {
-    throw new Error('Xác thực sinh trắc học bị hủy.');
+  if (!optionsRes.ok) {
+    const err = await optionsRes.json().catch(() => ({}));
+    throw new Error(err.error || 'Lỗi khi lấy thử thách đăng nhập Passkey');
   }
 
-  const rawId = bufferToBase64Url(credential.rawId);
-  return {
-    credentialId: credential.id,
-    rawId,
-  };
+  const options = await optionsRes.json();
+
+  // 2. Prompt authenticator for signature
+  let authResponse;
+  try {
+    authResponse = await startAuthentication({ optionsJSON: options });
+  } catch (err: unknown) {
+    if (
+      err &&
+      typeof err === 'object' &&
+      'name' in err &&
+      (err as { name: string }).name === 'NotAllowedError'
+    ) {
+      throw new Error('Đã hủy xác thực sinh trắc học hoặc hết thời gian.');
+    }
+    const msg =
+      err instanceof Error ? err.message : 'Xác thực sinh trắc học thất bại.';
+    throw new Error(msg);
+  }
+
+  // 3. Verify signature on server and receive Supabase-compatible JWT
+  const verifyRes = await fetch('/api/v1/auth/passkey/login/verify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ response: authResponse }),
+  });
+
+  if (!verifyRes.ok) {
+    const err = await verifyRes.json().catch(() => ({}));
+    throw new Error(err.error || 'Xác thực chữ ký Passkey không hợp lệ');
+  }
+
+  const result = await verifyRes.json();
+
+  // 4. Inject session into Supabase client to trigger auth state & RLS
+  if (result?.session?.access_token) {
+    const { error: sessionError } = await supabase.auth.setSession({
+      access_token: result.session.access_token,
+      refresh_token: result.session.access_token,
+    });
+
+    if (sessionError) {
+      throw new Error('Lỗi kích hoạt phiên đăng nhập: ' + sessionError.message);
+    }
+  }
+
+  return { verified: true, credentialId: authResponse.id };
+}
+
+/**
+ * Fetch registered passkeys for current user
+ */
+export async function listPasskeyCredentials(): Promise<
+  PasskeyCredentialInfo[]
+> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) return [];
+
+  const res = await fetch('/api/v1/auth/passkey/credentials', {
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.credentials || [];
+}
+
+/**
+ * Revoke a registered passkey
+ */
+export async function deletePasskeyCredential(id: string): Promise<boolean> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    throw new Error('Chưa đăng nhập');
+  }
+
+  const res = await fetch(`/api/v1/auth/passkey/credentials/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Không thể xóa khóa bảo mật');
+  }
+
+  return true;
 }
 
 export function usePasskeyAuth() {
   const [isSupported, setIsSupported] = useState<boolean>(false);
+  const [isPlatformAvailable, setIsPlatformAvailable] =
+    useState<boolean>(false);
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const [passkeyError, setPasskeyError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsSupported(isPasskeySupported());
+    const supported = isPasskeySupported();
+    setIsSupported(supported);
+    if (supported) {
+      platformAuthenticatorIsAvailable().then(setIsPlatformAvailable);
+    }
   }, []);
 
-  const handleRegister = useCallback(
-    async (userEmail: string, userId: string) => {
-      setPasskeyError(null);
-      try {
-        setIsAuthenticating(true);
-        return await registerPasskey(userEmail, userId);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        setPasskeyError(msg);
-        throw err;
-      } finally {
-        setIsAuthenticating(false);
-      }
-    },
-    [],
-  );
-
-  const handleSignIn = useCallback(async () => {
+  const handleRegister = useCallback(async (friendlyName?: string) => {
     setPasskeyError(null);
     try {
       setIsAuthenticating(true);
-      return await signInWithPasskey();
+      return await registerPasskey(friendlyName);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setPasskeyError(msg);
+      throw err;
+    } finally {
+      setIsAuthenticating(false);
+    }
+  }, []);
+
+  const handleSignIn = useCallback(async (identifier?: string) => {
+    setPasskeyError(null);
+    try {
+      setIsAuthenticating(true);
+      return await signInWithPasskey(identifier);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setPasskeyError(msg);
@@ -190,9 +261,12 @@ export function usePasskeyAuth() {
 
   return {
     isSupported,
+    isPlatformAvailable,
     isAuthenticating,
     passkeyError,
     registerPasskey: handleRegister,
     signInWithPasskey: handleSignIn,
+    listCredentials: listPasskeyCredentials,
+    deleteCredential: deletePasskeyCredential,
   };
 }

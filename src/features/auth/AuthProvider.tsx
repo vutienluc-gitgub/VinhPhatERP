@@ -44,8 +44,12 @@ export interface AuthActions {
   }>;
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  signInWithPasskey: () => Promise<{ credentialId: string; rawId: string }>;
-  registerPasskeyDevice: () => Promise<{ credentialId: string; rawId: string }>;
+  signInWithPasskey: (
+    identifier?: string,
+  ) => Promise<{ verified: boolean; credentialId?: string }>;
+  registerPasskeyDevice: (
+    friendlyName?: string,
+  ) => Promise<{ verified: boolean; credentialId: string }>;
   forgotPassword: (
     email: string,
     captchaToken?: string,
@@ -174,17 +178,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (error) throw error;
   }, []);
 
-  const signInWithPasskey = useCallback(async () => {
+  const signInWithPasskey = useCallback(async (identifier?: string) => {
     const { signInWithPasskey: passkeyAuth } =
       await import('@/shared/hooks/usePasskeyAuth');
-    return passkeyAuth();
+    return passkeyAuth(identifier);
   }, []);
 
-  const registerPasskeyDevice = useCallback(async () => {
-    if (!user) throw new Error('Cần đăng nhập để đăng ký sinh trắc học.');
-    const { registerPasskey } = await import('@/shared/hooks/usePasskeyAuth');
-    return registerPasskey(user.email ?? '', user.id);
-  }, [user]);
+  const registerPasskeyDevice = useCallback(
+    async (friendlyName?: string) => {
+      if (!user) throw new Error('Cần đăng nhập để đăng ký sinh trắc học.');
+      const { registerPasskey } = await import('@/shared/hooks/usePasskeyAuth');
+      return registerPasskey(friendlyName);
+    },
+    [user],
+  );
 
   const forgotPassword = useCallback(
     async (email: string, captchaToken?: string) => {

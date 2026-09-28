@@ -44,6 +44,14 @@ export const AUTH_MESSAGES = {
   passkeyLogin: 'Đăng nhập 1 chạm (Face ID / Touch ID / Passkey)',
   passkeyNotSupported: 'Thiết bị này chưa hỗ trợ sinh trắc học.',
   passkeySuccess: 'Xác thực sinh trắc học thành công.',
+  passkeyLoginAction: 'Đăng nhập Passkey / Vân tay',
+  passkeyConnecting: 'Đang xác thực sinh trắc học…',
+  passkeyPromptCancel: 'Đã hủy thao tác sinh trắc học hoặc hết thời gian chờ.',
+  passkeyDeviceDefault: 'Thiết bị bảo mật',
+  passkeyRegisterSuccess:
+    'Đăng ký khóa Passkey thành công! Từ nay bạn có thể đăng nhập bằng sinh trắc học.',
+  passkeyRevokeSuccess: 'Đã thu hồi khóa bảo mật thành công.',
+  passkeyRevokeError: 'Xóa khóa bảo mật thất bại.',
 };
 
 export const AUTH_LABELS = {
@@ -55,4 +63,9 @@ export const AUTH_LABELS = {
   emailPlaceholder: '1081991@gmail.com',
   passwordPlaceholder: '••••••••',
   registerPasskey: 'Đăng ký thiết bị sinh trắc học (Passkey / Face ID)',
+  passkeyIdentifierPlaceholder: 'Mã nhân viên (VD: NV001, VP-0142)...',
+  passkeyDevicePlaceholder:
+    'VD: MacBook Touch ID, iPhone Face ID, YubiKey 5...',
+  passkeyTabPasskey: 'Passkey / Mã NV',
+  passkeyTabPassword: 'Email & Mật khẩu',
 };
