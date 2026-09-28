@@ -331,6 +331,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  /* Chặn widget Cloudflare 300px cố định làm tràn ngang card trên mobile */
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .auth-divider {

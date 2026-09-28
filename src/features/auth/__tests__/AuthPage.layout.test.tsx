@@ -91,4 +91,25 @@ describe('Auth Mobile Layout & Order Reproduction Tests', () => {
     const forgotBtn = screen.getByRole('button', { name: /quên mật khẩu/i });
     expect(forgotBtn.className).toMatch(/whitespace-nowrap|shrink-0/);
   });
+
+  it('prevents horizontal overflow: auth tabs must be allowed to shrink below their content width', () => {
+    render(
+      <MemoryRouter>
+        <LoginForm />
+      </MemoryRouter>,
+    );
+
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(2);
+
+    for (const tab of tabs) {
+      // min-w-0 lets the flex item shrink below its min-content width;
+      // without it the nowrap labels force the card wider than narrow viewports.
+      expect(tab.className).toMatch(/\bmin-w-0\b/);
+      expect(tab.className).not.toMatch(/\bwhitespace-nowrap\b/);
+      // Labels must be allowed to wrap/truncate inside the shrinking tab.
+      const label = tab.querySelector('span');
+      expect(label?.className).toMatch(/min-w-0|truncate/);
+    }
+  });
 });
