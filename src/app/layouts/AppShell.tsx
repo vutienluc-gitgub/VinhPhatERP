@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useMemo, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useChatNotifications, useTotalUnread } from '@/application/chat';
@@ -16,10 +16,13 @@ import { useAppBadging } from '@/shared/hooks/useAppBadging';
 import { useNotificationDeepLink } from '@/shared/hooks/useNotificationDeepLink';
 import { usePushSubscription } from '@/shared/hooks/usePushSubscription';
 import { resolveRoleBottomTabs } from '@/app/layouts/resolvers/role-tabs.config';
+import { APP_SHELL_LABELS } from '@/shared/constants/layout';
+import { FloatingDock } from '@/shared/components/FloatingDock';
+import { HAPTIC_PATTERNS, triggerHapticFeedback } from '@/shared/lib/haptics';
 
 import { MobileMoreDrawer } from './MobileMoreDrawer';
+import { QuickActionsSheet } from './QuickActionsSheet';
 import { TopBar } from './TopBar';
-import { MobileBottomNav } from './MobileBottomNav';
 
 function getCurrentItem(pathname: string) {
   return getNavigationItems().find((item) =>
@@ -29,6 +32,7 @@ function getCurrentItem(pathname: string) {
 
 export function AppShell() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { profile, signOut } = useAuth();
 
   // Enable global chat notifications (with sound)
@@ -41,6 +45,13 @@ export function AppShell() {
   const { unreadCount: notifUnread } = useNotifications();
   const [showMore, setShowMore] = useState(false);
   const closeMoreDrawer = useCallback(() => setShowMore(false), []);
+  const openMoreDrawer = useCallback(() => setShowMore(true), []);
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const closeQuickActions = useCallback(() => setShowQuickActions(false), []);
+  const openQuickActions = useCallback(() => {
+    triggerHapticFeedback(HAPTIC_PATTERNS.SELECTION);
+    setShowQuickActions(true);
+  }, []);
   const [showCostingModal, setShowCostingModal] = useState(false);
   const navigationItems = useMemo(() => getNavigationItems(), []);
   const currentItem = useMemo(() => getCurrentItem(pathname), [pathname]);
@@ -78,6 +89,22 @@ export function AppShell() {
   const bottomTabPaths = useMemo(
     () => new Set(bottomTabs.map((item) => item.path)),
     [bottomTabs],
+  );
+
+  // Tab đang hoạt động trên dock (khớp path chính xác / theo tiền tố cho route con)
+  const activeDockId = useMemo(() => {
+    const matched = bottomTabs.find((item) =>
+      item.path === '/' ? pathname === '/' : pathname.startsWith(item.path),
+    );
+    return matched?.path;
+  }, [bottomTabs, pathname]);
+
+  const navigateToDock = useCallback(
+    (id: string) => {
+      triggerHapticFeedback(HAPTIC_PATTERNS.SELECTION);
+      navigate(id);
+    },
+    [navigate],
   );
 
   // All non-tab items for drawer (exclude active bottom tabs to avoid duplicates)
@@ -150,15 +177,37 @@ export function AppShell() {
           </main>
         </div>
 
-        {/* ── Mobile Bottom Nav (Role-aware tabs + Menu) ── */}
-        <MobileBottomNav
-          bottomTabs={bottomTabs}
-          isDrawerActive={isDrawerActive}
-          onOpenMore={() => setShowMore(true)}
-          menuBadge={
-            totalDeviceBadgeCount > 0 ? totalDeviceBadgeCount : undefined
-          }
-          menuHasDot={totalDeviceBadgeCount > 0}
+        {/* ── Floating Dock (Role-aware tabs + Menu) + FAB "+" tách riêng ── */}
+        <FloatingDock
+          items={bottomTabs}
+          activeId={activeDockId}
+          onSelect={navigateToDock}
+          actions={[
+            {
+              icon: 'LayoutGrid',
+              label: APP_SHELL_LABELS.MENU,
+              ariaLabel:
+                totalDeviceBadgeCount > 0
+                  ? `${APP_SHELL_LABELS.MENU}, ${totalDeviceBadgeCount} ${APP_SHELL_LABELS.TASKS_PENDING_SUFFIX}`
+                  : APP_SHELL_LABELS.MENU,
+              onTrigger: openMoreDrawer,
+              badge:
+                totalDeviceBadgeCount > 0 ? totalDeviceBadgeCount : undefined,
+              hasDot: totalDeviceBadgeCount > 0,
+              isActive: isDrawerActive,
+            },
+          ]}
+          fab={{
+            icon: 'Plus',
+            label: APP_SHELL_LABELS.QUICK_CREATE,
+            onTrigger: openQuickActions,
+          }}
+        />
+
+        <QuickActionsSheet
+          open={showQuickActions}
+          onClose={closeQuickActions}
+          onSelect={navigate}
         />
 
         {showMore && (

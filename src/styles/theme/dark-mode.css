@@ -30,6 +30,9 @@
   --muted-foreground: #9eb4ce;
   --disabled-foreground: #8fa1b8;
   --inverse-foreground: #091524;
+  /* Stays white in dark mode too: auth pages keep a dark backdrop here,
+     so --inverse-foreground (#091524) would be invisible on it. */
+  --on-dark-foreground: #ffffff;
 
   --primary: #4a8fd4;
   --primary-strong: #7ab3e8;

@@ -1,75 +1,98 @@
-# Claude AI Resident Agent — VinhPhatERP v3
+# CLAUDE.md
 
-Bạn là Kỹ sư AI Cao cấp kiêm Kiến trúc sư Hệ thống của **Công ty TNHH SX TM Dệt May Vĩnh Phát** (`VinhPhatERP_v3`).
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
----
+VinhPhat ERP: internal B2B ERP for a textile/fabric manufacturer (yarn intake → weaving → dyeing → finished-fabric stock by lot/roll → orders → shipping → payments/debt). Mobile-first React SPA on Supabase, plus a small Hono API server. Docs, comments, and all UI strings are in Vietnamese.
 
-## 1. Nguồn Tri Thức & Kỷ Luật Bắt Buộc (AI Governance)
+## Governance docs (read before non-trivial changes)
 
-Mỗi khi nhận tác vụ trong workspace này, Claude PHẢI tuân thủ nghiêm ngặt bộ quy chuẩn kỹ thuật:
+The repo has its own mandatory AI process. It is not optional background reading:
 
-1. **Hiến pháp dự án (`.erp-rules.md`)**: Gồm 24 quy tắc kỹ thuật bất biến bảo vệ dữ liệu sản xuất, phân tách Multi-Tenant, và an toàn hệ thống.
-2. **Quy trình làm việc (`AI_WORKFLOW.md`)**: Quy trình 5 bước có Approval Gates:
-   - Gate 1: Khảo sát & Đánh giá rủi ro (Audit & Impact Map)
-   - Gate 2: Thiết kế kỹ thuật & Phê duyệt giải pháp
-   - Gate 3: Triển khai code & Refactor chuẩn Clean Code
-   - Gate 4: Kiểm thử tự động (Unit Test / Integration)
-   - Gate 5: Nghiệm thu kỹ thuật (Quality Gates)
-3. **Biên bản nghiệm thu (`AI_CHECKLIST.md`)**: Bắt buộc tự kiểm tra từng tiêu chí trước khi hoàn thành task.
-4. **Quy tắc phát triển (`.agents/rules/coding-standards.md`)**: Chuẩn ESLint, Stylelint, Design Tokens, và DB Safety.
+- [.erp-rules.md](.erp-rules.md): the **24 engineering rules** and the **ERP Safety Rule**. Any change that touches pricing/tax, stock quantities or unit conversions (kg/m/rolls), AR/AP debt, payments/invoicing, order status flow, reservation/allocation concurrency, accounting, or permissions/RLS must be flagged `[BUSINESS BEHAVIOR CHANGE]`. Stop and wait for explicit approval before editing.
+- **Rule 23 (Host-Persistence Guard):** NEVER place persistent database storage volumes (`volumes/db/data`) inside the Git repository workspace (`/var/www/vinhphaterp`). Persistent volumes MUST reside in `/opt/supabase/` or `/var/lib/vinhphat-supabase/` or named Docker volumes so that Git resets/cleans never touch production data. Never run destructive Git commands (`git clean -xdf`, `rm -rf`) on directories containing Docker infrastructure configs or database volumes.
+- **Rule 24 (GoTrue Auth Schema Null-Safety Guard):** The GoTrue authentication engine maps `auth.users` string columns (`email_change`, `phone_change`, `confirmation_token`, `recovery_token`, etc.) directly into primitive Go `string` types. NEVER allow `NULL` values in string fields of `auth.users`. Any migration or direct seed MUST set `DEFAULT ''` and insert `''` (empty string) instead of `NULL`. Violation triggers runtime Go `sql: Scan error on column ...: converting NULL to string is unsupported` and crashes OAuth/login flows.
+- [AI_WORKFLOW.md](AI_WORKFLOW.md): the phased workflow with approval gates. A gate opens only on the exact literal token (`APPROVE PHASE 2`, `APPROVE PHASE 3`, `APPROVE PHASE 4 & 5`, `APPROVE MERGE`). "ok" or "looks good" does not open a gate. Use one commit per approved phase on a `fix/<scope>` or `chore/<scope>` branch, never on `main`.
+- **Evidence rule:** never report a check as passing unless it ran in this session. Report unrun checks as `[NOT RUN]` and checks that can't run (e.g. no DB) as `[NOT VERIFIED]`.
+- [AI_CHECKLIST.md](AI_CHECKLIST.md): the pre-close checklist. [AGENT.md](AGENT.md) lists which actions are safe and which need confirmation. [docs/do-not-touch.md](docs/do-not-touch.md) lists files reserved for maintainers (app shell CSS, `App.tsx`, `main.tsx`, design tokens, core shared components).
+- `.agents/rules/` has detailed UI/architecture/WCAG rules. `agent/ai-tool.md` has overrides for the `agent/` package.
+- **Automated DB Backups:** VPS runs `vinhphat-db-backup.timer` twice daily (02:00 and 14:00) saving compressed `.sql.gz` snapshots to `/var/backups/vinhphaterp/`.
+- **Post-Deployment Smoke Tests:** `.github/workflows/deploy-vioncloud.yml` enforces 5 automated smoke checks post-deploy (core containers, database query, PostgREST HTTP 200, Google OAuth HTTP 302, and GoTrue 0-null scan).
 
----
-
-## 2. 🚨 QUY TẮC AN TOÀN DỮ LIỆU & HẠ TẦNG (CRITICAL GUARDS)
-
-### Rule 3: ERP Business Safety Rule
-
-- **CẤM** tự ý thay đổi logic tính giá, công nợ khách hàng/nhà cung cấp, tồn kho sợi/vải, trạng thái đơn hàng hoặc bút toán kế toán.
-- Nếu có bất kỳ thay đổi nào liên quan, PHẢI gắn cờ `[BUSINESS BEHAVIOR CHANGE]` và dừng lại xin ý kiến người dùng.
-
-### Rule 23: Database & Infrastructure Host-Persistence Guard
-
-- **CẤM TUYỆT ĐỐI** đặt bind-mount volume dữ liệu PostgreSQL (`volumes/db/data`) bên trong thư mục Git workspace (`/var/www/vinhphaterp`). Toàn bộ dữ liệu PostgreSQL phải nằm ở thư mục hệ thống độc lập (`/opt/supabase/` hoặc `/var/lib/vinhphat-supabase/`) hoặc Docker Named Volumes.
-- **CẤM** chạy các lệnh Git mang tính phá hủy như `git clean -xdf` hay `rm -rf` trên các thư mục chứa cấu hình Docker, SSL certs hoặc volumes.
-- Hệ thống backup tự động (`vinhphat-db-backup.timer`) chạy 2 lần/ngày (02:00 và 14:00) lưu tại `/var/backups/vinhphaterp/` phải luôn ở trạng thái hoạt động.
-
-### Rule 24: Auth Schema & GoTrue Null-Safety Guard
-
-- GoTrue backend (ngôn ngữ Go) ánh xạ các trường chuỗi của `auth.users` (`email_change`, `phone_change`, `confirmation_token`, `recovery_token`, v.v.) vào kiểu `string` nguyên thủy.
-- **CẤM TUYỆT ĐỐI** để giá trị `NULL` trong các cột chuỗi của `auth.users`. Mọi thao tác insert/migration phải có `DEFAULT ''` và chèn chuỗi rỗng `''`. Lỗi `NULL` sẽ kích hoạt `sql: Scan error ... converting NULL to string is unsupported` làm tê liệt đăng nhập Google OAuth.
-
----
-
-## 3. Công Nghệ & Cấu Trúc Dự Án
-
-- **Frontend (`src/`)**: React 18, TypeScript, Vite, Tailwind CSS (Design Tokens, cấm mã màu cứng), TanStack React Query, Radix UI.
-- **Backend (`server/`)**: Hono web server, Drizzle ORM, Supabase JS, Google GenAI SDK.
-- **Cơ sở dữ liệu (`supabase/`)**: PostgreSQL, Row Level Security (Fail-Closed Multi-Tenancy), Storage Buckets Private, Edge Functions Deno.
-- **CI/CD & Automation (`.github/workflows/deploy-vioncloud.yml`)**: Tích hợp sẵn 5 bài kiểm tra tự động Post-Deployment Smoke Test (Containers, Postgres Query, PostgREST API 200, Google OAuth 302, GoTrue 0-Null).
-- **Bộ kiểm thử**: Vitest (`npm run test`), Playwright (`npm run test:e2e`).
-
----
-
-## 4. Tiêu Chuẩn Nghiệm Thu Kỹ Thuật (Quality Gates)
-
-Trước khi kết luận bất kỳ nhiệm vụ nào hoặc tạo Pull Request, BẮT BUỘC chạy và vượt qua 100%:
+## Commands
 
 ```bash
-npm run rpc:check                 # 0 issues (Kiểm tra khớp RPC giữa frontend & database)
-npm run typecheck                 # 0 errors (Kiểm tra TypeScript Frontend)
-npm run typecheck:server          # 0 errors (Kiểm tra TypeScript Backend)
-npm run lint -- --max-warnings=0  # 0 warnings (Kiểm tra kiến trúc ESLint)
-npm run lint:css                  # 0 errors (Kiểm tra Stylelint Design Tokens)
-npm run test                      # PASS 100% (Kiểm thử đơn vị Vitest)
+npm run dev              # Vite frontend (proxies /api → http://localhost:3001)
+npm run dev:server       # Hono server (server/, tsx watch, reads server/.env)
+npm run dev:all          # both
+
+# Required quality gates before calling a task done (0 errors, 0 warnings)
+npm run rpc:check                 # frontend rpc() calls vs live DB function signatures — needs DATABASE_URL
+npm run typecheck
+npm run lint -- --max-warnings=0
+npm run lint:css                  # Stylelint: semantic tokens only
+npm run test                      # Vitest (src/**/*.test.ts(x) and server/src/**/*.test.ts)
+
+npm run typecheck:server          # when touching server/
+npm run size:check                # file-size ratchet (see below)
+npm run theme:check               # theme contract
+npm run audit:full                # rpc + vapid + lint + typecheck(both) + theme
+
+# Single test
+npx vitest run src/domain/inventory/roll-selection.engine.test.ts
+npx vitest run -t "test name substring"
+npx playwright test e2e/auth.spec.ts   # E2E starts its own dev server on :5174 (--mode test)
+
+# DB (Supabase CLI)
+npm run db:new <name>    # new migration in supabase/migrations/
+npm run db:status
+npm run db:push          # applies to the REAL database — propose it, never run it yourself
 ```
 
----
+`agent/` and `server/` are separate npm packages with their own `package.json` and lockfiles. Run `npm run server:install` after changing server deps.
 
-## 5. Quy Trình Git & Phân Nhánh Chuẩn (`/git-workflow`)
+## Enforcement you will hit
 
-- **Branch Guard**: Cấm push trực tiếp lên nhánh `main`. Mọi tính năng/sửa lỗi phải tạo nhánh riêng:
-  - `feat/<ten-tinh-nang>`
-  - `fix/<ten-loi>`
-  - `refactor/<ten-module>`
-- **Commit**: Tuân thủ chuẩn Conventional Commits: `<type>(<scope>): <message>`.
-- **Pre-push Hook**: Husky tự động chạy lockfile sync, rpc:check, vapid:check, theme:check, và typecheck trước khi đẩy lên remote.
+- **Pre-push hook** (`.husky/pre-push`) blocks pushes to `main`, checks both lockfiles, and runs `rpc:check`, `size:check`, `vapid:check`, `theme:check`, and both typechecks. `SKIP_RPC_CHECK=1` only bypasses the push; it does not mean the check passed. Full lint, Vitest, build, E2E, and AI audit run in CI (`.github/workflows/ci.yml`).
+- **File-size ratchet (Rule 11, 300-line limit):** `scripts/file-size-baseline.json` lists legacy files over 300 lines. A listed file may not grow, and a new file may not exceed 300 lines. Split files instead of growing them. Run `npm run size:baseline` only after a real shrink.
+- **ESLint architecture guards:**
+  - No cross-feature imports: `src/features/A` cannot import `src/features/B`. `*Page.tsx`, `*Detail.tsx`, and `*Layout.tsx` are exempt.
+  - No relative `../` imports; use the `@/` alias (→ `src/`).
+  - No direct `lucide-react`; use `<Icon />`. No emoji literals in source.
+  - No native `<select>`; use `VPSelect`. No legacy `@/shared/components/Combobox`; use `VPCombobox` or `VPVirtualCombobox`.
+  - No hardcoded Tailwind palette colors like `text-gray-900`, `bg-white`, `text-red-500`. Use semantic tokens from `src/styles/theme/tokens.css`, e.g. `text-muted`, `bg-surface`, `text-danger`.
+  - In `.tsx`: no `.reduce()`, `formatCurrency()`, `toLocaleString()`, or `Intl.NumberFormat`. Move math into domain/utils and show money with `<MoneyText />` or `<MoneyCell />`.
+  - No `any`.
+  - Server routes (`server/src/routes`) must not import `server/src/db` directly; go through `server/src/services`.
+- **Infrastructure files stay out of feature commits.** Keep changes to `.github/`, `.husky/`, `.agents/rules/`, and `e2e/` out of feature commits. Automated commits have silently reverted CI gates before. Check with `git diff --name-only origin/main...HEAD | grep -E '^\.github/|^\.husky/|^\.agents/rules/|^e2e/'`.
+
+## Frontend architecture
+
+The folder list in README/`docs/ARCHITECTURE.md` is older than the code. A vertical slice actually looks like this:
+
+```
+src/features/<module>/      UI components, feature-local hooks, *.module.ts (FeatureDefinition: route, menu, roles)
+  ↓ imports hooks from
+src/application/<domain>/   React Query hooks (useQuery/useMutation) orchestrating api + domain
+  ↓
+src/domain/<domain>/        pure business logic, types, calculations (unit-tested; no React, no Supabase)
+src/schema/*.schema.ts      Zod schemas + form value types
+  ↓
+src/api/*.api.ts            Supabase queries / supabase.rpc(...) calls, one file per resource
+  ↓
+src/services/supabase/      typed client (database.types.ts) and untypedDb for tables/RPCs not yet in generated types
+  ↓
+supabase/migrations/        Postgres tables, RLS, RPC functions
+```
+
+- Features are registered through `*.module.ts` with `createModule` (`src/core/registry/moduleRegistry.ts`). Routing lives in `src/app/router/`, split into ERP shell, public, customer portal, supplier portal, and driver routes.
+- `src/shared/` holds cross-feature components (VP\* inputs, `Icon`, money display), hooks, utils, and print services. Look there before creating anything new.
+- **Writes:** single-row inserts/upserts go through `safeUpsert` in `src/lib/db-guard.ts`. Never call raw `.insert()`, and never build business IDs from `Date.now()`. Anything multi-table or concurrent must be an atomic Postgres RPC using `FOR UPDATE`: stock deduction, debt, status transitions, reservations.
+- **Adding or changing an RPC** means a new migration (never edit a pushed migration), updating `src/services/supabase/database.types.ts`, and keeping `rpc:check` green. `npm run rpc:fix` can generate a migration stub. A near-duplicate `src/schema/database.types.ts` also exists, but the Supabase client imports the `services/supabase` one.
+- Print documents (packing lists, invoices, etc.) use a registry in `src/domain/print` (templates, field registry). Rendering and export live in `src/shared/services/print/`.
+- Heavy libraries (exceljs, jspdf, html2canvas, AI SDKs) are split into their own chunks in `vite.config.ts`. Lazy-import them.
+
+## Backend
+
+- `server/`: a Hono app (`server/src/index.ts`) with Drizzle schema in `server/src/db/schema`. It covers AI chat, OCR/vision for payment slips, webhooks with a retry worker, and web push (VAPID keys must match the frontend; `npm run vapid:check`). Most CRUD goes straight from the frontend to Supabase under RLS; the server handles work that needs secrets or the service role.
+- `agent/`: a standalone AI agent and MCP server package with its own typecheck job in CI.
+- Env vars are listed in `.env.example`. `DATABASE_URL` is required for `rpc:check`.

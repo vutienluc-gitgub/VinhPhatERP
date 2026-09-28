@@ -38,6 +38,8 @@ jobs:
         run: npm run size:check
       - name: Theme contract check
         run: npm run theme:check
+      - name: Dark variant guard
+        run: npm run dark:check
       - name: Typecheck
         run: npm run typecheck
       - name: Test

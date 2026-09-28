@@ -5,6 +5,7 @@ import { useSearchMessages, useTypingIndicator } from '@/application/chat';
 import { CHAT_LABELS, type ChatMessage } from '@/schema/chat.schema';
 import { scrollToAndHighlightMessage } from '@/features/chat/chat.utils';
 import { useChatDrawerOrchestration } from '@/features/chat/hooks/useChatDrawerOrchestration';
+import { useBodyScrollLock } from '@/shared/hooks/useBodyScrollLock';
 
 import { ChatContextBar } from './components/ChatContextBar';
 import { ChatDrawerBannerGroup } from './components/ChatDrawerBannerGroup';
@@ -12,6 +13,7 @@ import { ChatDrawerSearchPanel } from './components/ChatDrawerSearchPanel';
 import { ChatHeaderV3 } from './components/ChatHeaderV3';
 import { ChatInputArea } from './components/ChatInputArea';
 import { ChatMessageList } from './components/ChatMessageList';
+import { ChatViewportSync } from './components/ChatViewportSync';
 import { PinnedMessagesBar } from './components/PinnedMessagesBar';
 
 import './chat.css';
@@ -75,6 +77,9 @@ export const ChatDrawer = React.memo(function ChatDrawer({
     useTypingIndicator(resolvedRoomId);
   const messageListRef = useRef<HTMLDivElement>(null);
 
+  // Khoá trang phía sau để kéo trong khung chat không làm trôi/nảy cả màn hình (iOS Safari)
+  useBodyScrollLock(open, { preserveScrollPosition: true });
+
   const handleToggleSearch = useCallback(() => {
     setIsSearchOpen((prev) => {
       if (prev) {
@@ -115,6 +120,7 @@ export const ChatDrawer = React.memo(function ChatDrawer({
         aria-modal="true"
         aria-label={title ?? CHAT_LABELS.TITLE}
       >
+        <ChatViewportSync />
         {/* Modern Header V3 */}
         <ChatHeaderV3
           title={title}

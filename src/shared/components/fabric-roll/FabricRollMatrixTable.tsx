@@ -185,10 +185,10 @@ export const FabricRollMatrixTable: React.FC<FabricRollMatrixTableProps> = ({
                       interactive &&
                         'cursor-pointer hover:bg-primary/10 active:scale-95 focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none',
                       isChecked &&
-                        'bg-success-soft/20 text-success font-semibold dark:bg-success-soft/10',
+                        'bg-success-soft/20 text-success font-semibold',
                       !isChecked &&
                         isGradeB &&
-                        'bg-warning-soft/20 text-warning font-semibold dark:bg-warning-soft/10',
+                        'bg-warning-soft/20 text-warning font-semibold',
                     )}
                   >
                     <div className="flex flex-col items-center justify-center leading-tight">

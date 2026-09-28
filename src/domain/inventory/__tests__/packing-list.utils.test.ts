@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import type { FabricRollPackingItem } from '@/domain/inventory/packing-list.types';
 import {
+  PACKING_LIST_EXPORT_COLUMNS,
   calculatePackingSummary,
   exportPackingListToCsvContent,
   filterPackingRolls,
+  formatPackingListForExcel,
   formatPackingListForExport,
   groupRollsByColorAndBatch,
   normalizeGrade,
@@ -213,6 +215,22 @@ describe('packing-list.utils', () => {
       expect(csv).toContain('BẢNG KÊ DANH SÁCH CÂY VẢI');
       expect(csv).toContain('VP-MT-01');
       expect(csv).toContain('67.5 kg');
+    });
+
+    it('keeps weight numeric for the .xlsx export', () => {
+      const rows = formatPackingListForExcel(mockRolls);
+      expect(rows[0]?.can_nang_kg).toBe(22.8);
+      expect(typeof rows[0]?.can_nang_kg).toBe('number');
+      expect(rows[0]?.ma_cay_vai).toBe('VP-MT-01');
+    });
+
+    it('declares one Excel column per exported field', () => {
+      const keys = PACKING_LIST_EXPORT_COLUMNS.map((c) => c.key);
+      expect(keys).toEqual(
+        Object.keys(formatPackingListForExcel(mockRolls)[0]!),
+      );
+      expect(keys).toContain('can_nang_kg');
+      expect(keys).toContain('ghi_chu');
     });
   });
 });

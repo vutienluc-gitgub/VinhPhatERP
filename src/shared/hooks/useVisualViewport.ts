@@ -55,6 +55,12 @@ export function useVisualViewport(): ViewportInfo {
 
     // Gán CSS Variable để sử dụng toàn cục trong stylesheet
     document.documentElement.style.setProperty('--vv-height', `${vh}px`);
+    // iOS Safari cuộn lệch layout viewport khi bàn phím mở → cần offset để ghim
+    // phần tử fixed toàn màn hình vào đúng vùng đang hiển thị
+    document.documentElement.style.setProperty(
+      '--vv-offset-top',
+      `${offsetTop}px`,
+    );
     document.documentElement.style.setProperty(
       '--keyboard-height',
       `${Math.max(0, maxVhRef.current - vh)}px`,

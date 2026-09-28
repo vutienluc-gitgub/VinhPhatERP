@@ -21,6 +21,7 @@ export const APP_SHELL_LABELS = {
   QUICK_CREATE_DEV_DESC:
     'Tính năng Tạo mới {action} trực tiếp qua Popup đang được phát triển. Form nhập liệu sẽ sớm có mặt tại đây.',
   APP_LAUNCHER_TITLE: 'Trình khởi chạy ứng dụng',
+  DOCK_NAV_ARIA: 'Điều hướng nhanh',
   NOTIFICATION_PREFIX: 'Thông báo:',
   TASKS_PENDING_SUFFIX: 'việc cần xử lý',
 };

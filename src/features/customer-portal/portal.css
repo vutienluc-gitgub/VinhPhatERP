@@ -361,7 +361,7 @@
 
 .portal-stat-icon--warning {
   background: var(--warning-soft, #fffbeb);
-  color: var(--warning, #d97706);
+  color: var(--warning, #b45309);
 }
 
 .portal-stat-icon--info {
@@ -394,7 +394,7 @@
 }
 
 .portal-stat-value--warning {
-  color: var(--warning, #d97706);
+  color: var(--warning, #b45309);
 }
 
 .portal-stat-value--info {

@@ -83,7 +83,7 @@ export function ShipmentDispatchPage() {
     <TacticalBoard onMoveComplete={handleMoveComplete}>
       <div className="flex flex-col gap-6 p-4 sm:p-6">
         {/* ── HEADER ── */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-surface-strong p-5 sm:p-6 text-inverse-foreground shadow-xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-surface-strong p-5 sm:p-6 text-foreground shadow-xl">
           <div>
             <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-success">
               {MSG.TITLE}

@@ -57,6 +57,9 @@ export default {
       inverse: {
         foreground: 'var(--inverse-foreground)',
       },
+      'on-dark': {
+        foreground: 'var(--on-dark-foreground)',
+      },
       surface: {
         DEFAULT: 'var(--surface)',
         secondary: 'var(--surface-secondary)',

@@ -166,3 +166,52 @@
   font-size: 0.75rem;
   font-weight: 500;
 }
+
+/* ── QuickActionsSheet: danh sách tác vụ tạo mới nhanh từ nút "+" trên dock ── */
+
+.quick-create-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.quick-create-row:hover {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.quick-create-row:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.quick-create-row-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+.quick-create-row-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

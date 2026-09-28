@@ -32,7 +32,8 @@ export type DocumentType =
   | 'sales_statement'
   | 'payment_receipt'
   | 'fabric_inspection'
-  | 'roll_tag';
+  | 'roll_tag'
+  | 'packing_list';
 
 export type PrinterProfileType =
   | 'laser'

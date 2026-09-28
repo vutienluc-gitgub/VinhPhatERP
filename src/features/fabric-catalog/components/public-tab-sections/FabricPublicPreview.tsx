@@ -182,7 +182,7 @@ export function FabricPublicPreview() {
           <div className="p-4 bg-surface">
             <button
               type="button"
-              className="w-full py-2.5 bg-surface-strong text-inverse-foreground font-bold rounded-lg text-sm hover:bg-surface-strong transition-colors shadow-sm"
+              className="w-full py-2.5 bg-surface-strong text-foreground font-bold rounded-lg text-sm hover:bg-surface-strong transition-colors shadow-sm"
             >
               {LABELS.PREVIEW_CONTACT_PRICE}
             </button>

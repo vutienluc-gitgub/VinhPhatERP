@@ -129,10 +129,10 @@ export function useShipmentColumns({
           return (
             <div className="flex bg-transparent w-full group cursor-default">
               <div className="flex flex-col items-center mr-3 mt-1 shrink-0">
-                <div className="w-2.5 h-2.5 rounded-full bg-surface-strong ring-2 ring-slate-100 dark:ring-slate-800" />
-                <div className="w-[1.5px] h-[22px] bg-surface-secondary border-l border-dashed border-muted dark:border-focus my-0.5" />
+                <div className="w-2.5 h-2.5 rounded-full bg-surface-strong ring-2 ring-slate-100" />
+                <div className="w-[1.5px] h-[22px] bg-surface-secondary border-l border-dashed border-muted my-0.5" />
                 <div
-                  className={`w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-800 ${isCompleted ? 'bg-success' : s.status === 'preparing' ? 'bg-surface-strong' : 'bg-warning-soft animate-pulse'}`}
+                  className={`w-2.5 h-2.5 rounded-full ring-2 ring-white ${isCompleted ? 'bg-success' : s.status === 'preparing' ? 'bg-surface-strong' : 'bg-warning-soft animate-pulse'}`}
                 />
               </div>
               <div className="flex w-[220px] flex-col justify-between py-[1px]">

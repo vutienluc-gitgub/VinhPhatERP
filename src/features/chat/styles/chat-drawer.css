@@ -12,6 +12,7 @@
   background: rgb(0, 0, 0, 0.4);
   z-index: 1010;
   animation: chatFadeIn 0.2s ease-out;
+  touch-action: none;
 }
 
 /* ── Chat Drawer Shell ── */
@@ -19,10 +20,16 @@
 .chat-drawer {
   position: fixed;
   inset: 0;
+
+  /* Ghim vào vùng đang hiển thị (visualViewport): iOS Safari không co 100dvh khi
+     bàn phím mở → dùng biến do ChatViewportSync cập nhật, fallback 100dvh */
+  top: var(--vv-offset-top, 0px);
+  bottom: auto;
   width: 100%;
   max-width: 100%;
   height: 100%;
   height: 100dvh;
+  height: var(--vv-height, 100dvh);
   background: var(--surface-strong);
   border-radius: 0;
   box-shadow: var(--shadow);
@@ -393,6 +400,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex: 1;
+  min-height: 100%;
   padding: 40px 16px;
   text-align: center;
   color: var(--muted-foreground);

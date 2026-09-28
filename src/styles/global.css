@@ -40,3 +40,21 @@
 @config "../../tailwind.config.js";
 
 @source "../";
+
+/* Docs under .agents/ contain Tailwind snippets as examples. Tailwind v4
+   scans markdown too, so without this it emits CSS for classes that only ever
+   appear in documentation (e.g. the shadcn `dark:` toggle example). */
+@source not "../../.agents";
+
+/* Tailwind v4 scans the whole project tree, including nested repos and
+   directories that only exist on the deploy host (a leftover `app/`, the
+   `supabase/` CLI clone, `vibe-bot/`, editor state). Source files there leak
+   their classes into the production stylesheet, so exclude everything that is
+   not part of this app. `supabase/functions` is intentionally kept scanned. */
+@source not "../../app";
+@source not "../../vibe-bot";
+@source not "../../.obsidian";
+@source not "../../supabase/apps";
+@source not "../../supabase/examples";
+@source not "../../supabase/packages";
+@source not "../../supabase/e2e";

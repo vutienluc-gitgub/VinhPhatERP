@@ -147,7 +147,7 @@ export const TaskCard = forwardRef(function TaskCard(
         <div className="flex items-center gap-1.5">
           {assignee ? (
             <div className="flex items-center gap-1">
-              <span className="h-4 w-4 rounded-full bg-info-soft text-inverse-foreground flex items-center justify-center text-[8px] font-bold">
+              <span className="h-4 w-4 rounded-full bg-info text-inverse-foreground flex items-center justify-center text-[8px] font-bold">
                 {assignee.name.slice(0, 1)}
               </span>
               <span className="truncate max-w-[70px] font-medium">

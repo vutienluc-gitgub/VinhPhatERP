@@ -110,3 +110,16 @@ Không có output = an toàn. Có output = phải xem lại từng file.
 | ---------------------- | ---------------------------------- |
 | Tạo feature mới từ đầu | `.github/skills/feature-scaffold/` |
 | Viết hoặc chạy test    | `.github/skills/run-tests/`        |
+
+---
+
+## Bảng kê cây vải (Fabric Roll Packing List)
+
+Tính năng đã có sẵn từ trước nhưng **trước đây chưa nối vào UI nội bộ**. Nay đã tích hợp vào Kho Thành phẩm (`finished-fabric`):
+
+- Nút **Bảng kê cây vải** ở `FinishedFabricList` (qua `FinishedFabricListActions`) mở `FinishedFabricPackingListDrawer`, tự nạp toàn bộ cây vải theo filter hiện tại qua `useFinishedFabricPackingList` (thêm vào `@/application/inventory`). `mapRollToPackingItem` chuyển `finished_fabric_rolls` → `FabricRollPackingItem`, đổi `width_cm` sang `width_inch`.
+- In ấn: `src/shared/services/print/packing-list/packing-list-print.ts` dựng HTML A5 landscape rồi in qua iframe ẩn (không bị chặn popup). `FabricRollPackingListModal` mặc định gọi `printPackingList` khi không truyền `onPrint`.
+- Nút In trong drawer mở `BusinessPrintDialog` với `documentType="packing_list"` — dùng chung Print Registry (`src/domain/print`): template seed `template-seed.packing-list.ts`, field registry `packing_list.*`, tab lọc tại `print-templates.constants.ts`. Preview dùng `PrintCanvasPreview` + `PackingRollsPreview`.
+- Domain thuần đặt tại `src/domain/inventory/packing-list.*` (utils: `calculatePackingSummary`, `groupRollsByColorAndBatch`, `buildPackingMatrixRows`, `processRollCheckoff`) và `packing-export.utils.ts` (`formatPackingListForExcel`, `PACKING_LIST_EXPORT_COLUMNS`, `exportPackingListToCsvContent`).
+- Xuất file: nút "Xuất file Excel" gọi `exportPackingListToExcel` (`src/shared/services/print/packing-list/packing-list-excel.ts`) → `exportToExcel` (ExcelJS lazy-import) tạo `.xlsx` thật, khối lượng giữ dạng số để Excel cộng được. CSV UTF-8 BOM vẫn còn cho ngữ cảnh khác.
+- Lưu ý Rule 11: `FinishedFabricList.tsx` (baseline 331) và `BusinessPrintDialog.tsx` (baseline 448) không được vượt; actions đã tách sang `FinishedFabricListActions.tsx`, preview tách sang `PrintCanvasPreview.tsx`, seed template tách khỏi `field-registry.ts`.
