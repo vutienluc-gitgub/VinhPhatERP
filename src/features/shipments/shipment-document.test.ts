@@ -126,4 +126,59 @@ describe('shipment-document', () => {
       'phieu_xuat_XK2604-0001_2026-04-02.pdf',
     );
   });
+
+  it('builds A5 dot matrix html with 15 columns and unified typography', async () => {
+    const { html } = await buildShipmentPrintHtml(shipmentFixture, {
+      format: 'A5_DOT_MATRIX',
+    });
+
+    expect(html).toContain('a5-roll-matrix');
+    expect(html).toContain('repeat(15, 1fr)');
+    expect(html).toContain('.a5-matrix-cell { border: none; text-align: left;');
+    expect(html).toContain(
+      '.a5-roll-idx { display: block; font-family: Arial, "Segoe UI", sans-serif; font-size: 7.5pt; color: #000; text-align: left; }',
+    );
+    expect(html).toContain(
+      '.a5-sign-desc { font-family: Arial, "Segoe UI", sans-serif; font-size: 7.5pt; color: #000;',
+    );
+    expect(html).toContain('.a5-footer {');
+    expect(html).toContain('font-size: 7.5pt;');
+    expect(html).toContain('PHIẾU XUẤT KHO');
+  });
+
+  it('renders 15 columns for multi-roll lots', async () => {
+    const multiRollFixture: ShipmentDocument = {
+      ...shipmentFixture,
+      shipment_items: Array.from({ length: 30 }, (_, i) => ({
+        id: `roll-${i + 1}`,
+        shipment_id: 'shipment-1',
+        finished_roll_id: `fin-${i + 1}`,
+        fabric_type: 'Kate Silk',
+        color_name: 'Trắng Sứ',
+        quantity: 25.5,
+        unit: 'kg',
+        roll_number: `C${String(i + 1).padStart(2, '0')}`,
+        roll_length_m: null,
+        warehouse_location: null,
+        price_per_meter: null,
+        notes: null,
+        tenant_id: null,
+        total_amount: null,
+        sort_order: i + 1,
+      })),
+    };
+
+    const { html } = await buildShipmentPrintHtml(multiRollFixture, {
+      format: 'A5_DOT_MATRIX',
+    });
+
+    expect(html).toContain('30 cây');
+    expect(html).toContain('#01');
+    expect(html).toContain('#15');
+    expect(html).toContain('#30');
+    expect(html).toContain('repeat(15, 1fr)');
+    expect(html).toContain(
+      '.a5-roll-idx { display: block; font-family: Arial, "Segoe UI", sans-serif; font-size: 7.5pt; color: #000; text-align: left; }',
+    );
+  });
 });
