@@ -117,3 +117,7 @@ server/.env
 !supabase/rollbacks/*.sql
 !supabase/schema.sql
 !scripts/**/*.sql
+
+# Supabase Docker local data & templates
+supabase/docker/
+

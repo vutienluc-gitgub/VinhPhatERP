@@ -220,18 +220,18 @@ export function LoginForm({
         </div>
 
         {/* Remember + Forgot */}
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2 px-1">
+          <div className="flex items-center gap-2 min-w-0">
             <input
               type="checkbox"
               id="rememberMe"
               disabled={isLocked}
-              className="w-4 h-4 rounded border-transparent/20 bg-foreground/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-4 h-4 rounded border-transparent/20 bg-foreground/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               {...register('rememberMe')}
             />
             <label
               htmlFor="rememberMe"
-              className="text-sm text-on-dark-foreground/70 cursor-pointer select-none"
+              className="text-sm text-on-dark-foreground/70 cursor-pointer select-none truncate"
             >
               {AUTH_LABELS.rememberMe}
             </label>
@@ -242,13 +242,35 @@ export function LoginForm({
               type="button"
               onClick={onForgotPassword}
               disabled={isLocked}
-              className="text-[#818cf8] hover:text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-[#818cf8] hover:text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap"
             >
               {AUTH_LABELS.forgotPassword}
             </button>
           )}
         </div>
       </div>
+
+      {/* ── Turnstile (Lazy Load) ──────────────────────────── */}
+      <div className="flex justify-center min-h-[65px]">
+        {isInteracting && (
+          <Turnstile onVerify={setCaptchaToken} options={{ theme: 'dark' }} />
+        )}
+      </div>
+
+      {/* ── Submit Button ──────────────────────────────────── */}
+      <button
+        type="submit"
+        disabled={isLocked || !captchaToken}
+        aria-busy={isSubmitting}
+        className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#818cf8] hover:to-[#6366f1] border-none shadow-lg shadow-[#6366f1]/30 text-on-dark-foreground font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+      >
+        {isSubmitting && (
+          <Icon name="LoaderCircle" size={18} className="animate-spin" />
+        )}
+        {isSubmitting
+          ? AUTH_MESSAGES.authenticating
+          : AUTH_MESSAGES.loginButton}
+      </button>
 
       {/* ── Server Error ───────────────────────────────────── */}
       {serverError && (
@@ -258,7 +280,7 @@ export function LoginForm({
       )}
 
       {/* ── Divider ────────────────────────────────────────── */}
-      <div className="flex items-center gap-4 my-2">
+      <div className="flex items-center gap-4 my-1">
         <div className="flex-1 h-px bg-surface/10" />
         <span className="text-xs font-medium text-on-dark-foreground/40 uppercase tracking-wider">
           {AUTH_MESSAGES.or}
@@ -314,28 +336,6 @@ export function LoginForm({
         <div className="auth-glow" />
         <GoogleIcon />
         {AUTH_MESSAGES.continueWithGoogle}
-      </button>
-
-      {/* ── Turnstile (Lazy Load) ──────────────────────────── */}
-      <div className="flex justify-center min-h-[65px]">
-        {isInteracting && (
-          <Turnstile onVerify={setCaptchaToken} options={{ theme: 'dark' }} />
-        )}
-      </div>
-
-      {/* ── Submit Button ──────────────────────────────────── */}
-      <button
-        type="submit"
-        disabled={isLocked || !captchaToken}
-        aria-busy={isSubmitting}
-        className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#818cf8] hover:to-[#6366f1] border-none shadow-lg shadow-[#6366f1]/30 text-on-dark-foreground font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        {isSubmitting && (
-          <Icon name="LoaderCircle" size={18} className="animate-spin" />
-        )}
-        {isSubmitting
-          ? AUTH_MESSAGES.authenticating
-          : AUTH_MESSAGES.loginButton}
       </button>
     </form>
   );
