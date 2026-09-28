@@ -117,7 +117,8 @@ jobs:
 
             # 7c. Kiểm tra PostgREST API endpoint
             echo "🔍 [Check 3/5] Verifying PostgREST API (/rest/v1/customers)..."
-            API_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000/rest/v1/customers")
+            ANON_KEY=$(grep -E '^(VITE_SUPABASE_ANON_KEY|ANON_KEY)=' "$APP_DIR/.env" "$APP_DIR/supabase/docker/.env" 2>/dev/null | head -n1 | cut -d= -f2- | tr -d '\r\n" ')
+            API_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $ANON_KEY" "http://127.0.0.1:8000/rest/v1/customers?limit=1")
             if [ "$API_CODE" != "200" ]; then
               echo "❌ CRITICAL: PostgREST API returned HTTP $API_CODE instead of 200!"
               exit 1
