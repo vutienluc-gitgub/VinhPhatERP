@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/AuthProvider';
+import { AUTH_LABELS, AUTH_MESSAGES } from '@/features/auth/constants';
 import { Icon } from '@/shared/components/Icon';
 
 export function PasskeyLoginSection({
@@ -43,7 +44,7 @@ export function PasskeyLoginSection({
           id="passkey-identifier"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
-          placeholder="MÃ£ nhÃ¢n viÃªn (VD: NV001, VP-0142)..."
+          placeholder={AUTH_LABELS.passkeyIdentifierPlaceholder}
           disabled={isLoading}
           className="w-full px-4 py-3 bg-foreground/20 border border-transparent/10 rounded-xl text-on-dark-foreground placeholder:text-on-dark-foreground/40 text-sm focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-all"
         />
@@ -65,8 +66,8 @@ export function PasskeyLoginSection({
         )}
         <span>
           {isLoading
-            ? 'Äang cháº¡m xÃ¡c thá»±c...'
-            : 'ÄÄƒng nháº­p Passkey / VÃ¢n tay'}
+            ? AUTH_MESSAGES.passkeyConnecting
+            : AUTH_MESSAGES.passkeyLoginAction}
         </span>
       </button>
 

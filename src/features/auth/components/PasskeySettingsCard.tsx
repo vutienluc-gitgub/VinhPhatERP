@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { AUTH_LABELS, AUTH_MESSAGES } from '@/features/auth/constants';
 import { Icon } from '@/shared/components';
 import {
   usePasskeyAuth,
@@ -25,7 +26,7 @@ export function PasskeySettingsCard() {
       const list = await listCredentials();
       setCredentials(list);
     } catch {
-      // Bỏ qua lỗi tải danh sách nếu mạng chậm
+      // Non-blocking in profile view
     } finally {
       setIsLoadingCreds(false);
     }
@@ -39,12 +40,12 @@ export function PasskeySettingsCard() {
     try {
       setIsRegistering(true);
       setFeedback(null);
-      const name = friendlyName.trim() || 'Thiết bị bảo mật';
+      const name = friendlyName.trim() || AUTH_MESSAGES.passkeyDeviceDefault;
       await registerPasskey(name);
       setFriendlyName('');
       setFeedback({
         type: 'success',
-        msg: 'Đăng ký khóa Passkey thành công! Từ nay bạn có thể đăng nhập bằng sinh trắc học.',
+        msg: AUTH_MESSAGES.passkeyRegisterSuccess,
       });
       await loadCredentials();
     } catch (err: unknown) {
@@ -75,7 +76,8 @@ export function PasskeySettingsCard() {
     } catch (err: unknown) {
       setFeedback({
         type: 'error',
-        msg: err instanceof Error ? err.message : 'Xóa khóa bảo mật thất bại.',
+        msg:
+          err instanceof Error ? err.message : AUTH_MESSAGES.passkeyRevokeError,
       });
     }
   };
@@ -88,131 +90,132 @@ export function PasskeySettingsCard() {
         </div>
         <div>
           <h2 className="text-lg font-bold text-foreground">
-            Sinh trắc học & Khóa Passkey
+            Khóa bảo mật Passkey & Sinh trắc học
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Đăng nhập không cần mật khẩu bằng Face ID, Touch ID hoặc Windows
-            Hello.
+          <p className="text-xs text-muted-foreground">
+            Đăng nhập 1 chạm an toàn không cần mật khẩu bằng Touch ID, Face ID
+            hoặc khóa FIDO2.
           </p>
         </div>
       </div>
 
+      {!isSupported && (
+        <div className="mt-4 p-3 bg-warning-soft/20 border border-warning/30 rounded-xl flex items-center gap-3 text-warning">
+          <Icon name="AlertTriangle" size={18} className="shrink-0" />
+          <p className="text-xs">
+            Trình duyệt hoặc hệ điều hành của bạn chưa hỗ trợ WebAuthn /
+            Passkeys.
+          </p>
+        </div>
+      )}
+
       {feedback && (
         <div
-          className={`p-3 rounded-xl text-sm font-medium my-4 ${
+          className={`mt-4 p-3 rounded-xl flex items-center justify-between text-xs ${
             feedback.type === 'success'
-              ? 'bg-success/10 text-success border border-success/20'
-              : 'bg-danger/10 text-danger border border-danger/20'
+              ? 'bg-success-soft/20 border border-success/30 text-success'
+              : 'bg-danger-soft/20 border border-danger/30 text-danger'
           }`}
         >
-          {feedback.msg}
+          <span>{feedback.msg}</span>
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            className="text-xs hover:underline cursor-pointer"
+          >
+            Đóng
+          </button>
         </div>
       )}
 
-      {isSupported ? (
-        <div className="mt-4 space-y-4">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 bg-surface/50 border border-border/60 rounded-xl">
-            <input
-              type="text"
-              placeholder="Tên thiết bị (VD: iPhone 15, Laptop xưởng may...)"
-              value={friendlyName}
-              onChange={(e) => setFriendlyName(e.target.value)}
-              disabled={isRegistering}
-              className="flex-1 px-3.5 py-2.5 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-            />
-            <button
-              type="button"
-              onClick={handleRegister}
-              disabled={isRegistering}
-              className="px-4 py-2.5 bg-primary text-primary-foreground font-semibold text-sm rounded-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
-            >
-              {isRegistering ? (
-                <Icon name="LoaderCircle" size={16} className="animate-spin" />
-              ) : (
-                <Icon name="Plus" size={16} />
-              )}
-              <span>
-                {isRegistering
-                  ? 'Đang chạm xác thực...'
-                  : 'Đăng ký thiết bị này'}
-              </span>
-            </button>
-          </div>
-
-          <div className="mt-6">
-            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-3">
-              Thiết bị đã liên kết ({credentials.length})
-            </h3>
-
-            {isLoadingCreds ? (
-              <div className="space-y-2">
-                <div className="h-14 bg-surface/40 animate-pulse rounded-xl" />
-                <div className="h-14 bg-surface/40 animate-pulse rounded-xl" />
-              </div>
-            ) : credentials.length === 0 ? (
-              <div className="p-6 text-center border border-dashed border-border rounded-xl bg-surface/20">
-                <Icon
-                  name="ShieldCheck"
-                  size={32}
-                  className="mx-auto text-muted-foreground/60 mb-2"
-                />
-                <p className="text-sm text-muted-foreground font-medium">
-                  Chưa có khóa Passkey nào được đăng ký cho tài khoản này.
-                </p>
-                <p className="text-xs text-muted-foreground/80 mt-1">
-                  Nhập tên thiết bị ở trên và nhấn "Đăng ký thiết bị này" để bật
-                  đăng nhập 1 chạm.
-                </p>
-              </div>
+      {/* Đăng ký Passkey mới */}
+      <div className="mt-6 pt-5 border-t border-border">
+        <label
+          htmlFor="passkey-name-input"
+          className="block text-xs font-semibold text-muted-foreground uppercase mb-2"
+        >
+          Thêm thiết bị mới
+        </label>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            id="passkey-name-input"
+            type="text"
+            value={friendlyName}
+            onChange={(e) => setFriendlyName(e.target.value)}
+            placeholder={AUTH_LABELS.passkeyDevicePlaceholder}
+            disabled={!isSupported || isRegistering}
+            className="flex-1 px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+          />
+          <button
+            type="button"
+            onClick={handleRegister}
+            disabled={!isSupported || isRegistering}
+            className="px-4 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl text-sm flex items-center justify-center gap-2 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+          >
+            {isRegistering ? (
+              <Icon name="LoaderCircle" size={16} className="animate-spin" />
             ) : (
-              <div className="divide-y divide-border border border-border rounded-xl overflow-hidden">
-                {credentials.map((cred) => (
-                  <div
-                    key={cred.id}
-                    className="p-3.5 sm:p-4 flex items-center justify-between gap-3 bg-surface hover:bg-surface/80 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                        <Icon name="Key" size={18} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold text-foreground truncate">
-                          {cred.friendly_name || 'Khóa bảo mật'}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          Tạo ngày:{' '}
-                          {new Date(cred.created_at).toLocaleDateString(
-                            'vi-VN',
-                          )}
-                          {cred.last_used_at &&
-                            ` · Dùng lần cuối: ${new Date(
-                              cred.last_used_at,
-                            ).toLocaleDateString('vi-VN')}`}
-                        </p>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(cred.id, cred.friendly_name)}
-                      className="px-2.5 py-1.5 text-xs font-semibold text-danger hover:bg-danger/10 rounded-lg transition-colors cursor-pointer shrink-0"
-                      title="Thu hồi khóa này"
-                    >
-                      Thu hồi
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <Icon name="Plus" size={16} />
             )}
+            <span>{isRegistering ? 'Đang tạo khóa…' : 'Đăng ký thiết bị'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Danh sách Passkeys đã đăng ký */}
+      <div className="mt-6 pt-5 border-t border-border">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-3">
+          Thiết bị đã liên kết ({credentials.length})
+        </h3>
+
+        {isLoadingCreds ? (
+          <div className="p-4 text-center text-xs text-muted-foreground">
+            Đang tải danh sách khóa bảo mật…
           </div>
-        </div>
-      ) : (
-        <div className="mt-3 p-4 bg-warning/10 border border-warning/20 rounded-xl text-sm text-warning-foreground">
-          Thiết bị hoặc trình duyệt hiện tại không hỗ trợ WebAuthn / Passkey.
-          Vui lòng sử dụng trình duyệt hiện đại (Chrome, Safari, Edge) có bật
-          bảo mật sinh trắc học.
-        </div>
-      )}
+        ) : credentials.length === 0 ? (
+          <div className="p-4 bg-muted/10 border border-border/60 rounded-xl text-center text-xs text-muted-foreground">
+            Chưa có khóa bảo mật nào được đăng ký. Hãy thêm thiết bị đầu tiên để
+            bật đăng nhập không cần mật khẩu.
+          </div>
+        ) : (
+          <ul className="divide-y divide-border">
+            {credentials.map((cred) => (
+              <li
+                key={cred.id}
+                className="py-3 flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-surface border border-border flex items-center justify-center text-muted-foreground">
+                    <Icon name="KeyRound" size={16} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {cred.friendly_name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Tạo ngày{' '}
+                      {new Date(cred.created_at).toLocaleDateString('vi-VN')}
+                      {cred.last_used_at &&
+                        ` • Dùng gần nhất ${new Date(
+                          cred.last_used_at,
+                        ).toLocaleDateString('vi-VN')}`}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleDelete(cred.id, cred.friendly_name)}
+                  className="px-2.5 py-1 text-xs text-danger hover:bg-danger-soft/20 rounded-lg transition-colors cursor-pointer"
+                  title="Thu hồi khóa này"
+                >
+                  Thu hồi
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

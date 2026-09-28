@@ -112,7 +112,7 @@ export function LoginForm({
           }`}
         >
           <Icon name="Fingerprint" size={16} />
-          <span>Passkey / MÃ£ NV</span>
+          <span>{AUTH_LABELS.passkeyTabPasskey}</span>
         </button>
         <button
           type="button"
@@ -127,7 +127,7 @@ export function LoginForm({
           }`}
         >
           <Icon name="KeyRound" size={16} />
-          <span>Email & M?t kh?u</span>
+          <span>{AUTH_LABELS.passkeyTabPassword}</span>
         </button>
       </div>
 
