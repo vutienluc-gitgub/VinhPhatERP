@@ -46,7 +46,7 @@ jobs:
             # `-x` drops those files while keeping gitignored paths (.env,
             # node_modules) intact.
             echo "🗑️  Removing stale untracked files..."
-            git clean -fd
+            git clean -fd -e supabase/
 
             # 3. Build Frontend React
             echo "📦 Building Frontend..."

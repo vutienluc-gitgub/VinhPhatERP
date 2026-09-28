@@ -58,7 +58,7 @@ export function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-auth-bg text-on-dark-foreground overflow-hidden font-sans">
+    <div className="flex min-h-screen w-full bg-auth-bg text-on-dark-foreground overflow-x-hidden overflow-y-auto lg:overflow-hidden font-sans">
       {/* ── Left Panel (Branding / Art) ── */}
       <div className="hidden lg:flex w-5/12 xl:w-[45%] relative flex-col justify-between p-12 lg:p-16 border-r border-transparent/5">
         {/* Background Gradients & Glows */}
@@ -103,7 +103,7 @@ export function AuthPage() {
       </div>
 
       {/* ── Right Panel (Auth Form) ── */}
-      <div className="flex-1 flex flex-col justify-center relative p-6 sm:p-12 lg:px-24">
+      <div className="flex-1 flex flex-col justify-center relative p-4 sm:p-12 lg:px-24 py-8 sm:py-12 min-h-screen lg:min-h-0">
         {/* Add a subtle glow behind the mobile form */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
           <div className="absolute top-0 right-0 w-full h-[50%] bg-primary/10 blur-[100px]" />
@@ -112,7 +112,7 @@ export function AuthPage() {
         <div className="w-full max-w-[400px] mx-auto relative z-10">
           <AuthBrandLogo layout="col" />
 
-          <div className="bg-surface/5 backdrop-blur-2xl border border-transparent/10 rounded-3xl p-8 sm:p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="bg-surface/5 backdrop-blur-2xl border border-transparent/10 rounded-3xl p-6 sm:p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
             {mode === 'login' && (
               <>
                 <LoginForm
