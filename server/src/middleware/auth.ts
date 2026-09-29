@@ -1,7 +1,7 @@
 ﻿import { createClient } from '@supabase/supabase-js';
 import type { Context, Next } from 'hono';
 
-import { verifySupabaseJwt } from '../utils/jwt.js';
+import { verifySupabaseJwt, hasJwtSecret } from '../utils/jwt.js';
 
 const supabaseUrl =
   process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
@@ -38,6 +38,13 @@ export async function requireAuth(c: Context, next: Next) {
   }
 
   // 2. Thử verify JWT ký bằng JWT_SECRET (dành cho Passkey session)
+  if (!hasJwtSecret()) {
+    // Không có secret: không thể verify passkey JWT. Đây là lỗi cấu hình phía
+    // server, không phải lỗi xác thực của client — trả 503 để sự cố vận hành
+    // không bị che sau lớp 401.
+    return c.json({ error: 'Authentication service not configured' }, 503);
+  }
+
   try {
     const payload = await verifySupabaseJwt(token);
     if (payload?.sub) {

@@ -86,6 +86,13 @@ export const Turnstile: React.FC<TurnstileProps> = ({
     return () => {
       clearInterval(timer);
       clearTimeout(loadTimeout);
+      // The widget is remounted on every failed login (the form bumps a key to
+      // replay the shake animation), so drop it from Cloudflare's registry to
+      // avoid leaking a hidden widget per attempt.
+      if (widgetIdRef.current) {
+        window.turnstile?.remove(widgetIdRef.current);
+        widgetIdRef.current = null;
+      }
     };
   }, [onVerify, options]);
 

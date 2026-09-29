@@ -72,6 +72,12 @@ export function LoginForm({
       );
       if (error) {
         setServerError(vietnameseAuthError(error.message));
+        // Cloudflare tokens are single-use: a failure (wrong password, or the
+        // challenge itself rejected) leaves the widget solved but the token
+        // spent, so the submit button stays enabled with a dead token and every
+        // retry fails silently. Reset so the next attempt gets a fresh one.
+        window.turnstile?.reset();
+        setCaptchaToken(null);
         setShakeKey((prev) => prev + 1);
         return;
       }

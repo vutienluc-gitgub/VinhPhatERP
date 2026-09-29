@@ -9,12 +9,29 @@ export interface SupabaseJwtUser {
   expiresInSeconds?: number;
 }
 
+/**
+ * Read the HMAC secret used to sign/verify Supabase-compatible JWTs.
+ *
+ * Never falls back to a default value: a well-known secret would let anyone
+ * mint a token for any `sub`, bypassing RLS across the whole instance.
+ * Throws instead, so a missing configuration fails loudly rather than
+ * silently insecurely.
+ */
 export function getJwtSecret(): string {
-  const secret =
-    process.env.SUPABASE_JWT_SECRET ||
-    process.env.JWT_SECRET ||
-    'your-super-secret-jwt-token-with-at-least-32-characters-long';
+  const secret = process.env.SUPABASE_JWT_SECRET || process.env.JWT_SECRET;
+  if (!secret || secret.trim().length === 0) {
+    throw new Error(
+      'SUPABASE_JWT_SECRET (or JWT_SECRET) chưa được cấu hình. ' +
+        'Từ chối ký/verify JWT để tránh dùng secret mặc định công khai.',
+    );
+  }
   return secret;
+}
+
+/** True when a JWT secret is configured. Used to guard startup and the auth middleware. */
+export function hasJwtSecret(): boolean {
+  const secret = process.env.SUPABASE_JWT_SECRET || process.env.JWT_SECRET;
+  return Boolean(secret && secret.trim().length > 0);
 }
 
 /**

@@ -13,6 +13,7 @@ import webhooksRouter from './routes/webhooks.js';
 import yarnReceiptsRouter from './routes/yarn-receipts.js';
 import aiChatRouter from './routes/ai-chat.js';
 import passkeyRouter from './routes/passkey.js';
+import { hasJwtSecret } from './utils/jwt.js';
 // Nạp biến môi trường từ .env nếu có (Node.js 20+)
 try {
   process.loadEnvFile?.();
@@ -89,6 +90,19 @@ app.onError((err, c) => {
 // Start Server
 // ──────────────────────────────────────────────
 const port = Number(process.env.PORT ?? 3001);
+
+// Không có secret thì vẫn chạy (để không sập các API không dùng JWT), nhưng
+// cảnh báo rõ: passkey login sẽ trả 503 cho tới khi biến được cấu hình.
+// Lỗ hổng "secret mặc định công khai" đã bị bịt ở getJwtSecret() — đây chỉ là
+// tín hiệu vận hành.
+if (!hasJwtSecret()) {
+  console.error(
+    '[VinhPhat API] WARNING: SUPABASE_JWT_SECRET (hoặc JWT_SECRET) chưa được cấu hình.\n' +
+      '                Đăng nhập Passkey sẽ trả 503. ' +
+      'Đặt biến này trong .env rồi khởi động lại service.',
+  );
+}
+
 // eslint-disable-next-line no-console
 console.log(`[VinhPhat API] Server listening on http://localhost:${port}`);
 
