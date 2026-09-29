@@ -122,7 +122,7 @@ re-authentication; see "Passkey refresh token" below.
 - `npm run test`: PASS — 162 files, 997 tests
 - `node scripts/check-file-size.mjs`: PASS — "No file grew past its baseline."
 - `npm run build`: PASS — `✓ built in 2.66s` (pre-existing chunk-size warning only)
-- `npm run test:e2e` (playwright): **[NOT RUN]** — needs a browser + dev server; not available in this sandbox. Must run in CI.
+- `npx playwright test e2e/auth-mobile-overflow.spec.ts e2e/auth.spec.ts --project=chromium`: PASS — 13 + 2 tests (run after install; see §11)
 
 ### Item status for this task
 
@@ -161,3 +161,58 @@ That is **acceptable Phase 2 scope** for this app because a passkey login is a
 single touch (Face ID), so re-authentication is cheap. It is **NOT** acceptable
 for unattended/kiosk or long-lived operations; those still need the server
 endpoint (tracked as future P1-C).
+
+---
+
+## 11. POST-MERGE VERIFICATION — auth mobile overflow + Phase 2 (e12a912)
+
+Gate 4 `APPROVE MERGE` received. PR #70 was already merged as e12a912; this
+section records the post-merge verification — no source change.
+
+### Deploy verification
+
+- `CI` / `Deploy to Vion Cloud (VPS)` / `Release` for `e12a912`: PASS (all three
+  `completed/success`). `e2e`, `rpc-sync`, `ai-audit` reported `skipped` — by
+  design (`E2E_ENABLED`/`RPC_SYNC_ENABLED` vars, `workflow_dispatch`), not a
+  trimmed CI.
+- Infra-diff guard (AGENTS.md grep): **no** `.github/`, `.husky/`,
+  `.agents/rules/`, `e2e/` files in the PR #70 diff.
+
+### Production smoke — `http://103.213.216.31/auth`
+
+- HTTP 200.
+- Bundle markers present: `passkey:no-refresh-token`, `vinhphat_remember`,
+  `vinhphat_session`, passkey-expiry copy (client chunk `client-Of2pz9yE.js`).
+
+### Bug #1 (mobile horizontal overflow) — live production probe (Puppeteer)
+
+| Viewport | Doc overflow | Card right edge | Clipped right |
+| -------- | ------------ | --------------- | ------------- |
+| 320px    | 0px          | 304 (< 320)     | no            |
+| 360px    | 0px          | 344 (< 360)     | no            |
+| 375px    | 0px          | 359 (< 375)     | no            |
+| 390px    | 0px          | 374 (< 390)     | no            |
+| 414px    | 0px          | 398 (< 414)     | no            |
+
+At 375px: Turnstile wrapper 309px fits inside the viewport; `clippedElements: []`
+(no "Email & Mậ…" / "Quên mậ…"); `documentElement.scrollWidth === innerWidth` at
+all widths → no horizontal pan.
+
+Bug #1 was already fixed on `main` before this task: Turnstile `resolveSize()`
+(compact <400px), tab `min-w-0`, and `html, body { overflow-x: clip }`.
+
+### E2E (now actually executed, not just CI)
+
+- `npx playwright test e2e/auth-mobile-overflow.spec.ts --project=chromium`:
+  PASS — 13 tests (320/360/375/390px; Turnstile mocked, asserts requested widget
+  size and no overflow).
+- `npx playwright test e2e/auth.spec.ts --project=chromium`: PASS — 2 tests.
+- Playwright chromium installed locally for this run only; no repo file changed.
+
+### Open PR #54 — not merged, superseded
+
+`fix(layout): prevent iOS overscroll bounce...` (Jules AI) is `mergeable_state:
+dirty`, behind `main` by 68 commits, touching `app-shell.css` +
+`useBodyScrollLock.ts`. The overscroll fix (issue #39) is **already on `main`** and
+in a better form (`preserveScrollPosition` restores prior styles + scroll
+position). PR #54 was left open and untouched — closing it needs owner sign-off.
