@@ -175,6 +175,37 @@ describe('rotateRefreshToken', () => {
     );
     expect(result.status).toBe('not_configured');
   });
+
+  it('reports not_configured for a PostgREST schema-cache miss (PGRST202)', async () => {
+    rpc.mockResolvedValue({
+      data: null,
+      error: {
+        code: 'PGRST202',
+        message:
+          'Could not find the function public.rotate_passkey_refresh_token in the schema cache',
+      },
+    });
+
+    const result = await PasskeyTokenService.rotateRefreshToken(
+      'pkrt_whatever',
+      CREDENTIAL_ID,
+    );
+    expect(result.status).toBe('not_configured');
+  });
+
+  it('does not mistake a permission-denied grant bug for a missing function', async () => {
+    rpc.mockResolvedValue({
+      data: null,
+      error: {
+        code: '42501',
+        message: 'permission denied for function rotate_passkey_refresh_token',
+      },
+    });
+
+    await expect(
+      PasskeyTokenService.rotateRefreshToken('pkrt_whatever', CREDENTIAL_ID),
+    ).rejects.toThrow(/permission denied/);
+  });
 });
 
 describe('revocation', () => {

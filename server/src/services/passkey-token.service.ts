@@ -24,6 +24,22 @@ export const DEFAULT_REFRESH_TTL_DAYS = 30;
 /** Sentinel embedded in the refresh token so a stray value is identifiable. */
 const TOKEN_PREFIX = 'pkrt_';
 
+/**
+ * True only when PostgREST/Postgres reports the function itself is absent.
+ * Deliberately excludes "permission denied for function" (42501): that is an
+ * execute-grant problem, not a missing deployment, and must not be disguised as
+ * a 503 not_configured response.
+ */
+function isMissingFunctionError(error: { message?: string; code?: string }): boolean {
+  const message = error.message ?? '';
+  if (/permission denied/i.test(message)) return false;
+  return (
+    error.code === 'PGRST202' ||
+    error.code === '42883' ||
+    /does not exist|schema cache|could not find the function/i.test(message)
+  );
+}
+
 export type RotateStatus =
   | 'rotated'
   | 'reuse'
@@ -137,7 +153,12 @@ export class PasskeyTokenService {
     if (error) {
       // A missing function is a deployment gap, not an auth failure — surface it
       // distinctly so the route can answer 503 instead of a misleading 401.
-      if (/function|does not exist|schema cache/i.test(error.message)) {
+      // PostgREST answers a missing function with PGRST202 ("Could not find the
+      // function ... in the schema cache") or Postgres 42883 ("... does not
+      // exist"). Match those precisely: a bare /function/ also catches
+      // "permission denied for function" (42501), which is a *grant* bug and
+      // must not be reported as an unconfigured service.
+      if (isMissingFunctionError(error)) {
         return { status: 'not_configured' };
       }
       throw new Error('Không thể xoay refresh token: ' + error.message);
