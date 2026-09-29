@@ -57,6 +57,8 @@ export const AUTH_MESSAGES = {
   passkeyRevokeSuccess: 'Đã thu hồi khóa bảo mật thành công.',
   passkeyRevokeError: 'Xóa khóa bảo mật thất bại.',
   passkeyHint: 'Chạm cảm biến vân tay hoặc Face ID để đăng nhập',
+  passkeySessionExpired:
+    'Phiên đăng nhập Passkey đã hết hạn. Vui lòng đăng nhập lại bằng Passkey hoặc mật khẩu.',
 };
 
 export const AUTH_LABELS = {
