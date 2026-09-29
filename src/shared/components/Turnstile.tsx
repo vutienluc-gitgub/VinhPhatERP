@@ -55,7 +55,6 @@ export const Turnstile: React.FC<TurnstileProps> = ({
     // 2. Render Widget khi container đã sẵn sàng
     const renderWidget = () => {
       if (window.turnstile && containerRef.current && !widgetIdRef.current) {
-        console.info('Rendering Turnstile widget...');
         const sitekey =
           import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAAC8ajj8quYdxkuYv';
 
