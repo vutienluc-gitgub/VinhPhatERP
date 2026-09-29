@@ -2,6 +2,10 @@ import React, { useEffect, useRef } from 'react';
 
 interface TurnstileProps {
   onVerify: (token: string) => void;
+  /* Fired when the Cloudflare script never loads (blocked by an ad-blocker,
+     offline network, or a proxy). Without this the widget would stay empty and
+     the caller could never distinguish "not solved yet" from "cannot load". */
+  onUnavailable?: () => void;
   options?: {
     theme?: 'light' | 'dark' | 'auto';
     size?: 'normal' | 'compact' | 'flexible';
@@ -15,6 +19,10 @@ interface TurnstileProps {
    breakpoint we fall back to 'compact' (150px), which fits any phone. */
 const COMPACT_BREAKPOINT = 400;
 
+/* If the Cloudflare script has not appeared by then, assume it is blocked
+   rather than polling forever. */
+const SCRIPT_LOAD_TIMEOUT_MS = 10_000;
+
 function resolveSize(
   size: 'normal' | 'compact' | 'flexible' | undefined,
   viewportWidth: number,
@@ -23,9 +31,15 @@ function resolveSize(
   return viewportWidth < COMPACT_BREAKPOINT ? 'compact' : 'flexible';
 }
 
-export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
+export const Turnstile: React.FC<TurnstileProps> = ({
+  onVerify,
+  onUnavailable,
+  options,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
+  const onUnavailableRef = useRef(onUnavailable);
+  onUnavailableRef.current = onUnavailable;
 
   useEffect(() => {
     // 1. Tải script nếu chưa tồn tại
@@ -41,7 +55,6 @@ export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
     // 2. Render Widget khi container đã sẵn sàng
     const renderWidget = () => {
       if (window.turnstile && containerRef.current && !widgetIdRef.current) {
-        console.info('Rendering Turnstile widget...');
         const sitekey =
           import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAAC8ajj8quYdxkuYv';
 
@@ -63,8 +76,16 @@ export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
       }
     }, 100);
 
+    const loadTimeout = setTimeout(() => {
+      if (!window.turnstile) {
+        clearInterval(timer);
+        onUnavailableRef.current?.();
+      }
+    }, SCRIPT_LOAD_TIMEOUT_MS);
+
     return () => {
       clearInterval(timer);
+      clearTimeout(loadTimeout);
       // The widget is remounted on every failed login (the form bumps a key to
       // replay the shake animation), so drop it from Cloudflare's registry to
       // avoid leaking a hidden widget per attempt.

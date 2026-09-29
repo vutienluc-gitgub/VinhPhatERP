@@ -3,7 +3,6 @@ import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import { Turnstile } from '@/shared/components/Turnstile';
 import { Icon } from '@/shared/components/Icon';
 
 import {
@@ -13,6 +12,7 @@ import {
 } from './auth.module';
 import { useAuth } from './AuthProvider';
 import { GoogleLoginButton } from './components/GoogleLoginButton';
+import { LoginCaptchaField } from './components/LoginCaptchaField';
 import { PasskeyLoginSection } from './components/PasskeyLoginSection';
 import { AUTH_MESSAGES, AUTH_LABELS } from './constants';
 import { vietnameseAuthError } from './utils';
@@ -269,18 +269,7 @@ export function LoginForm({
           </div>
 
           {/* Turnstile */}
-          <div className="flex justify-center min-h-[65px]">
-            {isInteracting && (
-              <Turnstile
-                onVerify={setCaptchaToken}
-                options={{
-                  theme: 'dark',
-                  appearance: 'interaction-only',
-                  execution: 'render',
-                }}
-              />
-            )}
-          </div>
+          {isInteracting && <LoginCaptchaField onVerify={setCaptchaToken} />}
 
           {/* Submit Button */}
           <button

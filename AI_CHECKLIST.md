@@ -61,8 +61,42 @@ Every task, refactor, or new feature in VinhPhatERP v3 MUST satisfy every item i
 
 ## 8. AUTOMATED VERIFICATION GATES (Mandatory: 0 Errors)
 
-- [ ] `npm run rpc:check` (Frontend RPC calls match DB functions)
-- [ ] `npm run typecheck` (TypeScript compiles with 0 errors)
-- [ ] `npm run lint -- --max-warnings=0` (ESLint passes with 0 warnings)
-- [ ] `npm run lint:css` (Stylelint passes with 0 color violations)
-- [ ] `npm run test` (Vitest unit tests pass 100%)
+- [!] `npm run rpc:check` (Frontend RPC calls match DB functions) — **[NOT VERIFIED]**: no `DATABASE_URL` in sandbox. MUST run in a DB-enabled environment before merge.
+- [x] `npm run typecheck` (TypeScript compiles with 0 errors)
+- [x] `npm run lint -- --max-warnings=0` (ESLint passes with 0 warnings)
+- [x] `npm run lint:css` (Stylelint passes with 0 color violations)
+- [x] `npm run test` (Vitest unit tests pass 100%)
+
+---
+
+## 9. TASK VERIFICATION RECORD — fix/auth-p2
+
+Scope: auth session-load guard (P2.3) + blocked-Turnstile feedback (P2.2).
+Not in scope: `rememberMe` (P2.1) and passkey refresh-token (P1) — see report.
+
+### Automated gates (real observed output)
+
+- `npm run rpc:check`: **[NOT VERIFIED]** — `❌ DATABASE_URL not set in .env`
+- `npm run typecheck`: PASS
+- `npm run lint -- --max-warnings=0`: PASS
+- `npm run lint:css`: PASS
+- `npm run test`: PASS — 153 files, 962 tests
+- `node scripts/check-file-size.mjs`: PASS — "No file grew past its baseline."
+- `npm run build`: PASS — `✓ built in 2.67s` (pre-existing chunk-size warning only)
+
+### Item status for this task
+
+- **Business logic in UI**: N/A — no math/filter/validation added to components.
+- **Single responsibility**: PASS — `LoginForm` 322 → 305 lines; new `LoginCaptchaField` 74 lines.
+- **Layer hierarchy / circular deps**: PASS — imports via `@/` alias only.
+- **Zero `any` / `@ts-ignore`**: PASS.
+- **Error narrowing / Rule 7**: PASS — `getSession` rejection logged and handled.
+- **Stable list keys**: N/A — no new lists.
+- **Error states with retry**: PASS — captcha alert + "Thử lại" (`role="alert"`).
+- **Pending state**: PASS (unchanged) — submit disabled while `isSubmitting`.
+- **Zero hardcoded colors**: **[OBSERVATION]** — `text-[#818cf8]` was carried over from the existing `LoginForm` pattern and a documented `@architecture-exception: legacy color migration`. Not introduced by this task; not refactored (out of scope).
+- **No emoji**: PASS.
+- **a11y**: PASS — `role="alert"`, labelled retry button, existing focus styles.
+- **RLS / secret leakage**: PASS — no DB or credential changes.
+- **ERP safety (pricing/debt/stock/status)**: PASS — untouched; no `[BUSINESS BEHAVIOR CHANGE]` to those domains.
+- **No speculative changes**: PASS — bounded to approved P2.2 + P2.3.
