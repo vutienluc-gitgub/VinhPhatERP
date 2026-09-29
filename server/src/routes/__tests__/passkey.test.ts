@@ -1,11 +1,16 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import { Hono } from 'hono';
 
 import { mintSupabaseJwt, verifySupabaseJwt } from '../../utils/jwt.js';
 import { getWebAuthnConfig } from '../../services/passkey.service.js';
 import passkeyRouter from '../passkey.js';
 
+const TEST_JWT_SECRET = 'unit-test-jwt-secret-at-least-32-chars-long';
+
 describe('Passkey Core & JWT Minting', () => {
+  beforeAll(() => {
+    process.env.SUPABASE_JWT_SECRET = TEST_JWT_SECRET;
+  });
   it('mints and verifies a valid Supabase-compatible JWT', async () => {
     const user = {
       userId: '7724bad2-5156-4015-8d64-c83097b4e31d',
