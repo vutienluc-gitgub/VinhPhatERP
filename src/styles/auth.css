@@ -1,5 +1,6 @@
 .auth-page {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,6 +209,7 @@
 .auth-loading,
 .auth-logged-in {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -413,6 +415,7 @@
 
 .auth-loading-screen {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -568,4 +571,21 @@ input:-webkit-autofill:focus ~ label {
   margin-top: 0.25rem;
   margin-left: 0.25rem;
   animation: fadeIn 0.2s ease-out;
+}
+
+/* ── Auth Viewport Shell ──────────────────────────────────
+   The /auth route sits outside .shell-layout, which owns mobile
+   scrolling for the ERP shell (app-shell.css pins html/body to 100dvh
+   with overflow: hidden on phones). On iOS Safari `100vh` equals the
+   viewport height with the URL bar hidden, so a page sized to 100vh is
+   taller than its scroll container and its last line ("Chưa có tài
+   khoản? Đăng ký ngay") becomes unreachable. Size against dvh instead
+   so the page never exceeds the visible area; `100vh` stays first as
+   the fallback for browsers without dvh support. */
+.auth-viewport {
+  height: 100vh;
+  min-height: 100vh;
+  height: 100dvh;
+  min-height: 100dvh;
+  overscroll-behavior-y: contain;
 }
