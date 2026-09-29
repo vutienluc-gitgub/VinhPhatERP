@@ -24,7 +24,13 @@ const { getSession, onAuthStateChange, signInWithPassword, from } = vi.hoisted(
 
 vi.mock('@/services/supabase/client', () => ({
   supabase: {
-    auth: { getSession, onAuthStateChange, signInWithPassword },
+    auth: {
+      getSession,
+      onAuthStateChange,
+      signInWithPassword,
+      startAutoRefresh: vi.fn().mockResolvedValue(undefined),
+      stopAutoRefresh: vi.fn().mockResolvedValue(undefined),
+    },
     from,
   },
 }));

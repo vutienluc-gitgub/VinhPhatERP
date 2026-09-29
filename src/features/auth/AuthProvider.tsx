@@ -16,6 +16,10 @@ type Profile = TableRow<'profiles'>;
 import { getTenantId, resetTenantCache } from '@/services/supabase/tenant';
 
 import { setRememberMe } from './remember-session';
+import {
+  revokePasskeyFamily,
+  useSessionAutoRefresh,
+} from './usePasskeySessionLifecycle';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -95,6 +99,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
+  const syncAutoRefresh = useSessionAutoRefresh();
+
   useEffect(() => {
     // Load initial session. getSession() can reject (corrupt storage, offline
     // network, blocked request). Without a catch, setLoading(false) never runs
@@ -105,6 +111,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       .then(({ data: { session: s } }) => {
         setSession(s);
         setUser(s?.user ?? null);
+        void syncAutoRefresh(s);
         if (s?.user) {
           fetchProfile(s.user.id).finally(() => setLoading(false));
         } else {
@@ -124,6 +131,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
+      void syncAutoRefresh(s);
       if (s?.user) {
         fetchProfile(s.user.id);
       } else {
@@ -132,7 +140,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchProfile]);
+  }, [fetchProfile, syncAutoRefresh]);
 
   const signIn = useCallback(
     async (
@@ -175,6 +183,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signOut = useCallback(async () => {
     resetTenantCache();
+    await revokePasskeyFamily();
     // Revoke device push subscription to prevent notifications leaking on shared computers/devices
     try {
       const { revokeCurrentDevicePushSubscription } =

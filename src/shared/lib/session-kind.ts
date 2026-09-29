@@ -39,3 +39,24 @@ export function isPasskeySession(
     session.refresh_token && session.refresh_token === session.access_token,
   );
 }
+
+/** Prefix of an opaque refresh token minted by our own server (see
+ *  server/src/services/passkey-token.service.ts). Distinguishes a token this app
+ *  can actually exchange at `/auth/passkey/refresh` from the sentinel and from
+ *  legacy sessions that have no renewable token at all. */
+export const PASSKEY_REFRESH_TOKEN_PREFIX = 'pkrt_';
+
+/**
+ * True when the session carries a refresh token our server can rotate. Only then
+ * is silent renewal worth attempting; older passkey sessions (sentinel or legacy
+ * shape) can only be replaced by a fresh biometric login.
+ */
+export function hasRenewablePasskeySession(
+  session: SessionLike | null | undefined,
+): boolean {
+  return (
+    isPasskeySession(session) &&
+    typeof session?.refresh_token === 'string' &&
+    session.refresh_token.startsWith(PASSKEY_REFRESH_TOKEN_PREFIX)
+  );
+}
