@@ -100,3 +100,64 @@ Not in scope: `rememberMe` (P2.1) and passkey refresh-token (P1) — see report.
 - **RLS / secret leakage**: PASS — no DB or credential changes.
 - **ERP safety (pricing/debt/stock/status)**: PASS — untouched; no `[BUSINESS BEHAVIOR CHANGE]` to those domains.
 - **No speculative changes**: PASS — bounded to approved P2.2 + P2.3.
+
+---
+
+## 10. TASK VERIFICATION RECORD — fix/auth-p2-remember-passkey
+
+Scope: **P2.1-A** `rememberMe` session persistence + **P1-B** passkey
+refresh-token handling. Both approved in Phase 2.
+
+Not in scope (explicitly deferred, NOT implemented): a server-side refresh-token
+endpoint for passkey sessions. Client-side handling now degrades gracefully to
+re-authentication; see "Passkey refresh token" below.
+
+### Automated gates (real observed output)
+
+- `npm run rpc:check`: **[NOT VERIFIED]** — `❌ DATABASE_URL not set in .env`
+- `npm run typecheck`: PASS
+- `npm run typecheck:server`: PASS
+- `npm run lint`: PASS — full repo, 0 errors
+- `npm run lint:css`: PASS
+- `npm run test`: PASS — 162 files, 997 tests
+- `node scripts/check-file-size.mjs`: PASS — "No file grew past its baseline."
+- `npm run build`: PASS — `✓ built in 2.66s` (pre-existing chunk-size warning only)
+- `npm run test:e2e` (playwright): **[NOT RUN]** — needs a browser + dev server; not available in this sandbox. Must run in CI.
+
+### Item status for this task
+
+- **Business logic in UI**: PASS — storage selection and session classification live in `remember-session.ts` / `session-kind.ts`, not in components.
+- **Single responsibility**: PASS — `LoginForm.tsx` 312 lines (baseline 342); new files well under 300.
+- **Layer hierarchy / circular deps**: PASS — `@/` alias only; helper imports point downward.
+- **Zero `any` / `@ts-ignore`**: PASS.
+- **Error narrowing**: N/A for this diff.
+- **Stable list keys**: N/A — no new lists.
+- **Pure effects**: PASS — `PasskeyExpiryNotice` effect only schedules/clears a timer; no fetching.
+- **Zero hardcoded colors**: PASS — no styling added.
+- **No emoji**: PASS.
+- **a11y**: PASS — notice is a toast announcement; no new interactive elements.
+- **RLS / secret leakage**: PASS — `auth.users` untouched; JWT signing unchanged.
+- **ERP safety**: PASS — no pricing/debt/stock/status touch.
+- **No speculative changes**: PASS — bounded to approved P2.1-A + P1-B.
+
+### Behaviour changes to call out (non-business, auth-only)
+
+- `[SESSION STORAGE CHANGE]` **P2.1-A**: sessions now route to `localStorage`
+  (remember) or `sessionStorage` (forget) via a custom supabase-js storage
+  adapter (`storageKey` unchanged: `vinhphat_session`). GoTrue's own `lock`/
+  `broadcastChannel` are keyed on `storageKey`, not the adapter, so cross-tab
+  sync still works.
+- `[AUTH LIFECYCLE CHANGE]` **P1-B**: passkey sessions no longer reuse the access
+  token as the refresh token. They store a truthy sentinel
+  (`passkey:no-refresh-token`) so supabase-js treats the session as valid without
+  a rotation request that GoTrue would reject. When the passkey token expires,
+  `PasskeyExpiryNotice` shows a persistent message and signs out deliberately
+  instead of the previous silent drop.
+
+### Passkey refresh token — honest limitation
+
+A true refresh token would need a server endpoint to re-mint a passkey JWT.
+That is **acceptable Phase 2 scope** for this app because a passkey login is a
+single touch (Face ID), so re-authentication is cheap. It is **NOT** acceptable
+for unattended/kiosk or long-lived operations; those still need the server
+endpoint (tracked as future P1-C).

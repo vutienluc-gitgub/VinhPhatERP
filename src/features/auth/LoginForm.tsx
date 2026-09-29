@@ -69,6 +69,7 @@ export function LoginForm({
         values.email,
         values.password,
         captchaToken ?? undefined,
+        values.rememberMe,
       );
       if (error) {
         setServerError(vietnameseAuthError(error.message));

@@ -7,6 +7,7 @@ import {
 import { useState, useCallback, useEffect } from 'react';
 
 import { supabase } from '@/services/supabase/client';
+import { PASSKEY_NO_REFRESH_TOKEN } from '@/shared/lib/session-kind';
 
 export interface PasskeyCredentialInfo {
   id: string;
@@ -159,9 +160,17 @@ export async function signInWithPasskey(
 
   // 4. Inject session into Supabase client to trigger auth state & RLS
   if (result?.session?.access_token) {
+    // Passkey tokens are minted by our Hono API, not GoTrue, so GoTrue holds no
+    // refresh token for them. supabase-js nonetheless requires a *truthy*
+    // `refresh_token` for the session to be considered valid, so we pass a
+    // sentinel instead of reusing the access token — reusing it made every
+    // rotation attempt look like a real (and thus rejected) refresh request.
+    // A sentinel truthy value keeps `getSession()` from throwing when the token
+    // expires, and fails the same way GoTrue would (gracefully, never silently
+    // valid-looking). See PasskeyExpiryNotice for the user-facing handoff.
     const { error: sessionError } = await supabase.auth.setSession({
       access_token: result.session.access_token,
-      refresh_token: result.session.access_token,
+      refresh_token: PASSKEY_NO_REFRESH_TOKEN,
     });
 
     if (sessionError) {
