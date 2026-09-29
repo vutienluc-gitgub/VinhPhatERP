@@ -1,0 +1,58 @@
+name: Apply Migrations
+
+# Manual-only. Production schema changes must never run implicitly on push.
+# The runner is the only place with DATABASE_URL, so applying a migration that
+# is already merged into main happens here instead of from a laptop.
+#
+# Usage: Actions → Apply Migrations → Run workflow.
+#   1. Default run is a DRY RUN: it lists what would be applied, changes nothing.
+#   2. Re-run with `dry_run` unchecked to actually apply.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Chỉ liệt kê migration (không áp dụng). Bỏ tick để áp thật.'
+        type: boolean
+        default: true
+
+concurrency:
+  # Never let two schema runs race each other.
+  group: apply-migrations
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Show pending migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx supabase migration list --db-url "$DATABASE_URL"
+
+      - name: Dry run (no changes)
+        if: ${{ inputs.dry_run }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🔎 Dry run — nothing will be applied."
+          npx supabase db push --db-url "$DATABASE_URL" --dry-run
+
+      - name: Apply migrations
+        if: ${{ !inputs.dry_run }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "⚠️  Applying migrations to production..."
+          npx supabase db push --db-url "$DATABASE_URL"
