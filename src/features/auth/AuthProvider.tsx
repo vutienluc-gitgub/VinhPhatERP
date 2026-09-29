@@ -15,6 +15,8 @@ import type { TableRow } from '@/shared/types/database.models';
 type Profile = TableRow<'profiles'>;
 import { getTenantId, resetTenantCache } from '@/services/supabase/tenant';
 
+import { setRememberMe } from './remember-session';
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -33,6 +35,7 @@ export interface AuthActions {
     email: string,
     password: string,
     captchaToken?: string,
+    rememberMe?: boolean,
   ) => Promise<{ error: AuthError | null }>;
   signUp: (
     email: string,
@@ -132,7 +135,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [fetchProfile]);
 
   const signIn = useCallback(
-    async (email: string, password: string, captchaToken?: string) => {
+    async (
+      email: string,
+      password: string,
+      captchaToken?: string,
+      rememberMe?: boolean,
+    ) => {
+      // Move the session to localStorage (remember) or sessionStorage (forget)
+      // before GoTrue persists it, so the adapter writes to the right store.
+      if (rememberMe !== undefined) setRememberMe(rememberMe);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,

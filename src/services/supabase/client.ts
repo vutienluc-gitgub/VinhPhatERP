@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
+import { createRememberSessionStorage } from '@/features/auth/remember-session';
 import { APP_CONFIG, HTTP_HEADERS } from '@/shared/utils/constants';
 
 import type { Database } from './database.types';
@@ -42,6 +43,7 @@ function createSupabaseClient() {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
+      storage: createRememberSessionStorage(),
       storageKey: 'vinhphat_session',
     },
     global: {
