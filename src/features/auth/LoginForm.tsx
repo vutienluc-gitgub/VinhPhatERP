@@ -267,7 +267,11 @@ export function LoginForm({
             {isInteracting && (
               <Turnstile
                 onVerify={setCaptchaToken}
-                options={{ theme: 'dark' }}
+                options={{
+                  theme: 'dark',
+                  appearance: 'interaction-only',
+                  execution: 'render',
+                }}
               />
             )}
           </div>
