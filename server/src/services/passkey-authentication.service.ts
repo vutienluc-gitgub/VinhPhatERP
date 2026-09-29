@@ -7,8 +7,12 @@ import {
 import { isoBase64URL } from '@simplewebauthn/server/helpers';
 
 import { serverSupabase } from '../db/supabase.js';
-import { mintSupabaseJwt } from '../utils/jwt.js';
 import { getWebAuthnConfig } from './passkey-config.js';
+import { PasskeySessionService } from './passkey-session.service.js';
+import {
+  PasskeyTokenService,
+  getRefreshTokenTtlSeconds,
+} from './passkey-token.service.js';
 
 export class PasskeyAuthenticationService {
   /**
@@ -152,14 +156,21 @@ export class PasskeyAuthenticationService {
       );
     }
 
-    const { data: challengeRow } = await serverSupabase
-      .from('webauthn_challenges')
-      .select('id, challenge')
-      .eq('type', 'authentication')
-      .gt('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // Consume the challenge atomically, bound to this credential and user. The
+    // RPC deletes it under a row lock, so a replayed assertion finds nothing and
+    // a challenge issued for a different user cannot satisfy this login.
+    const { data: challengeRows } = await serverSupabase.rpc(
+      'consume_webauthn_challenge',
+      {
+        p_type: 'authentication',
+        p_credential_id: cred.credential_id,
+        p_user_id: cred.user_id,
+      },
+    );
+
+    const challengeRow = Array.isArray(challengeRows)
+      ? challengeRows[0]
+      : challengeRows;
 
     if (!challengeRow) {
       throw new Error(
@@ -194,47 +205,26 @@ export class PasskeyAuthenticationService {
       })
       .eq('id', cred.id);
 
-    // Delete used challenge
-    await serverSupabase
-      .from('webauthn_challenges')
-      .delete()
-      .eq('id', challengeRow.id);
-
-    // Fetch user details to mint Supabase JWT
-    const { data: profile } = await serverSupabase
-      .from('profiles')
-      .select('id, full_name, role')
-      .eq('id', cred.user_id)
-      .single();
-
-    const { data: authUser } = await serverSupabase.auth.admin.getUserById(
+    // Build the access-token envelope, then add the refresh token. The access
+    // token is minted here, not by GoTrue, so GoTrue holds no refresh token for
+    // this session — ours lets the client renew without a new biometric prompt.
+    const session = await PasskeySessionService.buildSession(
       cred.user_id,
+      cred.credential_id,
     );
 
-    const token = await mintSupabaseJwt({
-      userId: cred.user_id,
-      email: authUser?.user?.email,
-      role: profile?.role || 'authenticated',
-      employeeId: cred.employee_id,
-      fullName: profile?.full_name,
-    });
+    const refresh = await PasskeyTokenService.issueRefreshToken(
+      cred.user_id,
+      cred.credential_id,
+    );
 
     return {
       verified: true,
       session: {
-        access_token: token,
-        token_type: 'bearer',
-        expires_in: 604800, // 7 days
-        user: {
-          id: cred.user_id,
-          email: authUser?.user?.email,
-          role: profile?.role || 'authenticated',
-          app_metadata: { provider: 'passkey' },
-          user_metadata: {
-            employee_id: cred.employee_id,
-            full_name: profile?.full_name,
-          },
-        },
+        ...session,
+        refresh_token: refresh.token,
+        refresh_expires_in: getRefreshTokenTtlSeconds(),
+        family_id: refresh.familyId,
       },
     };
   }
