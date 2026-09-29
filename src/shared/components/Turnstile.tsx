@@ -4,23 +4,23 @@ interface TurnstileProps {
   onVerify: (token: string) => void;
   options?: {
     theme?: 'light' | 'dark' | 'auto';
-    size?: 'normal' | 'compact';
+    size?: 'normal' | 'compact' | 'flexible';
+    appearance?: 'always' | 'execute' | 'interaction-only';
+    execution?: 'render' | 'execute';
   };
 }
 
-/* Cloudflare renders 'normal' as a fixed 300px widget. Below this viewport
-   width the auth card's inner width drops under 300px, so the widget would
-   force the whole card wider than the screen → horizontal clipping. */
+/* 'flexible' fills the container but Cloudflare floors it at 300px, so a
+   narrower auth card (< ~380px inner width) would still overflow. Below this
+   breakpoint we fall back to 'compact' (150px), which fits any phone. */
 const COMPACT_BREAKPOINT = 400;
 
 function resolveSize(
-  size: 'normal' | 'compact' | undefined,
-): 'normal' | 'compact' {
+  size: 'normal' | 'compact' | 'flexible' | undefined,
+  viewportWidth: number,
+): 'normal' | 'compact' | 'flexible' {
   if (size) return size;
-  if (typeof window !== 'undefined' && window.innerWidth < COMPACT_BREAKPOINT) {
-    return 'compact';
-  }
-  return 'normal';
+  return viewportWidth < COMPACT_BREAKPOINT ? 'compact' : 'flexible';
 }
 
 export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
@@ -49,7 +49,9 @@ export const Turnstile: React.FC<TurnstileProps> = ({ onVerify, options }) => {
           sitekey,
           callback: onVerify,
           theme: options?.theme || 'light',
-          size: resolveSize(options?.size),
+          size: resolveSize(options?.size, window.innerWidth),
+          appearance: options?.appearance,
+          execution: options?.execution,
         });
       }
     };
@@ -82,7 +84,9 @@ interface TurnstileInstance {
       'error-callback'?: () => void;
       'expired-callback'?: () => void;
       theme?: 'light' | 'dark' | 'auto';
-      size?: 'normal' | 'compact';
+      size?: 'normal' | 'compact' | 'flexible';
+      appearance?: 'always' | 'execute' | 'interaction-only';
+      execution?: 'render' | 'execute';
     },
   ) => string;
   reset: (widgetId?: string) => void;
