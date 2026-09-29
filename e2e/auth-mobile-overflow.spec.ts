@@ -145,3 +145,53 @@ for (const width of VIEWPORTS) {
     });
   }
 }
+
+/**
+ * Regression: vertical clipping of the last line on iOS Safari.
+ *
+ * The /auth route renders outside .shell-layout, whose css pins html/body to
+ * `100dvh` with `overflow: hidden` on phones. AuthPage used Tailwind
+ * `min-h-screen` (100vh). iOS Safari resolves 100vh with the URL bar hidden,
+ * i.e. taller than 100dvh, so the page outgrew its scroll container and the
+ * final line ("Chưa có tài khoản? Đăng ký ngay") could not be scrolled into
+ * view. The page must size against dvh so its content stays reachable.
+ */
+test('login page last line is reachable inside the visible viewport', async ({
+  page,
+}) => {
+  await mockTurnstile(page);
+  // A short phone with the URL bar visible: visible height < 100vh.
+  await page.setViewportSize({ width: 375, height: 600 });
+  await page.goto('/auth', { waitUntil: 'domcontentloaded' });
+  await page.fill('input#email', 'user@example.com');
+  await page.waitForTimeout(200);
+
+  const metrics = await page.evaluate(() => {
+    const root = document.querySelector('.auth-viewport') as HTMLElement | null;
+    const register = [...document.querySelectorAll('button')].find(
+      (el) => el.textContent?.trim() === 'Đăng ký ngay',
+    );
+    // Scroll every scrollable ancestor to the bottom, as a user would.
+    window.scrollTo(0, 999_999);
+    document.querySelectorAll('*').forEach((el) => {
+      if (el.scrollHeight > el.clientHeight) el.scrollTop = el.scrollHeight;
+    });
+    const rect = register?.getBoundingClientRect();
+    const rootRect = root?.getBoundingClientRect();
+    return {
+      registerBottom: rect ? Math.round(rect.bottom) : null,
+      visibleBottom: window.innerHeight,
+      rootHeight: rootRect ? Math.round(rootRect.height) : null,
+    };
+  });
+
+  expect(metrics.registerBottom).not.toBeNull();
+  // The shell must never be taller than the visible area, otherwise it spills
+  // past html/body (overflow: hidden on phones) and cannot be scrolled back.
+  expect(metrics.rootHeight).toBeLessThanOrEqual(metrics.visibleBottom + 1);
+  // The last line must sit inside the visible area after scrolling to the end.
+  expect(
+    metrics.registerBottom,
+    "last line 'Đăng ký ngay' must be reachable without vertical clipping",
+  ).toBeLessThanOrEqual(metrics.visibleBottom + 1);
+});
