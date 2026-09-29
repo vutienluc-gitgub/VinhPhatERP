@@ -7,6 +7,7 @@ import {
 import { useState, useCallback, useEffect } from 'react';
 
 import { supabase } from '@/services/supabase/client';
+import { storePasskeyMeta } from '@/features/auth/passkey-session.client';
 import { PASSKEY_NO_REFRESH_TOKEN } from '@/shared/lib/session-kind';
 
 export interface PasskeyCredentialInfo {
@@ -160,21 +161,28 @@ export async function signInWithPasskey(
 
   // 4. Inject session into Supabase client to trigger auth state & RLS
   if (result?.session?.access_token) {
-    // Passkey tokens are minted by our Hono API, not GoTrue, so GoTrue holds no
-    // refresh token for them. supabase-js nonetheless requires a *truthy*
-    // `refresh_token` for the session to be considered valid, so we pass a
-    // sentinel instead of reusing the access token — reusing it made every
-    // rotation attempt look like a real (and thus rejected) refresh request.
-    // A sentinel truthy value keeps `getSession()` from throwing when the token
-    // expires, and fails the same way GoTrue would (gracefully, never silently
-    // valid-looking). See PasskeyExpiryNotice for the user-facing handoff.
+    // The server mints both tokens (GoTrue holds neither). Store the real
+    // refresh token so the session can be renewed at /auth/passkey/refresh
+    // without another biometric prompt. A server that does not return one falls
+    // back to the sentinel, which keeps the session readable but not renewable —
+    // PasskeyExpiryNotice then asks for a fresh login instead.
+    const refreshToken =
+      result.session.refresh_token || PASSKEY_NO_REFRESH_TOKEN;
+
     const { error: sessionError } = await supabase.auth.setSession({
       access_token: result.session.access_token,
-      refresh_token: PASSKEY_NO_REFRESH_TOKEN,
+      refresh_token: refreshToken,
     });
 
     if (sessionError) {
       throw new Error('Lỗi kích hoạt phiên đăng nhập: ' + sessionError.message);
+    }
+
+    // The refresh endpoint needs the credential + family ids, which are not part
+    // of the supabase session envelope.
+    const familyId = result.session.family_id;
+    if (result.session.refresh_token && familyId) {
+      storePasskeyMeta({ credentialId: authResponse.id, familyId });
     }
   }
 

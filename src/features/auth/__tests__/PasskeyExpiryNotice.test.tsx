@@ -4,6 +4,14 @@ import { render } from '@testing-library/react';
 import { PasskeyExpiryNotice } from '@/features/auth/components/PasskeyExpiryNotice';
 import { PASSKEY_NO_REFRESH_TOKEN } from '@/shared/lib/session-kind';
 
+const { refreshPasskeySession } = vi.hoisted(() => ({
+  refreshPasskeySession: vi.fn(),
+}));
+
+vi.mock('@/features/auth/passkey-session.client', () => ({
+  refreshPasskeySession,
+}));
+
 const signOut = vi.fn();
 const toastError = vi.fn();
 
@@ -34,6 +42,7 @@ describe('PasskeyExpiryNotice', () => {
     signOut.mockReset();
     signOut.mockResolvedValue(undefined);
     toastError.mockReset();
+    refreshPasskeySession.mockReset();
     vi.useFakeTimers();
     mockSession = null;
   });
@@ -75,6 +84,54 @@ describe('PasskeyExpiryNotice', () => {
     vi.advanceTimersByTime(1_000);
     expect(toastError).toHaveBeenCalled();
     expect(signOut).toHaveBeenCalled();
+  });
+
+  describe('renewable sessions', () => {
+    function renewableSession(expiresInSeconds: number) {
+      return {
+        access_token: 'header.payload.sig',
+        refresh_token: 'pkrt_real',
+        user: { app_metadata: { provider: 'passkey' } },
+        expires_at: Math.floor(Date.now() / 1000) + expiresInSeconds,
+      };
+    }
+
+    it('renews shortly before expiry instead of signing out', async () => {
+      refreshPasskeySession.mockResolvedValue({
+        refreshToken: 'pkrt_new',
+        expiresAt: Math.floor(Date.now() / 1000) + 604800,
+      });
+      mockSession = renewableSession(600); // renew lead is 5 minutes
+
+      render(<PasskeyExpiryNotice />);
+      await vi.advanceTimersByTimeAsync(301_000);
+
+      expect(refreshPasskeySession).toHaveBeenCalledWith('pkrt_real');
+      expect(signOut).not.toHaveBeenCalled();
+      expect(toastError).not.toHaveBeenCalled();
+    });
+
+    it('signs out only after the token expired and renewal failed', async () => {
+      refreshPasskeySession.mockResolvedValue(null);
+      mockSession = renewableSession(-10);
+
+      render(<PasskeyExpiryNotice />);
+      await vi.advanceTimersByTimeAsync(1_000);
+
+      expect(refreshPasskeySession).toHaveBeenCalled();
+      expect(signOut).toHaveBeenCalled();
+    });
+
+    it('retries while the access token is still valid', async () => {
+      refreshPasskeySession.mockResolvedValue(null);
+      mockSession = renewableSession(60);
+
+      render(<PasskeyExpiryNotice />);
+      await vi.advanceTimersByTimeAsync(1_000);
+
+      expect(refreshPasskeySession).toHaveBeenCalledTimes(1);
+      expect(signOut).not.toHaveBeenCalled();
+    });
   });
 
   it('clears the timer on unmount', () => {
