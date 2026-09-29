@@ -93,16 +93,27 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
-    // Load initial session
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        fetchProfile(s.user.id).finally(() => setLoading(false));
-      } else {
+    // Load initial session. getSession() can reject (corrupt storage, offline
+    // network, blocked request). Without a catch, setLoading(false) never runs
+    // and the app hangs on AuthLoadingScreen forever, locking every protected
+    // route behind a spinner that can never resolve.
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: s } }) => {
+        setSession(s);
+        setUser(s?.user ?? null);
+        if (s?.user) {
+          fetchProfile(s.user.id).finally(() => setLoading(false));
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        console.error('[AuthProvider] getSession failed', err);
+        setSession(null);
+        setUser(null);
         setLoading(false);
-      }
-    });
+      });
 
     // Subscribe to auth state changes
     const {
