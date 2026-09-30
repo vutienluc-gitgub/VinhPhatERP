@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import {
   useDashboardStats,
@@ -34,6 +35,19 @@ vi.mock('@/shared/hooks/useAuth', () => ({
 }));
 
 describe('DashboardPage', () => {
+  let queryClient: QueryClient;
+
+  const renderDashboard = () =>
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
+          <DashboardPage />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
   const mockUseDashboardStats = useDashboardStats as Mock;
   const mockUsePendingTasks = usePendingTasks as Mock;
   const mockUseRecentOrders = useRecentOrders as Mock;
@@ -43,6 +57,11 @@ describe('DashboardPage', () => {
   const mockUseRecentTransactions = useRecentTransactions as Mock;
 
   beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
     vi.clearAllMocks();
 
     mockUseDashboardStats.mockReturnValue({
@@ -137,13 +156,7 @@ describe('DashboardPage', () => {
   });
 
   it('renders KPI values correctly with data', () => {
-    render(
-      <MemoryRouter
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <DashboardPage />
-      </MemoryRouter>,
-    );
+    renderDashboard();
 
     expect(screen.getAllByText('Đang xử lý').length).toBeGreaterThan(0);
     expect(screen.getAllByText('10').length).toBeGreaterThan(0);
@@ -166,13 +179,7 @@ describe('DashboardPage', () => {
   });
 
   it('renders v3 overview cards', () => {
-    render(
-      <MemoryRouter
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <DashboardPage />
-      </MemoryRouter>,
-    );
+    renderDashboard();
 
     expect(screen.getAllByText('Doanh thu bán hàng').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Chi phí nhập sợi').length).toBeGreaterThan(0);
@@ -199,13 +206,7 @@ describe('DashboardPage', () => {
       isLoading: true,
     });
 
-    const { container } = render(
-      <MemoryRouter
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <DashboardPage />
-      </MemoryRouter>,
-    );
+    const { container } = renderDashboard();
 
     // KPI cards + v3 overview cards should show loading state
     expect(
