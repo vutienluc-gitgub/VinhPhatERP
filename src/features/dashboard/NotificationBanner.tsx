@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom';
 import { Icon, Badge } from '@/shared/components';
 import type { DashboardStats } from '@/application/analytics';
 
-import { NOTIFICATION_LABELS } from './dashboard.constants';
+import {
+  NOTIFICATION_LABELS,
+  formatNotificationAriaLabel,
+} from './dashboard.constants';
 
 /* ── Types ── */
 
@@ -77,11 +80,16 @@ function buildNotifications(stats: DashboardStats): NotificationItem[] {
 
 function BannerSkeleton() {
   return (
-    <div className="notif-banner">
+    <div
+      className="notif-banner"
+      role="status"
+      aria-label={NOTIFICATION_LABELS.SKELETON_LABEL}
+    >
       {Array.from({ length: 3 }).map((_, i) => (
         <div
           key={`notif-skeleton-${String(i)}`}
           className="notif-banner-item notif-banner-skeleton"
+          aria-hidden="true"
         >
           <span className="skeleton-circle" />
           <span className="skeleton-text" />
@@ -104,29 +112,39 @@ export function NotificationBanner({
 
   if (notifications.length === 0) {
     return (
-      <div className="notif-banner notif-banner-clear">
-        <Icon name="CircleCheck" size={18} />
+      <div
+        className="notif-banner notif-banner-clear"
+        role="status"
+        aria-live="polite"
+      >
+        <Icon name="CircleCheck" size={18} aria-hidden="true" />
         <span>{NOTIFICATION_LABELS.ALL_CLEAR}</span>
       </div>
     );
   }
 
   return (
-    <div className="notif-banner">
+    <div
+      className="notif-banner"
+      role="region"
+      aria-label={NOTIFICATION_LABELS.REGION_LABEL}
+    >
       {notifications.map((item) => (
         <Link
           key={item.id}
           to={item.href}
           className={`notif-banner-item is-${item.variant}`}
           id={`notif-banner-${item.id}`}
+          aria-label={formatNotificationAriaLabel(item.label, item.count)}
         >
-          <span className="notif-banner-icon">
-            <Icon name={item.icon} size={16} />
+          <span className="notif-banner-icon" aria-hidden="true">
+            <Icon name={item.icon} size={16} aria-hidden="true" />
           </span>
           <span className="notif-banner-label">{item.label}</span>
           <Badge
             variant={item.variant === 'danger' ? 'danger' : 'info'}
             className="notif-banner-count"
+            aria-hidden="true"
           >
             {item.count}
           </Badge>

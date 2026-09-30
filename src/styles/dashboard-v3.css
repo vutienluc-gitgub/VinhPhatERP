@@ -647,7 +647,7 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  color: var(--success);
+  color: var(--success-strong);
   font-size: 0.82rem;
   font-weight: 600;
   background: rgb(var(--success-rgb), 0.06);
@@ -676,6 +676,11 @@
 .notif-banner-item:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgb(var(--base-rgb), 0.06);
+}
+
+.notif-banner-item:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .notif-banner-item.is-danger {
@@ -916,6 +921,7 @@
 }
 
 [data-theme='dark'] .notif-banner-clear {
+  color: var(--success);
   background: rgb(var(--success-rgb), 0.08);
 }
 
