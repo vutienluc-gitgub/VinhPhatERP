@@ -101,7 +101,17 @@ export const NOTIFICATION_LABELS = {
   EXPIRING_QUOTATIONS: 'Báo giá sắp hết hạn',
   ALL_CLEAR: 'Tất cả công việc đã được xử lý',
   QUICK_ACCESS_TITLE: 'Nghiệp vụ thường dùng',
+  REGION_LABEL: 'Thông báo công việc cần xử lý',
+  SKELETON_LABEL: 'Đang tải thông báo công việc',
 } as const;
+
+/** Format accessible label for notification banner items */
+export function formatNotificationAriaLabel(
+  label: string,
+  count: number,
+): string {
+  return `${label}: ${count} việc cần xử lý`;
+}
 
 /** Labels used by PendingTasksCard (shared with notification banner) */
 export const PENDING_TASKS_LABELS = {
