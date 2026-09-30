@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import { KpiCard, KpiGrid, Button, LiveIndicator } from '@/shared/components';
+import { KpiCard, KpiGrid, Button } from '@/shared/components';
 import { formatCompactCurrency } from '@/shared/utils/format';
 import {
   useDashboardStats,
@@ -15,6 +15,7 @@ import { useContextualGuide } from '@/features/guide-system/hooks/useContextualG
 import { ContextualGuide } from '@/features/guide-system/components/ContextualGuide';
 
 import { DASHBOARD_LABELS } from './dashboard.constants';
+import { DashboardSyncIndicator } from './DashboardSyncIndicator';
 import { RevenueOverviewCard } from './RevenueOverviewCard';
 import { SpendingOverviewCard } from './SpendingOverviewCard';
 import { CashFlowCard } from './CashFlowCard';
@@ -44,7 +45,7 @@ export function DashboardPage() {
     <div className="page-container">
       <div className="flex items-center justify-between mb-4">
         <h1 className="sr-only">Dashboard</h1>
-        <LiveIndicator label={DASHBOARD_LABELS.LIVE_UPDATE} />
+        <DashboardSyncIndicator />
         <Button
           id="dashboard-new-order"
           variant="primary"
