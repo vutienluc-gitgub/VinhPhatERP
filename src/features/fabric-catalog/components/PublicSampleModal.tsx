@@ -136,7 +136,7 @@ export function PublicSampleModal({
               required
               value={contactName}
               onChange={(e) => setContactName(e.target.value)}
-              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
               placeholder={LABELS.rfqPlaceholderName}
             />
           </div>
@@ -151,7 +151,7 @@ export function PublicSampleModal({
               required
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
               placeholder="VD: 0989xxxxxx"
             />
           </div>
@@ -167,7 +167,7 @@ export function PublicSampleModal({
               rows={2}
               value={contactAddress}
               onChange={(e) => setContactAddress(e.target.value)}
-              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary resize-none"
+              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary resize-none"
               placeholder={LABELS.samplePlaceholderAddress}
             />
           </div>
@@ -181,7 +181,7 @@ export function PublicSampleModal({
               type="text"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+              className="w-full text-sm border border-default rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
               placeholder="VD: Thời trang Tấn Phát"
             />
           </div>

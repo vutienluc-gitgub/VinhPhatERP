@@ -20,7 +20,7 @@ import { vietnameseAuthError } from './utils';
 /* -- Shared Styles -------------------------------------------------- */
 
 const FLOATING_INPUT =
-  'peer w-full px-4 pt-5 pb-2 bg-foreground/15 border border-transparent/15 rounded-xl text-on-dark-foreground placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:bg-foreground/25 transition-all duration-200';
+  'peer w-full px-4 pt-5 pb-2 bg-foreground/15 border border-transparent/15 rounded-xl text-on-dark-foreground placeholder-transparent focus-visible:outline-none focus-visible:border-[#6366f1] focus-visible:ring-2 focus-visible:ring-[#6366f1] focus:bg-foreground/25 transition-all duration-200';
 
 const FLOATING_LABEL =
   'absolute left-4 top-1/2 -translate-y-1/2 text-on-dark-foreground/75 text-sm pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-on-dark-foreground/90 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-on-dark-foreground/90';

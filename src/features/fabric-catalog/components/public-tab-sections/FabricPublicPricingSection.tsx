@@ -344,7 +344,7 @@ function GroupSelector({ selectedIds, onChange, groups }: GroupSelectorProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-9 px-3 py-1.5 border border-default rounded-xl bg-slate-50 text-left text-xs font-semibold hover:bg-white focus:outline-none transition-all truncate flex items-center justify-between cursor-pointer"
+        className="w-full h-9 px-3 py-1.5 border border-default rounded-xl bg-slate-50 text-left text-xs font-semibold hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all truncate flex items-center justify-between cursor-pointer"
       >
         <span className="truncate">{displayLabel}</span>
         <Icon

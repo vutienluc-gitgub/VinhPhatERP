@@ -180,7 +180,7 @@ export function InvoiceSearchPage() {
                   disabled={configError}
                   aria-label="Mã tra cứu hóa đơn dệt gia công"
                   aria-required="true"
-                  className={`w-full px-4 py-3 rounded-xl border bg-slate-50 text-[var(--foreground)] font-semibold text-lg uppercase tracking-wider placeholder:lowercase placeholder:text-sm placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-[#1a6bb5] focus:bg-white transition-all ${
+                  className={`w-full px-4 py-3 rounded-xl border bg-slate-50 text-[var(--foreground)] font-semibold text-lg uppercase tracking-wider placeholder:lowercase placeholder:text-sm placeholder:font-normal placeholder:tracking-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1a6bb5] focus-visible:bg-white transition-all ${
                     errors.lookupCode
                       ? 'border-danger ring-1 ring-red-500'
                       : 'border-[#dce6f0]'
@@ -239,7 +239,7 @@ export function InvoiceSearchPage() {
                     placeholder="?"
                     aria-label={`Kết quả phép tính ${captcha.num1} cộng ${captcha.num2}`}
                     aria-required="true"
-                    className="flex-1 px-4 py-3 rounded-xl border border-[#dce6f0] bg-slate-50 text-[var(--foreground)] font-bold text-lg text-center focus:outline-none focus:ring-2 focus:ring-[#1a6bb5] focus:bg-white transition-all"
+                    className="flex-1 px-4 py-3 rounded-xl border border-[#dce6f0] bg-slate-50 text-[var(--foreground)] font-bold text-lg text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1a6bb5] focus-visible:bg-white transition-all"
                     value={mathAnswer}
                     onChange={(e) => setMathAnswer(e.target.value)}
                   />

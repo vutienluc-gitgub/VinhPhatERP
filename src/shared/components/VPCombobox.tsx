@@ -79,7 +79,7 @@ export function VPCombobox({
           disabled={disabled || loading}
           onBlur={onBlur}
           className={cn(
-            'flex h-10 w-full items-center justify-between rounded-md border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50',
+            'flex h-10 w-full items-center justify-between rounded-md border bg-surface px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50',
             hasError ? 'border-danger' : 'border-border',
             className,
           )}

@@ -176,7 +176,7 @@ export function POChatWidget({ poId }: POChatWidgetProps) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Nhập tin nhắn trao đổi..."
-          className="flex-1 px-4 py-2 bg-slate-50 border border-border rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+          className="flex-1 px-4 py-2 bg-slate-50 border border-border rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary text-sm"
           disabled={addMutation.isPending}
         />
         <Button
