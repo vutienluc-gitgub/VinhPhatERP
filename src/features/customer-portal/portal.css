@@ -269,6 +269,15 @@
   }
 }
 
+/* Mobile: .portal-shell trở thành scroll owner (class .app-scroll-root
+   trong scroll-root.css). Bỏ min-height để không xung đột với height:100dvh
+   của scroll owner — nếu giữ, nội dung dài sẽ tràn khỏi khung cuộn. */
+@media (width < 768px) {
+  .portal-shell {
+    min-height: 0;
+  }
+}
+
 /* ── Stat Cards ── */
 .portal-summary-grid {
   display: grid;

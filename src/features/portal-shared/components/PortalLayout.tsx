@@ -76,7 +76,7 @@ export function PortalLayout({
   };
 
   return (
-    <div className="portal-shell">
+    <div className="portal-shell app-scroll-root">
       {/* Header */}
       <header className="portal-header">
         <div className="portal-header-brand">

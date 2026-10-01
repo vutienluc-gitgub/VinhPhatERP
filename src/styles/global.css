@@ -10,6 +10,7 @@
 
 /* Layouts */
 @import url('./layout/app-shell.css');
+@import url('./layout/scroll-root.css');
 @import url('./layout/topbar.css');
 @import url('./layout/mobile-nav.css');
 @import url('./layout/app-launcher.css');
