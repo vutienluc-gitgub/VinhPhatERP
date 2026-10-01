@@ -147,8 +147,9 @@ tác cuộn** — mỗi layout top-level phải tự khai báo một _scroll own
 Quy tắc:
 
 - Mọi layout cấp cao **ngoài** `.shell-layout` (ERP) — ví dụ `.portal-shell`
-  (customer/supplier portal), driver portal, các trang public — **phải** có
-  class `.app-scroll-root` (định nghĩa tại `src/styles/layout/scroll-root.css`).
+  (customer/supplier portal), `.driver-portal-shell` (cổng tài xế), các trang
+  public — **phải** có class `.app-scroll-root` (định nghĩa tại
+  `src/styles/layout/scroll-root.css`).
 - **Cấm** để một trang dài dựa vào `min-height` mà không có scroll owner:
   nội dung sẽ bị cắt cụt và không vuốt được.
 - **Cấm** đặt `.app-scroll-root` lên element lồng bên trong một scroll owner

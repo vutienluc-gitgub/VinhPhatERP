@@ -17,7 +17,7 @@ export function DriverPortalLayout() {
   useChatNotifications({ soundEnabled: true });
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--bg)] flex flex-col">
+    <div className="driver-portal-shell app-scroll-root bg-[var(--bg)] flex flex-col">
       {/* Top bar */}
       <header className="sticky top-0 z-50 px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)] flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ export function DriverPortalLayout() {
       </header>
 
       {/* Content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1">
         <Outlet />
       </main>
     </div>
