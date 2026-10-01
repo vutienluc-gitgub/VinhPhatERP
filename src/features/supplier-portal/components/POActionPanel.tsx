@@ -68,7 +68,7 @@ export function POActionPanel({
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder={TEXT.PO_REJECT_REASON_PLACEHOLDER}
               rows={3}
-              className="w-full border border-danger/30 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-danger/50 resize-none bg-surface text-foreground"
+              className="w-full border border-danger/30 rounded-lg p-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/50 resize-none bg-surface text-foreground"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">

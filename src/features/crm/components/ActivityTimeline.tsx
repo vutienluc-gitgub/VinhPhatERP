@@ -70,7 +70,7 @@ export function ActivityTimeline({ leadId }: ActivityTimelineProps) {
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
           placeholder="Nhập nội dung tương tác..."
-          className="w-full text-sm border border-border rounded p-2 mb-2 min-h-[80px] bg-surface-subtle focus:bg-surface focus:outline-none focus:ring-1 focus:ring-primary"
+          className="w-full text-sm border border-border rounded p-2 mb-2 min-h-[80px] bg-surface-subtle focus:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         />
         <div className="flex justify-end">
           <Button

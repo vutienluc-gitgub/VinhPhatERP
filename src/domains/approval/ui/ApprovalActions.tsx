@@ -77,7 +77,7 @@ export function ApprovalActions({
       )}
     >
       <textarea
-        className="w-full p-3 text-sm bg-background border border-default rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+        className="w-full p-3 text-sm bg-background border border-default rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 resize-none"
         placeholder="Nhập ghi chú / lý do (bắt buộc khi từ chối)..."
         value={comment}
         onChange={(e) => setComment(e.target.value)}

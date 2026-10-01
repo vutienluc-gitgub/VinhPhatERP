@@ -146,7 +146,7 @@ export function ReportExceptionModal({
               required
               rows={3}
               placeholder="Nhập mô tả cụ thể về sự cố..."
-              className="w-full p-2.5 text-sm rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full p-2.5 text-sm rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]"
             />
           </div>
 

@@ -261,7 +261,7 @@ export function ApprovalHistoryPage() {
             placeholder="Tìm theo mã đơn, người duyệt, ghi chú..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-surface-secondary border border-default rounded-md text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full pl-9 pr-4 py-2 bg-surface-secondary border border-default rounded-md text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           />
         </div>
 

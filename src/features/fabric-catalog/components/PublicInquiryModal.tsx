@@ -436,7 +436,7 @@ function RFQFormStep({
             min="1"
             value={rfqQty}
             onChange={(e) => setRfqQty(e.target.value)}
-            className="w-full text-sm border border-default rounded-xl pl-3 pr-12 py-2 focus:outline-none focus:border-primary bg-surface"
+            className="w-full text-sm border border-default rounded-xl pl-3 pr-12 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary bg-surface"
           />
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             <span className="text-xs font-bold text-muted-foreground">
@@ -471,7 +471,7 @@ function RFQFormStep({
           required
           value={rfqContactName}
           onChange={(e) => setRfqContactName(e.target.value)}
-          className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+          className="w-full text-sm border border-default rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
           placeholder={LABELS.rfqPlaceholderName}
         />
       </div>
@@ -485,7 +485,7 @@ function RFQFormStep({
           required
           value={rfqContactPhone}
           onChange={(e) => setRfqContactPhone(e.target.value)}
-          className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+          className="w-full text-sm border border-default rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
           placeholder={LABELS.rfqPlaceholderPhone}
         />
       </div>
@@ -498,7 +498,7 @@ function RFQFormStep({
           type="email"
           value={rfqEmail}
           onChange={(e) => setRfqEmail(e.target.value)}
-          className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+          className="w-full text-sm border border-default rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
           placeholder={LABELS.rfqPlaceholderEmail}
         />
       </div>
@@ -511,7 +511,7 @@ function RFQFormStep({
           type="text"
           value={rfqCompanyName}
           onChange={(e) => setRfqCompanyName(e.target.value)}
-          className="w-full text-sm border border-default rounded-xl px-3 py-2 focus:outline-none focus:border-primary"
+          className="w-full text-sm border border-default rounded-xl px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
           placeholder={LABELS.rfqPlaceholderCompany}
         />
       </div>
