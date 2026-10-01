@@ -137,6 +137,44 @@ Trước khi commit bất kỳ thay đổi UI nào, kiểm tra:
 
 ---
 
+## R8 — Mobile Scroll Owner Contract
+
+Trên mobile (`< 768px`), `src/styles/layout/app-shell.css` đặt `html, body`
+thành `height: 100dvh; overflow: hidden` để chặn pull-to-refresh và
+rubber-band bounce của iOS Safari. Hệ quả: **viewport không còn nhận thao
+tác cuộn** — mỗi layout top-level phải tự khai báo một _scroll owner_.
+
+Quy tắc:
+
+- Mọi layout cấp cao **ngoài** `.shell-layout` (ERP) — ví dụ `.portal-shell`
+  (customer/supplier portal), `.driver-portal-shell` (cổng tài xế), các trang
+  public — **phải** có class `.app-scroll-root` (định nghĩa tại
+  `src/styles/layout/scroll-root.css`).
+- **Cấm** để một trang dài dựa vào `min-height` mà không có scroll owner:
+  nội dung sẽ bị cắt cụt và không vuốt được.
+- **Cấm** đặt `.app-scroll-root` lên element lồng bên trong một scroll owner
+  khác (tạo scroller lồng nhau, phá sticky header).
+- Wrapper bọc `<Outlet/>` trong layout **không** được dùng `h-full` cứng —
+  dùng `min-h-full` để nội dung được phép giãn theo cha cuộn.
+
+```css
+@media (width < 768px) {
+  .app-scroll-root {
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+```
+
+Regression test: `e2e/portal-scroll.spec.ts` (kiểm tra class + vuốt thật bằng
+touch event).
+
+---
+
 ## Vi phạm nghiêm trọng
 
 Bất kỳ commit nào gây ra **horizontal scroll ngang không chủ đích** trên mobile sẽ bị coi là:
