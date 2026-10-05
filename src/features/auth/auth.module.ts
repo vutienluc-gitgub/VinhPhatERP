@@ -8,6 +8,9 @@ export {
   registerDefaultValues,
   forgotPasswordSchema,
   resetPasswordSchema,
+  normalizeAuthIdentifier,
+  isCustomerCode,
+  CUSTOMER_PORTAL_EMAIL_DOMAIN,
 } from '@/schema/auth.schema';
 export type {
   AuthFormValues,

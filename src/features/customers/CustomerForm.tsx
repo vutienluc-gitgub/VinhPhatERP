@@ -4,18 +4,9 @@ import { useForm, Controller } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Button, Icon, VPSelect, VPEntityPicker } from '@/shared/components';
-import {
-  customersDefaultValues,
-  CUSTOMER_SOURCES,
-  CUSTOMER_SOURCE_LABELS,
-  CUSTOMER_SOURCE_ICONS,
-} from '@/schema';
-import {
-  customersSchema,
-  CRM_STATUS_LABELS,
-  CRM_STATUS_ICONS,
-} from '@/schema/customer.schema';
+import { Button, VPSelect, VPEntityPicker } from '@/shared/components';
+import { customersDefaultValues } from '@/schema';
+import { customersSchema } from '@/schema/customer.schema';
 import type { CustomersFormValues } from '@/schema/customer.schema';
 import {
   useCreateCustomer,
@@ -40,85 +31,11 @@ import {
   customerToFormValues,
   onPhoneKeyDown,
 } from './utils/customer-form.helpers';
-
-const SOURCE_OPTIONS = CUSTOMER_SOURCES.map((s) => ({
-  value: s,
-  label: CUSTOMER_SOURCE_LABELS[s],
-  icon: (
-    <Icon
-      name={
-        CUSTOMER_SOURCE_ICONS[s] as React.ComponentProps<typeof Icon>['name']
-      }
-      className="h-4 w-4 text-muted-foreground"
-    />
-  ),
-}));
-
-const STATUS_OPTIONS = [
-  {
-    value: 'active',
-    label: CUSTOMER_FORM_LABELS.statusActive,
-    icon: <Icon name="check-circle-2" className="h-4 w-4 text-success" />,
-  },
-  {
-    value: 'inactive',
-    label: CUSTOMER_FORM_LABELS.statusInactive,
-    icon: <Icon name="x-circle" className="h-4 w-4 text-muted-foreground" />,
-  },
-];
-
-const LEAD_STATUS_OPTIONS = [
-  {
-    value: 'lead',
-    label: CRM_STATUS_LABELS.lead,
-    icon: (
-      <Icon
-        name={
-          CRM_STATUS_ICONS.lead as React.ComponentProps<typeof Icon>['name']
-        }
-        className="h-4 w-4 text-muted-foreground"
-      />
-    ),
-  },
-  {
-    value: 'opportunity',
-    label: CRM_STATUS_LABELS.opportunity,
-    icon: (
-      <Icon
-        name={
-          CRM_STATUS_ICONS.opportunity as React.ComponentProps<
-            typeof Icon
-          >['name']
-        }
-        className="h-4 w-4 text-muted-foreground"
-      />
-    ),
-  },
-  {
-    value: 'customer',
-    label: CRM_STATUS_LABELS.customer,
-    icon: (
-      <Icon
-        name={
-          CRM_STATUS_ICONS.customer as React.ComponentProps<typeof Icon>['name']
-        }
-        className="h-4 w-4 text-success"
-      />
-    ),
-  },
-  {
-    value: 'lost',
-    label: CRM_STATUS_LABELS.lost,
-    icon: (
-      <Icon
-        name={
-          CRM_STATUS_ICONS.lost as React.ComponentProps<typeof Icon>['name']
-        }
-        className="h-4 w-4 text-danger"
-      />
-    ),
-  },
-];
+import {
+  SOURCE_OPTIONS,
+  STATUS_OPTIONS,
+  LEAD_STATUS_OPTIONS,
+} from './utils/customer-form.options';
 
 type CustomerFormProps = {
   customer: Customer | null;
@@ -481,6 +398,7 @@ export function CustomerForm({ customer, onClose }: CustomerFormProps) {
               <CustomerPortalAccountPanel
                 customerId={customer.id}
                 customerName={customer.name}
+                customerCode={customer.code}
               />
             ) : (
               <div className="border border-dashed border-default bg-surface-secondary/50 rounded-xl p-4 min-h-[90px] flex items-center justify-center text-center text-xs text-muted-foreground italic">

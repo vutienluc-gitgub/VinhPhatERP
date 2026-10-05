@@ -88,12 +88,13 @@ serve(async (req: Request) => {
     }
 
     // Parse body
-    const { email, password, customer_id, full_name } = await req.json();
+    const { email, password, customer_id, full_name, customer_code } =
+      await req.json();
 
-    if (!email || !password || !customer_id || !full_name) {
+    if (!password || !customer_id || !full_name) {
       return errorResponse(
         'VALIDATION',
-        'Thiếu thông tin bắt buộc: email, password, customer_id, full_name',
+        'Thiếu thông tin bắt buộc: password, customer_id, full_name',
       );
     }
 
@@ -110,12 +111,27 @@ serve(async (req: Request) => {
     // Check customer exists
     const { data: customer, error: custErr } = await supabaseAdmin
       .from('customers')
-      .select('id, name')
+      .select('id, name, code')
       .eq('id', customer_id)
       .single();
 
     if (custErr || !customer) {
       return errorResponse('NOT_FOUND', 'Không tìm thấy khách hàng', 404);
+    }
+
+    const rawEmail = typeof email === 'string' ? email.trim() : '';
+    const code =
+      (typeof customer_code === 'string' && customer_code.trim()) ||
+      customer.code ||
+      '';
+    const effectiveEmail =
+      rawEmail || `${code.trim().toLowerCase()}@portal.vinhphaterp.vn`;
+
+    if (!effectiveEmail || effectiveEmail === '@portal.vinhphaterp.vn') {
+      return errorResponse(
+        'VALIDATION',
+        'Không thể xác định email hoặc mã khách hàng để tạo tài khoản',
+      );
     }
 
     // Check unique constraint: customer_id chưa có account
@@ -136,7 +152,7 @@ serve(async (req: Request) => {
     // Create Supabase Auth user
     const { data: newUser, error: createErr } =
       await supabaseAdmin.auth.admin.createUser({
-        email,
+        email: effectiveEmail,
         password,
         email_confirm: true,
       });

@@ -11,7 +11,7 @@ export const AUTH_MESSAGES = {
   continueWithGoogle: 'Tiếp tục với Google',
   authenticating: 'Đang xác thực…',
   loginButton: 'Đăng nhập vào hệ thống',
-  errorInvalidCredentials: 'Email hoặc mật khẩu không đúng.',
+  errorInvalidCredentials: 'Email/Mã khách hàng hoặc mật khẩu không đúng.',
   errorEmailNotConfirmed:
     'Email chưa được xác nhận. Vui lòng kiểm tra hộp thư.',
   errorTooManyRequests:
@@ -62,19 +62,19 @@ export const AUTH_MESSAGES = {
 };
 
 export const AUTH_LABELS = {
-  email: 'Email',
+  email: 'Email hoặc Mã khách hàng',
   password: 'Mật khẩu',
   confirmPassword: 'Xác nhận mật khẩu',
   rememberMe: 'Ghi nhớ',
   forgotPassword: 'Quên mật khẩu?',
-  emailPlaceholder: '1081991@gmail.com',
+  emailPlaceholder: 'nguyenvana@gmail.com hoặc KH-001',
   passwordPlaceholder: '••••••••',
   registerPasskey: 'Đăng ký thiết bị sinh trắc học (Passkey / Face ID)',
   passkeyIdentifierPlaceholder: 'Mã nhân viên (VD: NV001, VP-0142)...',
   passkeyDevicePlaceholder:
     'VD: MacBook Touch ID, iPhone Face ID, YubiKey 5...',
   passkeyTabPasskey: 'Passkey / Mã NV',
-  passkeyTabPassword: 'Email & Mật khẩu',
+  passkeyTabPassword: 'Tài khoản & Mật khẩu',
   authMethodTabList: 'Phương thức đăng nhập',
   showPassword: 'Hiện mật khẩu',
   hidePassword: 'Ẩn mật khẩu',
