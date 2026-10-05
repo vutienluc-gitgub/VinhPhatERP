@@ -292,28 +292,26 @@ export async function fetchCustomerPortalAccount(
   };
 }
 
-export async function createCustomerPortalAccount(payload: {
+export interface CreateCustomerPortalAccountPayload {
   customer_id: string;
   full_name: string;
-  email: string;
+  email?: string;
+  customer_code?: string;
   password?: string;
-}): Promise<void> {
-  // Refresh session to ensure we have a valid token
-  const { data: refreshData, error: refreshError } =
-    await supabase.auth.refreshSession();
+}
 
-  const session = refreshData?.session;
-  if (refreshError || !session) {
-    // Fallback to getSession
-    const { data: sessionData, error: sessionError } =
-      await supabase.auth.getSession();
-    if (sessionError || !sessionData?.session) {
-      throw new Error(
-        'Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.',
-      );
-    }
-    // Use fallback session
-    return callEdgeFunction(sessionData.session.access_token, payload);
+export async function createCustomerPortalAccount(
+  payload: CreateCustomerPortalAccountPayload,
+): Promise<void> {
+  // Refresh session to ensure we have a valid token
+  const { data: refreshData } = await supabase.auth.refreshSession();
+  const session =
+    refreshData?.session ?? (await supabase.auth.getSession()).data.session;
+
+  if (!session) {
+    throw new Error(
+      'Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.',
+    );
   }
 
   return callEdgeFunction(session.access_token, payload);
@@ -321,12 +319,7 @@ export async function createCustomerPortalAccount(payload: {
 
 async function callEdgeFunction(
   accessToken: string,
-  payload: {
-    customer_id: string;
-    full_name: string;
-    email: string;
-    password?: string;
-  },
+  payload: CreateCustomerPortalAccountPayload,
 ): Promise<void> {
   const res = await fetch(
     `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-customer-account`,

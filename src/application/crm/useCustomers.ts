@@ -166,7 +166,8 @@ export function useCreatePortalAccount(customerId: string) {
     mutationFn: (payload: {
       customer_id: string;
       full_name: string;
-      email: string;
+      email?: string;
+      customer_code?: string;
       password?: string;
     }) => {
       return createCustomerPortalAccount(payload);

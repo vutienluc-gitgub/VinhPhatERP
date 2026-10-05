@@ -250,8 +250,8 @@ export const CUSTOMER_PORTAL_LABELS = {
   statusDeactivated: 'Vô hiệu hóa',
   noAccountMsg: 'Khách hàng chưa có tài khoản Portal.',
   createAccountBtn: '+ Tạo tài khoản',
-  emailLabel: 'Email',
-  emailPlaceholder: 'khachhang@email.com',
+  emailLabel: 'Email (tùy chọn)',
+  emailPlaceholder: 'Để trống sẽ dùng Mã KH để đăng nhập',
   passwordLabel: 'Mật khẩu',
   passwordPlaceholder: 'Tối thiểu 8 ký tự',
   submitCreating: 'Đang tạo…',
@@ -259,6 +259,8 @@ export const CUSTOMER_PORTAL_LABELS = {
   actionProcessing: 'Đang xử lý…',
   actionDeactivate: '⊘ Vô hiệu hóa tài khoản',
   actionReactivate: '↺ Kích hoạt lại',
+  useCustomerCodeHint:
+    'Nếu không có email, khách hàng sẽ đăng nhập bằng Mã KH và mật khẩu.',
 } as const;
 
 export const CUSTOMER_MODULE_LABELS = {

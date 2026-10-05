@@ -14,11 +14,13 @@ import { CUSTOMER_PORTAL_LABELS } from './customers.constants';
 interface Props {
   customerId: string;
   customerName: string;
+  customerCode?: string;
 }
 
 export function CustomerPortalAccountPanel({
   customerId,
   customerName,
+  customerCode,
 }: Props) {
   const { data: account, isLoading: isFetching } = usePortalAccount(customerId);
   const createMutation = useCreatePortalAccount(customerId);
@@ -33,12 +35,13 @@ export function CustomerPortalAccountPanel({
   const loading = createMutation.isPending || updateStatusMutation.isPending;
 
   function handleCreate() {
-    if (!email || password.length < 8) return;
+    if (password.length < 8) return;
     createMutation.mutate(
       {
         customer_id: customerId,
         full_name: customerName,
-        email,
+        ...(email ? { email } : {}),
+        ...(customerCode ? { customer_code: customerCode } : {}),
         password,
       },
       {
@@ -175,7 +178,6 @@ export function CustomerPortalAccountPanel({
                   </label>
                   <input
                     type="email"
-                    required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="field-input h-9 text-xs"
@@ -196,12 +198,15 @@ export function CustomerPortalAccountPanel({
                     placeholder={CUSTOMER_PORTAL_LABELS.passwordPlaceholder}
                   />
                 </div>
+                <p className="text-[10px] text-muted-foreground italic">
+                  {CUSTOMER_PORTAL_LABELS.useCustomerCodeHint}
+                </p>
                 <div className="flex gap-2 pt-1">
                   <Button
                     variant="primary"
                     className="btn-sm text-[12px] font-bold"
                     type="button"
-                    disabled={loading || !email || password.length < 8}
+                    disabled={loading || password.length < 8}
                     onClick={handleCreate}
                   >
                     {loading

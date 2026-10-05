@@ -10,6 +10,7 @@ import {
   authSchema,
   authDefaultValues,
   type AuthFormValues,
+  normalizeAuthIdentifier,
 } from './auth.module';
 import { useAuth } from './AuthProvider';
 import { GoogleLoginButton } from './components/GoogleLoginButton';
@@ -65,8 +66,9 @@ export function LoginForm({
   const onSubmit = async (values: AuthFormValues) => {
     setServerError(null);
     try {
+      const normalizedEmail = normalizeAuthIdentifier(values.email);
       const { error } = await signIn(
-        values.email,
+        normalizedEmail,
         values.password,
         captchaToken ?? undefined,
       );
@@ -156,7 +158,7 @@ export function LoginForm({
               <div className="relative">
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   autoComplete="email"
                   autoFocus
                   placeholder=" "
