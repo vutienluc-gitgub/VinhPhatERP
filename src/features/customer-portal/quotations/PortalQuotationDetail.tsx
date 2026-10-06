@@ -1,12 +1,14 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { toast } from 'react-hot-toast';
-import { useState, useEffect } from 'react';
 
 import { usePortalQuotationDetail } from '@/application/crm/portal';
 import { MoneyText } from '@/shared/value';
 import { Button, Icon } from '@/shared/components';
-import { AdaptiveSheet } from '@/shared/components/AdaptiveSheet';
+
+import { QuotationAcceptSheet } from './QuotationAcceptSheet';
+import { QuotationRejectSheet } from './QuotationRejectSheet';
 
 export function PortalQuotationDetail() {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +22,6 @@ export function PortalQuotationDetail() {
   const [acceptSheetOpen, setAcceptSheetOpen] = useState(false);
   const [rejectSheetOpen, setRejectSheetOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     if (!quotation?.valid_until || quotation.status !== 'sent') return;
@@ -90,6 +91,7 @@ export function PortalQuotationDetail() {
         <button
           onClick={() => navigate(-1)}
           className="p-2 hover:bg-surface-secondary rounded-full transition-colors"
+          aria-label="Quay lại"
         >
           <Icon name="ArrowLeft" size={20} />
         </button>
@@ -116,11 +118,11 @@ export function PortalQuotationDetail() {
                     <th className="text-right pb-3 font-medium">Thành tiền</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-border">
                   {quotation.items?.map((item) => (
                     <tr
                       key={item.id}
-                      className="group hover:bg-slate-50/50 transition-colors"
+                      className="group hover:bg-surface-secondary/50 transition-colors"
                     >
                       <td className="py-4">
                         <div className="font-semibold text-foreground">
@@ -137,7 +139,7 @@ export function PortalQuotationDetail() {
                         <MoneyText value={item.unit_price} suffix="" />
                       </td>
                       <td className="py-4 text-right font-bold text-foreground">
-                        <MoneyText value={item.amount} suffix=" đ" />
+                        <MoneyText value={item.amount} />
                       </td>
                     </tr>
                   ))}
@@ -147,7 +149,7 @@ export function PortalQuotationDetail() {
           </div>
 
           {quotation.notes && (
-            <div className="portal-card p-5 bg-blue-50/30 border-info">
+            <div className="portal-card p-5 bg-info-soft/30 border-info">
               <h3 className="text-sm font-bold text-info mb-2 flex items-center gap-2">
                 <Icon name="Info" size={16} />
                 Ghi chú / Điều khoản
@@ -166,7 +168,7 @@ export function PortalQuotationDetail() {
             <div className="space-y-4">
               <div className="flex justify-between items-center text-2xl font-black text-foreground">
                 <span>
-                  <MoneyText value={quotation.total_amount} suffix=" đ" />
+                  <MoneyText value={quotation.total_amount} />
                 </span>
               </div>
 
@@ -192,7 +194,7 @@ export function PortalQuotationDetail() {
               </div>
 
               {timeLeft && quotation.status === 'sent' && (
-                <div className="p-3 bg-orange-50 rounded-lg border border-warning">
+                <div className="p-3 bg-warning-soft rounded-lg border border-warning">
                   <div className="text-[10px] uppercase tracking-wider text-warning font-bold mb-1">
                     Thời gian còn lại
                   </div>
@@ -215,7 +217,7 @@ export function PortalQuotationDetail() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full text-danger border-danger hover:bg-red-50"
+                      className="w-full text-danger border-danger hover:bg-danger-soft"
                       onClick={() => setRejectSheetOpen(true)}
                     >
                       Từ chối báo giá
@@ -225,14 +227,14 @@ export function PortalQuotationDetail() {
                     </p>
                   </>
                 ) : quotation.status === 'confirmed' ? (
-                  <div className="bg-green-50 border border-success rounded-lg p-5">
+                  <div className="bg-success-soft border border-success rounded-lg p-5">
                     <div className="text-success font-bold mb-4 flex items-center gap-2">
                       <Icon name="CheckCircle2" size={24} />
                       Đã xác nhận đặt hàng
                     </div>
                     <div className="relative border-l-2 border-success ml-3 space-y-6">
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-success-soft w-3 h-3 rounded-full border-4 border-transparent"></div>
+                        <div className="absolute -left-[21px] bg-success-soft w-3 h-3 rounded-full border-4 border-transparent" />
                         <div className="pl-4">
                           <h4 className="text-sm font-bold text-foreground">
                             Báo giá được duyệt
@@ -243,7 +245,7 @@ export function PortalQuotationDetail() {
                         </div>
                       </div>
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-transparent"></div>
+                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-transparent" />
                         <div className="pl-4">
                           <h4 className="text-sm font-bold text-muted-foreground">
                             Lên đơn hàng (SO)
@@ -251,7 +253,7 @@ export function PortalQuotationDetail() {
                         </div>
                       </div>
                       <div className="relative">
-                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-transparent"></div>
+                        <div className="absolute -left-[21px] bg-surface-strong w-3 h-3 rounded-full border-4 border-transparent" />
                         <div className="pl-4">
                           <h4 className="text-sm font-bold text-muted-foreground">
                             Chuẩn bị sản xuất
@@ -261,7 +263,7 @@ export function PortalQuotationDetail() {
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 bg-slate-50 rounded-lg text-center font-bold text-muted-foreground">
+                  <div className="p-4 bg-surface-secondary rounded-lg text-center font-bold text-muted-foreground">
                     Báo giá này{' '}
                     {quotation.status === 'rejected'
                       ? 'đã bị từ chối'
@@ -274,102 +276,25 @@ export function PortalQuotationDetail() {
         </div>
       </div>
 
-      {/* Accept Sheet */}
-      <AdaptiveSheet
+      {/* Accept Sheet Sub-component */}
+      <QuotationAcceptSheet
         open={acceptSheetOpen}
         onClose={() => setAcceptSheetOpen(false)}
-        title="Xác nhận đặt hàng"
-        maxWidth={500}
-        footer={
-          <div className="flex gap-3 w-full">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => setAcceptSheetOpen(false)}
-            >
-              Quay lại
-            </Button>
-            <Button
-              variant="primary"
-              className="flex-1"
-              onClick={handleAcceptConfirm}
-              disabled={!termsAccepted || isProcessing}
-            >
-              <Icon name="Check" size={18} className="mr-2" />
-              {isProcessing ? 'Đang xử lý...' : 'Xác nhận'}
-            </Button>
-          </div>
-        }
-      >
-        <div className="space-y-4 text-muted-foreground py-2">
-          <div className="bg-blue-50 text-info p-4 rounded-lg flex items-start gap-3">
-            <Icon name="Info" size={20} className="mt-0.5 shrink-0" />
-            <p className="text-sm">
-              Bạn đang xác nhận chuyển đổi báo giá{' '}
-              <strong>{quotation.quotation_number}</strong> thành đơn hàng chính
-              thức với tổng giá trị{' '}
-              <strong>
-                <MoneyText value={quotation.total_amount} suffix=" đ" />
-              </strong>
-              .
-            </p>
-          </div>
+        quotationNumber={quotation.quotation_number}
+        totalAmount={quotation.total_amount}
+        onConfirm={handleAcceptConfirm}
+        isProcessing={isProcessing}
+      />
 
-          <label className="flex items-start gap-3 cursor-pointer p-4 border border-default rounded-lg hover:bg-slate-50 transition-colors mt-6">
-            <input
-              type="checkbox"
-              className="mt-1 w-4 h-4 text-foreground rounded border-muted focus:ring-primary"
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-            />
-            <span className="text-sm select-none">
-              Tôi xác nhận đồng ý với các điều khoản, đơn giá và số lượng trong
-              báo giá này.
-            </span>
-          </label>
-        </div>
-      </AdaptiveSheet>
-
-      {/* Reject Sheet */}
-      <AdaptiveSheet
+      {/* Reject Sheet Sub-component */}
+      <QuotationRejectSheet
         open={rejectSheetOpen}
         onClose={() => setRejectSheetOpen(false)}
-        title="Từ chối báo giá"
-        maxWidth={500}
-        footer={
-          <div className="flex gap-3 w-full">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => setRejectSheetOpen(false)}
-            >
-              Hủy
-            </Button>
-            <Button
-              variant="danger"
-              className="flex-1"
-              onClick={handleRejectConfirm}
-              disabled={isProcessing}
-            >
-              {isProcessing ? 'Đang xử lý...' : 'Xác nhận từ chối'}
-            </Button>
-          </div>
-        }
-      >
-        <div className="space-y-4 py-2">
-          <p className="text-sm text-muted-foreground">
-            Vui lòng cho chúng tôi biết lý do bạn từ chối báo giá này để Vĩnh
-            Phát có thể cải thiện chất lượng dịch vụ:
-          </p>
-          <textarea
-            className="w-full border border-muted rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none"
-            rows={4}
-            placeholder="Ví dụ: Đơn giá cao, thời gian giao hàng lâu..."
-            value={rejectReason}
-            onChange={(e) => setRejectReason(e.target.value)}
-          />
-        </div>
-      </AdaptiveSheet>
+        reason={rejectReason}
+        onReasonChange={setRejectReason}
+        onConfirm={handleRejectConfirm}
+        isProcessing={isProcessing}
+      />
     </div>
   );
 }

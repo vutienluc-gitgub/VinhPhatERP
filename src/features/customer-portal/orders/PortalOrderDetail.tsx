@@ -7,6 +7,7 @@ import {
   ORDER_STATUS_BADGE,
   ORDER_STATUS_LABELS,
 } from '@/features/customer-portal/constants';
+import { TableSkeleton, ErrorInline, EmptyState } from '@/shared/components';
 
 import { PortalOrderPaymentSection } from './PortalOrderPaymentSection';
 import { PortalOrderPackingList } from './PortalOrderPackingList';
@@ -19,25 +20,37 @@ export const PortalOrderDetail: React.FC = () => {
     usePortalOrders(id);
 
   if (loading) {
-    return <p className="portal-loading">{PORTAL_ORDER_DETAIL_TEXT.LOADING}</p>;
+    return (
+      <div className="portal-section space-y-4">
+        <TableSkeleton rows={4} columns={4} />
+      </div>
+    );
   }
 
   if (error) {
-    return <p className="portal-error">{error}</p>;
+    return (
+      <div className="portal-section">
+        <ErrorInline>{error}</ErrorInline>
+      </div>
+    );
   }
 
   if (!order) {
-    return <p className="portal-empty">{PORTAL_ORDER_DETAIL_TEXT.NOT_FOUND}</p>;
+    return (
+      <div className="portal-section">
+        <EmptyState
+          icon="PackageX"
+          description={PORTAL_ORDER_DETAIL_TEXT.NOT_FOUND}
+        />
+      </div>
+    );
   }
 
   const statusBadgeClass = ORDER_STATUS_BADGE[order.status] ?? 'portal-badge';
   const statusLabel = ORDER_STATUS_LABELS[order.status] ?? order.status;
 
   return (
-    <div
-      className="portal-section"
-      style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-    >
+    <div className="portal-section flex flex-col gap-6">
       {/* Breadcrumb */}
       <div className="portal-breadcrumb">
         <Link to="/portal/customer/orders">
@@ -50,7 +63,7 @@ export const PortalOrderDetail: React.FC = () => {
       {/* Header Info Card */}
       <div className="portal-table-wrap">
         <div className="portal-card-header">
-          <span style={{ fontWeight: 700 }}>{order.order_number}</span>
+          <span className="font-bold">{order.order_number}</span>
           <span className={statusBadgeClass}>{statusLabel}</span>
         </div>
         <div className="portal-card-body">
@@ -65,7 +78,7 @@ export const PortalOrderDetail: React.FC = () => {
             </div>
             <div className="portal-detail-item">
               <label>{PORTAL_ORDER_DETAIL_TEXT.TOTAL_AMOUNT}</label>
-              <p style={{ fontWeight: 600 }}>
+              <p className="font-semibold">
                 <MoneyText value={order.total_amount} />
               </p>
             </div>
@@ -97,7 +110,7 @@ export const PortalOrderDetail: React.FC = () => {
             <span>{PORTAL_ORDER_DETAIL_TEXT.PRODUCTS_TITLE}</span>
             <span className="portal-badge">{order.items.length} mặt hàng</span>
           </div>
-          <div style={{ overflowX: 'auto' }}>
+          <div className="overflow-x-auto">
             <table className="portal-table">
               <thead>
                 <tr>
@@ -117,13 +130,13 @@ export const PortalOrderDetail: React.FC = () => {
               <tbody>
                 {order.items.map((item) => (
                   <tr key={item.id}>
-                    <td style={{ fontWeight: 600 }}>{item.fabric_name}</td>
+                    <td className="font-semibold">{item.fabric_name}</td>
                     <td>{item.color ?? '—'}</td>
                     <td className="right">{item.quantity}</td>
                     <td className="right">
                       <MoneyText value={item.unit_price} />
                     </td>
-                    <td className="right" style={{ fontWeight: 600 }}>
+                    <td className="right font-semibold">
                       <MoneyText value={item.amount} />
                     </td>
                   </tr>

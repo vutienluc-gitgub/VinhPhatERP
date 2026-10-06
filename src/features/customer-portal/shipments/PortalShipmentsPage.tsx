@@ -3,7 +3,12 @@ import { Link } from 'react-router-dom';
 
 import { usePortalShipments } from '@/application/crm/portal';
 import { SHIPMENT_STATUS_LABELS } from '@/features/customer-portal/constants';
-import { EmptyState, FilterChips } from '@/shared/components';
+import {
+  EmptyState,
+  FilterChips,
+  TableSkeleton,
+  ErrorInline,
+} from '@/shared/components';
 
 type FilterStatus = 'ALL' | 'PREPARING' | 'SHIPPED' | 'DELIVERED';
 
@@ -11,8 +16,23 @@ export function PortalShipmentsPage() {
   const { shipments, loading, error } = usePortalShipments();
   const [activeFilter, setActiveFilter] = useState<FilterStatus>('ALL');
 
-  if (loading) return <p className="portal-loading">Đang tải…</p>;
-  if (error) return <p className="portal-error">{error}</p>;
+  if (loading) {
+    return (
+      <div className="portal-section space-y-4">
+        <h1 className="portal-page-title">Giao hàng</h1>
+        <TableSkeleton rows={5} columns={5} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="portal-section">
+        <h1 className="portal-page-title">Giao hàng</h1>
+        <ErrorInline>{error}</ErrorInline>
+      </div>
+    );
+  }
 
   const filteredShipments = shipments.filter((s) => {
     if (activeFilter === 'ALL') return true;
@@ -43,7 +63,7 @@ export function PortalShipmentsPage() {
         <EmptyState icon="Truck" description="Chưa có phiếu giao hàng nào." />
       ) : (
         <div className="portal-table-wrap">
-          <div style={{ overflowX: 'auto' }}>
+          <div className="overflow-x-auto">
             <table className="portal-table">
               <thead>
                 <tr>

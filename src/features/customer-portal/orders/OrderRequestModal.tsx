@@ -1,18 +1,16 @@
 import { useState, useMemo } from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { usePortalOrderRequest } from '@/application/crm/portal';
-import { Button, Icon, AdaptiveSheet, Combobox } from '@/shared/components';
+import { Button, Icon, AdaptiveSheet } from '@/shared/components';
 import { useFabricCatalogOptions } from '@/shared/hooks/useFabricCatalogOptions';
-import {
-  useColorOptions,
-  toColorComboboxOptions,
-} from '@/shared/hooks/useColorOptions';
+import { useColorOptions } from '@/shared/hooks/useColorOptions';
 import { orderRequestFormSchema } from '@/schema/order-request.schema';
 import type { OrderRequestFormValues } from '@/schema/order-request.schema';
 import type { PortalOrderItem } from '@/domain/portal/types';
-import { QuantityInput } from '@/shared/value';
+
+import { OrderRequestItemRow } from './OrderRequestItemRow';
 
 type RequestFormValues = OrderRequestFormValues;
 
@@ -104,34 +102,34 @@ export function OrderRequestModal({
 
     if (success) {
       setSubmitSuccess(true);
-      if (onSuccess) {
-        setTimeout(onSuccess, 2000);
-      } else {
-        setTimeout(onClose, 2000);
-      }
+      onSuccess?.();
     }
   }
 
   if (submitSuccess) {
     return (
       <AdaptiveSheet
-        open={true}
+        open
         onClose={onClose}
-        title="Gửi yêu cầu thành công"
-      >
-        <div className="flex flex-col items-center justify-center p-8 text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center text-success">
-            <Icon name="CheckCircle2" size={32} />
-          </div>
-          <h3 className="text-xl font-bold">Yêu cầu đã được gửi</h3>
-          <p className="text-muted-foreground text-sm max-w-xs">
-            Chúng tôi đã nhận được yêu cầu đặt hàng của bạn. Nhân viên kinh
-            doanh sẽ liên hệ lại trong thời gian sớm nhất để xác nhận và làm báo
-            giá chi tiết.
-          </p>
-          <Button variant="primary" onClick={onClose} className="mt-4">
+        title="Yêu cầu đã được gửi!"
+        maxWidth={520}
+        footer={
+          <Button variant="primary" onClick={onClose} className="w-full">
             Đóng
           </Button>
+        }
+      >
+        <div className="text-center py-6 space-y-3">
+          <div className="w-14 h-14 bg-success-soft text-success rounded-full flex items-center justify-center mx-auto">
+            <Icon name="CheckCircle2" size={32} />
+          </div>
+          <h3 className="font-semibold text-lg text-foreground">
+            Gửi yêu cầu đặt hàng thành công
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+            Bộ phận kinh doanh Vĩnh Phát sẽ liên hệ xác nhận đơn hàng và báo giá
+            trong thời gian sớm nhất.
+          </p>
         </div>
       </AdaptiveSheet>
     );
@@ -141,12 +139,13 @@ export function OrderRequestModal({
     <AdaptiveSheet
       open
       onClose={onClose}
-      title="Yêu cầu đặt hàng"
+      title="Yêu cầu đặt hàng mới"
+      maxWidth={680}
       footer={
         <>
           <Button
-            variant="secondary"
             type="button"
+            variant="outline"
             onClick={onClose}
             disabled={isPending}
           >
@@ -164,11 +163,7 @@ export function OrderRequestModal({
         </>
       }
     >
-      {error && (
-        <p className="field-error" style={{ marginBottom: '1rem' }}>
-          Lỗi: {error}
-        </p>
-      )}
+      {error && <p className="field-error mb-4">Lỗi: {error}</p>}
 
       <form
         id="order-request-form"
@@ -203,116 +198,20 @@ export function OrderRequestModal({
 
             <div className="space-y-3">
               {fields.map((field, index) => (
-                <div
+                <OrderRequestItemRow
                   key={field.id}
-                  className="p-3 rounded-lg border border-border bg-surface relative"
-                >
-                  {fields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-danger rounded-lg bg-background"
-                    >
-                      <Icon name="X" size={14} />
-                    </button>
-                  )}
-
-                  <div className="form-grid form-grid-2 mb-3">
-                    <div className="form-field">
-                      <label>
-                        Loại vải <span className="field-required">*</span>
-                      </label>
-                      <Controller
-                        name={`items.${index}.fabric_type` as const}
-                        control={control}
-                        render={({ field }) => (
-                          <Combobox
-                            options={fabricComboOptions}
-                            value={field.value}
-                            onChange={(val) => {
-                              field.onChange(val);
-                              const selected = fabricOptions.find(
-                                (f) => f.name === val,
-                              );
-                              if (selected?.unit) {
-                                // Tự động chọn đơn vị nếu có trong danh mục
-                                const unitVal =
-                                  selected.unit.toLowerCase() === 'mét'
-                                    ? 'm'
-                                    : selected.unit.toLowerCase();
-                                setValue(`items.${index}.unit`, unitVal);
-                              }
-                            }}
-                            placeholder="VD: Cotton 65/35"
-                            hasError={!!errors.items?.[index]?.fabric_type}
-                            allowInput
-                          />
-                        )}
-                      />
-                      {errors.items?.[index]?.fabric_type && (
-                        <p className="field-error">
-                          {errors.items[index]?.fabric_type?.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="form-field">
-                      <label>Tên màu / Mã màu</label>
-                      <Controller
-                        name={`items.${index}.color_name` as const}
-                        control={control}
-                        render={({ field }) => (
-                          <Combobox
-                            options={toColorComboboxOptions(colorOptions)}
-                            value={field.value ?? ''}
-                            onChange={field.onChange}
-                            placeholder="VD: Trắng tinh, Đen, Xanh Navy"
-                            allowInput
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-grid form-grid-2 mb-3">
-                    <Controller
-                      name={`items.${index}.quantity`}
-                      control={control}
-                      render={({ field }) => (
-                        <QuantityInput
-                          min="1"
-                          className={`field-input${errors.items?.[index]?.quantity ? ' border-danger' : ''}`}
-                          value={field.value}
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                        />
-                      )}
-                    />
-                    <div className="form-field">
-                      <label>Đơn vị</label>
-                      <Controller
-                        name={`items.${index}.unit` as const}
-                        control={control}
-                        render={({ field }) => (
-                          <Combobox
-                            options={UNIT_OPTIONS}
-                            value={field.value}
-                            onChange={field.onChange}
-                            hasError={!!errors.items?.[index]?.unit}
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-field mb-0">
-                    <label>Ghi chú thêm (Hồ cứng, xẻ, v.v...)</label>
-                    <input
-                      className="field-input"
-                      placeholder="Ghi chú về mặt hàng này..."
-                      {...register(`items.${index}.notes`)}
-                    />
-                  </div>
-                </div>
+                  index={index}
+                  control={control}
+                  register={register}
+                  errors={errors}
+                  setValue={setValue}
+                  onRemove={() => remove(index)}
+                  canRemove={fields.length > 1}
+                  fabricOptions={fabricOptions}
+                  fabricComboOptions={fabricComboOptions}
+                  colorOptions={colorOptions}
+                  unitOptions={UNIT_OPTIONS}
+                />
               ))}
             </div>
           </div>
