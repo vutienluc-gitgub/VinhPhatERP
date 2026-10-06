@@ -1,14 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from 'react';
 
-import { Icon } from '@/shared/components';
 import {
   CUSTOMER_SOURCES,
   CUSTOMER_SOURCE_LABELS,
   CUSTOMER_SOURCE_ICONS,
 } from '@/schema';
 import { CRM_STATUS_LABELS, CRM_STATUS_ICONS } from '@/schema/customer.schema';
-import { CUSTOMER_FORM_LABELS } from '@/features/customers/customers.constants';
+import { Icon } from '@/shared/components';
+
+import { CUSTOMER_FORM_LABELS } from './customers.constants';
 
 export const SOURCE_OPTIONS = CUSTOMER_SOURCES.map((s) => ({
   value: s,

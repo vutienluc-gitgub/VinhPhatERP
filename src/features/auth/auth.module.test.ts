@@ -5,7 +5,7 @@ import {
   authSchema,
   normalizeAuthIdentifier,
   isCustomerCode,
-} from '@/features/auth/auth.module';
+} from './auth.module';
 
 describe('auth.module', () => {
   it('accepts valid credentials with standard email', () => {

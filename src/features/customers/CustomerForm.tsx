@@ -35,7 +35,7 @@ import {
   SOURCE_OPTIONS,
   STATUS_OPTIONS,
   LEAD_STATUS_OPTIONS,
-} from './utils/customer-form.options';
+} from './customer-form.options';
 
 type CustomerFormProps = {
   customer: Customer | null;
