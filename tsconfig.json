@@ -14,5 +14,6 @@
       "@/*": ["src/*"]
     },
     "jsx": "react-jsx"
-  }
+  },
+  "exclude": ["supabase/functions"]
 }
