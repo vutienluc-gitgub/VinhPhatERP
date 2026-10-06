@@ -30,7 +30,10 @@ const TOKEN_PREFIX = 'pkrt_';
  * execute-grant problem, not a missing deployment, and must not be disguised as
  * a 503 not_configured response.
  */
-function isMissingFunctionError(error: { message?: string; code?: string }): boolean {
+function isMissingFunctionError(error: {
+  message?: string;
+  code?: string;
+}): boolean {
   const message = error.message ?? '';
   if (/permission denied/i.test(message)) return false;
   return (

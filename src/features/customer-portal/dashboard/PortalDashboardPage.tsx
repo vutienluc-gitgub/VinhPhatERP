@@ -1,22 +1,15 @@
-import { Link } from 'react-router-dom';
-
 import { usePortalOrders } from '@/application/crm/portal';
 import { usePortalDebt } from '@/application/crm/portal';
 import { usePortalShipments } from '@/application/crm/portal';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { MoneyText } from '@/shared/value';
-import { Icon, StatCard } from '@/shared/components';
-import {
-  ORDER_STATUS_LABELS,
-  ORDER_STATUS_BADGE,
-} from '@/features/customer-portal/constants';
+import { StatCard } from '@/shared/components';
+import { PORTAL_DASHBOARD_LABELS } from '@/features/customer-portal/constants';
 
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Chào buổi sáng,';
-  if (hour < 18) return 'Chào buổi chiều,';
-  return 'Chào buổi tối,';
-}
+import { PortalWelcomeBanner } from './PortalWelcomeBanner';
+import { PortalQuickActions } from './PortalQuickActions';
+import { PortalRecentOrdersSection } from './PortalRecentOrdersSection';
+import { PortalSupportCard } from './PortalSupportCard';
 
 export function PortalDashboardPage() {
   const { profile } = useAuth();
@@ -26,167 +19,77 @@ export function PortalDashboardPage() {
 
   const latestShipment = shipments[0];
 
-  return (
-    <div className="portal-section">
-      {/* ── Welcome Banner ── */}
-      <div className="bg-gradient-to-br from-[#0f1f3d] to-[#1a3a6e] rounded-[14px] px-6 py-5 text-inverse-foreground flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <p className="m-0 text-[0.78rem] text-inverse-foreground/55 uppercase tracking-[0.06em] font-semibold">
-            {getGreeting()}
-          </p>
-          <p className="mt-1 mb-0 text-[1.15rem] font-bold tracking-[-0.01em]">
-            {profile?.full_name ?? 'Khách hàng'}
-          </p>
-        </div>
-        <div className="text-[0.78rem] text-inverse-foreground/50 text-right">
-          <p className="m-0">Cổng khách hàng</p>
-          <p className="mt-1 mb-0 text-inverse-foreground/30">Vĩnh Phát ERP</p>
-        </div>
-      </div>
+  const handleOpenChat = () => {
+    const chatFab =
+      document.querySelector<HTMLButtonElement>('.portal-chat-fab');
+    if (chatFab) {
+      chatFab.click();
+    }
+  };
 
-      {/* ── Stat Cards (StatCard Component) ── */}
+  return (
+    <div className="portal-section space-y-6">
+      {/* ── 1. Welcome Hero Banner ── */}
+      <PortalWelcomeBanner fullName={profile?.full_name} />
+
+      {/* ── 2. Stat Cards Grid ── */}
       <div className="portal-summary-grid">
-        {/* Don hang */}
         <StatCard
-          label="Đơn hàng"
+          label={PORTAL_DASHBOARD_LABELS.ORDERS_LABEL}
           value={orders.length}
           icon="ShoppingBag"
           tone="default"
           isLoading={ordersLoading}
-          linkTo="/portal/orders"
-          linkLabel="Xem tất cả"
+          linkTo="/portal/customer/orders"
+          linkLabel={PORTAL_DASHBOARD_LABELS.VIEW_ALL}
         />
 
-        {/* Cong no */}
         <StatCard
-          label="Công nợ còn lại"
-          value={<MoneyText value={remainingDebt} suffix=" đ" />}
+          label={PORTAL_DASHBOARD_LABELS.DEBT_LABEL}
+          value={<MoneyText value={remainingDebt} />}
           icon="Receipt"
           tone="danger"
           isLoading={debtLoading}
-          linkTo="/portal/debt"
-          linkLabel="Chi tiết"
+          linkTo="/portal/customer/debt"
+          linkLabel={PORTAL_DASHBOARD_LABELS.VIEW_DETAILS}
         />
 
-        {/* Giao hang */}
         <StatCard
-          label="Giao hàng gần nhất"
+          label={PORTAL_DASHBOARD_LABELS.SHIPMENT_LABEL}
           value={
             latestShipment ? (
               <span className="text-base font-semibold">
                 {latestShipment.shipment_number}
               </span>
             ) : (
-              'Chưa có'
+              PORTAL_DASHBOARD_LABELS.NO_SHIPMENT
             )
           }
           subtext={latestShipment?.shipment_date ?? undefined}
           icon="Truck"
           tone={latestShipment ? 'success' : 'default'}
           isLoading={shipmentsLoading}
-          linkTo="/portal/shipments"
-          linkLabel="Xem tất cả"
+          linkTo="/portal/customer/shipments"
+          linkLabel={PORTAL_DASHBOARD_LABELS.VIEW_ALL}
         />
       </div>
 
-      {/* ── Don hang gan day ── */}
-      {!ordersLoading && orders.length > 0 && (
-        <div className="portal-table-wrap">
-          <div className="portal-card-header">
-            <span>Đơn hàng gần đây</span>
-            <Link to="/portal/orders" className="portal-stat-link">
-              Xem tất cả
-            </Link>
-          </div>
+      {/* ── 3. Quick Actions Hub (Eliminating Void) ── */}
+      <PortalQuickActions onOpenChat={handleOpenChat} />
 
-          {/* Desktop table */}
-          <div className="portal-table-desktop overflow-x-auto">
-            <table className="portal-table">
-              <thead>
-                <tr>
-                  <th>Số đơn</th>
-                  <th>Ngày đặt</th>
-                  <th className="right">Tổng tiền</th>
-                  <th>Trạng thái</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.slice(0, 5).map((o) => (
-                  <tr key={o.id}>
-                    <td>
-                      <Link
-                        to={`/portal/orders/${o.id}`}
-                        className="portal-link"
-                      >
-                        {o.order_number}
-                      </Link>
-                    </td>
-                    <td className="text-[#647284] text-[0.82rem]">
-                      {o.order_date}
-                    </td>
-                    <td className="right font-semibold">
-                      <MoneyText value={o.total_amount} suffix=" đ" />
-                    </td>
-                    <td>
-                      <span
-                        className={
-                          ORDER_STATUS_BADGE[o.status] ?? 'portal-badge'
-                        }
-                      >
-                        {ORDER_STATUS_LABELS[o.status] ?? o.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile cards */}
-          <div className="p-3 flex flex-col gap-3">
-            {orders.slice(0, 5).map((o) => (
-              <div
-                key={o.id}
-                className="p-3 rounded-xl border border-border bg-surface flex flex-col gap-2 shadow-xs"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <Link
-                    to={`/portal/orders/${o.id}`}
-                    className="portal-link text-[0.9rem]"
-                  >
-                    {o.order_number}
-                  </Link>
-                  <span
-                    className={ORDER_STATUS_BADGE[o.status] ?? 'portal-badge'}
-                  >
-                    {ORDER_STATUS_LABELS[o.status] ?? o.status}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{o.order_date}</span>
-                  <span className="font-semibold text-foreground">
-                    <MoneyText value={o.total_amount} suffix=" đ" />
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* ── 4. Main Section (2-Column Grid) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <PortalRecentOrdersSection
+            orders={orders}
+            ordersLoading={ordersLoading}
+          />
         </div>
-      )}
 
-      {!ordersLoading && orders.length === 0 && (
-        <div className="portal-table-wrap">
-          <div className="portal-card-header">
-            <span>Đơn hàng gần đây</span>
-          </div>
-          <div className="portal-empty">
-            <div className="portal-empty-icon">
-              <Icon name="Inbox" size={40} />
-            </div>
-            <p>Chưa có đơn hàng nào.</p>
-          </div>
+        <div className="lg:col-span-1">
+          <PortalSupportCard onOpenChat={handleOpenChat} />
         </div>
-      )}
+      </div>
     </div>
   );
 }

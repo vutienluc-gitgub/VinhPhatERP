@@ -36,6 +36,7 @@ import { chatPlugin } from '@/features/chat';
 import { guidePlugin } from '@/features/guide-system/guide-system.module';
 import { mediaPlugin } from '@/features/media';
 import { approvalPlugin } from '@/features/approval';
+import { customerPortalPlugin } from '@/features/customer-portal';
 
 /**
  * Plugin Registry — Composition Root.
@@ -92,6 +93,7 @@ const plugins: ERPPlugin[] = [
   guidePlugin,
   mediaPlugin,
   approvalPlugin,
+  customerPortalPlugin,
 ];
 
 /**

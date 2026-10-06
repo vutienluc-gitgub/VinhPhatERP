@@ -65,3 +65,34 @@ export const TIMELINE_STEPS = [
   { key: 'shipping', label: 'Đang giao' },
   { key: 'completed', label: 'Hoàn thành' },
 ] as const;
+
+export const PORTAL_DASHBOARD_LABELS = {
+  GREETING_MORNING: 'Chào buổi sáng,',
+  GREETING_AFTERNOON: 'Chào buổi chiều,',
+  GREETING_EVENING: 'Chào buổi tối,',
+  PARTNER_BADGE: 'Doanh nghiệp đối tác',
+  PORTAL_SUB: 'Cổng khách hàng B2B • Vĩnh Phát ERP',
+  BTN_CATALOG: 'Tra cứu mẫu vải',
+  BTN_QUOTATION: 'Gửi yêu cầu báo giá',
+  QUICK_ACTIONS_TITLE: 'Phím tắt tác vụ nhanh',
+  RECENT_ORDERS_TITLE: 'Đơn hàng gần đây',
+  VIEW_ALL: 'Xem tất cả',
+  VIEW_DETAILS: 'Chi tiết',
+  ORDERS_LABEL: 'Đơn hàng',
+  DEBT_LABEL: 'Công nợ hiện tại',
+  SHIPMENT_LABEL: 'Giao hàng gần nhất',
+  NO_SHIPMENT: 'Chưa có',
+  EMPTY_ORDERS_TITLE: 'Chưa có đơn đặt hàng nào trong hệ thống',
+  EMPTY_ORDERS_DESC:
+    'Mọi đơn hàng kinh doanh được ký kết sẽ tự động đồng bộ và hiển thị chi tiết tiến độ tại đây.',
+  SUPPORT_CARD_TITLE: 'Trung tâm hỗ trợ khách hàng',
+  SUPPORT_CARD_DESC:
+    'Đội ngũ chuyên viên Vĩnh Phát sẵn sàng hỗ trợ kỹ thuật và đơn hàng',
+  HOTLINE_LABEL: 'Hotline CSKH',
+  HOTLINE_VALUE: '028 3815 8888',
+  EMAIL_LABEL: 'Email hỗ trợ',
+  EMAIL_VALUE: 'cskh@vinhphat.com',
+  HOURS_LABEL: 'Thời gian làm việc',
+  HOURS_VALUE: 'Thứ 2 - Thứ 7 (08:00 - 17:30)',
+  BTN_SUPPORT_CHAT: 'Trò chuyện với tư vấn viên',
+} as const;

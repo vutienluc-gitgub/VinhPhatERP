@@ -56,7 +56,10 @@ export const Turnstile: React.FC<TurnstileProps> = ({
     const renderWidget = () => {
       if (window.turnstile && containerRef.current && !widgetIdRef.current) {
         const sitekey =
-          import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAAC8ajj8quYdxkuYv';
+          import.meta.env.VITE_TURNSTILE_SITE_KEY ||
+          (import.meta.env.DEV
+            ? '1x00000000000000000000AA'
+            : '0x4AAAAAAC8ajj8quYdxkuYv');
 
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey,

@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import { LoginForm } from '@/features/auth/LoginForm';
+import { AUTH_MESSAGES } from '@/features/auth/constants';
 
 const signIn = vi.fn();
 
@@ -79,7 +80,7 @@ describe('LoginForm — captcha reset on failed login', () => {
     solveCaptchaAndSubmit();
 
     // Allow the async submit to settle
-    await screen.findByText(/email hoặc mật khẩu không đúng/i);
+    await screen.findByText(AUTH_MESSAGES.errorInvalidCredentials);
 
     const reset = (window as unknown as { turnstile: { reset: () => void } })
       .turnstile.reset;
