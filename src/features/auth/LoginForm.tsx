@@ -37,7 +37,9 @@ export function LoginForm({
   const navigate = useNavigate();
   const [authMode, setAuthMode] = useState<'passkey' | 'password'>('password');
   const [serverError, setServerError] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(
+    import.meta.env.DEV ? 'dev-bypass-token' : null,
+  );
   const [isCapsLock, setIsCapsLock] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
   const [shakeKey, setShakeKey] = useState(0);
@@ -77,7 +79,7 @@ export function LoginForm({
         setShakeKey((prev) => prev + 1);
         return;
       }
-      navigate('/dashboard');
+      navigate('/');
     } catch {
       setServerError(AUTH_MESSAGES.errorUnknown);
       setShakeKey((prev) => prev + 1);
