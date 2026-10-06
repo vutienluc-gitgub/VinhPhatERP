@@ -36,7 +36,7 @@ export interface PortalLayoutProps {
   /** The subtitle next to the brand name (e.g. 'Cổng khách hàng' or 'Cổng nhà cung cấp') */
   brandSub: string;
   /** Navigation links */
-  navItems: PortalNavItem[];
+  navItems: readonly PortalNavItem[] | PortalNavItem[];
   /** React Router Outlet or other children */
   children: React.ReactNode;
 

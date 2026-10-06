@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { Navigate, type RouteObject } from 'react-router-dom';
 
 import { withSuspense } from '@/app/router/routeWrappers';
+import { ModuleErrorBoundary } from '@/shared/components/ModuleErrorBoundary';
 import { CustomerPortalLayout } from '@/features/customer-portal/CustomerPortalLayout';
 import { PortalRoute } from '@/features/customer-portal/PortalRoute';
 
@@ -118,7 +119,11 @@ export const portalRoutes: RouteObject[] = [
       },
       {
         path: 'customer',
-        element: <CustomerPortalLayout />,
+        element: (
+          <ModuleErrorBoundary featureName="Cổng khách hàng">
+            <CustomerPortalLayout />
+          </ModuleErrorBoundary>
+        ),
         children: [
           {
             index: true,

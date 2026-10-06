@@ -13,6 +13,7 @@ import {
 } from './notifications/useNotifications';
 import { NotificationBadge } from './notifications/NotificationBadge';
 import * as RealtimeService from './notifications/RealtimeService';
+import { CUSTOMER_PORTAL_NAV_ITEMS } from './customer-portal.module';
 import './portal.css';
 
 /**
@@ -53,20 +54,10 @@ function PortalLayoutInner() {
     };
   }, [profile?.customer_id, addNotification, setConnectionWarning]);
 
-  const navItems = [
-    { to: '/portal/customer', label: 'Tổng quan', end: true },
-    { to: '/portal/customer/fabric-catalog', label: 'Danh mục sản phẩm' },
-    { to: '/portal/customer/quotations', label: 'Báo giá' },
-    { to: '/portal/customer/orders', label: 'Đơn hàng' },
-    { to: '/portal/customer/debt', label: 'Công nợ' },
-    { to: '/portal/customer/payments', label: 'Thanh toán' },
-    { to: '/portal/customer/shipments', label: 'Giao hàng' },
-  ];
-
   return (
     <PortalLayout
       brandSub="Cổng khách hàng"
-      navItems={navItems}
+      navItems={CUSTOMER_PORTAL_NAV_ITEMS}
       entityType="customer"
       entityId={profile?.customer_id ?? undefined}
       chatTitle="Hỗ trợ khách hàng"
