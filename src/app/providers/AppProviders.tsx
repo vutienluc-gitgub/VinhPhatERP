@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 
 import { AuthProvider } from '@/features/auth/AuthProvider';
+import { PasskeyExpiryNotice } from '@/features/auth/components/PasskeyExpiryNotice';
 import { ConcurrencyConflictProvider } from '@/shared/contexts/ConcurrencyConflictContext';
 import { ConfirmProvider } from '@/shared/components/ConfirmDialog';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
@@ -33,6 +34,7 @@ export function AppProviders({ children }: PropsWithChildren) {
       <TenantProvider>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
+            <PasskeyExpiryNotice />
             <ConcurrencyConflictProvider>
               <ConfirmProvider>
                 <GlobalModalProvider>

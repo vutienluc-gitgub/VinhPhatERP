@@ -61,8 +61,158 @@ Every task, refactor, or new feature in VinhPhatERP v3 MUST satisfy every item i
 
 ## 8. AUTOMATED VERIFICATION GATES (Mandatory: 0 Errors)
 
-- [ ] `npm run rpc:check` (Frontend RPC calls match DB functions)
-- [ ] `npm run typecheck` (TypeScript compiles with 0 errors)
-- [ ] `npm run lint -- --max-warnings=0` (ESLint passes with 0 warnings)
-- [ ] `npm run lint:css` (Stylelint passes with 0 color violations)
-- [ ] `npm run test` (Vitest unit tests pass 100%)
+- [!] `npm run rpc:check` (Frontend RPC calls match DB functions) — **[NOT VERIFIED]**: no `DATABASE_URL` in sandbox. MUST run in a DB-enabled environment before merge.
+- [x] `npm run typecheck` (TypeScript compiles with 0 errors)
+- [x] `npm run lint -- --max-warnings=0` (ESLint passes with 0 warnings)
+- [x] `npm run lint:css` (Stylelint passes with 0 color violations)
+- [x] `npm run test` (Vitest unit tests pass 100%)
+
+---
+
+## 9. TASK VERIFICATION RECORD — fix/auth-p2
+
+Scope: auth session-load guard (P2.3) + blocked-Turnstile feedback (P2.2).
+Not in scope: `rememberMe` (P2.1) and passkey refresh-token (P1) — see report.
+
+### Automated gates (real observed output)
+
+- `npm run rpc:check`: **[NOT VERIFIED]** — `❌ DATABASE_URL not set in .env`
+- `npm run typecheck`: PASS
+- `npm run lint -- --max-warnings=0`: PASS
+- `npm run lint:css`: PASS
+- `npm run test`: PASS — 153 files, 962 tests
+- `node scripts/check-file-size.mjs`: PASS — "No file grew past its baseline."
+- `npm run build`: PASS — `✓ built in 2.67s` (pre-existing chunk-size warning only)
+
+### Item status for this task
+
+- **Business logic in UI**: N/A — no math/filter/validation added to components.
+- **Single responsibility**: PASS — `LoginForm` 322 → 305 lines; new `LoginCaptchaField` 74 lines.
+- **Layer hierarchy / circular deps**: PASS — imports via `@/` alias only.
+- **Zero `any` / `@ts-ignore`**: PASS.
+- **Error narrowing / Rule 7**: PASS — `getSession` rejection logged and handled.
+- **Stable list keys**: N/A — no new lists.
+- **Error states with retry**: PASS — captcha alert + "Thử lại" (`role="alert"`).
+- **Pending state**: PASS (unchanged) — submit disabled while `isSubmitting`.
+- **Zero hardcoded colors**: **[OBSERVATION]** — `text-[#818cf8]` was carried over from the existing `LoginForm` pattern and a documented `@architecture-exception: legacy color migration`. Not introduced by this task; not refactored (out of scope).
+- **No emoji**: PASS.
+- **a11y**: PASS — `role="alert"`, labelled retry button, existing focus styles.
+- **RLS / secret leakage**: PASS — no DB or credential changes.
+- **ERP safety (pricing/debt/stock/status)**: PASS — untouched; no `[BUSINESS BEHAVIOR CHANGE]` to those domains.
+- **No speculative changes**: PASS — bounded to approved P2.2 + P2.3.
+
+---
+
+## 10. TASK VERIFICATION RECORD — fix/auth-p2-remember-passkey
+
+Scope: **P2.1-A** `rememberMe` session persistence + **P1-B** passkey
+refresh-token handling. Both approved in Phase 2.
+
+Not in scope (explicitly deferred, NOT implemented): a server-side refresh-token
+endpoint for passkey sessions. Client-side handling now degrades gracefully to
+re-authentication; see "Passkey refresh token" below.
+
+### Automated gates (real observed output)
+
+- `npm run rpc:check`: **[NOT VERIFIED]** — `❌ DATABASE_URL not set in .env`
+- `npm run typecheck`: PASS
+- `npm run typecheck:server`: PASS
+- `npm run lint`: PASS — full repo, 0 errors
+- `npm run lint:css`: PASS
+- `npm run test`: PASS — 162 files, 997 tests
+- `node scripts/check-file-size.mjs`: PASS — "No file grew past its baseline."
+- `npm run build`: PASS — `✓ built in 2.66s` (pre-existing chunk-size warning only)
+- `npx playwright test e2e/auth-mobile-overflow.spec.ts e2e/auth.spec.ts --project=chromium`: PASS — 13 + 2 tests (run after install; see §11)
+
+### Item status for this task
+
+- **Business logic in UI**: PASS — storage selection and session classification live in `remember-session.ts` / `session-kind.ts`, not in components.
+- **Single responsibility**: PASS — `LoginForm.tsx` 312 lines (baseline 342); new files well under 300.
+- **Layer hierarchy / circular deps**: PASS — `@/` alias only; helper imports point downward.
+- **Zero `any` / `@ts-ignore`**: PASS.
+- **Error narrowing**: N/A for this diff.
+- **Stable list keys**: N/A — no new lists.
+- **Pure effects**: PASS — `PasskeyExpiryNotice` effect only schedules/clears a timer; no fetching.
+- **Zero hardcoded colors**: PASS — no styling added.
+- **No emoji**: PASS.
+- **a11y**: PASS — notice is a toast announcement; no new interactive elements.
+- **RLS / secret leakage**: PASS — `auth.users` untouched; JWT signing unchanged.
+- **ERP safety**: PASS — no pricing/debt/stock/status touch.
+- **No speculative changes**: PASS — bounded to approved P2.1-A + P1-B.
+
+### Behaviour changes to call out (non-business, auth-only)
+
+- `[SESSION STORAGE CHANGE]` **P2.1-A**: sessions now route to `localStorage`
+  (remember) or `sessionStorage` (forget) via a custom supabase-js storage
+  adapter (`storageKey` unchanged: `vinhphat_session`). GoTrue's own `lock`/
+  `broadcastChannel` are keyed on `storageKey`, not the adapter, so cross-tab
+  sync still works.
+- `[AUTH LIFECYCLE CHANGE]` **P1-B**: passkey sessions no longer reuse the access
+  token as the refresh token. They store a truthy sentinel
+  (`passkey:no-refresh-token`) so supabase-js treats the session as valid without
+  a rotation request that GoTrue would reject. When the passkey token expires,
+  `PasskeyExpiryNotice` shows a persistent message and signs out deliberately
+  instead of the previous silent drop.
+
+### Passkey refresh token — honest limitation
+
+A true refresh token would need a server endpoint to re-mint a passkey JWT.
+That is **acceptable Phase 2 scope** for this app because a passkey login is a
+single touch (Face ID), so re-authentication is cheap. It is **NOT** acceptable
+for unattended/kiosk or long-lived operations; those still need the server
+endpoint (tracked as future P1-C).
+
+---
+
+## 11. POST-MERGE VERIFICATION — auth mobile overflow + Phase 2 (e12a912)
+
+Gate 4 `APPROVE MERGE` received. PR #70 was already merged as e12a912; this
+section records the post-merge verification — no source change.
+
+### Deploy verification
+
+- `CI` / `Deploy to Vion Cloud (VPS)` / `Release` for `e12a912`: PASS (all three
+  `completed/success`). `e2e`, `rpc-sync`, `ai-audit` reported `skipped` — by
+  design (`E2E_ENABLED`/`RPC_SYNC_ENABLED` vars, `workflow_dispatch`), not a
+  trimmed CI.
+- Infra-diff guard (AGENTS.md grep): **no** `.github/`, `.husky/`,
+  `.agents/rules/`, `e2e/` files in the PR #70 diff.
+
+### Production smoke — `http://103.213.216.31/auth`
+
+- HTTP 200.
+- Bundle markers present: `passkey:no-refresh-token`, `vinhphat_remember`,
+  `vinhphat_session`, passkey-expiry copy (client chunk `client-Of2pz9yE.js`).
+
+### Bug #1 (mobile horizontal overflow) — live production probe (Puppeteer)
+
+| Viewport | Doc overflow | Card right edge | Clipped right |
+| -------- | ------------ | --------------- | ------------- |
+| 320px    | 0px          | 304 (< 320)     | no            |
+| 360px    | 0px          | 344 (< 360)     | no            |
+| 375px    | 0px          | 359 (< 375)     | no            |
+| 390px    | 0px          | 374 (< 390)     | no            |
+| 414px    | 0px          | 398 (< 414)     | no            |
+
+At 375px: Turnstile wrapper 309px fits inside the viewport; `clippedElements: []`
+(no "Email & Mậ…" / "Quên mậ…"); `documentElement.scrollWidth === innerWidth` at
+all widths → no horizontal pan.
+
+Bug #1 was already fixed on `main` before this task: Turnstile `resolveSize()`
+(compact <400px), tab `min-w-0`, and `html, body { overflow-x: clip }`.
+
+### E2E (now actually executed, not just CI)
+
+- `npx playwright test e2e/auth-mobile-overflow.spec.ts --project=chromium`:
+  PASS — 13 tests (320/360/375/390px; Turnstile mocked, asserts requested widget
+  size and no overflow).
+- `npx playwright test e2e/auth.spec.ts --project=chromium`: PASS — 2 tests.
+- Playwright chromium installed locally for this run only; no repo file changed.
+
+### Open PR #54 — not merged, superseded
+
+`fix(layout): prevent iOS overscroll bounce...` (Jules AI) is `mergeable_state:
+dirty`, behind `main` by 68 commits, touching `app-shell.css` +
+`useBodyScrollLock.ts`. The overscroll fix (issue #39) is **already on `main`** and
+in a better form (`preserveScrollPosition` restores prior styles + scroll
+position). PR #54 was left open and untouched — closing it needs owner sign-off.

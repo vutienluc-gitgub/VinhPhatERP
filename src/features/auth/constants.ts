@@ -41,6 +41,10 @@ export const AUTH_MESSAGES = {
   goBack: 'Quay lại',
   errorUserNotFound: 'Email không tồn tại hoặc chưa đăng ký.',
   capsLockWarning: 'Caps Lock đang bật',
+  captchaUnavailableTitle: 'Không tải được xác thực bảo mật',
+  captchaUnavailableDesc:
+    'Trình duyệt có thể đang chặn Cloudflare (tiện ích chặn quảng cáo hoặc mạng). Hãy tắt tiện ích chặn quảng cáo, rồi bấm Thử lại.',
+  captchaRetry: 'Thử lại',
   passkeyLogin: 'Đăng nhập 1 chạm (Face ID / Touch ID / Passkey)',
   passkeyNotSupported: 'Thiết bị này chưa hỗ trợ sinh trắc học.',
   passkeySuccess: 'Xác thực sinh trắc học thành công.',
@@ -53,6 +57,8 @@ export const AUTH_MESSAGES = {
   passkeyRevokeSuccess: 'Đã thu hồi khóa bảo mật thành công.',
   passkeyRevokeError: 'Xóa khóa bảo mật thất bại.',
   passkeyHint: 'Chạm cảm biến vân tay hoặc Face ID để đăng nhập',
+  passkeySessionExpired:
+    'Phiên đăng nhập Passkey đã hết hạn. Vui lòng đăng nhập lại bằng Passkey hoặc mật khẩu.',
 };
 
 export const AUTH_LABELS = {

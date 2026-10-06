@@ -144,7 +144,7 @@ export function B2BPlanner({ fabric, activeVariant }: B2BPlannerProps) {
                     min="1"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    className="w-full text-base rounded-xl pl-3 pr-10 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/20 bg-surface-secondary font-black transition-all"
+                    className="w-full text-base rounded-xl pl-3 pr-10 py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 bg-surface-secondary font-black transition-all"
                   />
                   <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                     <span className="text-sm font-bold text-muted-foreground">

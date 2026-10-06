@@ -1,0 +1,24 @@
+/* ── App Scroll-Root Contract ────────────────────────────────────
+   Chủ sở hữu cuộn (scroll owner) cho mọi layout top-level NGOÀI
+   .shell-layout của ERP.
+
+   Trên mobile (< 768px), app-shell.css đặt html/body = overflow:hidden
+   để chặn pull-to-refresh & rubber-band bounce của iOS Safari. Vì vậy
+   mỗi layout cấp cao phải tự khai báo một scroll owner — nếu không,
+   nội dung dài sẽ bị cắt cụt và không vuốt được.
+
+   Áp dụng cho: .portal-shell, driver/public page roots, và bất kỳ
+   layout top-level mới nào. KHÔNG dùng cho element lồng bên trong một
+   scroll owner khác (sẽ tạo scroller lồng nhau).
+
+   Xem thêm: docs/responsive-rules.md (R8) · src/styles/layout/app-shell.css
+   ──────────────────────────────────────────────────────────────── */
+@media (width < 768px) {
+  .app-scroll-root {
+    height: 100vh; /* fallback cho browser không hỗ trợ dvh */
+    height: 100dvh;
+    overflow: hidden auto; /* x: hidden (R1), y: auto → scroll owner */
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}

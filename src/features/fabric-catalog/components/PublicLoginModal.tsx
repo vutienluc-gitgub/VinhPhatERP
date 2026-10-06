@@ -105,7 +105,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
               placeholder={LABELS.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary transition-all"
             />
           </div>
 
@@ -123,7 +123,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
               placeholder={LABELS.passwordPlaceholder}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full px-4 py-2 bg-gray-50 border border-default rounded-xl text-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary transition-all"
             />
           </div>
 

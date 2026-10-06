@@ -22,7 +22,7 @@ export function ActionMenu({
         <div className="relative group">
           <button
             type="button"
-            className="btn-icon focus:outline-none"
+            className="btn-icon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             onClick={onExport}
             disabled={isExporting}
             aria-label="Xuất Excel"

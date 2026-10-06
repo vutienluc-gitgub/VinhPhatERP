@@ -15,6 +15,12 @@ import type { TableRow } from '@/shared/types/database.models';
 type Profile = TableRow<'profiles'>;
 import { getTenantId, resetTenantCache } from '@/services/supabase/tenant';
 
+import { setRememberMe } from './remember-session';
+import {
+  revokePasskeyFamily,
+  useSessionAutoRefresh,
+} from './usePasskeySessionLifecycle';
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -33,6 +39,7 @@ export interface AuthActions {
     email: string,
     password: string,
     captchaToken?: string,
+    rememberMe?: boolean,
   ) => Promise<{ error: AuthError | null }>;
   signUp: (
     email: string,
@@ -92,17 +99,31 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
+  const syncAutoRefresh = useSessionAutoRefresh();
+
   useEffect(() => {
-    // Load initial session
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        fetchProfile(s.user.id).finally(() => setLoading(false));
-      } else {
+    // Load initial session. getSession() can reject (corrupt storage, offline
+    // network, blocked request). Without a catch, setLoading(false) never runs
+    // and the app hangs on AuthLoadingScreen forever, locking every protected
+    // route behind a spinner that can never resolve.
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: s } }) => {
+        setSession(s);
+        setUser(s?.user ?? null);
+        void syncAutoRefresh(s);
+        if (s?.user) {
+          fetchProfile(s.user.id).finally(() => setLoading(false));
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        console.error('[AuthProvider] getSession failed', err);
+        setSession(null);
+        setUser(null);
         setLoading(false);
-      }
-    });
+      });
 
     // Subscribe to auth state changes
     const {
@@ -110,6 +131,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
+      void syncAutoRefresh(s);
       if (s?.user) {
         fetchProfile(s.user.id);
       } else {
@@ -118,10 +140,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchProfile]);
+  }, [fetchProfile, syncAutoRefresh]);
 
   const signIn = useCallback(
-    async (email: string, password: string, captchaToken?: string) => {
+    async (
+      email: string,
+      password: string,
+      captchaToken?: string,
+      rememberMe?: boolean,
+    ) => {
+      // Move the session to localStorage (remember) or sessionStorage (forget)
+      // before GoTrue persists it, so the adapter writes to the right store.
+      if (rememberMe !== undefined) setRememberMe(rememberMe);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -153,6 +183,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signOut = useCallback(async () => {
     resetTenantCache();
+    await revokePasskeyFamily();
     // Revoke device push subscription to prevent notifications leaking on shared computers/devices
     try {
       const { revokeCurrentDevicePushSubscription } =

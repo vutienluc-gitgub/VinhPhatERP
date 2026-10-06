@@ -67,7 +67,7 @@ export function MediaLibraryModal({
         <input
           type="text"
           placeholder="Tìm kiếm... (Comming soon)"
-          className="w-full pl-9 pr-4 py-2 text-sm bg-surface rounded-md border border-border opacity-50 cursor-not-allowed focus:outline-none"
+          className="w-full pl-9 pr-4 py-2 text-sm bg-surface rounded-md border border-border opacity-50 cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           disabled
         />
       </div>

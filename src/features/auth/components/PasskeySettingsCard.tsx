@@ -144,7 +144,7 @@ export function PasskeySettingsCard() {
             onChange={(e) => setFriendlyName(e.target.value)}
             placeholder={AUTH_LABELS.passkeyDevicePlaceholder}
             disabled={!isSupported || isRegistering}
-            className="flex-1 px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            className="flex-1 px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground/60 text-sm focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary transition-all"
           />
           <button
             type="button"

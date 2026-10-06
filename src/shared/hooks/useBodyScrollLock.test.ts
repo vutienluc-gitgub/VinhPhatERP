@@ -73,4 +73,83 @@ describe('useBodyScrollLock', () => {
     expect(document.documentElement.style.overscrollBehavior).toBe('');
     expect(scrollToSpy).toHaveBeenCalledWith(0, 240);
   });
+
+  describe('with a scrollable .shell-layout (mobile scroll owner)', () => {
+    let shell: HTMLDivElement;
+
+    beforeEach(() => {
+      shell = document.createElement('div');
+      shell.className = 'shell-layout';
+      shell.style.overflow = 'auto';
+      shell.scrollTop = 150;
+      document.body.appendChild(shell);
+    });
+
+    afterEach(() => {
+      document.body.removeChild(shell);
+    });
+
+    it('freezes the container in default mode and restores it', () => {
+      const { unmount } = renderHook(() => useBodyScrollLock(true));
+
+      expect(shell.style.overflow).toBe('hidden');
+      expect(document.body.style.overflow).toBe('hidden');
+
+      unmount();
+
+      expect(shell.style.overflow).toBe('auto');
+    });
+
+    it('captures the container offset and restores it when unlocked', () => {
+      const { rerender } = renderHook(
+        ({ locked }) =>
+          useBodyScrollLock(locked, { preserveScrollPosition: true }),
+        { initialProps: { locked: true } },
+      );
+
+      // Offset comes from the container, not window.scrollY (~0 on mobile).
+      expect(document.body.style.top).toBe('-150px');
+      expect(shell.style.overflow).toBe('hidden');
+      expect(shell.scrollTop).toBe(0);
+
+      rerender({ locked: false });
+
+      expect(shell.scrollTop).toBe(150);
+      expect(shell.style.overflow).toBe('auto');
+      expect(scrollToSpy).not.toHaveBeenCalled();
+    });
+
+    it('ignores the container on desktop (not a scroller) and uses window scroll', () => {
+      // Desktop: .shell-layout keeps default overflow: visible, body scrolls.
+      shell.scrollTop = 0;
+      shell.style.overflow = 'visible';
+
+      const { rerender } = renderHook(
+        ({ locked }) =>
+          useBodyScrollLock(locked, { preserveScrollPosition: true }),
+        { initialProps: { locked: true } },
+      );
+
+      expect(shell.style.overflow).not.toBe('hidden');
+      expect(document.body.style.top).toBe('-240px');
+
+      rerender({ locked: false });
+
+      expect(scrollToSpy).toHaveBeenCalledWith(0, 240);
+    });
+
+    it('does not touch the container when the selector is disabled', () => {
+      const { unmount } = renderHook(() =>
+        useBodyScrollLock(true, {
+          preserveScrollPosition: true,
+          scrollContainerSelector: null,
+        }),
+      );
+
+      expect(shell.style.overflow).toBe('auto');
+      expect(document.body.style.top).toBe('-240px');
+
+      unmount();
+    });
+  });
 });

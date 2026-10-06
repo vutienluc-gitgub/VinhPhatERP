@@ -30,7 +30,7 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
           onClick();
         }
       }}
-      className="bg-surface border border-border rounded-lg p-3 shadow-sm hover:border-primary/50 hover:shadow-md transition-all cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary/20"
+      className="bg-surface border border-border rounded-lg p-3 shadow-sm hover:border-primary/50 hover:shadow-md transition-all cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
     >
       <div className="flex items-start justify-between mb-2">
         <h3 className="font-semibold text-sm text-foreground line-clamp-1">

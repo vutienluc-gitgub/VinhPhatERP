@@ -3,7 +3,6 @@ import { useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import { Turnstile } from '@/shared/components/Turnstile';
 import { Icon } from '@/shared/components/Icon';
 
 import {
@@ -14,6 +13,7 @@ import {
 } from './auth.module';
 import { useAuth } from './AuthProvider';
 import { GoogleLoginButton } from './components/GoogleLoginButton';
+import { LoginCaptchaField } from './components/LoginCaptchaField';
 import { PasskeyLoginSection } from './components/PasskeyLoginSection';
 import { AUTH_MESSAGES, AUTH_LABELS } from './constants';
 import { vietnameseAuthError } from './utils';
@@ -21,7 +21,7 @@ import { vietnameseAuthError } from './utils';
 /* -- Shared Styles -------------------------------------------------- */
 
 const FLOATING_INPUT =
-  'peer w-full px-4 pt-5 pb-2 bg-foreground/15 border border-transparent/15 rounded-xl text-on-dark-foreground placeholder-transparent focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] focus:bg-foreground/25 transition-all duration-200';
+  'peer w-full px-4 pt-5 pb-2 bg-foreground/15 border border-transparent/15 rounded-xl text-on-dark-foreground placeholder-transparent focus-visible:outline-none focus-visible:border-[#6366f1] focus-visible:ring-2 focus-visible:ring-[#6366f1] focus:bg-foreground/25 transition-all duration-200';
 
 const FLOATING_LABEL =
   'absolute left-4 top-1/2 -translate-y-1/2 text-on-dark-foreground/75 text-sm pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:text-on-dark-foreground/90 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-on-dark-foreground/90';
@@ -73,9 +73,14 @@ export function LoginForm({
         normalizedEmail,
         values.password,
         captchaToken ?? undefined,
+        values.rememberMe,
       );
       if (error) {
         setServerError(vietnameseAuthError(error.message));
+        // Cloudflare tokens are single-use: a failure (wrong password, or the
+        // challenge itself rejected) leaves the widget solved but the token
+        // spent, so the submit button stays enabled with a dead token and every
+        // retry fails silently. Reset so the next attempt gets a fresh one.
         window.turnstile?.reset();
         setCaptchaToken(null);
         setShakeKey((prev) => prev + 1);
@@ -110,7 +115,7 @@ export function LoginForm({
       <div
         role="tablist"
         aria-label={AUTH_LABELS.authMethodTabList}
-        className="flex p-1 bg-foreground/10 rounded-xl border border-transparent/10"
+        className="flex p-0.5 sm:p-1 bg-foreground/10 rounded-xl border border-transparent/10"
       >
         <button
           role="tab"
@@ -120,14 +125,20 @@ export function LoginForm({
             setAuthMode('passkey');
             setServerError(null);
           }}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-0 flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
             authMode === 'passkey'
               ? 'bg-[#6366f1] text-on-dark-foreground shadow-md'
               : 'text-on-dark-foreground/60 hover:text-on-dark-foreground'
           }`}
         >
-          <Icon name="Fingerprint" size={16} className="shrink-0" />
-          <span>{AUTH_LABELS.passkeyTabPasskey}</span>
+          <Icon
+            name="Fingerprint"
+            size={16}
+            className="shrink-0 max-[359px]:hidden"
+          />
+          <span className="min-w-0 leading-tight">
+            {AUTH_LABELS.passkeyTabPasskey}
+          </span>
         </button>
         <button
           role="tab"
@@ -137,14 +148,20 @@ export function LoginForm({
             setAuthMode('password');
             setServerError(null);
           }}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+          className={`flex-1 min-w-0 flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
             authMode === 'password'
               ? 'bg-[#6366f1] text-on-dark-foreground shadow-md'
               : 'text-on-dark-foreground/60 hover:text-on-dark-foreground'
           }`}
         >
-          <Icon name="KeyRound" size={16} className="shrink-0" />
-          <span>{AUTH_LABELS.passkeyTabPassword}</span>
+          <Icon
+            name="KeyRound"
+            size={16}
+            className="shrink-0 max-[359px]:hidden"
+          />
+          <span className="min-w-0 leading-tight">
+            {AUTH_LABELS.passkeyTabPassword}
+          </span>
         </button>
       </div>
 
@@ -228,7 +245,7 @@ export function LoginForm({
             </div>
 
             {/* Remember + Forgot */}
-            <div className="flex items-center justify-between gap-2 px-1">
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 px-1">
               <label
                 htmlFor="rememberMe"
                 className="flex items-center gap-2 min-w-0 min-h-[44px] py-1 cursor-pointer select-none"
@@ -240,7 +257,7 @@ export function LoginForm({
                   className="w-4 h-4 rounded border-transparent/20 bg-foreground/20 text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-0 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                   {...register('rememberMe')}
                 />
-                <span className="text-sm text-on-dark-foreground/75 truncate">
+                <span className="text-sm text-on-dark-foreground/75">
                   {AUTH_LABELS.rememberMe}
                 </span>
               </label>
@@ -250,7 +267,7 @@ export function LoginForm({
                   type="button"
                   onClick={onForgotPassword}
                   disabled={isLocked}
-                  className="text-[#818cf8] hover:text-on-dark-foreground text-sm font-medium transition-colors min-h-[44px] py-1 flex items-center disabled:opacity-50 disabled:cursor-not-allowed shrink-0 whitespace-nowrap cursor-pointer"
+                  className="text-[#818cf8] hover:text-on-dark-foreground text-sm font-medium transition-colors min-h-[44px] py-1 flex items-center text-left disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {AUTH_LABELS.forgotPassword}
                 </button>
@@ -259,14 +276,7 @@ export function LoginForm({
           </div>
 
           {/* Turnstile */}
-          <div className="flex justify-center min-h-[65px]">
-            {isInteracting && (
-              <Turnstile
-                onVerify={setCaptchaToken}
-                options={{ theme: 'dark' }}
-              />
-            )}
-          </div>
+          {isInteracting && <LoginCaptchaField onVerify={setCaptchaToken} />}
 
           {/* Submit Button */}
           <button

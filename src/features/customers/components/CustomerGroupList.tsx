@@ -202,7 +202,7 @@ export function CustomerGroupList() {
           <input
             type="text"
             placeholder={CUSTOMER_GROUP_LABELS.searchPlaceholder}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border bg-surface text-text text-sm transition-all focus:outline-none focus:ring-2 focus:ring-input-focus focus:border-primary border-border placeholder:text-muted-foreground"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border bg-surface text-text text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input-focus focus-visible:border-primary border-border placeholder:text-muted-foreground"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -340,7 +340,7 @@ export function CustomerGroupList() {
             <textarea
               placeholder={CUSTOMER_GROUP_LABELS.descriptionPlaceholder}
               rows={3}
-              className="w-full px-3 py-2 rounded-xl border bg-input text-text text-sm transition-all placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-input-focus focus:border-primary border-input-border resize-none"
+              className="w-full px-3 py-2 rounded-xl border bg-input text-text text-sm transition-all placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input-focus focus-visible:border-primary border-input-border resize-none"
               {...register('description')}
             />
           </div>

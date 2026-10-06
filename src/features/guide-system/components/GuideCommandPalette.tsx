@@ -215,7 +215,7 @@ export function GuideCommandPalette() {
                   return (
                     <button
                       key={r.item.path}
-                      className="w-full text-left px-3 py-3 rounded-lg hover:bg-primary/5 hover:text-primary-strong transition-colors flex items-center gap-3 focus:bg-primary/10 focus:outline-none"
+                      className="w-full text-left px-3 py-3 rounded-lg hover:bg-primary/5 hover:text-primary-strong transition-colors flex items-center gap-3 focus:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       onClick={() => {
                         trackAction('palette_navigate', r.item.path);
                         setIsOpen(false);
@@ -260,7 +260,7 @@ export function GuideCommandPalette() {
                   return (
                     <button
                       key={`${r.section.id}-${r.step.id}`}
-                      className="w-full text-left px-3 py-3 rounded-lg hover:bg-primary/5 hover:text-primary-strong transition-colors flex flex-col gap-1 focus:bg-primary/10 focus:outline-none"
+                      className="w-full text-left px-3 py-3 rounded-lg hover:bg-primary/5 hover:text-primary-strong transition-colors flex flex-col gap-1 focus:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       onClick={() => {
                         trackAction('search_result_click', r.step.id);
                         setIsOpen(false);
