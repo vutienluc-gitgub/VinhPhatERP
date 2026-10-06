@@ -2,7 +2,12 @@ import { Link } from 'react-router-dom';
 
 import { usePortalDebt } from '@/application/crm/portal';
 import { MoneyText } from '@/shared/value';
-import { StatCard, EmptyState } from '@/shared/components';
+import {
+  StatCard,
+  EmptyState,
+  TableSkeleton,
+  ErrorInline,
+} from '@/shared/components';
 
 export function PortalDebtPage() {
   const {
@@ -14,30 +19,51 @@ export function PortalDebtPage() {
     error,
   } = usePortalDebt();
 
-  if (loading) return <p className="portal-loading">Đang tải…</p>;
-  if (error) return <p className="portal-error">{error}</p>;
+  if (loading) {
+    return (
+      <div className="portal-section space-y-6">
+        <div className="portal-summary-grid">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={`debt-stat-skel-${i}`}
+              className="h-28 bg-surface animate-pulse rounded-xl border border-default"
+            />
+          ))}
+        </div>
+        <TableSkeleton rows={4} columns={3} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="portal-section">
+        <ErrorInline>{error}</ErrorInline>
+      </div>
+    );
+  }
 
   return (
     <div className="portal-section">
       <h1 className="portal-page-title">Công nợ</h1>
 
-      {/* ── Stat Cards (StatCard Component) ── */}
+      {/* ── Stat Cards ── */}
       <div className="portal-summary-grid">
         <StatCard
           label="Tổng tiền đơn hàng"
-          value={<MoneyText value={totalAmount} suffix=" ₫" />}
+          value={<MoneyText value={totalAmount} />}
           icon="TrendingUp"
           tone="default"
         />
         <StatCard
           label="Đã thanh toán"
-          value={<MoneyText value={paidAmount} suffix=" ₫" />}
+          value={<MoneyText value={paidAmount} />}
           icon="CheckCircle"
           tone="success"
         />
         <StatCard
           label="Còn nợ"
-          value={<MoneyText value={remainingDebt} suffix=" ₫" />}
+          value={<MoneyText value={remainingDebt} />}
           icon="Receipt"
           tone="danger"
         />
@@ -60,10 +86,7 @@ export function PortalDebtPage() {
                   </td>
                   <td className="right">
                     <div className="font-medium text-danger">
-                      <MoneyText
-                        value={o.total_amount - o.paid_amount}
-                        suffix=" ₫"
-                      />
+                      <MoneyText value={o.total_amount - o.paid_amount} />
                     </div>
                     <div className="text-xs text-muted-foreground">còn nợ</div>
                   </td>

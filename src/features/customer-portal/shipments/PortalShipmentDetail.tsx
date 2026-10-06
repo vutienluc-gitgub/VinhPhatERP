@@ -3,15 +3,38 @@ import { useParams, Link } from 'react-router-dom';
 import { usePortalShipments } from '@/application/crm/portal';
 import { ChatWidget } from '@/features/chat/ChatWidget';
 import { SHIPMENT_STATUS_LABELS } from '@/features/customer-portal/constants';
+import { TableSkeleton, ErrorInline, EmptyState } from '@/shared/components';
 
 export function PortalShipmentDetail() {
   const { id } = useParams<{ id: string }>();
   const { shipment, loading, error } = usePortalShipments(id);
 
-  if (loading) return <p className="portal-loading">Đang tải…</p>;
-  if (error) return <p className="portal-error">{error}</p>;
-  if (!shipment)
-    return <p className="portal-empty">Không tìm thấy phiếu giao.</p>;
+  if (loading) {
+    return (
+      <div className="portal-section space-y-4">
+        <TableSkeleton rows={4} columns={3} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="portal-section">
+        <ErrorInline>{error}</ErrorInline>
+      </div>
+    );
+  }
+
+  if (!shipment) {
+    return (
+      <div className="portal-section">
+        <EmptyState
+          icon="PackageX"
+          description="Không tìm thấy phiếu giao hàng."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="portal-section">
@@ -49,7 +72,7 @@ export function PortalShipmentDetail() {
       {shipment.items && shipment.items.length > 0 && (
         <div className="portal-table-wrap">
           <div className="portal-card-header">Danh sách cuộn vải</div>
-          <div style={{ overflowX: 'auto' }}>
+          <div className="overflow-x-auto">
             <table className="portal-table">
               <thead>
                 <tr>
@@ -60,16 +83,14 @@ export function PortalShipmentDetail() {
                 </tr>
               </thead>
               <tbody>
-                {shipment.items.map((item) => (
-                  <tr key={item.roll_number || JSON.stringify(item)}>
-                    <td
-                      style={{
-                        fontFamily: 'monospace',
-                        fontSize: '0.8rem',
-                      }}
-                    >
-                      {item.roll_number}
-                    </td>
+                {shipment.items.map((item, index) => (
+                  <tr
+                    key={
+                      item.roll_number ??
+                      `${item.fabric_type}-${item.length_m ?? index}`
+                    }
+                  >
+                    <td className="font-mono text-xs">{item.roll_number}</td>
                     <td>{item.fabric_type}</td>
                     <td className="right">{item.length_m ?? '—'}</td>
                     <td className="right">{item.weight_kg ?? '—'}</td>
