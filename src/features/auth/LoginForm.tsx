@@ -76,12 +76,16 @@ export function LoginForm({
       );
       if (error) {
         setServerError(vietnameseAuthError(error.message));
+        window.turnstile?.reset();
+        setCaptchaToken(null);
         setShakeKey((prev) => prev + 1);
         return;
       }
       navigate('/');
     } catch {
       setServerError(AUTH_MESSAGES.errorUnknown);
+      window.turnstile?.reset();
+      setCaptchaToken(null);
       setShakeKey((prev) => prev + 1);
     }
   };
