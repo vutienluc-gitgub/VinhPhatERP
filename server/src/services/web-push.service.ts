@@ -128,7 +128,7 @@ export class WebPushService {
       title: payload.title,
       body: sanitizedBody,
       icon: '/icon-192.png',
-      badge: '/badge-72.png',
+      badge: '/icon-192.png',
       tag: payload.tag || payload.type || 'vinhphat-notification',
       data: {
         domain: payload.domain,
