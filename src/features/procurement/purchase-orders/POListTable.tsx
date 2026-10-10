@@ -9,19 +9,20 @@ import {
   Icon,
   ActionMenu,
   StatusBadge,
+  type PaginationConfig,
 } from '@/shared/components';
 import { MoneyText } from '@/shared/value';
 import type { PurchaseOrder } from '@/domain/purchase-orders';
 
 import { PO_CONSTANTS } from './purchase-orders.constants';
 
-export function POListTable({
-  data,
-  isLoading,
-}: {
+export interface POListTableProps {
   data: PurchaseOrder[];
   isLoading: boolean;
-}) {
+  pagination?: PaginationConfig<PurchaseOrder>;
+}
+
+export function POListTable({ data, isLoading, pagination }: POListTableProps) {
   const navigate = useNavigate();
 
   const columns = useMemo<ColumnDef<PurchaseOrder>[]>(
@@ -114,6 +115,7 @@ export function POListTable({
         data={data}
         columns={columns}
         isLoading={isLoading}
+        pagination={pagination}
         onRowClick={(row) => navigate(`/purchase-orders/${row.id}`)}
         renderMobileCard={(po) => {
           return (

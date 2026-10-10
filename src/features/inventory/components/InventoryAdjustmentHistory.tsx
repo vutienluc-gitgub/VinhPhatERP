@@ -1,7 +1,18 @@
-import { DataTable, Badge, type DataTableColumn } from '@/shared/components';
-import { useInventoryAdjustmentHistory } from '@/application/inventory';
+import { useState } from 'react';
+
+import {
+  DataTable,
+  Badge,
+  type DataTableColumn,
+  type PaginationConfig,
+} from '@/shared/components';
+import { useInventoryAdjustmentHistoryPaginated } from '@/application/inventory';
 import type { InventoryAdjustment as BaseInventoryAdjustment } from '@/domain/inventory/inventory.types';
 import { INVENTORY_MESSAGES as MSG } from '@/features/inventory/inventory.constants';
+import {
+  DEFAULT_PAGE_SIZE,
+  type PaginatedResult,
+} from '@/shared/types/pagination';
 
 // Extend the type since generated types are not updated yet
 type InventoryAdjustment = BaseInventoryAdjustment & {
@@ -86,7 +97,13 @@ const ADJUSTMENT_COLUMNS: DataTableColumn<InventoryAdjustment>[] = [
 ];
 
 export function InventoryAdjustmentHistory() {
-  const { data, isLoading, error } = useInventoryAdjustmentHistory();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useInventoryAdjustmentHistoryPaginated(page, pageSize);
 
   if (error) {
     return (
@@ -99,12 +116,24 @@ export function InventoryAdjustmentHistory() {
     );
   }
 
+  const items = (result?.data as unknown as InventoryAdjustment[]) ?? [];
+  const paginationConfig: PaginationConfig<InventoryAdjustment> = {
+    result: result as unknown as PaginatedResult<InventoryAdjustment>,
+    onPageChange: setPage,
+    onPageSizeChange: (size) => {
+      setPageSize(size);
+      setPage(1);
+    },
+    itemLabel: 'bản ghi',
+  };
+
   return (
     <DataTable
-      data={(data as unknown as InventoryAdjustment[]) ?? []}
+      data={items}
       columns={ADJUSTMENT_COLUMNS}
       isLoading={isLoading}
       rowKey={(r) => r.id}
+      pagination={paginationConfig}
       emptyStateTitle={MSG.EMPTY_ADJUST_HIST_TITLE}
       emptyStateDescription={MSG.EMPTY_ADJUST_HIST_DESC}
       emptyStateIcon="History"

@@ -1,8 +1,37 @@
 import type { InventoryAdjustment } from '@/domain/inventory/inventory.types';
 import { supabase, untypedDb } from '@/services/supabase/client';
 import type { YarnAvailability } from '@/api/yarn-reservation.api';
+import {
+  DEFAULT_PAGE_SIZE,
+  type PaginatedResult,
+} from '@/shared/types/pagination';
 
 const TABLE = 'inventory_adjustments';
+
+export async function fetchInventoryAdjustmentsPaginated(
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+): Promise<PaginatedResult<InventoryAdjustment>> {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data, error, count } = await supabase
+    .from(TABLE)
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) throw error;
+  const total = count ?? 0;
+
+  return {
+    data: (data ?? []) as InventoryAdjustment[],
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}
 
 export type InventoryStats = {
   totalRolls: number;

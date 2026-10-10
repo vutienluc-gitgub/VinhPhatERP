@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import {
   fetchPurchaseOrders,
+  fetchPurchaseOrdersPaginated,
   fetchPurchaseOrderById,
   createPurchaseOrder,
   approvePurchaseOrder,
@@ -24,9 +25,22 @@ import type {
   GoodsReceiptFormValues,
   PurchaseOrder,
 } from '@/domain/purchase-orders';
+import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 import { useAuth } from '@/shared/hooks/useAuth';
 
 const QUERY_KEY = ['purchase-orders'] as const;
+
+export function usePurchaseOrderListPaginated(
+  filters: { status?: string; supplier_id?: string } = {},
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+) {
+  return useQuery({
+    queryKey: [...QUERY_KEY, 'paginated', filters, page, pageSize],
+    queryFn: () => fetchPurchaseOrdersPaginated(filters, page, pageSize),
+    placeholderData: (previousData) => previousData,
+  });
+}
 
 export function usePurchaseOrderList(
   filters: { status?: string; supplier_id?: string } = {},

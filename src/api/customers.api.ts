@@ -11,8 +11,96 @@ import { customerResponseSchema } from '@/schema/customer.schema';
 import { safeUpsert } from '@/lib/db-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiCustomerInsert } from '@/schema/api-validation.schema';
+import {
+  DEFAULT_PAGE_SIZE,
+  type PaginatedResult,
+} from '@/shared/types/pagination';
 
 const TABLE = 'customers';
+
+export async function fetchCustomersPaginated(
+  filters: CustomersFilter = {},
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+): Promise<PaginatedResult<Customer>> {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = supabase
+    .from(TABLE)
+    .select('*, salesperson:employees!salesperson_id(id, code, name)', {
+      count: 'exact',
+    })
+    .order('name', { ascending: true })
+    .range(from, to);
+
+  let salespersonId = filters.salesperson_id;
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale') {
+      salespersonId = profile.employee_id || undefined;
+    }
+  }
+
+  if (filters.status) {
+    query = query.eq('status', filters.status);
+  }
+  if (filters.query?.trim()) {
+    const q = filters.query.trim();
+    query = query.or(`name.ilike.%${q}%,code.ilike.%${q}%,phone.ilike.%${q}%`);
+  }
+  if (salespersonId) {
+    query = query.eq('salesperson_id', salespersonId);
+  }
+  if (filters.created_from) {
+    query = query.gte('created_at', filters.created_from);
+  }
+  if (filters.created_to) {
+    query = query.lte('created_at', filters.created_to);
+  }
+  if (filters.source) {
+    query = query.eq('source', filters.source);
+  }
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+  const total = count ?? 0;
+  const parsedData = customerResponseSchema
+    .array()
+    .parse(data ?? []) as Customer[];
+
+  return {
+    data: parsedData,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}
+
+export async function fetchCustomerStats(): Promise<{
+  active: number;
+  new: number;
+}> {
+  const [activeRes, totalRes] = await Promise.all([
+    supabase
+      .from(TABLE)
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active'),
+    supabase.from(TABLE).select('*', { count: 'exact', head: true }),
+  ]);
+
+  return {
+    active: activeRes.count ?? 0,
+    new: totalRes.count ?? 0,
+  };
+}
 
 export async function fetchCustomers(
   filters: CustomersFilter = {},

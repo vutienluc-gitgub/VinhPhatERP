@@ -3,9 +3,51 @@ import type {
   PurchaseOrderFormValues,
   GoodsReceiptFormValues,
   PurchaseOrderComment,
+  PurchaseOrder,
 } from '@/domain/purchase-orders';
 import { safeUpsert } from '@/lib/db-guard';
 import { assertSingleMutation } from '@/lib/db-mutation-guard';
+import {
+  DEFAULT_PAGE_SIZE,
+  type PaginatedResult,
+} from '@/shared/types/pagination';
+
+export async function fetchPurchaseOrdersPaginated(
+  filters: {
+    status?: string;
+    supplier_id?: string;
+  } = {},
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+): Promise<PaginatedResult<PurchaseOrder>> {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = untypedDb
+    .from('v_po_detail_full')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (filters.status) {
+    query = query.eq('status', filters.status);
+  }
+  if (filters.supplier_id) {
+    query = query.eq('supplier_id', filters.supplier_id);
+  }
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+  const total = count ?? 0;
+
+  return {
+    data: (data ?? []) as PurchaseOrder[],
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}
 
 export async function fetchPurchaseOrders(filters: {
   status?: string;
