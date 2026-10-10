@@ -1,2 +1,4 @@
 # Supabase Edge Functions (Deno environment, snake_case required for DB interaction)
 supabase/functions/
+# Local scratch scripts
+scratch/

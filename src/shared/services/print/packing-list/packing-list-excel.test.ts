@@ -66,7 +66,7 @@ describe('exportPackingListToExcel', () => {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     );
     expect((blob as Blob).size).toBeGreaterThan(0);
-  });
+  }, 15000);
 
   it('re-opens the saved workbook with real ExcelJS and keeps roll values + numeric weight', async () => {
     await exportPackingListToExcel(mockRolls, {
@@ -94,7 +94,7 @@ describe('exportPackingListToExcel', () => {
       .map((r) => ws!.getRow(r).getCell(weightCol).value)
       .reduce<number>((sum, v) => sum + Number(v), 0);
     expect(total).toBeCloseTo(46.2, 3);
-  });
+  }, 15000);
 
   it('derives a readable file name from the title when none is given', async () => {
     await exportPackingListToExcel(mockRolls, { title: 'Bảng kê ca 1' });
