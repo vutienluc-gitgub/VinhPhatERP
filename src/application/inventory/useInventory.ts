@@ -7,6 +7,7 @@ import {
   fetchAgingStock,
   createInventoryAdjustment,
   fetchInventoryAdjustments,
+  fetchInventoryAdjustmentsPaginated,
 } from '@/api/inventory.api';
 import type {
   InventoryStats,
@@ -14,6 +15,7 @@ import type {
   AgingRoll,
 } from '@/api/inventory.api';
 import { calculateAgingStats, calculateYarnKPIs } from '@/domain/inventory';
+import { DEFAULT_PAGE_SIZE } from '@/shared/types/pagination';
 
 export type { InventoryStats, InventoryBreakdownRow, AgingRoll };
 
@@ -50,6 +52,17 @@ export function useAgingStock() {
       rolls: data,
       stats: calculateAgingStats(data),
     }),
+  });
+}
+
+export function useInventoryAdjustmentHistoryPaginated(
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+) {
+  return useQuery({
+    queryKey: ['inventory', 'adjustments', 'paginated', page, pageSize],
+    queryFn: () => fetchInventoryAdjustmentsPaginated(page, pageSize),
+    placeholderData: (previousData) => previousData,
   });
 }
 

@@ -3,7 +3,6 @@ import type {
   CustomerInsert,
   CustomerUpdate,
   CustomersFilter,
-  PortalAccount,
 } from '@/domain/crm/customers.types';
 import { supabase } from '@/services/supabase/client';
 import { getTenantId } from '@/services/supabase/tenant';
@@ -11,8 +10,96 @@ import { customerResponseSchema } from '@/schema/customer.schema';
 import { safeUpsert } from '@/lib/db-guard';
 import { validateApiInput } from '@/lib/validate-api-input';
 import { apiCustomerInsert } from '@/schema/api-validation.schema';
+import {
+  DEFAULT_PAGE_SIZE,
+  type PaginatedResult,
+} from '@/shared/types/pagination';
 
 const TABLE = 'customers';
+
+export async function fetchCustomersPaginated(
+  filters: CustomersFilter = {},
+  page = 1,
+  pageSize = DEFAULT_PAGE_SIZE,
+): Promise<PaginatedResult<Customer>> {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = supabase
+    .from(TABLE)
+    .select('*, salesperson:employees!salesperson_id(id, code, name)', {
+      count: 'exact',
+    })
+    .order('name', { ascending: true })
+    .range(from, to);
+
+  let salespersonId = filters.salesperson_id;
+
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, employee_id')
+      .eq('id', userData.user.id)
+      .single();
+    if (profile?.role === 'sale') {
+      salespersonId = profile.employee_id || undefined;
+    }
+  }
+
+  if (filters.status) {
+    query = query.eq('status', filters.status);
+  }
+  if (filters.query?.trim()) {
+    const q = filters.query.trim();
+    query = query.or(`name.ilike.%${q}%,code.ilike.%${q}%,phone.ilike.%${q}%`);
+  }
+  if (salespersonId) {
+    query = query.eq('salesperson_id', salespersonId);
+  }
+  if (filters.created_from) {
+    query = query.gte('created_at', filters.created_from);
+  }
+  if (filters.created_to) {
+    query = query.lte('created_at', filters.created_to);
+  }
+  if (filters.source) {
+    query = query.eq('source', filters.source);
+  }
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+  const total = count ?? 0;
+  const parsedData = customerResponseSchema
+    .array()
+    .parse(data ?? []) as Customer[];
+
+  return {
+    data: parsedData,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}
+
+export async function fetchCustomerStats(): Promise<{
+  active: number;
+  new: number;
+}> {
+  const [activeRes, totalRes] = await Promise.all([
+    supabase
+      .from(TABLE)
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active'),
+    supabase.from(TABLE).select('*', { count: 'exact', head: true }),
+  ]);
+
+  return {
+    active: activeRes.count ?? 0,
+    new: totalRes.count ?? 0,
+  };
+}
 
 export async function fetchCustomers(
   filters: CustomersFilter = {},
@@ -272,92 +359,9 @@ export async function fetchNextCustomerCode(): Promise<string> {
   return `KH-${String(nextNum).padStart(3, '0')}`;
 }
 
-export async function fetchCustomerPortalAccount(
-  customerId: string,
-): Promise<PortalAccount | null> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id, is_active')
-    .eq('customer_id', customerId)
-    .eq('role', 'customer')
-    .maybeSingle();
-
-  if (error) throw error;
-  if (!data) return null;
-
-  return {
-    id: data.id,
-    email: '(đã có tài khoản)', // Email from auth is not natively queried here
-    is_active: data.is_active,
-  };
-}
-
-export interface CreateCustomerPortalAccountPayload {
-  customer_id: string;
-  full_name: string;
-  email?: string;
-  customer_code?: string;
-  password?: string;
-}
-
-export async function createCustomerPortalAccount(
-  payload: CreateCustomerPortalAccountPayload,
-): Promise<void> {
-  // Refresh session to ensure we have a valid token
-  const { data: refreshData } = await supabase.auth.refreshSession();
-  const session =
-    refreshData?.session ?? (await supabase.auth.getSession()).data.session;
-
-  if (!session) {
-    throw new Error(
-      'Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.',
-    );
-  }
-
-  return callEdgeFunction(session.access_token, payload);
-}
-
-async function callEdgeFunction(
-  accessToken: string,
-  payload: CreateCustomerPortalAccountPayload,
-): Promise<void> {
-  const res = await fetch(
-    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-customer-account`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-      },
-      body: JSON.stringify(payload),
-    },
-  );
-
-  let json;
-  try {
-    json = await res.json();
-  } catch {
-    throw new Error(
-      `Đã có lỗi xảy ra (HTTP ${res.status}). Hãy kiểm tra lại kết nối mạng.`,
-    );
-  }
-
-  if (!res.ok || !json.ok) {
-    throw new Error(
-      json.error?.message ?? `Tạo tài khoản thất bại (HTTP ${res.status}).`,
-    );
-  }
-}
-
-export async function updateCustomerPortalAccountStatus(
-  id: string,
-  isActive: boolean,
-): Promise<void> {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ is_active: isActive })
-    .eq('id', id);
-
-  if (error) throw error;
-}
+export {
+  fetchCustomerPortalAccount,
+  createCustomerPortalAccount,
+  updateCustomerPortalAccountStatus,
+  type CreateCustomerPortalAccountPayload,
+} from './customers-portal.api';

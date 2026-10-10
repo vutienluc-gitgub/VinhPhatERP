@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import {
-  fetchCustomers,
+  fetchCustomersPaginated,
+  fetchCustomerStats,
   createCustomer,
   updateCustomer,
   deleteCustomer,
@@ -59,22 +60,17 @@ export function useCustomerList(
         stats: { active: number; new: number };
       }
     > => {
-      const from = (page - 1) * pageSize;
-      const data = await fetchCustomers(sanitizedFilters);
-      const total = data.length;
-      const pageData = data.slice(from, from + pageSize);
+      const [pagedResult, stats] = await Promise.all([
+        fetchCustomersPaginated(sanitizedFilters, page, pageSize),
+        fetchCustomerStats(),
+      ]);
+
       return {
-        data: pageData,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
-        stats: {
-          active: data.filter((c) => c.status === 'active').length,
-          new: data.length, // According to business logic, new is often total for the filtered period, or we could just return total length
-        },
+        ...pagedResult,
+        stats,
       };
     },
+    placeholderData: (previousData) => previousData,
   });
 }
 
