@@ -1,8 +1,6 @@
 import { untypedDb } from '@/services/supabase/client';
 import type {
   PurchaseOrderFormValues,
-  GoodsReceiptFormValues,
-  PurchaseOrderComment,
   PurchaseOrder,
 } from '@/domain/purchase-orders';
 import { safeUpsert } from '@/lib/db-guard';
@@ -533,73 +531,13 @@ export async function rejectPurchaseOrder(
   return validatedData;
 }
 
-export async function createGoodsReceipt(
-  values: GoodsReceiptFormValues,
-  userId: string,
-  clientId: string,
-) {
-  const { data, error } = await untypedDb.rpc('rpc_create_goods_receipt', {
-    p_po_id: values.po_id,
-    p_client_request_id: clientId,
-    p_items: values.items,
-    p_received_date: values.received_date,
-    p_created_by: userId,
-  });
+export {
+  createGoodsReceipt,
+  fetchGoodsReceiptsByPo,
+  fetchGoodsReceiptById,
+} from './purchase-orders-receipts.api';
 
-  if (error) throw error;
-  return data;
-}
-
-export async function fetchGoodsReceiptsByPo(poId: string) {
-  const { data, error } = await untypedDb
-    .from('goods_receipts')
-    .select('*, goods_receipt_items(*)')
-    .eq('po_id', poId)
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  return data;
-}
-
-export async function fetchGoodsReceiptById(grId: string) {
-  const { data, error } = await untypedDb
-    .from('goods_receipts')
-    .select('*, goods_receipt_items(*)')
-    .eq('id', grId)
-    .single();
-
-  if (error) throw error;
-  return data;
-}
-
-export async function getPurchaseOrderComments(poId: string) {
-  const { data, error } = await untypedDb
-    .from('purchase_order_comments')
-    .select('*')
-    .eq('purchase_order_id', poId)
-    .order('created_at', { ascending: true });
-
-  if (error) throw error;
-  return data as PurchaseOrderComment[];
-}
-
-export async function addPurchaseOrderComment(payload: {
-  poId: string;
-  content: string;
-  userId: string;
-  visibility: 'internal' | 'external';
-}) {
-  const data = (await safeUpsert({
-    table: 'purchase_order_comments',
-    data: {
-      purchase_order_id: payload.poId,
-      content: payload.content,
-      sender_type: 'erp',
-      sender_id: payload.userId,
-      visibility: payload.visibility,
-    },
-    conflictKey: 'id',
-  })) as unknown as PurchaseOrderComment[];
-
-  return data[0] as PurchaseOrderComment;
-}
+export {
+  getPurchaseOrderComments,
+  addPurchaseOrderComment,
+} from './purchase-orders-comments.api';
